@@ -9,7 +9,7 @@
 ## Top 2: Programmiersprache
  - Wir legen uns auf **Java** fest
  - Gründe:
-    - Einige von uns könne Java
+    - Einige von uns können Java
     - Viele Beispiele sind bereits in Java implementiert
     - Mutlithreading ist einfach und Java ist relativ performant
 
@@ -20,7 +20,7 @@
     - Wenn es nicht gut funktioniert, dann überlegen wir, ob ein Scrum-Master notwendig ist
 
 ## Top 4: Regelmäßige Termine
- - Wir treffen uns anfangs einmal die Wpche und prüfen dann, wie es läuft
+ - Wir treffen uns anfangs einmal die Woche und prüfen dann, wie es läuft
  - Kleine Untergruppen, können sich regelmäßiger Treffen
  - Treffen findet am **Dienstag um 20:00 Uhr** statt
     - Wir fragen Redouane noch, ob er früher kann
@@ -38,5 +38,5 @@
   - **Spielaufbau:** Redouane / Gruppe
 
 ## Top 7: Sonstiges
- - Karten, Rollen, etc. muss das Praktikum in der Gruppe festlegen
+ - Kartengröße, Rollen, etc. müssen die Praktikumsteilnehmer in der Gruppe festlegen
     -   Abhängig von der Entscheidung können wir dann evtl. Algorithmen oder Strategien anpassen
