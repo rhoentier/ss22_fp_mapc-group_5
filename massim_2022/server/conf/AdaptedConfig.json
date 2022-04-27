@@ -22,7 +22,8 @@
 
   "match" : [
     "$(sim/simBob1.json)",
-    "$(sim/sim2.json)"
+    "$(sim/simBob2.json)"
+
   ],
 
   "teams" : {
