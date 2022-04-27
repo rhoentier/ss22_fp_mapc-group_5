@@ -1,0 +1,93 @@
+<assembly>
+    <id>bin</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <fileSets>
+        <!-- Documentation and starter kits -->
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>COPYING.txt</include>
+                <include>CHANGELOG.md</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>docs</directory>
+            <outputDirectory>docs</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>starterKits</directory>
+            <outputDirectory>starterKits</outputDirectory>
+        </fileSet>
+
+        <!-- MASSim-server -->
+        <fileSet>
+            <directory>server/target</directory>
+            <outputDirectory>server</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>server/conf</directory>
+            <outputDirectory>server/conf</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>server/osm</directory>
+            <outputDirectory>server/osm</outputDirectory>
+            <includes>
+                <include>*.osm.pbf</include>
+            </includes>
+        </fileSet>
+
+        <!-- Protocol -->
+        <fileSet>
+            <directory>protocol/target</directory>
+            <outputDirectory>protocol</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <!-- Java-agents -->
+        <fileSet>
+            <directory>javaagents/target</directory>
+            <outputDirectory>javaagents</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>javaagents/conf</directory>
+            <outputDirectory>javaagents/conf</outputDirectory>
+        </fileSet>
+
+        <!-- EISMASSim -->
+        <fileSet>
+            <directory>eismassim/target</directory>
+            <outputDirectory>eismassim</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>eismassim/conf</directory>
+            <outputDirectory>eismassim/conf</outputDirectory>
+            <includes>
+                <include>*.json</include>
+            </includes>
+        </fileSet>
+
+        <!-- Monitor -->
+        <fileSet>
+            <directory>monitor/target</directory>
+            <outputDirectory>monitor</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

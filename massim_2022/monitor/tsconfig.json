@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": false,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": false,
+    "target": "ES2016",
+    "lib": ["DOM", "ES2016"],
+    "moduleResolution": "node"
+  },
+  "include": ["js/*.ts"]
+}

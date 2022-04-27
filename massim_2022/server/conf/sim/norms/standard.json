@@ -1,0 +1,36 @@
+{
+    "simultaneous" : 1,
+    "chance": 15,
+    "subjects" : [
+        {
+            "name" : "Carry",
+            "announcement" : [10, 20],
+            "duration" : [100, 200],
+            "punishment": [10, 20],
+            "weight": 15,
+            "optional": {
+                "quantity": [1,1]
+            }          
+        },
+        {
+            "name" : "Adopt",
+            "announcement" : [10, 20],
+            "duration" : [20, 50],
+            "punishment": [5, 10],
+            "weight": 15,
+            "optional": {
+                "max": [0,0]
+            }          
+        },
+        {
+            "name" : "Adopt",
+            "announcement" : [10, 20],
+            "duration" : [100, 200],
+            "punishment": [10, 20],
+            "weight": 15,
+            "optional": {
+                "max": [1,3]
+            }
+        }
+    ]
+}

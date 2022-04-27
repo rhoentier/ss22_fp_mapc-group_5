@@ -1,0 +1,28 @@
+{
+  "agents" : [
+    {
+      "count":  20,
+      "start-index":  1,
+      "agent-prefix":  "A",
+      "entity-prefix":  "connectionA",
+      "team":  "A",
+      "class": "BasicAgent"
+    },
+    {
+      "count":  30,
+      "start-index":  21,
+      "agent-prefix":  "A",
+      "entity-prefix":  "connectionA",
+      "team":  "A",
+      "class": "BasicAgent"
+    },
+    {
+      "count":  50,
+      "start-index":  1,
+      "agent-prefix":  "B",
+      "entity-prefix":  "connectionB",
+      "team":  "B",
+      "class": "BasicAgent"
+    }
+  ]
+}

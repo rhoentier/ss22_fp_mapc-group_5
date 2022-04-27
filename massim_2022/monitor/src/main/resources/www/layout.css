@@ -1,0 +1,104 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #161512;
+  color: #bababa;
+  font-family: Helvetica, sans-serif;
+  overflow: hidden;
+}
+a {
+  color: #bababa;
+  cursor: pointer;
+  text-decoration: underline;
+}
+p {
+  margin: 0;
+}
+
+#overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 340px;
+  max-height: calc(100% - 20px);
+  background: #161512cc;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.replay button {
+  padding: 0;
+  line-height: 1.5em;
+  width: 19%;
+}
+.replay {
+  word-wrap: anywhere;
+}
+
+#overlay canvas {
+  margin: 0.8em auto;
+  display: block;
+}
+
+span.no_action,
+span.unknown {
+  color: red;
+}
+
+.team {
+  padding: 4px;
+}
+
+#monitor > canvas,
+#monitor > .maps {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#monitor > .maps {
+  padding-top: 10px;
+  padding-left: 350px;
+  overflow-y: auto;
+  width: calc(100% - 350px);
+}
+
+.box,
+.map {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  background-color: #252422;
+  margin: 0.5em;
+  padding: 0.5em;
+}
+
+ul {
+  margin: 0.4em 0;
+  padding-left: 1.5em;
+}
+
+.map {
+  width: 250px;
+  float: left;
+}
+.map.no_action,
+.map.unknown {
+  background: #901717;
+}
+.map a {
+  display: block;
+}
+.map a.team {
+  text-decoration: none;
+}
+.map .meta {
+  height: 5em;
+  font-size: 0.8em;
+}
+
+canvas {
+  cursor: crosshair;
+}
