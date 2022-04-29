@@ -150,7 +150,7 @@ public class NextPerceptReader {
                         if (percept.getParameters().size() == 2) {
                             surveyedThing.add(percept.getParameters());
                         }
-                        agent.say("Surveyed reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
+                        //agent.say("Surveyed reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
                     }
                     default -> //overhang.add(percept.getParameters());
                     {
@@ -182,8 +182,6 @@ public class NextPerceptReader {
                 agent.say("------------------------------------------------");
                  */
                 // handling of unusual perception entries
-
-                agent.say("things \n" + things.toString());
 
                 if (!tasks.isEmpty()) {
                     //  agent.say("Tasks \n" + tasks.toString());
@@ -253,7 +251,7 @@ public class NextPerceptReader {
             ));
         }
         if (!processedAttachedSet.isEmpty()) {
-            agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
+            // agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
         }
         return processedAttachedSet;
     }
@@ -323,7 +321,7 @@ public class NextPerceptReader {
                     "Hit"));
         }
         if (!processedHits.isEmpty()) {
-            agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
+            // agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
         }
     }
 
