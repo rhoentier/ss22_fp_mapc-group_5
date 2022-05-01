@@ -93,7 +93,7 @@ public class NextPerceptReader {
                     // - SimulationIsFinished Message
                     case "bye" ->
                         // is called, when Simulation is finished.
-                        agent.setFlagDeactivateAgent();
+                        agent.setFlagDisableAgent();
 
                     // - Request Action Perceipts
                     case "requestAction" ->

@@ -25,7 +25,7 @@ public class NextAgent extends Agent {
 
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
-    private Boolean deactivateAgentFlag = false; // True when all Simulations are finished 
+    private Boolean disableAgentFlag = false; // True when all Simulations are finished 
 
     //Agent related attributes
     private AgentStatus status;
@@ -107,8 +107,8 @@ public class NextAgent extends Agent {
 
         //clear the processed perceipts - used later at the moment, has to be moved here
         // this.setPercepts(new ArrayList<>(), this.getPercepts());
-        if (deactivateAgentFlag) {
-            deactivateAgent();
+        if (disableAgentFlag) {
+            disableAgent();
         }
 
         // processing after one simulation is finished
@@ -120,6 +120,12 @@ public class NextAgent extends Agent {
         if (!simStatus.getSimulationIsStarted()) {
             return null;
         }
+        
+        // Represents losing attached Blocks after beeing deactivated.
+        if(status.getDeactivatedFlag()){
+            status.dropAttachedElements();
+        }
+        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.getActionID() > lastID) {
             lastID = simStatus.getActionID();
@@ -221,7 +227,7 @@ public class NextAgent extends Agent {
     /*
         Agent behavior after all simulations have finished
      */
-    public void deactivateAgent() {
+    public void disableAgent() {
         this.say("All games finished!");
 
         //System.exit(1); // Kill the window
@@ -274,8 +280,8 @@ public class NextAgent extends Agent {
 
     }
 
-    void setFlagDeactivateAgent() {
-        this.deactivateAgentFlag = true;
+    void setFlagDisableAgent() {
+        this.disableAgentFlag = true;
     }
 
     private void resetAgent() {
