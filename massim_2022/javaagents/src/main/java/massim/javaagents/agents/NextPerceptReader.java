@@ -46,7 +46,6 @@ public class NextPerceptReader {
 
     //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
     // Nachteil: BoilerCode + Performance
-    
     void evaluate(List<Percept> percepts) {
 
         clearSets();
@@ -151,7 +150,7 @@ public class NextPerceptReader {
                         if (percept.getParameters().size() == 2) {
                             surveyedThing.add(percept.getParameters());
                         }
-                        agent.say("Surveyed reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
+                        //agent.say("Surveyed reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
                     }
                     default -> //overhang.add(percept.getParameters());
                     {
@@ -185,7 +184,7 @@ public class NextPerceptReader {
                 // handling of unusual perception entries
 
                 if (!tasks.isEmpty()) {
-                    agent.say("Tasks \n" + tasks.toString());
+                    //  agent.say("Tasks \n" + tasks.toString());
                 }
 
                 if (!overhangNames.isEmpty()) {
@@ -204,6 +203,7 @@ public class NextPerceptReader {
     }
 
     private void clearSets() {
+        
         attached = new HashSet<>();
         tasks = new HashSet<>();
         norms = new HashSet<>();
@@ -221,8 +221,11 @@ public class NextPerceptReader {
     }
 
     private void convertGeneratedSets() {
+        
+        //if (!overhangNames.isEmpty()) {
+        
+        //}
 
-        // processThingsSet();
         agent.getStatus().setAttachedElements(processAttachedSet());
         // processTasksSet();
         // processNormsSet();
@@ -248,7 +251,7 @@ public class NextPerceptReader {
             ));
         }
         if (!processedAttachedSet.isEmpty()) {
-            agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
+            // agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
         }
         return processedAttachedSet;
     }
@@ -278,6 +281,7 @@ public class NextPerceptReader {
     }
 
     private void processGoalZonesSet() {
+        // ToDo: Transfer into Main Data Warehouse
         HashSet<MapTile> processedGoalZones = new HashSet<>();
         for (List<Parameter> zone : goalZones) {
             processedGoalZones.add(new MapTile(
@@ -292,6 +296,7 @@ public class NextPerceptReader {
     }
 
     private void processRoleZonesSet() {
+        // ToDo: Transfer into Main Data Warehouse
         HashSet<MapTile> processedRoleZones = new HashSet<>();
         for (List<Parameter> zone : roleZones) {
             processedRoleZones.add(new MapTile(
@@ -306,6 +311,7 @@ public class NextPerceptReader {
     }
 
     private void processHitsSet() {
+        // ToDo: Transfer into Main Data Warehouse
         HashSet<MapTile> processedHits = new HashSet<>();
         for (List<Parameter> zone : roleZones) {
             processedHits.add(new MapTile(
@@ -315,7 +321,7 @@ public class NextPerceptReader {
                     "Hit"));
         }
         if (!processedHits.isEmpty()) {
-            agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
+            // agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
         }
     }
 
