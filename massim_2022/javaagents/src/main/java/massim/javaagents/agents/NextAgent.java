@@ -13,29 +13,32 @@ import java.util.Random;
 /**
  * First iteration of an experimental agent.
  *
- * Done: 
- * Handling of transition between simulations 
- * Basic action generation based on random movement
- * 
- * ToDo: registerAgent @ Mailserver -> anmeldung für Agentenkommunikation.
- *          // kombination mit Gruppenbildung?
+ * Done: Handling of transition between simulations Basic action generation
+ * based on random movement
  *
- * @author AVL
+ * ToDo: registerAgent @ Mailserver -> anmeldung für Agentenkommunikation. //
+ * kombination mit Gruppenbildung?
+ *
+ * @author Alexander Lorenz
  */
-
 public class NextAgent extends Agent {
 
-    private int lastID = -1;
+    private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
-    private Boolean deactivateAgentFlag = false;
+    private Boolean deactivateAgentFlag = false; // True when all Simulations are finished 
 
+    //Agent related attributes
     private AgentStatus status;
+    //Simulation related attributes
     private SimulationStatus simStatus;
 
+    //Compilation of finisched Simulations to be Processed after "deactivateAgentFlag == True"
     private List<SimulationStatus> finishedSimulations = new ArrayList<>();
 
     // --- Algorithms ---
+    // Eismassim interpreter
     NextPerceptReader processor;
+    // Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
 
     //--- General Directions ----
@@ -44,9 +47,7 @@ public class NextAgent extends Agent {
     final static Point southPoint = new Point(0, 1);
     final static Point northPoint = new Point(0, -1);
 
-    private ArrayList<Point> cargoSlots = new ArrayList();
-    private ArrayList<Point> attachedList = new ArrayList();
-
+    
     /**
      * Priotiy selection to be used by Agents
      */
@@ -76,11 +77,6 @@ public class NextAgent extends Agent {
     public NextAgent(String name, MailService mailbox) {
         super(name, mailbox);
 
-        this.cargoSlots.add(westPoint);
-        this.cargoSlots.add(northPoint);
-        this.cargoSlots.add(eastPoint);
-        this.cargoSlots.add(southPoint);
-
         this.status = new AgentStatus();
         this.simStatus = new SimulationStatus();
 
@@ -89,37 +85,39 @@ public class NextAgent extends Agent {
     }
 
     //-----------------------------------------------------------
+    
+    // Original Method
     @Override
     public void handlePercept(Percept percept) {
     }
 
+    // Original Method
     @Override
     public void handleMessage(Percept message, String sender) {
     }
 
     /**
-     * Agent handling after the step Call 
-     * 
+     * Agent handling after the step call
+     *
      * @return Action - Next action for Massim simulation for this agent.
      */
     @Override
     public Action step() {
         processor.evaluate(getPercepts());
-        
+
         //clear the processed perceipts - used later at the moment, has to be moved here
         // this.setPercepts(new ArrayList<>(), this.getPercepts());
-    
-        
         if (deactivateAgentFlag) {
             deactivateAgent();
         }
-        
+
+        // processing after one simulation is finished
         if (simStatus.getSimulationIsFinished()) {
             finishTheSimulation();
         }
-        
+
         // Skips the ActionGeneration while simulation is idle
-        if(!simStatus.getSimulationIsStarted()){
+        if (!simStatus.getSimulationIsStarted()) {
             return null;
         }
         // ActionGeneration is started on a new ActionID only
@@ -128,14 +126,14 @@ public class NextAgent extends Agent {
 
             ArrayList<Action> possibleActions = new ArrayList<>();
             generatePossibleActions(possibleActions);
-            
+
             //clear the processed perceipts
+            // To be moved to top
             this.setPercepts(new ArrayList<>(), this.getPercepts());
-    
+
             return selectNextAction(possibleActions);
         }
 
-        
         return null;
 
     }
@@ -146,51 +144,30 @@ public class NextAgent extends Agent {
         return new Action("move", new Identifier(directions[rn.nextInt(4)]));
     }
 
-    private Action generateMoveNorth() {
-        return new Action("move", new Identifier("n"));
-    }
-
-    private Action generateMoveSouth() {
-        return new Action("move", new Identifier("s"));
-    }
-
-    private Action generateMoveEast() {
-        return new Action("move", new Identifier("e"));
-    }
-
-    private Action generateMoveWest() {
-        return new Action("move", new Identifier("w"));
-    }
-
+    
     /**
      * Reports, if a Thing is next to the Agent
      *
-     * @param xValue - xValue of Thing
-     * @param yValue - yValue of Thing
+     * @param xValue - x-Value of Thing
+     * @param yValue - y-Value of Thing
      * @return boolean
      */
     private boolean nextTo(Point position) {
-        Boolean feedback = false;
-        for (Point freeSlot : cargoSlots) {
-
-            if (position.equals(freeSlot)) {
-                feedback = true;
-            }
-
-            for (Point attachedSlot : attachedList) {
-                if (position.equals(attachedSlot)) {
-                    feedback = false;
-                }
-            }
+        if(position.equals(westPoint) || 
+                position.equals(northPoint) || 
+                position.equals(eastPoint) || 
+                position.equals(southPoint)) {
+            return true;
         }
-        return feedback;
+        
+        return false;
     }
 
     /**
      * Returns the direction for an action
      *
-     * @param xValue - xValue of Thing
-     * @param yValue - yValue of Thing
+     * @param xValue - x-Value of Thing
+     * @param yValue - y-Value of Thing
      * @return Identifier for the direction value of an action.
      */
     private Identifier getDirection(Point direction) {
@@ -250,7 +227,6 @@ public class NextAgent extends Agent {
         //System.exit(1); // Kill the window
     }
 
-    
     /*
         Agent behavior after current simulation has finished
      */
@@ -268,25 +244,9 @@ public class NextAgent extends Agent {
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
         possibleActions.add(generateRandomMove());
 
-        ArrayList<Point> attachedListNew = new ArrayList();
-
         List<Percept> percepts = getPercepts();
         for (Percept percept : percepts) {
             // TODO - Convert to using AgentStatus
-            if (percept.getName().equals("attached")) {
-
-                List<Parameter> parameters = percept.getParameters();
-                Point newPoint = new Point(Integer.parseInt(parameters.get(0).toProlog()), Integer.parseInt(parameters.get(1).toProlog()));
-                if (!attachedListNew.contains(newPoint)) {
-                    attachedListNew.add(newPoint);
-                }
-            }
-
-            if (percept.getName().equals("goalZones")) {
-                this.say("Goal" + percept.getParameters().get(0));
-                possibleActions.add(new Action("submit"));
-
-            }
 
             //Implementation of a reactive Action, atttach - if standing next to a block
             if (percept.getName().equals("thing")) {
@@ -300,33 +260,18 @@ public class NextAgent extends Agent {
                 if (Ident instanceof Identifier) {
                     String wert = ((Identifier) Ident).getValue();
 
-                    /*
-                    TODO - if Block attached, ignore 
-                    if (wert.equals("block")) {
-                        this.say("Sehe Block");
-                    }
-                     */
-                    if (wert.equals("block") && nextTo(PositionOfThing) && this.attachedList.size() < 2) {
-                        // - TODO: evaluate if Cargo fetch sucessful
-
-                        //this.say("attach " + getDirection(PositionOfThing));
-                        //cargoSlots.remove(PositionOfThing);
+                    if (wert.equals("block") && nextTo(PositionOfThing) && status.getAttachedElements().size() < 2) {
+                        this.say(status.getAttachedElements().toString());
                         possibleActions.add(new Action("attach", getDirection(PositionOfThing)));
                     }
 
-                    if (wert.equals("dispenser") && nextTo(PositionOfThing) && this.attachedList.size() < 2) {
-
-                        //this.say("request " + getDirection(PositionOfThing));
+                    if (wert.equals("dispenser") && nextTo(PositionOfThing) && status.getAttachedElements().size() < 2) {
                         possibleActions.add(new Action("request", getDirection(PositionOfThing)));
                     }
                 }
             }
         }
 
-        //Can be removed after transition to Agent status
-        attachedList = attachedListNew;
-        // this.say(" Actionlist " + possibleActions.size());
-        this.actionRequestActive = false;
     }
 
     void setFlagDeactivateAgent() {
