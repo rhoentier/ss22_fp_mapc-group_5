@@ -25,7 +25,7 @@ public class NextAgent extends Agent {
 
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
-    private Boolean deactivateAgentFlag = false; // True when all Simulations are finished 
+    private Boolean disableAgentFlag = false; // True when all Simulations are finished 
 
     //Agent related attributes
     private AgentStatus status;
@@ -84,6 +84,13 @@ public class NextAgent extends Agent {
 
     }
 
+    /*
+    //-----------------------
+ 
+    
+    //------------------------
+    */
+    
     //-----------------------------------------------------------
     
     // Original Method
@@ -105,10 +112,8 @@ public class NextAgent extends Agent {
     public Action step() {
         processor.evaluate(getPercepts());
 
-        //clear the processed perceipts - used later at the moment, has to be moved here
-        // this.setPercepts(new ArrayList<>(), this.getPercepts());
-        if (deactivateAgentFlag) {
-            deactivateAgent();
+        if (disableAgentFlag) {
+            disableAgent();
         }
 
         // processing after one simulation is finished
@@ -120,16 +125,18 @@ public class NextAgent extends Agent {
         if (!simStatus.getSimulationIsStarted()) {
             return null;
         }
+        
+        // Represents losing attached Blocks after beeing deactivated.
+        if(status.getDeactivatedFlag()){
+            status.dropAttachedElements();
+        }
+        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.getActionID() > lastID) {
             lastID = simStatus.getActionID();
 
             ArrayList<Action> possibleActions = new ArrayList<>();
             generatePossibleActions(possibleActions);
-
-            //clear the processed perceipts
-            // To be moved to top
-            this.setPercepts(new ArrayList<>(), this.getPercepts());
 
             return selectNextAction(possibleActions);
         }
@@ -153,13 +160,18 @@ public class NextAgent extends Agent {
      * @return boolean
      */
     private boolean nextTo(Point position) {
-        if(position.equals(westPoint) || 
-                position.equals(northPoint) || 
-                position.equals(eastPoint) || 
-                position.equals(southPoint)) {
+        if(position.equals(westPoint) && !this.status.getAttachedElements().contains(westPoint)){
             return true;
         }
-        
+        if(position.equals(northPoint) && !this.status.getAttachedElements().contains(northPoint)){
+            return true;
+        }
+        if(position.equals(eastPoint) && !this.status.getAttachedElements().contains(eastPoint)){
+            return true;
+        }
+        if(position.equals(southPoint) && !this.status.getAttachedElements().contains(southPoint)){
+            return true;
+        }        
         return false;
     }
 
@@ -200,6 +212,7 @@ public class NextAgent extends Agent {
 
         Action nextAction = new Action("skip");
 
+        //Compares each action based on the value
         for (Action action : possibleActions) {
             if (priorityMap.get(action.getName()) < priorityMap.get(nextAction.getName())) {
                 nextAction = action;
@@ -221,7 +234,7 @@ public class NextAgent extends Agent {
     /*
         Agent behavior after all simulations have finished
      */
-    public void deactivateAgent() {
+    public void disableAgent() {
         this.say("All games finished!");
 
         //System.exit(1); // Kill the window
@@ -257,25 +270,32 @@ public class NextAgent extends Agent {
 
                 Parameter Ident = percept.getParameters().get(2);
 
+                // BUG: The agent seem to share the attached status with other agents. 
+                // If 1 agent is full, no further attach or request actions are tried. 
+                // - 
+                
                 if (Ident instanceof Identifier) {
                     String wert = ((Identifier) Ident).getValue();
 
-                    if (wert.equals("block") && nextTo(PositionOfThing) && status.getAttachedElements().size() < 2) {
-                        this.say(status.getAttachedElements().toString());
+                    // if (this.status.getAttachedElements().size() < 2 && 
+                    if (        wert.equals("block") && nextTo(PositionOfThing)) {
                         possibleActions.add(new Action("attach", getDirection(PositionOfThing)));
                     }
 
-                    if (wert.equals("dispenser") && nextTo(PositionOfThing) && status.getAttachedElements().size() < 2) {
+                    // if (this.status.getAttachedElements().size() < 2 && 
+                    if (        wert.equals("dispenser") && nextTo(PositionOfThing)) {
                         possibleActions.add(new Action("request", getDirection(PositionOfThing)));
                     }
                 }
+                
+                // Todo: Wandeln in If NextTo Thing, select action based on thing
             }
         }
 
     }
 
-    void setFlagDeactivateAgent() {
-        this.deactivateAgentFlag = true;
+    void setFlagDisableAgent() {
+        this.disableAgentFlag = true;
     }
 
     private void resetAgent() {

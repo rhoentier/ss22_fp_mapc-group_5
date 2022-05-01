@@ -36,6 +36,7 @@ siehe simulation status
         energy = -1;
         deactivated = false;
         role= null;
+        attachedElements = new HashSet<>();
     
     };
     
@@ -104,21 +105,19 @@ siehe simulation status
     }
 
     public void setAttachedElements(HashSet<Point> attachedElements) {
-        this.attachedElements = attachedElements;
+        for(Point attached:attachedElements) {
+            this.attachedElements.add(attached);
+        }
     }
 
     public HashSet<Point> getAttachedElements() {
         return attachedElements;
     }
-    
-    
-    
-    
-    
-    
+
+    void dropAttachedElements() {
+        attachedElements = new HashSet<>();
+    }
     
    
-    
-    
     
 }

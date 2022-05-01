@@ -1,3 +1,4 @@
 # Ignore logs and replay
 logs/*
 replays/*
+results/*

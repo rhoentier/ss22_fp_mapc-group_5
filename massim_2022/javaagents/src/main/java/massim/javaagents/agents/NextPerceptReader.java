@@ -12,7 +12,7 @@ import java.util.List;
  * Done: Handling of all documented Percepts is implemented ToDo: The conversion
  * of sets into the target format + external saving
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextPerceptReader {
 
@@ -93,7 +93,7 @@ public class NextPerceptReader {
                     // - SimulationIsFinished Message
                     case "bye" ->
                         // is called, when Simulation is finished.
-                        agent.setFlagDeactivateAgent();
+                        agent.setFlagDisableAgent();
 
                     // - Request Action Perceipts
                     case "requestAction" ->
@@ -159,51 +159,23 @@ public class NextPerceptReader {
                     }
 
                 }
-                /*
-                agent.say("attached \n" + attached.toString());
-                agent.say("------------------------------------------------");
-                agent.say("goals \n" + tasks.toString());
-                agent.say("------------------------------------------------");
-                agent.say("things \n" + things.toString());
-                agent.say("------------------------------------------------");
-                agent.say("obstacles \n" + obstacles.toString());
-                agent.say("------------------------------------------------");
-                agent.say("norms \n" + norms.toString());
-                agent.say("------------------------------------------------");
-                agent.say("roles \n" + roles.toString());
-                agent.say("------------------------------------------------");
-                agent.say("roleZones \n" + roleZones.toString());
-                agent.say("------------------------------------------------");
-                agent.say("GoalZones \n" + goalZones.toString());
-                agent.say("------------------------------------------------");
-                agent.say("------------------------------------------------");
-                agent.say("------------------------------------------------");
-                agent.say("hits \n" + hits.toString());
-                agent.say("------------------------------------------------");
-                 */
-                // handling of unusual perception entries
-
-                if (!tasks.isEmpty()) {
-                    //  agent.say("Tasks \n" + tasks.toString());
-                }
-
-                if (!overhangNames.isEmpty()) {
-                    agent.say("------------------------------------------------");
-                    agent.say("overhang: \n" + overhangNames.toString());
-                    agent.say("------------------------------------------------");
-                }
-
-                convertGeneratedSets();
-
-                // Clearing of perception list after processing of the Data.
-                // has to be moved here. At the moment it is handled in Next Agent to keep Action generation active.  
-                // this.agent.setPercepts(new ArrayList<>(), percepts);
             }
+            
+            // handling of unusual perception entries
+            
+            if (!overhangNames.isEmpty()) {
+                agent.say("------------------------------------------------");
+                agent.say("WARNING! overhang: \n" + overhangNames.toString());
+                agent.say("------------------------------------------------");
+            }
+
+            convertGeneratedSets();
+            
         }
     }
 
     private void clearSets() {
-        
+
         attached = new HashSet<>();
         tasks = new HashSet<>();
         norms = new HashSet<>();
@@ -221,12 +193,12 @@ public class NextPerceptReader {
     }
 
     private void convertGeneratedSets() {
+
         
         //if (!overhangNames.isEmpty()) {
-        
-        //}
 
-        agent.getStatus().setAttachedElements(processAttachedSet());
+        //}
+        agent.getStatus().setAttachedElements(processAttachedSet()); // TODO: Buggy ?
         // processTasksSet();
         // processNormsSet();
         // processRolesSet();
@@ -243,6 +215,9 @@ public class NextPerceptReader {
 
     private HashSet<Point> processAttachedSet() {
         // implement the Definition of the entity, by aquiring Data from Things set.
+        if (!attached.isEmpty()) {
+            //    agent.say("\n" + "Attached input \n" + attached.toString() + "\n");
+        }
         HashSet<Point> processedAttachedSet = new HashSet<>();
         for (List<Parameter> zone : attached) {
             processedAttachedSet.add(new Point(
@@ -251,7 +226,7 @@ public class NextPerceptReader {
             ));
         }
         if (!processedAttachedSet.isEmpty()) {
-            // agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
+            //    agent.say("\n" + "Attached output\n" + processedAttachedSet.toString() + "\n");
         }
         return processedAttachedSet;
     }
