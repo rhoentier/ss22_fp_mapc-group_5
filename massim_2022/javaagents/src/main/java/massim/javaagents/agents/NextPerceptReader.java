@@ -12,7 +12,7 @@ import java.util.List;
  * Done: Handling of all documented Percepts is implemented ToDo: The conversion
  * of sets into the target format + external saving
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextPerceptReader {
 
@@ -226,7 +226,7 @@ public class NextPerceptReader {
         
         //}
 
-        agent.getStatus().setAttachedElements(processAttachedSet());
+        agent.getStatus().setAttachedElements(processAttachedSet()); // TODO: Buggy ?
         // processTasksSet();
         // processNormsSet();
         // processRolesSet();
@@ -251,7 +251,7 @@ public class NextPerceptReader {
             ));
         }
         if (!processedAttachedSet.isEmpty()) {
-            // agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
+            agent.say("\n" + "Attached \n" + processedAttachedSet.toString() + "\n");
         }
         return processedAttachedSet;
     }
