@@ -119,17 +119,7 @@ public class SimulationStatus {
         return simulationIsFinished;
     }
 
-    
-    
     public void setFlagSimulationIsFinished() {
         simulationIsFinished=true;
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }

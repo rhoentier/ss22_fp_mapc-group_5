@@ -10,11 +10,6 @@ import java.util.List;
  * @author AVL
  */
 public class AgentStatus {
-    
-    /*
-siehe simulation status
-*/    
-    
     private String name;  
     private String teamName;    
     private String lastAction;
@@ -37,10 +32,9 @@ siehe simulation status
         deactivated = false;
         role= null;
         attachedElements = new HashSet<>();
-    
     };
     
-    void setTeam( String teamName) {
+    public void setTeam( String teamName) {
         this.teamName = teamName;
     }
 
@@ -48,7 +42,7 @@ siehe simulation status
         return teamName;
     }
 
-    void setlastAction(String lastAction) {
+    public void setlastAction(String lastAction) {
         this.lastAction = lastAction;
     }
 
@@ -56,7 +50,7 @@ siehe simulation status
         return lastAction;
     }
 
-    void setDeactivatedFlag(boolean deactivated) {
+    public void setDeactivatedFlag(boolean deactivated) {
         this.deactivated = deactivated;}
 
     public boolean getDeactivatedFlag() {
@@ -114,10 +108,7 @@ siehe simulation status
         return attachedElements;
     }
 
-    void dropAttachedElements() {
+    public void dropAttachedElements() {
         attachedElements = new HashSet<>();
     }
-    
-   
-    
 }

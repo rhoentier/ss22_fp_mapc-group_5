@@ -41,7 +41,6 @@ public class NextPerceptReader {
         agentStatus = agent.getStatus();
 
         clearSets();
-
     }
 
     //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
