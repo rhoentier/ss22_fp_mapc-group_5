@@ -1,5 +1,7 @@
 package massim.javaagents.agents;
 
+import java.awt.Point;
+
 /**
  * The Atomic element of a Massim Map
  *
@@ -69,4 +71,7 @@ public class MapTile {
                 + "Last Step: " + this.lastVisionStep;
     }
 
+    public Point getPoint(){
+        return new Point(positionX, positionY);
+    }
 }

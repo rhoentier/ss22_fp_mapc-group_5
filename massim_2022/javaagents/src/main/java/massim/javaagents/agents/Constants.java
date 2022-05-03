@@ -30,18 +30,19 @@ public final class Constants
     // Priotiy selection to be used by Agents
     final static Map<String, Integer> PriorityMap = new HashMap<String, Integer>() {
         {
-            put("submit", 1);
-            put("attach", 2);
-            put("request", 3);
-            put("move", 4);
-            put("detach", 5);
-            put("rotate", 6);
-            put("connect", 7);
-            put("survey", 8);
-            put("adopt", 9);
-            put("disconnect", 10);
-            put("clear", 11);
-            put("skip", 100);
+            put("submit", 10);
+            put("attach", 20);
+            put("request", 30);
+            put("dodge", 39);
+            put("move", 40);
+            put("detach", 50);
+            put("rotate", 60);
+            put("connect", 70);
+            put("survey", 80);
+            put("adopt", 90);
+            put("disconnect", 100);
+            put("clear", 110);
+            put("skip", 1000);
         }
     };
     

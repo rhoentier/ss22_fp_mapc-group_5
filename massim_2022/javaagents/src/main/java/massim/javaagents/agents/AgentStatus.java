@@ -22,6 +22,8 @@ public class AgentStatus {
     
     private HashSet<Point> attachedElements;
     
+    private HashSet<MapTile> vision;
+    
     public AgentStatus() {
         name = null;  
         teamName= null;    
@@ -98,6 +100,7 @@ public class AgentStatus {
         return lastActionParams;
     }
 
+    // compare attached elements to Constants directions and convert to array ?
     public void setAttachedElements(HashSet<Point> attachedElements) {
         for(Point attached:attachedElements) {
             this.attachedElements.add(attached);
@@ -105,10 +108,23 @@ public class AgentStatus {
     }
 
     public HashSet<Point> getAttachedElements() {
-        return attachedElements;
+        return this.attachedElements;
+    }
+    
+    public Integer getAttachedElementsAmount() {
+        return this.attachedElements.size();
     }
 
     public void dropAttachedElements() {
-        attachedElements = new HashSet<>();
+        this.attachedElements = new HashSet<>();
     }
+    
+    public void setVision(HashSet<MapTile> visionElements) {
+        this.vision = visionElements;
+    }
+
+    public HashSet<MapTile> getVision() {
+        return vision;
+    }
+    
 }

@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class NextAgent extends Agent {
 
-	/*
+    /*
 	 * ########## region fields
-	 */
+     */
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
     private Boolean disableAgentFlag = false; // True when all Simulations are finished 
@@ -41,11 +41,9 @@ public class NextAgent extends Agent {
     // Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
 
-	/*
+    /*
 	 * ##################### endregion fields
-	 */
-  
-
+     */
     /**
      * ########## region constructor.
      *
@@ -61,14 +59,14 @@ public class NextAgent extends Agent {
         this.processor = new NextPerceptReader(this);
 
     }
-	/*
-	 * ##################### endregion constructor
-	 */
 
-	/*
+    /*
+	 * ##################### endregion constructor
+     */
+
+ /*
 	 * ########## region public methods
-	 */
-    
+     */
     // Original Method
     @Override
     public void handlePercept(Percept percept) {
@@ -92,21 +90,21 @@ public class NextAgent extends Agent {
             disableAgent();
         }
 
-        // processing after one simulation is finished
-        if (simStatus.getSimulationIsFinished()) {
-            finishTheSimulation();
-        }
-
         // Skips the ActionGeneration while simulation is idle
         if (!simStatus.getSimulationIsStarted()) {
             return null;
         }
-        
+
+        // processing after the current simulation is finished
+        if (simStatus.getSimulationIsFinished()) {
+            finishTheSimulation();
+        }
+
         // Represents losing attached Blocks after beeing deactivated.
-        if(agentStatus.getDeactivatedFlag()){
+        if (agentStatus.getDeactivatedFlag()) {
             agentStatus.dropAttachedElements();
         }
-        
+
         // ActionGeneration is started on a new ActionID only
         if (simStatus.getActionID() > lastID) {
             lastID = simStatus.getActionID();
@@ -119,7 +117,7 @@ public class NextAgent extends Agent {
 
         return null;
     }
-    
+
     public AgentStatus getStatus() {
         return this.agentStatus;
     }
@@ -127,7 +125,7 @@ public class NextAgent extends Agent {
     public SimulationStatus getSimulationStatus() {
         return simStatus;
     }
-    
+
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
     }
@@ -136,15 +134,13 @@ public class NextAgent extends Agent {
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
     }
-    
+
     /*
 	 * ##################### endregion public methods
-	 */
-    
-    /*
+     */
+ /*
 	 * ########## region private methods
-	 */
-    
+     */
     /**
      * Selects the next Action based on priorityMap
      *
@@ -165,13 +161,13 @@ public class NextAgent extends Agent {
         this.say(nextAction.toProlog());
         return nextAction;
     }
-    
+
     private void disableAgent() {
         this.say("All games finished!");
-
+        
         //System.exit(1); // Kill the window
     }
-    
+
     //Agent behavior after current simulation has finished
     private void finishTheSimulation() {
         this.say("Finishing this Simulation!");
@@ -179,43 +175,34 @@ public class NextAgent extends Agent {
 
         resetAgent();
     }
-    
+
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
         possibleActions.add(AgentUtil.generateRandomMove());
 
-        List<Percept> percepts = getPercepts();
-        for (Percept percept : percepts) {
-            // TODO - Convert to using AgentStatus
+        //Special case: Interaction with an adjacent element.
+        for (MapTile visibleThing : agentStatus.getVision()) {
 
-            //Implementation of a reactive Action, attach - if standing next to a block
-            if (percept.getName().equals("thing")) {
-                int xValue = ((Numeral) percept.getParameters().get(0)).getValue().intValue();
-                int yValue = ((Numeral) percept.getParameters().get(1)).getValue().intValue();
+            Point position = visibleThing.getPoint();
 
-                Point PositionOfThing = new Point(xValue, yValue);
-
-                Parameter Ident = percept.getParameters().get(2);
-
-                // BUG: The agent seem to share the attached status with other agents. 
-                // If 1 agent is full, no further attach or request actions are tried. 
-                // - 
+            if (AgentUtil.NextTo(position, agentStatus)) {
                 
-                if (Ident instanceof Identifier) {
-                    String wert = ((Identifier) Ident).getValue();
+                // Possible BUG: The agent seem to share the attached status with other agents. 
+                // If 1 agent is full, no further attach or request actions are tried. 
+                // -
 
-                    // if (this.status.getAttachedElements().size() < 2 && 
-                    if (wert.equals("block") && AgentUtil.NextTo(PositionOfThing, this.agentStatus)) {
-                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(PositionOfThing)));
-                    }
-
-                    // if (this.status.getAttachedElements().size() < 2 && 
-                    if (wert.equals("dispenser") && AgentUtil.NextTo(PositionOfThing, this.agentStatus)) {
-                        possibleActions.add(new Action("request", AgentUtil.GetDirection(PositionOfThing)));
+                if (visibleThing.getThingType().equals("dispenser")) {
+                    if (agentStatus.getAttachedElementsAmount() < 5) {
+                        possibleActions.add(new Action("request", AgentUtil.GetDirection(position)));
                     }
                 }
-                
-                // Todo: Wandeln in If NextTo Thing, select action based on thing
+
+                if (visibleThing.getThingType().equals("block")) {
+                    if (agentStatus.getAttachedElementsAmount() < 5) {
+                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
+                    }
+                }
             }
+
         }
     }
 
@@ -228,8 +215,8 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
     }
-    
+
     /*
 	 * ##################### endregion private methods
-	 */
+     */
 }

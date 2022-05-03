@@ -64,4 +64,8 @@ public final class AgentUtil{
 
         return null;
     }
+
+    static boolean hasFreeSlots(AgentStatus agentStatus) {
+        return agentStatus.getAttachedElementsAmount() <= 2;
+    }
 }

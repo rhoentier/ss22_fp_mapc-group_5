@@ -159,9 +159,8 @@ public class NextPerceptReader {
 
                 }
             }
-            
+
             // handling of unusual perception entries
-            
             if (!overhangNames.isEmpty()) {
                 agent.say("------------------------------------------------");
                 agent.say("WARNING! overhang: \n" + overhangNames.toString());
@@ -169,7 +168,7 @@ public class NextPerceptReader {
             }
 
             convertGeneratedSets();
-            
+
         }
     }
 
@@ -193,15 +192,11 @@ public class NextPerceptReader {
 
     private void convertGeneratedSets() {
 
-        
-        //if (!overhangNames.isEmpty()) {
-
-        //}
-        agent.getStatus().setAttachedElements(processAttachedSet()); // TODO: Buggy ?
+        agentStatus.setAttachedElements(processAttachedSet());
         // processTasksSet();
         // processNormsSet();
         // processRolesSet();
-        // processThingsSet();
+        agentStatus.setVision(processThingsSet());
         // processObstaclesSet();
         // processViolationsSet();
         processGoalZonesSet();
@@ -242,8 +237,25 @@ public class NextPerceptReader {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    private void processThingsSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<MapTile> processThingsSet() {
+
+        // thing(x, y, type, details)
+        HashSet<MapTile> processedThingsSet = new HashSet<>();
+        for (List<Parameter> zone : things) {
+
+            //String thingVariant = zone.get(3).toProlog(); - Not Evaluated
+            processedThingsSet.add(
+                    new MapTile(
+                            Integer.parseInt(zone.get(0).toProlog()),
+                            Integer.parseInt(zone.get(1).toProlog()),
+                            simStatus.getActualStep(),
+                            zone.get(2).toString()
+                    ));
+        }
+        if (!processedThingsSet.isEmpty()) {
+            //agent.say("\n" + "Visible Things\n" + processedThingsSet.toString() + "\n");
+        }
+        return processedThingsSet;
     }
 
     private void processObstaclesSet() {
