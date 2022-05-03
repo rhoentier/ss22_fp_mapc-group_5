@@ -36,8 +36,8 @@ public class NextAgent extends Agent {
     private List<SimulationStatus> finishedSimulations = new ArrayList<>();
 
     // --- Algorithms ---
-    // Eismassim interpreter
-    NextPerceptReader processor;
+    
+    NextPerceptReader processor; // Eismassim interpreter
     // Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
 
@@ -64,7 +64,7 @@ public class NextAgent extends Agent {
 	 * ##################### endregion constructor
      */
 
- /*
+    /*
 	 * ########## region public methods
      */
     // Original Method
@@ -84,7 +84,9 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        processor.evaluate(getPercepts());
+        processor.evaluate(getPercepts(),this);
+        
+        //this.printAgentStatus();
 
         if (disableAgentFlag) {
             disableAgent();
@@ -138,11 +140,13 @@ public class NextAgent extends Agent {
     /*
 	 * ##################### endregion public methods
      */
- /*
+    
+    /*
 	 * ########## region private methods
      */
+    
     /**
-     * Selects the next Action based on priorityMap
+     * Selects the next Action based on the priorityMap
      *
      * @param possibleActions
      * @return Action
@@ -186,18 +190,14 @@ public class NextAgent extends Agent {
 
             if (AgentUtil.NextTo(position, agentStatus)) {
                 
-                // Possible BUG: The agent seem to share the attached status with other agents. 
-                // If 1 agent is full, no further attach or request actions are tried. 
-                // -
-
                 if (visibleThing.getThingType().equals("dispenser")) {
-                    if (agentStatus.getAttachedElementsAmount() < 5) {
+                    if (agentStatus.getAttachedElementsAmount() < 2) {
                         possibleActions.add(new Action("request", AgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().equals("block")) {
-                    if (agentStatus.getAttachedElementsAmount() < 5) {
+                    if (agentStatus.getAttachedElementsAmount() < 2) {
                         possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
                     }
                 }
@@ -216,7 +216,14 @@ public class NextAgent extends Agent {
         this.setPercepts(new ArrayList<>(), this.getPercepts());
     }
 
+    
+    private void printAgentStatus() {
+        this.say(agentStatus.toString());
+    }
+    
     /*
 	 * ##################### endregion private methods
      */
+
+    
 }

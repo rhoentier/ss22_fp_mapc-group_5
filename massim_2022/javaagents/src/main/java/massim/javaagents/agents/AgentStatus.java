@@ -10,33 +10,36 @@ import java.util.List;
  * @author AVL
  */
 public class AgentStatus {
-    private String name;  
-    private String teamName;    
+
+    private String name;
+    private String teamName;
     private String lastAction;
     private String lastActionResult;
     private String lastActionParams;
-    
+
     private int energy;
     private boolean deactivated;
     private String role;
-    
+
     private HashSet<Point> attachedElements;
-    
+
     private HashSet<MapTile> vision;
-    
+
     public AgentStatus() {
-        name = null;  
-        teamName= null;    
-        lastAction= null;
-        lastActionResult= null;
-        lastActionParams= null;    
+        name = null;
+        teamName = null;
+        lastAction = null;
+        lastActionResult = null;
+        lastActionParams = null;
         energy = -1;
         deactivated = false;
-        role= null;
+        role = null;
         attachedElements = new HashSet<>();
-    };
+    }
+
+    ;
     
-    public void setTeam( String teamName) {
+    public void setTeam(String teamName) {
         this.teamName = teamName;
     }
 
@@ -53,7 +56,8 @@ public class AgentStatus {
     }
 
     public void setDeactivatedFlag(boolean deactivated) {
-        this.deactivated = deactivated;}
+        this.deactivated = deactivated;
+    }
 
     public boolean getDeactivatedFlag() {
         return this.deactivated;
@@ -95,22 +99,27 @@ public class AgentStatus {
         this.lastActionParams = lastActionParams;
     }
 
-    
     public String getLastActionParams() {
         return lastActionParams;
     }
 
     // compare attached elements to Constants directions and convert to array ?
     public void setAttachedElements(HashSet<Point> attachedElements) {
-        for(Point attached:attachedElements) {
-            this.attachedElements.add(attached);
+        this.attachedElements = new HashSet();
+        for (Point attached : attachedElements) {
+            if (attached.equals(Constants.WestPoint)
+                    || attached.equals(Constants.NorthPoint)
+                    || attached.equals(Constants.EastPoint)
+                    || attached.equals(Constants.SouthPoint)) {
+                this.attachedElements.add(attached);
+            }
         }
     }
 
     public HashSet<Point> getAttachedElements() {
         return this.attachedElements;
     }
-    
+
     public Integer getAttachedElementsAmount() {
         return this.attachedElements.size();
     }
@@ -118,7 +127,7 @@ public class AgentStatus {
     public void dropAttachedElements() {
         this.attachedElements = new HashSet<>();
     }
-    
+
     public void setVision(HashSet<MapTile> visionElements) {
         this.vision = visionElements;
     }
@@ -126,5 +135,12 @@ public class AgentStatus {
     public HashSet<MapTile> getVision() {
         return vision;
     }
-    
+
+    @Override
+    public String toString() {
+
+        return "[ " + this.name + " ] \n \n Attached: \n" + attachedElements + " \n \n"
+                + "vision: \n" + this.vision + " \n  --------------------------------- \n";
+
+    }
 }

@@ -37,15 +37,15 @@ public class NextPerceptReader {
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
-        simStatus = agent.getSimulationStatus();
-        agentStatus = agent.getStatus();
+        this.simStatus = agent.getSimulationStatus();
+        this.agentStatus = agent.getStatus();
 
         clearSets();
     }
 
     //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
     // Nachteil: BoilerCode + Performance
-    void evaluate(List<Percept> percepts) {
+    void evaluate(List<Percept> percepts, NextAgent agent) {
 
         clearSets();
 
