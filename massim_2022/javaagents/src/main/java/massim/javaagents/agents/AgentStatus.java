@@ -136,13 +136,20 @@ public class AgentStatus {
         return vision;
     }
 
-    public void SetGoalZones(){
-        
+    public void SetGoalZones(HashSet<MapTile> goalZones){
     }
             
-    public void SetRoleZones(){
+    public void SetRoleZones(HashSet<MapTile> roleZones){
         
     }  
+    
+    public void SetHits(HashSet<MapTile> Hits){
+        
+    }
+    
+    public void SetObstacles(HashSet<MapTile> Obstacles) {
+        
+    }
     
     @Override
     public String toString() {

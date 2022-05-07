@@ -103,8 +103,8 @@ public class NextAgent extends Agent {
         }
 
         // Represents losing attached Blocks after beeing deactivated.
-        if (agentStatus.getDeactivatedFlag()) {
-            agentStatus.dropAttachedElements();
+        if (agentStatus.GetDeactivatedFlag()) {
+            agentStatus.DropAttachedElements();
         }
 
         // ActionGeneration is started on a new ActionID only
@@ -184,21 +184,24 @@ public class NextAgent extends Agent {
         possibleActions.add(AgentUtil.generateRandomMove());
 
         //Special case: Interaction with an adjacent element.
-        for (MapTile visibleThing : agentStatus.getVision()) {
+        for (MapTile visibleThing : agentStatus.GetVision()) {
 
             Point position = visibleThing.getPoint();
 
             if (AgentUtil.NextTo(position, agentStatus)) {
                 
                 if (visibleThing.getThingType().equals("dispenser")) {
-                    if (agentStatus.getAttachedElementsAmount() < 2) {
+                    if (agentStatus.GetAttachedElementsAmount() < 2) {
                         possibleActions.add(new Action("request", AgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().equals("block")) {
-                    if (agentStatus.getAttachedElementsAmount() < 2) {
-                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
+                    if (agentStatus.GetAttachedElementsAmount() < 2) {
+                        possibleActions = new ArrayList<>();
+                        possibleActions.add(new Action("move", AgentUtil.GetDirection(position)));
+                        
+                        //possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
                     }
                 }
             }
