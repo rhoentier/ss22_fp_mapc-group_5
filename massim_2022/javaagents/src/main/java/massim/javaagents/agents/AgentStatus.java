@@ -24,6 +24,7 @@ public class AgentStatus {
     private HashSet<Point> attachedElements;
 
     private HashSet<MapTile> vision;
+    
 
     public AgentStatus() {
         name = null;
@@ -36,75 +37,74 @@ public class AgentStatus {
         role = null;
         attachedElements = new HashSet<>();
     }
-
     ;
     
-    public void setTeam(String teamName) {
+    public void SetTeam(String teamName) {
         this.teamName = teamName;
     }
 
-    public String getTeamName() {
+    public String GetTeamName() {
         return teamName;
     }
 
-    public void setlastAction(String lastAction) {
+    public void SetLastAction(String lastAction) {
         this.lastAction = lastAction;
     }
 
-    public String getLastAction() {
+    public String GetLastAction() {
         return lastAction;
     }
 
-    public void setDeactivatedFlag(boolean deactivated) {
+    public void SetDeactivatedFlag(boolean deactivated) {
         this.deactivated = deactivated;
     }
 
-    public boolean getDeactivatedFlag() {
+    public boolean GetDeactivatedFlag() {
         return this.deactivated;
     }
 
-    public void setLastActionResult(String lastActionResult) {
+    public void SetLastActionResult(String lastActionResult) {
         this.lastActionResult = lastActionResult;
     }
 
-    public String getLastActionResult() {
+    public String GetLastActionResult() {
         return lastActionResult;
     }
 
-    public void setEnergy(int energy) {
+    public void SetEnergy(int energy) {
         this.energy = energy;
     }
 
-    public int getEnergy() {
+    public int GetEnergy() {
         return energy;
     }
 
-    public void setRole(String role) {
+    public void SetRole(String role) {
         this.role = role;
     }
 
-    public String getRole() {
+    public String GetRole() {
         return role;
     }
 
-    public void setName(String name) {
+    public void SetName(String name) {
         this.name = name;
     }
 
-    public String getName() {
+    public String GetName() {
         return name;
     }
 
-    public void setLastActionParams(String lastActionParams) {
+    public void SetLastActionParams(String lastActionParams) {
         this.lastActionParams = lastActionParams;
     }
 
-    public String getLastActionParams() {
+    public String GetLastActionParams() {
         return lastActionParams;
     }
 
     // compare attached elements to Constants directions and convert to array ?
-    public void setAttachedElements(HashSet<Point> attachedElements) {
+    public void SetAttachedElements(HashSet<Point> attachedElements) {
         this.attachedElements = new HashSet();
         for (Point attached : attachedElements) {
             if (attached.equals(Constants.WestPoint)
@@ -116,26 +116,34 @@ public class AgentStatus {
         }
     }
 
-    public HashSet<Point> getAttachedElements() {
+    public HashSet<Point> GetAttachedElements() {
         return this.attachedElements;
     }
 
-    public Integer getAttachedElementsAmount() {
+    public Integer GetAttachedElementsAmount() {
         return this.attachedElements.size();
     }
 
-    public void dropAttachedElements() {
+    public void DropAttachedElements() {
         this.attachedElements = new HashSet<>();
     }
 
-    public void setVision(HashSet<MapTile> visionElements) {
+    public void SetVision(HashSet<MapTile> visionElements) {
         this.vision = visionElements;
     }
 
-    public HashSet<MapTile> getVision() {
+    public HashSet<MapTile> GetVision() {
         return vision;
     }
 
+    public void SetGoalZones(){
+        
+    }
+            
+    public void SetRoleZones(){
+        
+    }  
+    
     @Override
     public String toString() {
 

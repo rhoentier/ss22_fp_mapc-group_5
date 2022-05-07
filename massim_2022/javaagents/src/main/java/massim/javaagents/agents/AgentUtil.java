@@ -23,16 +23,16 @@ public final class AgentUtil{
      * @return boolean
      */
     static boolean NextTo(Point position, AgentStatus status) {
-        if(position.equals(Constants.WestPoint) && !status.getAttachedElements().contains(Constants.WestPoint)){
+        if(position.equals(Constants.WestPoint) && !status.GetAttachedElements().contains(Constants.WestPoint)){
             return true;
         }
-        if(position.equals(Constants.NorthPoint) && !status.getAttachedElements().contains(Constants.NorthPoint)){
+        if(position.equals(Constants.NorthPoint) && !status.GetAttachedElements().contains(Constants.NorthPoint)){
             return true;
         }
-        if(position.equals(Constants.EastPoint) && !status.getAttachedElements().contains(Constants.EastPoint)){
+        if(position.equals(Constants.EastPoint) && !status.GetAttachedElements().contains(Constants.EastPoint)){
             return true;
         }
-        if(position.equals(Constants.SouthPoint) && !status.getAttachedElements().contains(Constants.SouthPoint)){
+        if(position.equals(Constants.SouthPoint) && !status.GetAttachedElements().contains(Constants.SouthPoint)){
             return true;
         }        
         return false;
@@ -66,6 +66,6 @@ public final class AgentUtil{
     }
 
     static boolean hasFreeSlots(AgentStatus agentStatus) {
-        return agentStatus.getAttachedElementsAmount() <= 2;
+        return agentStatus.GetAttachedElementsAmount() <= 2;
     }
 }
