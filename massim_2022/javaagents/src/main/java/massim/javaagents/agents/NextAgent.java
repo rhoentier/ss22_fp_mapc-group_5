@@ -93,12 +93,12 @@ public class NextAgent extends Agent {
         }
 
         // Skips the ActionGeneration while simulation is idle
-        if (!simStatus.getSimulationIsStarted()) {
+        if (!simStatus.GetFlagSimulationIsStarted()) {
             return null;
         }
 
         // processing after the current simulation is finished
-        if (simStatus.getSimulationIsFinished()) {
+        if (simStatus.GetFlagSimulationIsFinished()) {
             finishTheSimulation();
         }
 
@@ -108,8 +108,8 @@ public class NextAgent extends Agent {
         }
 
         // ActionGeneration is started on a new ActionID only
-        if (simStatus.getActionID() > lastID) {
-            lastID = simStatus.getActionID();
+        if (simStatus.GetActionID() > lastID) {
+            lastID = simStatus.GetActionID();
 
             ArrayList<Action> possibleActions = new ArrayList<>();
             generatePossibleActions(possibleActions);
@@ -175,13 +175,21 @@ public class NextAgent extends Agent {
     //Agent behavior after current simulation has finished
     private void finishTheSimulation() {
         this.say("Finishing this Simulation!");
-        this.say("Result: #" + simStatus.getRanking());
+        this.say("Result: #" + simStatus.GetRanking());
 
         resetAgent();
     }
 
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
         possibleActions.add(AgentUtil.generateRandomMove());
+        
+        // Localises the distance to the next target:  "dispenser", "goal", "role"
+        possibleActions.add(AgentUtil.GenerateSurveyThingAction("dispenser"));
+        
+        // Survey a specific field with an agent. Get Name, Role, Energy
+        // Attributes x-Position, y-Position relative to the Agent
+        possibleActions.add(AgentUtil.GenerateSurveyAgentAction(0, 0));
+        
 
         //Special case: Interaction with an adjacent element.
         for (MapTile visibleThing : agentStatus.GetVision()) {
@@ -198,10 +206,7 @@ public class NextAgent extends Agent {
 
                 if (visibleThing.getThingType().equals("block")) {
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions = new ArrayList<>();
-                        possibleActions.add(new Action("move", AgentUtil.GetDirection(position)));
-                        
-                        //possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
+                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
                     }
                 }
             }

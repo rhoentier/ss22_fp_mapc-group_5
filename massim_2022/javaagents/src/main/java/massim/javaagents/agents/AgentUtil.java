@@ -68,4 +68,24 @@ public final class AgentUtil{
     static boolean hasFreeSlots(AgentStatus agentStatus) {
         return agentStatus.GetAttachedElementsAmount() <= 2;
     }
+
+    /**
+     * Creates an action to localise the distance to the next target:  
+     *
+     * @param type of Target. "dispenser", "goal", "role"
+     * @return Action
+     */
+    static Action GenerateSurveyThingAction(String type) {
+        return new Action("survey", new Identifier(type));
+    }
+    /**
+     * Creates an action to survey a remote agent:  
+     *
+     * @param String X-Coordinate relative to the surveing Agent
+     * @param String Y-Coordinate relative to the surveing Agent
+     * @return Action
+     */
+    static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
+        return new Action("survey", new Identifier( "" + xPosition ),new Identifier( "" + yPosition));
+    }
 }
