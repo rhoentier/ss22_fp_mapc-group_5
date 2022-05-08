@@ -323,7 +323,7 @@ public class NextPerceptReader {
 
         //Process all Datasets and transfer to Storage - AgentStatus
         
-        // processTasksSet();
+        simStatus.setTasksList( processTasksSet());
         // processNormsSet();
         // processRolesSet();
         simStatus.setViolations(processViolationsSet());
@@ -337,10 +337,76 @@ public class NextPerceptReader {
         agentStatus.SetRoleZones(processRoleZonesSet());
         agentStatus.SetHits(processHitsSet());
 
-        processSurveyedAgentSet(); // Need a Target to store the Data
-        processSurveyedThingSet(); // Need a Target to store the Data
+        processSurveyedAgentSet(); // Needs a target to store the data
+        processSurveyedThingSet(); // Needs a target to store the data
     }
 
+    
+    
+    private HashSet<NextTask> processTasksSet() {
+        // task(name, deadline, reward, [req(x,y,type),...])
+        HashSet<NextTask> processedTasksSet = new HashSet<>();
+        // Converts Percept Data to Task Elements.
+        for (List<Parameter> task : tasks) {
+            try {
+                
+                HashSet<List<Parameter>> collectionOfBlocks = new HashSet<>();
+                for (Parameter block : ((ParameterList) task.get(3))) {
+                collectionOfBlocks.add(((Function) block).getParameters());
+                }
+                processedTasksSet.add(
+                    new NextTask(
+                        task.get(0).toProlog(),
+                        Integer.parseInt(task.get(1).toProlog())  ,
+                        Integer.parseInt(task.get(2).toProlog()) ,
+                        convertRequirements( collectionOfBlocks))
+                        );      
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
+            }
+        }
+         /* Debug Helper - Place // before to activate
+        if (!processedTasksSet.isEmpty()) {
+            agent.say("\n" + "Tasks \n" + processedTasksSet.toString() + "\n");
+        }
+        //*/
+        return processedTasksSet;
+    
+    }
+
+    private void processNormsSet() {
+/*        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+
+    id : Identifier - ID of the norm
+    start : Numeral - first step the norm holds
+    end : Numeral - last step the norm holds
+        requirement:
+            type : the subject of the norm
+            name : the precise name the subject refers to, e.g., the role constructor
+            quantity : the maximum quantity that can be carried/adopted
+            details : possibly additional details
+    fine : Numeral - the energy cost of violating the norm (per step)
+
+*/
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void processRolesSet() {
+        /*
+        role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+
+    name : Identifier
+    vision : Numeral
+    action[N] : Identifier
+    speed[N] : Numeral
+    clearChance : Numeral (0-1)
+    clearMaxDistance : Numeral
+
+*/
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    
     private HashSet<Point> processAttachedSet() {
         // attached(x, y) - Percept Data Format
         HashSet<Point> processedAttachedSet = new HashSet<>();
@@ -355,7 +421,7 @@ public class NextPerceptReader {
                 agent.say("Error in NextPerceptReader - processAttachedSet: \n" + e.toString());
             }
         }
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedAttachedSet.isEmpty()) {
             agent.say("\n" + "Attached Elements\n" + processedAttachedSet.toString() + "\n");
         }
@@ -363,18 +429,7 @@ public class NextPerceptReader {
         return processedAttachedSet;
     }
 
-    private void processTasksSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void processNormsSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void processRolesSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
+    
     private HashSet<MapTile> processThingsSet() {
         // thing(x, y, type, details) - Percept Data Format
         HashSet<MapTile> processedThingsSet = new HashSet<>();
@@ -407,7 +462,7 @@ public class NextPerceptReader {
             }
         }
 
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedThingsSet.isEmpty()) {
             agent.say("\n" + "Visible Things\n" + processedThingsSet.toString() + "\n");
         }
@@ -432,7 +487,7 @@ public class NextPerceptReader {
 
         }
 
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedObstacles.isEmpty()) {
             agent.say("\n" + "Obstacles\n" + processedObstacles.toString() + "\n");
         }
@@ -445,7 +500,7 @@ public class NextPerceptReader {
         // violation(id) - Percept Data Format
         // Forwards Percept Data as String
        
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!violations.isEmpty()) {
             agent.say("\n" + "Violations \n" + violations.toString() + "\n");
         }
@@ -471,7 +526,7 @@ public class NextPerceptReader {
 
         }
 
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedGoalZones.isEmpty()) {
             agent.say("\n" + "Goal Zones\n" + processedGoalZones.toString() + "\n");
         }
@@ -495,7 +550,7 @@ public class NextPerceptReader {
             }
         }
 
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedRoleZones.isEmpty()) {
             agent.say("\n" + "Role Zones \n" + processedRoleZones.toString() + "\n");
         }
@@ -520,7 +575,7 @@ public class NextPerceptReader {
 
         }
 
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedHits.isEmpty()) {
             agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
         }
@@ -549,7 +604,7 @@ public class NextPerceptReader {
                 agent.say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
             }
         }
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedSurveyedAgents.isEmpty()) {
             agent.say("\n" + "Surveyed Agents \n" + processedSurveyedAgents.toString() + "\n");
         }
@@ -574,11 +629,27 @@ public class NextPerceptReader {
                 agent.say("Error in NextPerceptReader - processSurveyedThingSet: \n" + e.toString());
             }
         }
-        /* Debug Helper 
+        /* Debug Helper - Place // before to activate 
         if (!processedSurveyedThings.isEmpty()) {
             agent.say("\n" + "Distance to Surveyed Things \n" + processedSurveyedThings.toString() + "\n");
         }
         //*/
         return processedSurveyedThings;
+    }
+
+    private HashSet<MapTile> convertRequirements(HashSet<List<Parameter>> requirementsList) {
+            HashSet<MapTile> processedRequirements = new HashSet<>();
+            for(List<Parameter> element : requirementsList) {
+                processedRequirements.add(
+                        new MapTile(                                
+                                Integer.parseInt(element.get(0).toProlog()),
+                                Integer.parseInt(element.get(1).toProlog()),
+                                -1,
+                                element.get(2).toProlog())
+                );
+            }
+        //agent.say(requirementsList.toString());
+            
+        return processedRequirements;
     }
 }
