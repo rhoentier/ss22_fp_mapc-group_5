@@ -10,7 +10,7 @@ public class SimulationStatus {
     
     
     /*
-    public Set<TaskInfo> taskInfo = new HashSet<>();
+    public Set<TaskInfo> tasksList = new HashSet<>();
     public Set<NormInfo> normsInfo = new HashSet<>();
     -- public long score;
     -- public String lastAction;
@@ -37,8 +37,8 @@ public class SimulationStatus {
     
     private HashSet<String> violations;
     
-    //public HashSet<TaskInfo> taskInfo = new HashSet<>();
-    //public HashSet<NormInfo> normsInfo = new HashSet<>();
+    private HashSet<NextTask> tasksList = new HashSet<>();
+    //public HashSet<NextNorm> normsList = new HashSet<>();
 
     //---------------- Getter and Setter
     
@@ -134,6 +134,14 @@ public class SimulationStatus {
 
     public void setViolations(HashSet<String> violations) {
         this.violations = violations;
+    }
+    
+    public HashSet<NextTask> getTasksList() {
+        return tasksList;
+    }
+
+    public void setTasksList(HashSet<NextTask> tasksList) {
+        this.tasksList = tasksList;
     }
 
 }

@@ -86,6 +86,7 @@ public class NextAgent extends Agent {
     public Action step() {
         processor.evaluate(getPercepts(),this);
         
+        
         //this.printAgentStatus();
 
         if (disableAgentFlag) {
