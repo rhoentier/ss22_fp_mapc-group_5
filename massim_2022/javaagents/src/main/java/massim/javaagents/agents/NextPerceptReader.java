@@ -322,15 +322,13 @@ public class NextPerceptReader {
     private void convertGeneratedSets() {
 
         //Process all Datasets and transfer to Storage - AgentStatus
-        
-        simStatus.setTasksList( processTasksSet());
-        // processNormsSet();
-        // processRolesSet();
+        simStatus.setTasksList(processTasksSet());
+        simStatus.setNormsList(processNormsSet());
+        simStatus.setRolesList(processRolesSet());
         simStatus.setViolations(processViolationsSet());
 
-        
         agentStatus.SetAttachedElements(processAttachedSet());
-        
+
         agentStatus.SetVision(processThingsSet());
         agentStatus.SetObstacles(processObstaclesSet());
         agentStatus.SetGoalZones(processGoalZonesSet());
@@ -341,72 +339,127 @@ public class NextPerceptReader {
         processSurveyedThingSet(); // Needs a target to store the data
     }
 
-    
-    
     private HashSet<NextTask> processTasksSet() {
         // task(name, deadline, reward, [req(x,y,type),...])
         HashSet<NextTask> processedTasksSet = new HashSet<>();
         // Converts Percept Data to Task Elements.
         for (List<Parameter> task : tasks) {
             try {
-                
+
                 HashSet<List<Parameter>> collectionOfBlocks = new HashSet<>();
                 for (Parameter block : ((ParameterList) task.get(3))) {
-                collectionOfBlocks.add(((Function) block).getParameters());
+                    collectionOfBlocks.add(((Function) block).getParameters());
                 }
                 processedTasksSet.add(
-                    new NextTask(
-                        task.get(0).toProlog(),
-                        Integer.parseInt(task.get(1).toProlog())  ,
-                        Integer.parseInt(task.get(2).toProlog()) ,
-                        convertRequirements( collectionOfBlocks))
-                        );      
+                        new NextTask(
+                                task.get(0).toProlog(),
+                                Integer.parseInt(task.get(1).toProlog()),
+                                Integer.parseInt(task.get(2).toProlog()),
+                                convertRequirements(collectionOfBlocks))
+                );
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
             }
         }
-         /* Debug Helper - Place // before to activate
+        /* Debug Helper - Place // before to activate
         if (!processedTasksSet.isEmpty()) {
             agent.say("\n" + "Tasks \n" + processedTasksSet.toString() + "\n");
         }
         //*/
         return processedTasksSet;
-    
+
     }
 
-    private void processNormsSet() {
-/*        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+    private HashSet<NextNorm> processNormsSet() {
+        /*  
+        
+        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
 
-    id : Identifier - ID of the norm
-    start : Numeral - first step the norm holds
-    end : Numeral - last step the norm holds
-        requirement:
-            type : the subject of the norm
-            name : the precise name the subject refers to, e.g., the role constructor
-            quantity : the maximum quantity that can be carried/adopted
-            details : possibly additional details
-    fine : Numeral - the energy cost of violating the norm (per step)
+        id : Identifier - ID of the norm
+        start : Numeral - first step the norm holds
+        end : Numeral - last step the norm holds
+            requirement:
+                type : the subject of the norm
+                name : the precise name the subject refers to, e.g., the role constructor
+                quantity : the maximum quantity that can be carried/adopted
+                details : possibly additional details
+        fine : Numeral - the energy cost of violating the norm (per step)
+        
+         */
 
-*/
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        HashSet<NextNorm> processedNormsSet = new HashSet<>();
+        // Converts Percept Data to Norm Attributes and constructs Norms.
+        for (List<Parameter> norm : norms) {
+            try {
+
+                HashSet<NextNormRequirement> collectionOfRequirements = new HashSet<>();
+
+                HashSet<List<Parameter>> collectionOfRequirementElements = new HashSet<>();
+                for (Parameter requirement : ((ParameterList) norm.get(3))) {
+                    collectionOfRequirementElements.add(((Function) requirement).getParameters());
+                }
+
+                collectionOfRequirements.add(new NextNormRequirement("type", "name", 0, "details"));
+
+                processedNormsSet.add(new NextNorm(
+                        norm.get(0).toProlog(),
+                        Integer.parseInt(norm.get(1).toProlog()),
+                        Integer.parseInt(norm.get(2).toProlog()),
+                        convertNormRequirements(collectionOfRequirementElements),
+                        Integer.parseInt(norm.get(4).toProlog())
+                ));
+
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processNormsSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate
+        if (!processedNormsSet.isEmpty()) {
+            agent.say("\n" + "Norms \n" + processedNormsSet.toString() + "\n");
+        }
+        //*/
+        return processedNormsSet;
     }
 
-    private void processRolesSet() {
-        /*
-        role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+    private HashSet<NextRole> processRolesSet() {
+        // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
 
-    name : Identifier
-    vision : Numeral
-    action[N] : Identifier
-    speed[N] : Numeral
-    clearChance : Numeral (0-1)
-    clearMaxDistance : Numeral
+        HashSet<NextRole> processedRolesSet = new HashSet<>();
+        // Converts Percept Data to Role Attributes and constructs Roles.
+        for (List<Parameter> role : roles) {
+            try {
 
-*/
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+                HashSet<String> collectionOfActions = new HashSet<>();
+                for (Parameter action : ((ParameterList) role.get(2))) {
+                    collectionOfActions.add(action.toProlog());
+                }
+                ArrayList<Integer> collectionOfSpeeds = new ArrayList<>();
+                for (Parameter speed : ((ParameterList) role.get(3))) {
+                    collectionOfSpeeds.add(Integer.parseInt(speed.toProlog()));
+                }
+                processedRolesSet.add(
+                        new NextRole(
+                                role.get(0).toProlog(),
+                                Integer.parseInt(role.get(1).toProlog()),
+                                collectionOfActions,
+                                collectionOfSpeeds,
+                                Float.parseFloat(role.get(4).toProlog()),
+                                Integer.parseInt(role.get(5).toProlog())
+                        )
+                );
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processRolesSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate
+        if (!processedRolesSet.isEmpty()) {
+            agent.say("\n" + "Roles \n" + processedRolesSet.toString() + "\n");
+        }
+        //*/
+        return processedRolesSet;
+
     }
 
-    
     private HashSet<Point> processAttachedSet() {
         // attached(x, y) - Percept Data Format
         HashSet<Point> processedAttachedSet = new HashSet<>();
@@ -429,7 +482,6 @@ public class NextPerceptReader {
         return processedAttachedSet;
     }
 
-    
     private HashSet<MapTile> processThingsSet() {
         // thing(x, y, type, details) - Percept Data Format
         HashSet<MapTile> processedThingsSet = new HashSet<>();
@@ -499,14 +551,14 @@ public class NextPerceptReader {
     private HashSet<String> processViolationsSet() {
         // violation(id) - Percept Data Format
         // Forwards Percept Data as String
-       
+
         /* Debug Helper - Place // before to activate 
         if (!violations.isEmpty()) {
             agent.say("\n" + "Violations \n" + violations.toString() + "\n");
         }
         //*/
         return violations;
-        
+
     }
 
     private HashSet<MapTile> processGoalZonesSet() {
@@ -583,7 +635,6 @@ public class NextPerceptReader {
         return processedHits;
     }
 
-    
     private HashSet<String[]> processSurveyedAgentSet() {
         //surveyed("agent", name, role, energy)
         // name : Identifier
@@ -614,7 +665,7 @@ public class NextPerceptReader {
     }
 
     private HashSet<String[]> processSurveyedThingSet() {
-        
+
         // surveyed("dispenser"/"goal"/"role", distance)
         HashSet<String[]> processedSurveyedThings = new HashSet<>();
         // Converts Percept Data to Target Data
@@ -638,18 +689,33 @@ public class NextPerceptReader {
     }
 
     private HashSet<MapTile> convertRequirements(HashSet<List<Parameter>> requirementsList) {
-            HashSet<MapTile> processedRequirements = new HashSet<>();
-            for(List<Parameter> element : requirementsList) {
-                processedRequirements.add(
-                        new MapTile(                                
-                                Integer.parseInt(element.get(0).toProlog()),
-                                Integer.parseInt(element.get(1).toProlog()),
-                                -1,
-                                element.get(2).toProlog())
-                );
-            }
+        HashSet<MapTile> processedRequirements = new HashSet<>();
+        for (List<Parameter> element : requirementsList) {
+            processedRequirements.add(
+                    new MapTile(
+                            Integer.parseInt(element.get(0).toProlog()),
+                            Integer.parseInt(element.get(1).toProlog()),
+                            -1,
+                            element.get(2).toProlog())
+            );
+        }
         //agent.say(requirementsList.toString());
-            
+
         return processedRequirements;
+    }
+
+    private HashSet<NextNormRequirement> convertNormRequirements(HashSet<List<Parameter>> collectionOfRequirementElements) {
+        HashSet<NextNormRequirement> processedNormRequirements = new HashSet<>();
+        for (List<Parameter> element : collectionOfRequirementElements) {
+            processedNormRequirements.add(
+                    new NextNormRequirement(
+                            element.get(0).toProlog(),
+                            element.get(1).toProlog(),
+                            Integer.parseInt(element.get(2).toProlog()),
+                            element.get(3).toProlog())
+            );
+        }
+
+        return processedNormRequirements;
     }
 }

@@ -7,8 +7,7 @@ import java.util.HashSet;
  * @author AVL
  */
 public class SimulationStatus {
-    
-    
+
     /*
     public Set<TaskInfo> tasksList = new HashSet<>();
     public Set<NormInfo> normsInfo = new HashSet<>();
@@ -21,33 +20,32 @@ public class SimulationStatus {
     public JSONArray stepEvents;
     public List<Position> goalZones = new ArrayList<>();
     public List<Position> roleZones = new ArrayList<>();
-    */
-    
+     */
     private Boolean simulationIsFinished;
     private Boolean simulationIsStarted;
-        
+
     private Integer actionID = -1;
     private Integer teamSize;
     private Integer totalSteps;
-    private Integer actualStep;    
+    private Integer actualStep;
     private Integer ranking;
     private long score;
     private long timestamp;
     private long deadline;
-    
-    private HashSet<String> violations;
-    
-    private HashSet<NextTask> tasksList = new HashSet<>();
-    //public HashSet<NextNorm> normsList = new HashSet<>();
 
-    //---------------- Getter and Setter
+    private HashSet<String> violations;
+
+    private HashSet<NextTask> tasksList = new HashSet<>();
+    private HashSet<NextRole> rolesList = new HashSet<>();
+    private HashSet<NextNorm> normsList = new HashSet<>();
     
-    public SimulationStatus () {
+    //---------------- Getter and Setter
+    public SimulationStatus() {
         simulationIsFinished = false;
         simulationIsStarted = false;
         actionID = -1;
     }
-    
+
     public void SetActionID(Integer actionID) {
         this.actionID = actionID;
     }
@@ -115,9 +113,9 @@ public class SimulationStatus {
     public Boolean GetFlagSimulationIsStarted() {
         return simulationIsStarted;
     }
-    
+
     public void SetFlagSimulationIsStarted() {
-        simulationIsStarted=true;
+        simulationIsStarted = true;
     }
 
     public Boolean GetFlagSimulationIsFinished() {
@@ -125,9 +123,9 @@ public class SimulationStatus {
     }
 
     public void SetFlagSimulationIsFinished() {
-        simulationIsFinished=true;
+        simulationIsFinished = true;
     }
-    
+
     public HashSet<String> getViolations() {
         return violations;
     }
@@ -135,7 +133,7 @@ public class SimulationStatus {
     public void setViolations(HashSet<String> violations) {
         this.violations = violations;
     }
-    
+
     public HashSet<NextTask> getTasksList() {
         return tasksList;
     }
@@ -144,4 +142,22 @@ public class SimulationStatus {
         this.tasksList = tasksList;
     }
 
+    public HashSet<NextRole> getRolesList() {
+        return rolesList;
+    }
+
+    public void setRolesList(HashSet<NextRole> rolesList) {
+        this.rolesList = rolesList;
+    }
+
+    public HashSet<NextNorm> getNormsList() {
+        return normsList;
+    }
+
+    public void setNormsList(HashSet<NextNorm> normsList) {
+        this.normsList = normsList;
+    }
+
+    
+    
 }
