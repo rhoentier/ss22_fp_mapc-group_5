@@ -2,6 +2,10 @@ package massim.javaagents.agents;
 
 import java.util.HashSet;
 
+import massim.javaagents.percept.NextNorm;
+import massim.javaagents.percept.NextRole;
+import massim.javaagents.percept.NextTask;
+
 /**
  *
  * @author AVL
@@ -54,7 +58,7 @@ public class SimulationStatus {
         return actionID;
     }
 
-    void SetTeamSize(int teamSize) {
+    public void SetTeamSize(int teamSize) {
         this.teamSize = teamSize;
     }
 
@@ -62,7 +66,7 @@ public class SimulationStatus {
         return teamSize;
     }
 
-    void SetScore(long score) {
+    public void SetScore(long score) {
         this.score = score;
     }
 
@@ -126,38 +130,35 @@ public class SimulationStatus {
         simulationIsFinished = true;
     }
 
-    public HashSet<String> getViolations() {
+    public HashSet<String> GetViolations() {
         return violations;
     }
 
-    public void setViolations(HashSet<String> violations) {
+    public void SetViolations(HashSet<String> violations) {
         this.violations = violations;
     }
 
-    public HashSet<NextTask> getTasksList() {
+    public HashSet<NextTask> GetTasksList() {
         return tasksList;
     }
 
-    public void setTasksList(HashSet<NextTask> tasksList) {
+    public void SetTasksList(HashSet<NextTask> tasksList) {
         this.tasksList = tasksList;
     }
 
-    public HashSet<NextRole> getRolesList() {
+    public HashSet<NextRole> GetRolesList() {
         return rolesList;
     }
 
-    public void setRolesList(HashSet<NextRole> rolesList) {
+    public void SetRolesList(HashSet<NextRole> rolesList) {
         this.rolesList = rolesList;
     }
 
-    public HashSet<NextNorm> getNormsList() {
+    public HashSet<NextNorm> GetNormsList() {
         return normsList;
     }
 
-    public void setNormsList(HashSet<NextNorm> normsList) {
+    public void SetNormsList(HashSet<NextNorm> normsList) {
         this.normsList = normsList;
-    }
-
-    
-    
+    }    
 }

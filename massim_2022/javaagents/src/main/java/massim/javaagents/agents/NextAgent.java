@@ -4,6 +4,8 @@ import eis.iilang.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import massim.javaagents.MailService;
+import massim.javaagents.general.Constants;
+import massim.javaagents.percept.NextPerceptReader;
 
 import java.util.List;
 
@@ -69,12 +71,12 @@ public class NextAgent extends Agent {
      */
     // Original Method
     @Override
-    public void handlePercept(Percept percept) {
+    public void HandlePercept(Percept percept) {
     }
 
     // Original Method
     @Override
-    public void handleMessage(Percept message, String sender) {
+    public void HandleMessage(Percept message, String sender) {
     }
 
     /**
@@ -83,8 +85,8 @@ public class NextAgent extends Agent {
      * @return Action - Next action for Massim simulation for this agent.
      */
     @Override
-    public Action step() {
-        processor.evaluate(getPercepts(),this);
+    public Action Step() {
+        processor.evaluate(GetPercepts(),this);
         
         //this.printAgentStatus();
 
@@ -162,20 +164,20 @@ public class NextAgent extends Agent {
             }
         }
 
-        this.say(nextAction.toProlog());
+        this.Say(nextAction.toProlog());
         return nextAction;
     }
 
     private void disableAgent() {
-        this.say("All games finished!");
+        this.Say("All games finished!");
         
         //System.exit(1); // Kill the window
     }
 
     //Agent behavior after current simulation has finished
     private void finishTheSimulation() {
-        this.say("Finishing this Simulation!");
-        this.say("Result: #" + simStatus.GetRanking());
+        this.Say("Finishing this Simulation!");
+        this.Say("Result: #" + simStatus.GetRanking());
 
         resetAgent();
     }
@@ -220,12 +222,12 @@ public class NextAgent extends Agent {
         this.agentStatus = new AgentStatus();
         this.processor = new NextPerceptReader(this);
 
-        this.setPercepts(new ArrayList<>(), this.getPercepts());
+        this.SetPercepts(new ArrayList<>(), this.GetPercepts());
     }
 
     
     private void printAgentStatus() {
-        this.say(agentStatus.toString());
+        this.Say(agentStatus.toString());
     }
     
     /*

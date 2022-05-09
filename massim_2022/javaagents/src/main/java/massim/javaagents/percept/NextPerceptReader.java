@@ -1,6 +1,13 @@
-package massim.javaagents.agents;
+package massim.javaagents.percept;
 
 import eis.iilang.*;
+import massim.javaagents.agents.AgentStatus;
+import massim.javaagents.agents.MapTile;
+import massim.javaagents.agents.NextAgent;
+import massim.javaagents.agents.SimulationStatus;
+import massim.javaagents.percept.NextNorm;
+import massim.javaagents.general.Constants;
+import massim.javaagents.general.Constants.EPercepts;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -46,6 +53,8 @@ public class NextPerceptReader {
 
     //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
     // Nachteil: BoilerCode + Performance
+    // Hier ggf eine Exception um die komplette switch-Case packen? 
+    // Die Fehlermeldung reicht vermutlich und es muss nicht überall "team, name etc." stehen -> BoulerCode vermeiden
     public void evaluate(List<Percept> percepts, NextAgent agent) {
 
         clearSets(); //clearing of the containers before processing of perceipts
@@ -55,42 +64,40 @@ public class NextPerceptReader {
 
 			for (Percept percept : percepts) {
 
-                switch (percept.getName()) {
-
+                switch (Constants.EPercepts.valueOf(percept.getName())) {
                     // - SimulationStart Messages
-                    case "simStart" -> {
+                    case simStart:
                         simStatus.SetFlagSimulationIsStarted();
-                    }
-
-                    case "name" -> {
+                        break;
+                    case name: 
                         try {
                             agentStatus.SetName(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - name: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - name: \n" + e.toString());
                         }
-                    }
-                    case "team" -> {
+                    	break;
+                    case team: 
                         try {
                             agentStatus.SetTeam(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - team: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - team: \n" + e.toString());
                         }
-                    }
-                    case "teamSize" -> {
+                    	break;
+                    case teamSize: 
                         try {
                             simStatus.SetTeamSize(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - teamSize: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - teamSize: \n" + e.toString());
                         }
-                    }
-                    case "steps" -> {
+                    	break;
+                    case steps: 
                         try {
                             simStatus.SetTotalSteps(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - steps: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - steps: \n" + e.toString());
                         }
-                    }
-                    case "role" -> {
+                    	break;
+                    case role:
                         try {
                             // List of roles in simulation
                             // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
@@ -101,91 +108,88 @@ public class NextPerceptReader {
                                 agentStatus.SetRole(percept.getParameters().get(0).toProlog());
                             }
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - role: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - role: \n" + e.toString());
                         }
-                    }
-
+                    	break;
                     // - SimulationEnd Messages
-                    case "simEnd" -> {
+                    case simEnd:
                         simStatus.SetFlagSimulationIsFinished();
-                    }
-                    case "ranking" -> {
+                    	break;
+                    case ranking:
                         try {
                             simStatus.SetRanking(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - ranking: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - ranking: \n" + e.toString());
                         }
-                    }
-                    case "score" -> {
+                    	break;
+                    case score:
                         try {
                             simStatus.SetScore(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - score: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - score: \n" + e.toString());
                         }
-                    }
-
+                    	break;
                     // - AllSimulationsAreFinished Message
-                    case "bye" ->
+                    case bye:
                         // is called, when last Simulation is finished.
                         agent.setFlagDisableAgent();
-
+                    	break;
                     // - Request Action Messages
-                    case "requestAction" ->
+                    case requestAction: 
                         agent.setFlagActionRequest();
-
-                    case "actionID" -> {
+                    	break;
+                    case actionID:
                         try {
                             simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - actionID: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - actionID: \n" + e.toString());
                         }
-                    }
-                    case "timestamp" -> {
+                    	break;
+                    case timestamp:
                         try {
                             simStatus.SetTimestamp(Long.parseLong(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - timestamp: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - timestamp: \n" + e.toString());
                         }
-                    }
-                    case "deadline" -> {
+                    	break;
+                    case deadline:
                         try {
                             simStatus.SetDeadline(Long.parseLong(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - deadline: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - deadline: \n" + e.toString());
                         }
-                    }
-                    case "step" -> {
+                    	break;
+                    case step:
                         try {
                             simStatus.SetActualStep(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - step: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - step: \n" + e.toString());
                         }
-                    }
-                    case "lastAction" -> {
+                    	break;
+                    case lastAction:
                         try {
                             agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - lastAction: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - lastAction: \n" + e.toString());
                         }
-                    }
-                    case "lastActionResult" -> {
+                    	break;
+                    case lastActionResult:
                         try {
                             agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - lastActionResult: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - lastActionResult: \n" + e.toString());
                         }
-                    }
-                    case "lastActionParams" -> {
+                    	break;
+                    case lastActionParams:
                         try {
                             // has to be adjusted to a List if used/needed
                             agentStatus.SetLastActionParams(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - lastActionParams: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - lastActionParams: \n" + e.toString());
                         }
-                    }
-
+                    	break;
                     // The "Score" percept is handled together with @SimEnd messages above
-                    case "thing" -> {
+                    case thing:
                         try {
                             // Dividing in two sublists obstacles and things 
                             if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
@@ -194,74 +198,73 @@ public class NextPerceptReader {
                             }
                             things.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - Thing: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - Thing: \n" + e.toString());
                         }
-
-                    }
-                    case "task" -> {
+                    	break;
+                    case task:
                         try {
                             tasks.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - task: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - task: \n" + e.toString());
                         }
-                    }
-                    case "attached" -> {
+                    	break;
+                    case attached:
                         try {
                             attached.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - attached: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - attached: \n" + e.toString());
                         }
-                    }
-                    case "energy" -> {
+                    	break;
+                    case energy:
                         try {
                             agentStatus.SetEnergy(Integer.parseInt(percept.getParameters().get(0).toProlog()));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - energy: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - energy: \n" + e.toString());
                         }
-                    }
-                    case "deactivated" -> {
+                    	break;
+                    case deactivated:
                         try {
                             agentStatus.SetDeactivatedFlag(percept.getParameters().get(0).toProlog().equals("true"));
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - deactivated: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - deactivated: \n" + e.toString());
                         }
-                    }
-                    case "roleZone" -> {
+                    	break;
+                    case roleZone:
                         try {
                             roleZones.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - roleZone: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - roleZone: \n" + e.toString());
                         }
-                    }
-                    case "goalZone" -> {
+                    	break;
+                    case goalZone:
                         try {
                             goalZones.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - goalZone: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - goalZone: \n" + e.toString());
                         }
-                    }
-                    case "violation" -> {
+                    	break;
+                    case violation:
                         try {
                             violations.add(percept.getParameters().get(0).toProlog());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - violation: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - violation: \n" + e.toString());
                         }
-                    }
-                    case "norm" -> {
+                    	break;
+                    case norm:
                         try {
                             norms.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - norm: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - norm: \n" + e.toString());
                         }
-                    }
-                    case "hit" -> {
+                    	break;
+                    case hit:
                         try {
                             hits.add(percept.getParameters());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - hit: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - hit: \n" + e.toString());
                         }
-                    }
-                    case "surveyed" -> {
+                    	break;
+                    case surveyed:
                         // Dividing in two sublists handling Surveyed Agents and Surveyed Things 
                         try {
                             // Surveyed Agent
@@ -273,27 +276,26 @@ public class NextPerceptReader {
                                 surveyedThings.add(percept.getParameters());
                             }
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - lastActionParams: \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - lastActionParams: \n" + e.toString());
                         }
-                    }
-
-                    default -> //All not processed perceipts are moved to the Overhang List
+                    	break;
+                    default: //All not processed perceipts are moved to the Overhang List
                     {
                         try {
                             overhangNames.add(percept.getName());
                         } catch (Exception e) {
-                            agent.say("Error in NextPerceptReader - evaluate - Default Overhang Messages : \n" + e.toString());
+                            agent.Say("Error in NextPerceptReader - evaluate - Default Overhang Messages : \n" + e.toString());
                         }
                     }
-
+                    break;
                 }
             }
 
             // handling of unusual perception entries
             if (!overhangNames.isEmpty()) {
-                agent.say("------------------------------------------------");
-                agent.say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
-                agent.say("------------------------------------------------");
+                agent.Say("------------------------------------------------");
+                agent.Say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
+                agent.Say("------------------------------------------------");
             }
 
             //Second Step of Processing of Sets
@@ -320,10 +322,10 @@ public class NextPerceptReader {
 
     private void convertGeneratedSets() {
         //Process all Datasets and transfer to Storage - AgentStatus
-        simStatus.setTasksList(processTasksSet());
-        simStatus.setNormsList(processNormsSet());
-        simStatus.setRolesList(processRolesSet());
-        simStatus.setViolations(processViolationsSet());
+        simStatus.SetTasksList(processTasksSet());
+        simStatus.SetNormsList(processNormsSet());
+        simStatus.SetRolesList(processRolesSet());
+        simStatus.SetViolations(processViolationsSet());
 
         agentStatus.SetAttachedElements(processAttachedSet());
 
@@ -356,7 +358,7 @@ public class NextPerceptReader {
                                 convertRequirements(collectionOfBlocks))
                 );
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate
@@ -408,7 +410,7 @@ public class NextPerceptReader {
                 ));
 
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processNormsSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processNormsSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate
@@ -446,7 +448,7 @@ public class NextPerceptReader {
                         )
                 );
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processRolesSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processRolesSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate
@@ -469,7 +471,7 @@ public class NextPerceptReader {
                         Integer.parseInt(zone.get(1).toProlog())
                 ));
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processAttachedSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processAttachedSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate 
@@ -504,11 +506,11 @@ public class NextPerceptReader {
                         ));
                     }
                     default ->
-                        agent.say("Error in NextPerceptReader - processThingsSet: Inadequate number of attributes");
+                        agent.Say("Error in NextPerceptReader - processThingsSet: Inadequate number of attributes");
 
                 }
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processThingsSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processThingsSet: \n" + e.toString());
             }
         }
 
@@ -532,7 +534,7 @@ public class NextPerceptReader {
                         agent.getSimulationStatus().GetActualStep(),
                         "obstacle"));
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processObstaclesSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processObstaclesSet: \n" + e.toString());
             }
 
         }
@@ -571,7 +573,7 @@ public class NextPerceptReader {
                         agent.getSimulationStatus().GetActualStep(),
                         "goalZone"));
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processGoalZonesSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processGoalZonesSet: \n" + e.toString());
             }
 
         }
@@ -596,7 +598,7 @@ public class NextPerceptReader {
                         agent.getSimulationStatus().GetActualStep(),
                         "roleZone"));
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processRoleZonesSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processRoleZonesSet: \n" + e.toString());
             }
         }
 
@@ -620,7 +622,7 @@ public class NextPerceptReader {
                         agent.getSimulationStatus().GetActualStep(),
                         "Hit"));
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processHitsSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processHitsSet: \n" + e.toString());
             }
 
         }
@@ -650,7 +652,7 @@ public class NextPerceptReader {
                             SurveyedAgent.get(1).toProlog()}
                 );
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate 
@@ -675,7 +677,7 @@ public class NextPerceptReader {
                             SurveyedAgent.get(1).toProlog()}
                 );
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - processSurveyedThingSet: \n" + e.toString());
+                agent.Say("Error in NextPerceptReader - processSurveyedThingSet: \n" + e.toString());
             }
         }
         /* Debug Helper - Place // before to activate 

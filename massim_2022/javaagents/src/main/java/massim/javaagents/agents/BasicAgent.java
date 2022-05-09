@@ -22,14 +22,14 @@ public class BasicAgent extends Agent {
     }
 
     @Override
-    public void handlePercept(Percept percept) {}
+    public void HandlePercept(Percept percept) {}
 
     @Override
-    public void handleMessage(Percept message, String sender) {}
+    public void HandleMessage(Percept message, String sender) {}
 
     @Override
-    public Action step() {
-        List<Percept> percepts = getPercepts();
+    public Action Step() {
+        List<Percept> percepts = GetPercepts();
         for (Percept percept : percepts) {
             if (percept.getName().equals("actionID")) {
                 Parameter param = percept.getParameters().get(0);

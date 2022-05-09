@@ -119,19 +119,19 @@ public class Scheduler implements AgentListener, EnvironmentListener {
             mailService.RegisterAgent(agent, agentConf.team);
 
             try {
-                ei.registerAgent(agent.getName());
+                ei.registerAgent(agent.GetName());
             } catch (AgentException e) {
                 e.printStackTrace();
             }
 
             try {
-                ei.associateEntity(agent.getName(), agentConf.entity);
-                System.out.println("associated agent \"" + agent.getName() + "\" with entity \"" + agentConf.entity + "\"");
+                ei.associateEntity(agent.GetName(), agentConf.entity);
+                System.out.println("associated agent \"" + agent.GetName() + "\" with entity \"" + agentConf.entity + "\"");
             } catch (RelationException e) {
                 e.printStackTrace();
             }
 
-            ei.attachAgentListener(agent.getName(), this);
+            ei.attachAgentListener(agent.GetName(), this);
             agents.put(agentConf.name, agent);
         }
         ei.attachEnvironmentListener(this);
@@ -147,26 +147,26 @@ public class Scheduler implements AgentListener, EnvironmentListener {
             try {
                 var addList = new ArrayList<Percept>();
                 var delList = new ArrayList<Percept>();
-                eis.getPercepts(ag.getName()).values().forEach(pUpdate -> {
+                eis.getPercepts(ag.GetName()).values().forEach(pUpdate -> {
                     addList.addAll(pUpdate.getAddList());
                     delList.addAll(pUpdate.getDeleteList());
                 });
                 if (!addList.isEmpty() || !delList.isEmpty()) {
                     newPerceptAgents.add(ag);
                 }
-                ag.setPercepts(addList, delList);
+                ag.SetPercepts(addList, delList);
             } catch (PerceiveException ignored) {
             }
         });
 
         // step all agents which have new percepts
         newPerceptAgents.forEach(agent -> {
-            eis.iilang.Action action = agent.step();
+            eis.iilang.Action action = agent.Step();
             if (action != null) {
                 try {
-                    eis.performAction(agent.getName(), action);
+                    eis.performAction(agent.GetName(), action);
                 } catch (ActException e) {
-                    System.out.println("Could not perform action " + action.getName() + " for " + agent.getName());
+                    System.out.println("Could not perform action " + action.getName() + " for " + agent.GetName());
                 }
             }
         });
@@ -179,7 +179,7 @@ public class Scheduler implements AgentListener, EnvironmentListener {
 
     @Override
     public void handlePercept(String agent, Percept percept) {
-        agents.get(agent).handlePercept(percept);
+        agents.get(agent).HandlePercept(percept);
     }
 
     @Override

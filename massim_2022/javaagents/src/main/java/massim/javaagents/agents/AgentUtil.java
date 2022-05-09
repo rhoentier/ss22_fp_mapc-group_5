@@ -5,6 +5,7 @@ import java.util.Random;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
+import massim.javaagents.general.Constants;
 
 public final class AgentUtil{
 
