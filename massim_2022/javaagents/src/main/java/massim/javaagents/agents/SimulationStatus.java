@@ -1,15 +1,15 @@
 package massim.javaagents.agents;
 
+import java.util.HashSet;
+
 /**
  *
  * @author AVL
  */
 public class SimulationStatus {
-    
-    
+
     /*
-    public Set<Thing> things = new HashSet<>();
-    public Set<TaskInfo> taskInfo = new HashSet<>();
+    public Set<TaskInfo> tasksList = new HashSet<>();
     public Set<NormInfo> normsInfo = new HashSet<>();
     -- public long score;
     -- public String lastAction;
@@ -18,108 +18,146 @@ public class SimulationStatus {
     -- public List<Position> attachedThings = new ArrayList<>();
  
     public JSONArray stepEvents;
-    public List<String> violations;
     public List<Position> goalZones = new ArrayList<>();
     public List<Position> roleZones = new ArrayList<>();
-    */
-    
+     */
     private Boolean simulationIsFinished;
     private Boolean simulationIsStarted;
-        
+
     private Integer actionID = -1;
     private Integer teamSize;
     private Integer totalSteps;
-    private Integer actualStep;    
+    private Integer actualStep;
     private Integer ranking;
     private long score;
     private long timestamp;
     private long deadline;
 
-    //---------------- Getter and Setter
+    private HashSet<String> violations;
+
+    private HashSet<NextTask> tasksList = new HashSet<>();
+    private HashSet<NextRole> rolesList = new HashSet<>();
+    private HashSet<NextNorm> normsList = new HashSet<>();
     
-    public SimulationStatus () {
+    //---------------- Getter and Setter
+    public SimulationStatus() {
         simulationIsFinished = false;
         simulationIsStarted = false;
         actionID = -1;
     }
-    
-    public void setActionID(Integer actionID) {
+
+    public void SetActionID(Integer actionID) {
         this.actionID = actionID;
     }
 
-    public Integer getActionID() {
+    public Integer GetActionID() {
         return actionID;
     }
 
-    void setTeamSize(int teamSize) {
+    void SetTeamSize(int teamSize) {
         this.teamSize = teamSize;
     }
 
-    public Integer getTeamSize() {
+    public Integer GetTeamSize() {
         return teamSize;
     }
 
-    void setScore(long score) {
+    void SetScore(long score) {
         this.score = score;
     }
 
-    public long getScore() {
+    public long GetScore() {
         return score;
     }
 
-    public void setDeadline(long deadline) {
+    public void SetDeadline(long deadline) {
         this.deadline = deadline;
     }
 
-    public long getDeadline() {
+    public long GetDeadline() {
         return deadline;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void SetTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
-    public long getTimestamp() {
+    public long GetTimestamp() {
         return timestamp;
     }
 
-    public void setTotalSteps(Integer totalSteps) {
+    public void SetTotalSteps(Integer totalSteps) {
         this.totalSteps = totalSteps;
     }
 
-    public Integer getTotalSteps() {
+    public Integer GetTotalSteps() {
         return totalSteps;
     }
 
-    public void setActualStep(Integer actualStep) {
+    public void SetActualStep(Integer actualStep) {
         this.actualStep = actualStep;
     }
 
-    public Integer getActualStep() {
+    public Integer GetActualStep() {
         return actualStep;
     }
 
-    public void setRanking(Integer ranking) {
+    public void SetRanking(Integer ranking) {
         this.ranking = ranking;
     }
 
-    public Integer getRanking() {
+    public Integer GetRanking() {
         return ranking;
     }
 
-    public Boolean getSimulationIsStarted() {
+    public Boolean GetFlagSimulationIsStarted() {
         return simulationIsStarted;
     }
-    
-    public void setFlagSimulationIsStarted() {
-        simulationIsStarted=true;
+
+    public void SetFlagSimulationIsStarted() {
+        simulationIsStarted = true;
     }
 
-    public Boolean getSimulationIsFinished() {
+    public Boolean GetFlagSimulationIsFinished() {
         return simulationIsFinished;
     }
 
-    public void setFlagSimulationIsFinished() {
-        simulationIsFinished=true;
+    public void SetFlagSimulationIsFinished() {
+        simulationIsFinished = true;
     }
+
+    public HashSet<String> getViolations() {
+        return violations;
+    }
+
+    public void setViolations(HashSet<String> violations) {
+        this.violations = violations;
+    }
+
+    public HashSet<NextTask> getTasksList() {
+        return tasksList;
+    }
+
+    public void setTasksList(HashSet<NextTask> tasksList) {
+        this.tasksList = tasksList;
+    }
+
+    public HashSet<NextRole> getRolesList() {
+        return rolesList;
+    }
+
+    public void setRolesList(HashSet<NextRole> rolesList) {
+        this.rolesList = rolesList;
+    }
+
+    public HashSet<NextNorm> getNormsList() {
+        return normsList;
+    }
+
+    public void setNormsList(HashSet<NextNorm> normsList) {
+        this.normsList = normsList;
+    }
+
+    
+    
 }

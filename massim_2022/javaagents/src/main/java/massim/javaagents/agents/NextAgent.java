@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class NextAgent extends Agent {
 
-	/*
+    /*
 	 * ########## region fields
-	 */
+     */
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
     private Boolean disableAgentFlag = false; // True when all Simulations are finished 
@@ -36,16 +36,14 @@ public class NextAgent extends Agent {
     private List<SimulationStatus> finishedSimulations = new ArrayList<>();
 
     // --- Algorithms ---
-    // Eismassim interpreter
-    NextPerceptReader processor;
+    
+    NextPerceptReader processor; // Eismassim interpreter
     // Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
 
-	/*
+    /*
 	 * ##################### endregion fields
-	 */
-  
-
+     */
     /**
      * ########## region constructor.
      *
@@ -61,14 +59,14 @@ public class NextAgent extends Agent {
         this.processor = new NextPerceptReader(this);
 
     }
-	/*
-	 * ##################### endregion constructor
-	 */
 
-	/*
+    /*
+	 * ##################### endregion constructor
+     */
+
+    /*
 	 * ########## region public methods
-	 */
-    
+     */
     // Original Method
     @Override
     public void handlePercept(Percept percept) {
@@ -86,30 +84,32 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        processor.evaluate(getPercepts());
+        processor.evaluate(getPercepts(),this);
+        
+        //this.printAgentStatus();
 
         if (disableAgentFlag) {
             disableAgent();
         }
 
-        // processing after one simulation is finished
-        if (simStatus.getSimulationIsFinished()) {
+        // Skips the ActionGeneration while simulation is idle
+        if (!simStatus.GetFlagSimulationIsStarted()) {
+            return null;
+        }
+
+        // processing after the current simulation is finished
+        if (simStatus.GetFlagSimulationIsFinished()) {
             finishTheSimulation();
         }
 
-        // Skips the ActionGeneration while simulation is idle
-        if (!simStatus.getSimulationIsStarted()) {
-            return null;
-        }
-        
         // Represents losing attached Blocks after beeing deactivated.
-        if(agentStatus.getDeactivatedFlag()){
-            agentStatus.dropAttachedElements();
+        if (agentStatus.GetDeactivatedFlag()) {
+            agentStatus.DropAttachedElements();
         }
-        
+
         // ActionGeneration is started on a new ActionID only
-        if (simStatus.getActionID() > lastID) {
-            lastID = simStatus.getActionID();
+        if (simStatus.GetActionID() > lastID) {
+            lastID = simStatus.GetActionID();
 
             ArrayList<Action> possibleActions = new ArrayList<>();
             generatePossibleActions(possibleActions);
@@ -119,7 +119,7 @@ public class NextAgent extends Agent {
 
         return null;
     }
-    
+
     public AgentStatus getStatus() {
         return this.agentStatus;
     }
@@ -127,7 +127,7 @@ public class NextAgent extends Agent {
     public SimulationStatus getSimulationStatus() {
         return simStatus;
     }
-    
+
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
     }
@@ -136,17 +136,17 @@ public class NextAgent extends Agent {
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
     }
-    
+
     /*
 	 * ##################### endregion public methods
-	 */
+     */
     
     /*
 	 * ########## region private methods
-	 */
+     */
     
     /**
-     * Selects the next Action based on priorityMap
+     * Selects the next Action based on the priorityMap
      *
      * @param possibleActions
      * @return Action
@@ -165,57 +165,51 @@ public class NextAgent extends Agent {
         this.say(nextAction.toProlog());
         return nextAction;
     }
-    
+
     private void disableAgent() {
         this.say("All games finished!");
-
+        
         //System.exit(1); // Kill the window
     }
-    
+
     //Agent behavior after current simulation has finished
     private void finishTheSimulation() {
         this.say("Finishing this Simulation!");
-        this.say("Result: #" + simStatus.getRanking());
+        this.say("Result: #" + simStatus.GetRanking());
 
         resetAgent();
     }
-    
+
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
         possibleActions.add(AgentUtil.generateRandomMove());
+        
+        // Localises the distance to the next target:  "dispenser", "goal", "role"
+        possibleActions.add(AgentUtil.GenerateSurveyThingAction("dispenser"));
+        
+        // Survey a specific field with an agent. Get Name, Role, Energy
+        // Attributes x-Position, y-Position relative to the Agent
+        possibleActions.add(AgentUtil.GenerateSurveyAgentAction(0, 0));
+        
+        //Special case: Interaction with an adjacent element.
+        for (MapTile visibleThing : agentStatus.GetVision()) {
 
-        List<Percept> percepts = getPercepts();
-        for (Percept percept : percepts) {
-            // TODO - Convert to using AgentStatus
+            Point position = visibleThing.getPoint();
 
-            //Implementation of a reactive Action, attach - if standing next to a block
-            if (percept.getName().equals("thing")) {
-                int xValue = ((Numeral) percept.getParameters().get(0)).getValue().intValue();
-                int yValue = ((Numeral) percept.getParameters().get(1)).getValue().intValue();
-
-                Point PositionOfThing = new Point(xValue, yValue);
-
-                Parameter Ident = percept.getParameters().get(2);
-
-                // BUG: The agent seem to share the attached status with other agents. 
-                // If 1 agent is full, no further attach or request actions are tried. 
-                // - 
+            if (AgentUtil.NextTo(position, agentStatus)) {
                 
-                if (Ident instanceof Identifier) {
-                    String wert = ((Identifier) Ident).getValue();
-
-                    // if (this.status.getAttachedElements().size() < 2 && 
-                    if (wert.equals("block") && AgentUtil.NextTo(PositionOfThing, this.agentStatus)) {
-                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(PositionOfThing)));
-                    }
-
-                    // if (this.status.getAttachedElements().size() < 2 && 
-                    if (wert.equals("dispenser") && AgentUtil.NextTo(PositionOfThing, this.agentStatus)) {
-                        possibleActions.add(new Action("request", AgentUtil.GetDirection(PositionOfThing)));
+                if (visibleThing.getThingType().equals("dispenser")) {
+                    if (agentStatus.GetAttachedElementsAmount() < 2) {
+                        possibleActions.add(new Action("request", AgentUtil.GetDirection(position)));
                     }
                 }
-                
-                // Todo: Wandeln in If NextTo Thing, select action based on thing
+
+                if (visibleThing.getThingType().equals("block")) {
+                    if (agentStatus.GetAttachedElementsAmount() < 2) {
+                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
+                    }
+                }
             }
+
         }
     }
 
@@ -228,8 +222,15 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
     }
+
+    
+    private void printAgentStatus() {
+        this.say(agentStatus.toString());
+    }
     
     /*
 	 * ##################### endregion private methods
-	 */
+     */
+
+    
 }

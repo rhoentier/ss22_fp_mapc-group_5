@@ -10,105 +10,150 @@ import java.util.List;
  * @author AVL
  */
 public class AgentStatus {
-    private String name;  
-    private String teamName;    
+
+    private String name;
+    private String teamName;
     private String lastAction;
     private String lastActionResult;
     private String lastActionParams;
-    
+
     private int energy;
     private boolean deactivated;
     private String role;
-    
+
     private HashSet<Point> attachedElements;
-    
+
+    private HashSet<MapTile> vision;
+
     public AgentStatus() {
-        name = null;  
-        teamName= null;    
-        lastAction= null;
-        lastActionResult= null;
-        lastActionParams= null;    
+        name = null;
+        teamName = null;
+        lastAction = null;
+        lastActionResult = null;
+        lastActionParams = null;
         energy = -1;
         deactivated = false;
-        role= null;
+        role = null;
         attachedElements = new HashSet<>();
     };
     
-    public void setTeam( String teamName) {
+    public void SetTeam(String teamName) {
         this.teamName = teamName;
     }
 
-    public String getTeamName() {
-        return teamName;
+    public String GetTeamName() {
+        return this.teamName;
     }
 
-    public void setlastAction(String lastAction) {
+    public void SetLastAction(String lastAction) {
         this.lastAction = lastAction;
     }
 
-    public String getLastAction() {
-        return lastAction;
+    public String GetLastAction() {
+        return this.lastAction;
     }
 
-    public void setDeactivatedFlag(boolean deactivated) {
-        this.deactivated = deactivated;}
+    public void SetDeactivatedFlag(boolean deactivated) {
+        this.deactivated = deactivated;
+    }
 
-    public boolean getDeactivatedFlag() {
+    public boolean GetDeactivatedFlag() {
         return this.deactivated;
     }
 
-    public void setLastActionResult(String lastActionResult) {
+    public void SetLastActionResult(String lastActionResult) {
         this.lastActionResult = lastActionResult;
     }
 
-    public String getLastActionResult() {
-        return lastActionResult;
+    public String GetLastActionResult() {
+        return this.lastActionResult;
     }
 
-    public void setEnergy(int energy) {
+    public void SetEnergy(int energy) {
         this.energy = energy;
     }
 
-    public int getEnergy() {
-        return energy;
+    public int GetEnergy() {
+        return this.energy;
     }
 
-    public void setRole(String role) {
+    public void SetRole(String role) {
         this.role = role;
     }
 
-    public String getRole() {
-        return role;
+    public String GetRole() {
+        return this.role;
     }
 
-    public void setName(String name) {
+    public void SetName(String name) {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
+    public String GetName() {
+        return this.name;
     }
 
-    public void setLastActionParams(String lastActionParams) {
+    public void SetLastActionParams(String lastActionParams) {
         this.lastActionParams = lastActionParams;
     }
 
-    
-    public String getLastActionParams() {
-        return lastActionParams;
+    public String GetLastActionParams() {
+        return this.lastActionParams;
     }
 
-    public void setAttachedElements(HashSet<Point> attachedElements) {
-        for(Point attached:attachedElements) {
-            this.attachedElements.add(attached);
+    // compare attached elements to Constants directions and convert to array ?
+    public void SetAttachedElements(HashSet<Point> attachedElements) {
+        this.attachedElements = new HashSet();
+        for (Point attached : attachedElements) {
+            if (attached.equals(Constants.WestPoint)
+                    || attached.equals(Constants.NorthPoint)
+                    || attached.equals(Constants.EastPoint)
+                    || attached.equals(Constants.SouthPoint)) {
+                this.attachedElements.add(attached);
+            }
         }
     }
 
-    public HashSet<Point> getAttachedElements() {
-        return attachedElements;
+    public HashSet<Point> GetAttachedElements() {
+        return this.attachedElements;
     }
 
-    public void dropAttachedElements() {
-        attachedElements = new HashSet<>();
+    public Integer GetAttachedElementsAmount() {
+        return this.attachedElements.size();
+    }
+
+    public void DropAttachedElements() {
+        this.attachedElements = new HashSet<>();
+    }
+
+    public void SetVision(HashSet<MapTile> visionElements) {
+        this.vision = visionElements;
+    }
+
+    public HashSet<MapTile> GetVision() {
+        return this.vision;
+    }
+
+    public void SetGoalZones(HashSet<MapTile> goalZones){
+    }
+            
+    public void SetRoleZones(HashSet<MapTile> roleZones){
+        
+    }  
+    
+    public void SetHits(HashSet<MapTile> Hits){
+        
+    }
+    
+    public void SetObstacles(HashSet<MapTile> Obstacles) {
+        
+    }
+    
+    @Override
+    public String toString() {
+
+        return "[ " + this.name + " ] \n \n Attached: \n" + attachedElements + " \n \n"
+                + "vision: \n" + this.vision + " \n  --------------------------------- \n";
+
     }
 }

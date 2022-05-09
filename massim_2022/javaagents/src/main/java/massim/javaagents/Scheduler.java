@@ -116,7 +116,7 @@ public class Scheduler implements AgentListener, EnvironmentListener {
                 continue;
             }
 
-            mailService.registerAgent(agent, agentConf.team);
+            mailService.RegisterAgent(agent, agentConf.team);
 
             try {
                 ei.registerAgent(agent.getName());

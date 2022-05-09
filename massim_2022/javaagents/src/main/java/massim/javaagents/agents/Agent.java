@@ -51,7 +51,7 @@ public abstract class Agent {
      * @param sender the agent sending the message
      */
     protected void sendMessage(Percept message, String receiver, String sender){
-        mailbox.sendMessage(message, receiver, sender);
+        mailbox.SendMessage(message, receiver, sender);
     }
 
     /**
@@ -60,7 +60,7 @@ public abstract class Agent {
      * @param sender the agent sending the message
      */
     void broadcast(Percept message, String sender){
-        mailbox.broadcast(message, sender);
+        mailbox.Broadcast(message, sender);
     }
 
     /**

@@ -23,16 +23,16 @@ public final class AgentUtil{
      * @return boolean
      */
     static boolean NextTo(Point position, AgentStatus status) {
-        if(position.equals(Constants.WestPoint) && !status.getAttachedElements().contains(Constants.WestPoint)){
+        if(position.equals(Constants.WestPoint) && !status.GetAttachedElements().contains(Constants.WestPoint)){
             return true;
         }
-        if(position.equals(Constants.NorthPoint) && !status.getAttachedElements().contains(Constants.NorthPoint)){
+        if(position.equals(Constants.NorthPoint) && !status.GetAttachedElements().contains(Constants.NorthPoint)){
             return true;
         }
-        if(position.equals(Constants.EastPoint) && !status.getAttachedElements().contains(Constants.EastPoint)){
+        if(position.equals(Constants.EastPoint) && !status.GetAttachedElements().contains(Constants.EastPoint)){
             return true;
         }
-        if(position.equals(Constants.SouthPoint) && !status.getAttachedElements().contains(Constants.SouthPoint)){
+        if(position.equals(Constants.SouthPoint) && !status.GetAttachedElements().contains(Constants.SouthPoint)){
             return true;
         }        
         return false;
@@ -63,5 +63,29 @@ public final class AgentUtil{
         }
 
         return null;
+    }
+
+    static boolean hasFreeSlots(AgentStatus agentStatus) {
+        return agentStatus.GetAttachedElementsAmount() <= 2;
+    }
+
+    /**
+     * Creates an action to localise the distance to the next target:  
+     *
+     * @param type of Target. "dispenser", "goal", "role"
+     * @return Action
+     */
+    static Action GenerateSurveyThingAction(String type) {
+        return new Action("survey", new Identifier(type));
+    }
+    /**
+     * Creates an action to survey a remote agent:  
+     *
+     * @param String X-Coordinate relative to the surveing Agent
+     * @param String Y-Coordinate relative to the surveing Agent
+     * @return Action
+     */
+    static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
+        return new Action("survey", new Identifier( "" + xPosition ),new Identifier( "" + yPosition));
     }
 }
