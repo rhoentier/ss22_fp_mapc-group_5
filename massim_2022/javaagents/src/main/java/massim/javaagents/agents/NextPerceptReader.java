@@ -1,6 +1,7 @@
 package massim.javaagents.agents;
 
 import eis.iilang.*;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,14 +46,14 @@ public class NextPerceptReader {
 
     //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
     // Nachteil: BoilerCode + Performance
-    void evaluate(List<Percept> percepts, NextAgent agent) {
+    public void evaluate(List<Percept> percepts, NextAgent agent) {
 
         clearSets(); //clearing of the containers before processing of perceipts
 
         //WARNING: ConcurrentModificationException workaround! based on FitBUT
         synchronized (percepts) {
 
-            for (Percept percept : percepts) {
+			for (Percept percept : percepts) {
 
                 switch (percept.getName()) {
 
@@ -297,7 +298,6 @@ public class NextPerceptReader {
 
             //Second Step of Processing of Sets
             convertGeneratedSets();
-
         }
     }
 
@@ -316,11 +316,9 @@ public class NextPerceptReader {
         hits = new HashSet<>();
         surveyedAgents = new HashSet<>();
         surveyedThings = new HashSet<>();
-
     }
 
     private void convertGeneratedSets() {
-
         //Process all Datasets and transfer to Storage - AgentStatus
         simStatus.setTasksList(processTasksSet());
         simStatus.setNormsList(processNormsSet());

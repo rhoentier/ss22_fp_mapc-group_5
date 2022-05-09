@@ -24,7 +24,7 @@ public class MailService {
      * @param agent the agent to register
      * @param team the agent's team (needed for broadcasts)
      */
-    void registerAgent(Agent agent, String team){
+    public void RegisterAgent(Agent agent, String team){
         register.put(agent.getName(), agent);
         agentsByTeam.putIfAbsent(team, new Vector<>());
         agentsByTeam.get(team).add(agent);
@@ -37,7 +37,7 @@ public class MailService {
      * @param to the receiving agent
      * @param from the agent sending the message
      */
-    public void sendMessage(Percept message, String to, String from){
+    public void SendMessage(Percept message, String to, String from){
 
         Agent recipient = register.get(to);
 
@@ -54,10 +54,10 @@ public class MailService {
      * @param message the message to broadcast
      * @param sender the sending agent
      */
-    public void broadcast(Percept message, String sender) {
+    public void Broadcast(Percept message, String sender) {
         agentsByTeam.get(teamForAgent.get(sender)).stream()
                 .map(Agent::getName)
                 .filter(ag -> !ag.equals(sender))
-                .forEach(ag -> sendMessage(message, ag, sender));
+                .forEach(ag -> SendMessage(message, ag, sender));
     }
 }

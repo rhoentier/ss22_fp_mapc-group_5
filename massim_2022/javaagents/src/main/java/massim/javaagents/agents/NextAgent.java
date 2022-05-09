@@ -86,7 +86,6 @@ public class NextAgent extends Agent {
     public Action step() {
         processor.evaluate(getPercepts(),this);
         
-        
         //this.printAgentStatus();
 
         if (disableAgentFlag) {
@@ -191,7 +190,6 @@ public class NextAgent extends Agent {
         // Attributes x-Position, y-Position relative to the Agent
         possibleActions.add(AgentUtil.GenerateSurveyAgentAction(0, 0));
         
-
         //Special case: Interaction with an adjacent element.
         for (MapTile visibleThing : agentStatus.GetVision()) {
 

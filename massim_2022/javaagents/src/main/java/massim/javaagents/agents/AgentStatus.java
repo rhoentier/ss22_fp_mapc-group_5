@@ -24,7 +24,6 @@ public class AgentStatus {
     private HashSet<Point> attachedElements;
 
     private HashSet<MapTile> vision;
-    
 
     public AgentStatus() {
         name = null;
@@ -36,15 +35,14 @@ public class AgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
-    }
-    ;
+    };
     
     public void SetTeam(String teamName) {
         this.teamName = teamName;
     }
 
     public String GetTeamName() {
-        return teamName;
+        return this.teamName;
     }
 
     public void SetLastAction(String lastAction) {
@@ -52,7 +50,7 @@ public class AgentStatus {
     }
 
     public String GetLastAction() {
-        return lastAction;
+        return this.lastAction;
     }
 
     public void SetDeactivatedFlag(boolean deactivated) {
@@ -68,7 +66,7 @@ public class AgentStatus {
     }
 
     public String GetLastActionResult() {
-        return lastActionResult;
+        return this.lastActionResult;
     }
 
     public void SetEnergy(int energy) {
@@ -76,7 +74,7 @@ public class AgentStatus {
     }
 
     public int GetEnergy() {
-        return energy;
+        return this.energy;
     }
 
     public void SetRole(String role) {
@@ -84,7 +82,7 @@ public class AgentStatus {
     }
 
     public String GetRole() {
-        return role;
+        return this.role;
     }
 
     public void SetName(String name) {
@@ -92,7 +90,7 @@ public class AgentStatus {
     }
 
     public String GetName() {
-        return name;
+        return this.name;
     }
 
     public void SetLastActionParams(String lastActionParams) {
@@ -100,7 +98,7 @@ public class AgentStatus {
     }
 
     public String GetLastActionParams() {
-        return lastActionParams;
+        return this.lastActionParams;
     }
 
     // compare attached elements to Constants directions and convert to array ?
@@ -133,7 +131,7 @@ public class AgentStatus {
     }
 
     public HashSet<MapTile> GetVision() {
-        return vision;
+        return this.vision;
     }
 
     public void SetGoalZones(HashSet<MapTile> goalZones){
