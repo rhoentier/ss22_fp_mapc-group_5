@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Constants 
+public final class NextConstants 
 {
     //--- General Directions ----
     public final static Point WestPoint = new Point(-1, 0);

@@ -6,7 +6,7 @@ package massim.javaagents.percept;
 
 import java.util.HashSet;
 
-import massim.javaagents.agents.MapTile;
+import massim.javaagents.map.NextMapTile;
 
 /**
  *
@@ -20,9 +20,9 @@ public class NextTask {
     private long deadline;
 
     private long reward;
-    private HashSet<MapTile> requiredBlocks;
+    private HashSet<NextMapTile> requiredBlocks;
     
-    public NextTask (String name, int deadline, int reward, HashSet<MapTile> requiredBlocks) {
+    public NextTask (String name, int deadline, int reward, HashSet<NextMapTile> requiredBlocks) {
         this.name = name;
         this.deadline = deadline;
         this.reward = reward;
@@ -53,11 +53,11 @@ public class NextTask {
         this.reward = reward;
     }
 
-    public HashSet<MapTile> GetRequiredBlocks() {
+    public HashSet<NextMapTile> GetRequiredBlocks() {
         return requiredBlocks;
     }
 
-    public void SetRequiredBlocks(HashSet<MapTile> requiredBlocks) {
+    public void SetRequiredBlocks(HashSet<NextMapTile> requiredBlocks) {
         this.requiredBlocks = requiredBlocks;
     }
     
