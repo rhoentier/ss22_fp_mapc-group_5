@@ -24,11 +24,11 @@ public class MailService {
      * @param agent the agent to register
      * @param team the agent's team (needed for broadcasts)
      */
-    public void RegisterAgent(Agent agent, String team){
-        register.put(agent.GetName(), agent);
+    void registerAgent(Agent agent, String team){
+        register.put(agent.getName(), agent);
         agentsByTeam.putIfAbsent(team, new Vector<>());
         agentsByTeam.get(team).add(agent);
-        teamForAgent.put(agent.GetName(), team);
+        teamForAgent.put(agent.getName(), team);
     }
 
     /**
@@ -37,7 +37,7 @@ public class MailService {
      * @param to the receiving agent
      * @param from the agent sending the message
      */
-    public void SendMessage(Percept message, String to, String from){
+    public void sendMessage(Percept message, String to, String from){
 
         Agent recipient = register.get(to);
 
@@ -45,7 +45,7 @@ public class MailService {
             logger.warning("Cannot deliver message to " + to + "; unknown target,");
         }
         else{
-            recipient.HandleMessage(message, from);
+            recipient.handleMessage(message, from);
         }
     }
 
@@ -54,10 +54,10 @@ public class MailService {
      * @param message the message to broadcast
      * @param sender the sending agent
      */
-    public void Broadcast(Percept message, String sender) {
+    public void broadcast(Percept message, String sender) {
         agentsByTeam.get(teamForAgent.get(sender)).stream()
-                .map(Agent::GetName)
+                .map(Agent::getName)
                 .filter(ag -> !ag.equals(sender))
-                .forEach(ag -> SendMessage(message, ag, sender));
+                .forEach(ag -> sendMessage(message, ag, sender));
     }
 }

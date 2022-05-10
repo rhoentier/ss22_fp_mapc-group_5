@@ -5,9 +5,9 @@ import java.util.Random;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
-import massim.javaagents.general.Constants;
+import massim.javaagents.general.NextConstants;
 
-public final class AgentUtil{
+public final class NextAgentUtil{
 
 	static Action generateRandomMove() 
 	{
@@ -19,21 +19,21 @@ public final class AgentUtil{
     /**
      * Reports, if a Thing is next to the Agent
      *
-     * @param xValue - x-Value of Thing
-     * @param yValue - y-Value of Thing
+     * @param position - x-Value, y-Value of a Thing
+     * @param status - #source of Information
      * @return boolean
      */
-    static boolean NextTo(Point position, AgentStatus status) {
-        if(position.equals(Constants.WestPoint) && !status.GetAttachedElements().contains(Constants.WestPoint)){
+    static boolean NextTo(Point position, NextAgentStatus status) {
+        if(position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)){
             return true;
         }
-        if(position.equals(Constants.NorthPoint) && !status.GetAttachedElements().contains(Constants.NorthPoint)){
+        if(position.equals(NextConstants.NorthPoint) && !status.GetAttachedElements().contains(NextConstants.NorthPoint)){
             return true;
         }
-        if(position.equals(Constants.EastPoint) && !status.GetAttachedElements().contains(Constants.EastPoint)){
+        if(position.equals(NextConstants.EastPoint) && !status.GetAttachedElements().contains(NextConstants.EastPoint)){
             return true;
         }
-        if(position.equals(Constants.SouthPoint) && !status.GetAttachedElements().contains(Constants.SouthPoint)){
+        if(position.equals(NextConstants.SouthPoint) && !status.GetAttachedElements().contains(NextConstants.SouthPoint)){
             return true;
         }        
         return false;
@@ -47,26 +47,26 @@ public final class AgentUtil{
      * @return Identifier for the direction value of an action.
      */
     static Identifier GetDirection(Point direction) {
-        if (direction.equals(Constants.WestPoint)) {
-            return new Identifier(Constants.ECardinals.w.toString());
+        if (direction.equals(NextConstants.WestPoint)) {
+            return new Identifier(NextConstants.ECardinals.w.toString());
         }
 
-        if (direction.equals(Constants.SouthPoint)) {
-            return new Identifier(Constants.ECardinals.s.toString());
+        if (direction.equals(NextConstants.SouthPoint)) {
+            return new Identifier(NextConstants.ECardinals.s.toString());
         }
 
-        if (direction.equals(Constants.EastPoint)) {
-            return new Identifier(Constants.ECardinals.e.toString());
+        if (direction.equals(NextConstants.EastPoint)) {
+            return new Identifier(NextConstants.ECardinals.e.toString());
         }
 
-        if (direction.equals(Constants.NorthPoint)) {
-            return new Identifier(Constants.ECardinals.n.toString());
+        if (direction.equals(NextConstants.NorthPoint)) {
+            return new Identifier(NextConstants.ECardinals.n.toString());
         }
 
         return null;
     }
 
-    static boolean hasFreeSlots(AgentStatus agentStatus) {
+    static boolean hasFreeSlots(NextAgentStatus agentStatus) {
         return agentStatus.GetAttachedElementsAmount() <= 2;
     }
 

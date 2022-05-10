@@ -1,4 +1,4 @@
-package massim.javaagents.agents;
+package massim.javaagents.map;
 
 import java.awt.Point;
 
@@ -11,7 +11,7 @@ import java.awt.Point;
  *
  * @author AVL
  */
-public class MapTile {
+public class NextMapTile {
 
     private Integer positionX;
     private Integer positionY;
@@ -19,7 +19,7 @@ public class MapTile {
     private Boolean isAThing;
     private String thingType; // - (b1,b0,b2, Dispenser, Obstacle, zone...)
 
-    public MapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
+    public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.lastVisionStep = lastStepObserved;
@@ -28,7 +28,7 @@ public class MapTile {
 
     }
 
-    public MapTile(Integer positionX, Integer positionY, Integer lastStepObserved) {
+    public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.lastVisionStep = lastStepObserved;

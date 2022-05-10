@@ -8,7 +8,7 @@ package massim.javaagents.percept;
  *
  * @author AVL
  */
-class NextNormRequirement {
+public class NextNormRequirement {
     /*        
     requirement:
             type : the subject of the norm
