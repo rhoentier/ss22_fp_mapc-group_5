@@ -22,14 +22,14 @@ public class BasicAgent extends Agent {
     }
 
     @Override
-    public void HandlePercept(Percept percept) {}
+    public void handlePercept(Percept percept) {}
 
     @Override
-    public void HandleMessage(Percept message, String sender) {}
+    public void handleMessage(Percept message, String sender) {}
 
     @Override
-    public Action Step() {
-        List<Percept> percepts = GetPercepts();
+    public Action step() {
+        List<Percept> percepts = getPercepts();
         for (Percept percept : percepts) {
             if (percept.getName().equals("actionID")) {
                 Parameter param = percept.getParameters().get(0);
@@ -37,7 +37,7 @@ public class BasicAgent extends Agent {
                     int id = ((Numeral) param).getValue().intValue();
                     if (id > lastID) {
                         lastID = id;
-                        return new Action("move", new Identifier("e"));
+                        return new Action("move", new Identifier("n"));
                     }
                 }
             }

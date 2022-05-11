@@ -29,17 +29,17 @@ public abstract class Agent {
      * This method is used only if the EIS is configured to handle percepts as notifications.
      * @param percept the percept to process
      */
-    public abstract void HandlePercept(Percept percept);
+    public abstract void handlePercept(Percept percept);
 
     /**
      * Called for each step.
      */
-    public abstract eis.iilang.Action Step();
+    public abstract eis.iilang.Action step();
 
     /**
      * @return the name of the agent
      */
-    public String GetName() {
+    public String getName() {
         return name;
     }
 
@@ -50,8 +50,8 @@ public abstract class Agent {
      * @param receiver the receiving agent
      * @param sender the agent sending the message
      */
-    protected void SendMessage(Percept message, String receiver, String sender){
-        mailbox.SendMessage(message, receiver, sender);
+    protected void sendMessage(Percept message, String receiver, String sender){
+        mailbox.sendMessage(message, receiver, sender);
     }
 
     /**
@@ -59,8 +59,8 @@ public abstract class Agent {
      * @param message the message to broadcast
      * @param sender the agent sending the message
      */
-    public void Broadcast(Percept message, String sender){
-        mailbox.Broadcast(message, sender);
+    void broadcast(Percept message, String sender){
+        mailbox.broadcast(message, sender);
     }
 
     /**
@@ -69,14 +69,14 @@ public abstract class Agent {
      * @param message the message that was sent
      * @param sender name of the agent who sent the message
      */
-    public abstract void HandleMessage(Percept message, String sender);
+    public abstract void handleMessage(Percept message, String sender);
 
     /**
      * Sets the percepts for this agent. Should only be called from the outside.
      * @param addList the new percepts for this agent.
      * @param delList the now invalid percepts for this agent.
      */
-    public void SetPercepts(List<Percept> addList, List<Percept> delList) {
+    public void setPercepts(List<Percept> addList, List<Percept> delList) {
         this.percepts.removeAll(delList);
         this.percepts.addAll(addList);
     }
@@ -85,7 +85,7 @@ public abstract class Agent {
      * Prints a message to std out prefixed with the agent's name.
      * @param message the message to say
      */
-    public void Say(String message){
+    void say(String message){
         System.out.println("[ " + name + " ]  " + message);
     }
 
@@ -96,7 +96,7 @@ public abstract class Agent {
      * by the agent.
      * @return a list of all new percepts for the current step
      */
-    public List<Percept> GetPercepts(){
+    List<Percept> getPercepts(){
         return new ArrayList<>(percepts);
     }
 }

@@ -10,7 +10,7 @@ import massim.javaagents.percept.NextTask;
  *
  * @author AVL
  */
-public class SimulationStatus {
+public class NextSimulationStatus {
 
     /*
     public Set<TaskInfo> tasksList = new HashSet<>();
@@ -44,7 +44,7 @@ public class SimulationStatus {
     private HashSet<NextNorm> normsList = new HashSet<>();
     
     //---------------- Getter and Setter
-    public SimulationStatus() {
+    public NextSimulationStatus() {
         simulationIsFinished = false;
         simulationIsStarted = false;
         actionID = -1;

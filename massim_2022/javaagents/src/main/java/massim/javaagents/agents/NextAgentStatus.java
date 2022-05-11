@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import massim.javaagents.general.Constants;
+import massim.javaagents.general.NextConstants;
+import massim.javaagents.map.NextMapTile;
 
 /**
  *
  * @author AVL
  */
-public class AgentStatus {
+public class NextAgentStatus {
 
     private String name;
     private String teamName;
@@ -25,9 +26,9 @@ public class AgentStatus {
 
     private HashSet<Point> attachedElements;
 
-    private HashSet<MapTile> vision;
+    private HashSet<NextMapTile> vision;
 
-    public AgentStatus() {
+    public NextAgentStatus() {
         name = null;
         teamName = null;
         lastAction = null;
@@ -103,14 +104,14 @@ public class AgentStatus {
         return this.lastActionParams;
     }
 
-    // compare attached elements to Constants directions and convert to array ?
+    // compare attached elements to NextConstants directions and convert to array ?
     public void SetAttachedElements(HashSet<Point> attachedElements) {
         this.attachedElements = new HashSet();
         for (Point attached : attachedElements) {
-            if (attached.equals(Constants.WestPoint)
-                    || attached.equals(Constants.NorthPoint)
-                    || attached.equals(Constants.EastPoint)
-                    || attached.equals(Constants.SouthPoint)) {
+            if (attached.equals(NextConstants.WestPoint)
+                    || attached.equals(NextConstants.NorthPoint)
+                    || attached.equals(NextConstants.EastPoint)
+                    || attached.equals(NextConstants.SouthPoint)) {
                 this.attachedElements.add(attached);
             }
         }
@@ -128,26 +129,26 @@ public class AgentStatus {
         this.attachedElements = new HashSet<>();
     }
 
-    public void SetVision(HashSet<MapTile> visionElements) {
+    public void SetVision(HashSet<NextMapTile> visionElements) {
         this.vision = visionElements;
     }
 
-    public HashSet<MapTile> GetVision() {
+    public HashSet<NextMapTile> GetVision() {
         return this.vision;
     }
 
-    public void SetGoalZones(HashSet<MapTile> goalZones){
+    public void SetGoalZones(HashSet<NextMapTile> goalZones){
     }
             
-    public void SetRoleZones(HashSet<MapTile> roleZones){
+    public void SetRoleZones(HashSet<NextMapTile> roleZones){
         
     }  
     
-    public void SetHits(HashSet<MapTile> Hits){
+    public void SetHits(HashSet<NextMapTile> Hits){
         
     }
     
-    public void SetObstacles(HashSet<MapTile> Obstacles) {
+    public void SetObstacles(HashSet<NextMapTile> Obstacles) {
         
     }
     
