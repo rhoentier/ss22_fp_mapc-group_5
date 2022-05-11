@@ -1,11 +1,11 @@
 package massim.javaagents.agents;
 
+import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import massim.javaagents.MailService;
-import massim.javaagents.general.Constants;
-import massim.javaagents.percept.NextPerceptReader;
+import massim.javaagents.general.NextConstants;
 
 import java.util.List;
 
@@ -30,17 +30,17 @@ public class NextAgent extends Agent {
     private Boolean disableAgentFlag = false; // True when all Simulations are finished 
 
     //Agent related attributes
-    private AgentStatus agentStatus;
+    private NextAgentStatus agentStatus;
     //Simulation related attributes
-    private SimulationStatus simStatus;
+    private NextSimulationStatus simStatus;
 
     //Compilation of finisched Simulations to be Processed after "deactivateAgentFlag == True"
-    private List<SimulationStatus> finishedSimulations = new ArrayList<>();
+    private List<NextSimulationStatus> finishedSimulations = new ArrayList<>();
 
     // --- Algorithms ---
     
     NextPerceptReader processor; // Eismassim interpreter
-    // Pathfinding algorithm
+    //Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
 
     /*
@@ -55,8 +55,8 @@ public class NextAgent extends Agent {
     public NextAgent(String name, MailService mailbox) {
         super(name, mailbox);
 
-        this.agentStatus = new AgentStatus();
-        this.simStatus = new SimulationStatus();
+        this.agentStatus = new NextAgentStatus();
+        this.simStatus = new NextSimulationStatus();
 
         this.processor = new NextPerceptReader(this);
 
@@ -71,12 +71,12 @@ public class NextAgent extends Agent {
      */
     // Original Method
     @Override
-    public void HandlePercept(Percept percept) {
+    public void handlePercept(Percept percept) {
     }
 
     // Original Method
     @Override
-    public void HandleMessage(Percept message, String sender) {
+    public void handleMessage(Percept message, String sender) {
     }
 
     /**
@@ -85,8 +85,8 @@ public class NextAgent extends Agent {
      * @return Action - Next action for Massim simulation for this agent.
      */
     @Override
-    public Action Step() {
-        processor.evaluate(GetPercepts(),this);
+    public Action step() {
+        processor.evaluate(getPercepts(),this);
         
         //this.printAgentStatus();
 
@@ -122,11 +122,11 @@ public class NextAgent extends Agent {
         return null;
     }
 
-    public AgentStatus getStatus() {
+    public NextAgentStatus getStatus() {
         return this.agentStatus;
     }
 
-    public SimulationStatus getSimulationStatus() {
+    public NextSimulationStatus getSimulationStatus() {
         return simStatus;
     }
 
@@ -159,55 +159,57 @@ public class NextAgent extends Agent {
 
         //Compares each action based on the value
         for (Action action : possibleActions) {
-            if (Constants.PriorityMap.get(action.getName()) < Constants.PriorityMap.get(nextAction.getName())) {
+            if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
                 nextAction = action;
             }
         }
 
-        this.Say(nextAction.toProlog());
+        this.say(nextAction.toProlog());
         return nextAction;
     }
 
     private void disableAgent() {
-        this.Say("All games finished!");
+        this.say("All games finished!");
         
         //System.exit(1); // Kill the window
     }
 
     //Agent behavior after current simulation has finished
     private void finishTheSimulation() {
-        this.Say("Finishing this Simulation!");
-        this.Say("Result: #" + simStatus.GetRanking());
+        this.say("Finishing this Simulation!");
+        this.say("Result: #" + simStatus.GetRanking());
 
         resetAgent();
     }
 
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
-        possibleActions.add(AgentUtil.generateRandomMove());
+        possibleActions.add(NextAgentUtil.generateRandomMove());
         
         // Localises the distance to the next target:  "dispenser", "goal", "role"
-        possibleActions.add(AgentUtil.GenerateSurveyThingAction("dispenser"));
+        possibleActions.add(NextAgentUtil.GenerateSurveyThingAction("dispenser"));
         
         // Survey a specific field with an agent. Get Name, Role, Energy
         // Attributes x-Position, y-Position relative to the Agent
-        possibleActions.add(AgentUtil.GenerateSurveyAgentAction(0, 0));
+        possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
         
         //Special case: Interaction with an adjacent element.
-        for (MapTile visibleThing : agentStatus.GetVision()) {
-
+        for (NextMapTile visibleThing : agentStatus.GetVision()) {
+             
             Point position = visibleThing.getPoint();
 
-            if (AgentUtil.NextTo(position, agentStatus)) {
+            if (NextAgentUtil.NextTo(position, agentStatus)) {
+                        
+                this.say(visibleThing.getThingType());
+                if (visibleThing.getThingType().contains("dispenser")) {
                 
-                if (visibleThing.getThingType().equals("dispenser")) {
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(new Action("request", AgentUtil.GetDirection(position)));
+                        possibleActions.add(new Action("request", NextAgentUtil.GetDirection(position)));
                     }
                 }
 
-                if (visibleThing.getThingType().equals("block")) {
+                if (visibleThing.getThingType().contains("block")) {
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(new Action("attach", AgentUtil.GetDirection(position)));
+                        possibleActions.add(new Action("attach", NextAgentUtil.GetDirection(position)));
                     }
                 }
             }
@@ -218,16 +220,16 @@ public class NextAgent extends Agent {
     private void resetAgent() {
 
         this.lastID = -1;
-        this.simStatus = new SimulationStatus();
-        this.agentStatus = new AgentStatus();
+        this.simStatus = new NextSimulationStatus();
+        this.agentStatus = new NextAgentStatus();
         this.processor = new NextPerceptReader(this);
 
-        this.SetPercepts(new ArrayList<>(), this.GetPercepts());
+        this.setPercepts(new ArrayList<>(), this.getPercepts());
     }
 
     
     private void printAgentStatus() {
-        this.Say(agentStatus.toString());
+        this.say(agentStatus.toString());
     }
     
     /*
