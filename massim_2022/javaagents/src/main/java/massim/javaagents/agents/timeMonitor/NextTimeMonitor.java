@@ -2,7 +2,7 @@ package massim.javaagents.agents;
 
 import java.time.Instant;
 
-public class TimeMonitor {
+public class NextTimeMonitor {
     private long simulationStartTime;
     private long roundStartTime;
     private long roundDeadline;
