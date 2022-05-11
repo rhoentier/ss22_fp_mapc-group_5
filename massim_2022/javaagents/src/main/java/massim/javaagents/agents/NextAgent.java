@@ -33,6 +33,7 @@ public class NextAgent extends Agent {
     private NextAgentStatus agentStatus;
     //Simulation related attributes
     private NextSimulationStatus simStatus;
+    private NextTimeMonitor timeMonitor;
 
     //Compilation of finisched Simulations to be Processed after "deactivateAgentFlag == True"
     private List<NextSimulationStatus> finishedSimulations = new ArrayList<>();
