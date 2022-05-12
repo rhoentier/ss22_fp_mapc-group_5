@@ -6,16 +6,20 @@ import java.awt.Point;
 import java.util.ArrayList;
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.timeMonitor.NextTimeMonitor;
 
 import java.util.List;
 
 /**
  * First iteration of an experimental agent.
  *
- * Done: Handling of transition between simulations Basic action generation
- * based on random movement
+ * Done: 
+ * Handling of transition between simulations 
+ * Basic action generation based on random movement
+ * Processing of all percepts and storing in dataVaults
  *
- * ToDo: registerAgent @ Mailserver -> anmeldung für Agentenkommunikation. //
+ * ToDo: 
+ * registerAgent @ Mailserver -> anmeldung für Agentenkommunikation. //
  * kombination mit Gruppenbildung?
  *
  * @author Alexander Lorenz
@@ -35,11 +39,10 @@ public class NextAgent extends Agent {
     private NextSimulationStatus simStatus;
     private NextTimeMonitor timeMonitor;
 
-    //Compilation of finisched Simulations to be Processed after "deactivateAgentFlag == True"
+    //Compilation of finished Simulations to be Processed after "deactivateAgentFlag == True"
     private List<NextSimulationStatus> finishedSimulations = new ArrayList<>();
 
     // --- Algorithms ---
-    
     NextPerceptReader processor; // Eismassim interpreter
     //Pathfinding algorithm
     //PathFinding pathFinder; - ToDo
@@ -67,7 +70,7 @@ public class NextAgent extends Agent {
 	 * ##################### endregion constructor
      */
 
-    /*
+ /*
 	 * ########## region public methods
      */
     // Original Method
@@ -87,10 +90,9 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        processor.evaluate(getPercepts(),this);
-        
-        //this.printAgentStatus();
+        processor.evaluate(getPercepts(), this);
 
+        //this.printAgentStatus();
         if (disableAgentFlag) {
             disableAgent();
         }
@@ -143,11 +145,9 @@ public class NextAgent extends Agent {
     /*
 	 * ##################### endregion public methods
      */
-    
-    /*
+ /*
 	 * ########## region private methods
      */
-    
     /**
      * Selects the next Action based on the priorityMap
      *
@@ -171,7 +171,7 @@ public class NextAgent extends Agent {
 
     private void disableAgent() {
         this.say("All games finished!");
-        
+
         //System.exit(1); // Kill the window
     }
 
@@ -185,24 +185,24 @@ public class NextAgent extends Agent {
 
     private void generatePossibleActions(ArrayList<Action> possibleActions) {
         possibleActions.add(NextAgentUtil.generateRandomMove());
-        
+
         // Localises the distance to the next target:  "dispenser", "goal", "role"
         possibleActions.add(NextAgentUtil.GenerateSurveyThingAction("dispenser"));
-        
+
         // Survey a specific field with an agent. Get Name, Role, Energy
         // Attributes x-Position, y-Position relative to the Agent
         possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
-        
+
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : agentStatus.GetVision()) {
-             
+
             Point position = visibleThing.getPoint();
 
             if (NextAgentUtil.NextTo(position, agentStatus)) {
-                        
+
                 this.say(visibleThing.getThingType());
                 if (visibleThing.getThingType().contains("dispenser")) {
-                
+
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
                         possibleActions.add(new Action("request", NextAgentUtil.GetDirection(position)));
                     }
@@ -228,14 +228,11 @@ public class NextAgent extends Agent {
         this.setPercepts(new ArrayList<>(), this.getPercepts());
     }
 
-    
     private void printAgentStatus() {
         this.say(agentStatus.toString());
     }
-    
+
     /*
 	 * ##################### endregion private methods
      */
-
-    
 }

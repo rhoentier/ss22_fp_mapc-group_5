@@ -1,4 +1,4 @@
-package massim.javaagents.agents;
+package massim.javaagents.timeMonitor;
 
 import java.time.Instant;
 
@@ -11,7 +11,7 @@ public class NextTimeMonitor {
      */
     private long secureOffset = 100;
 
-    public TimeMonitor(long simulationStartTime) {
+    public NextTimeMonitor(long simulationStartTime) {
         this.simulationStartTime = simulationStartTime;
     }
 
@@ -20,7 +20,7 @@ public class NextTimeMonitor {
      * das sich aus der Zeit der Kommunikation ermittelt
     */
     public void SetRoundTime(long roundStartTime, long roundDeadline){
-        long long currentTime = Instant.now().toEpochMilli();
+        long currentTime = Instant.now().toEpochMilli();
         this.roundStartTime = roundStartTime;
         this.roundDeadline = roundDeadline;
         this.secureOffset = roundStartTime - currentTime;
@@ -53,6 +53,6 @@ public class NextTimeMonitor {
     public long GetRemainingTime(){
         if(!IsTimeRemaining()) return 0;
         long currentTime = Instant.now().toEpochMilli();
-        return roundDeadline - (currentTime + secureOffset)
+        return roundDeadline - (currentTime + secureOffset);
     }
 }
