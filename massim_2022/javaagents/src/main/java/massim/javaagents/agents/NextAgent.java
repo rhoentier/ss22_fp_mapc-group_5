@@ -200,7 +200,6 @@ public class NextAgent extends Agent {
 
             if (NextAgentUtil.NextTo(position, agentStatus)) {
 
-                this.say(visibleThing.getThingType());
                 if (visibleThing.getThingType().contains("dispenser")) {
 
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
