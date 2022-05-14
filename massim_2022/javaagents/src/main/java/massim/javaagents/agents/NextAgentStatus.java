@@ -27,10 +27,16 @@ public class NextAgentStatus {
     private HashSet<Point> attachedElements;
 
     private HashSet<NextMapTile> visibleThings;
+
     private HashSet<NextMapTile> obstacles;
     private HashSet<NextMapTile> roleZones;
     private HashSet<NextMapTile> goalZones;
     private HashSet<NextMapTile> hits;
+    
+    // Let us discuss the proper target format for surveyed elements -> AVL
+    // The conversion should happen in NextPerceptReader
+    private HashSet<String[]> surveyedAgents; 
+    private HashSet<String[]> surveyedThings;
 
     public NextAgentStatus() {
         name = null;
@@ -171,6 +177,23 @@ public class NextAgentStatus {
 
     public void SetHits(HashSet<NextMapTile> hits) {
         this.hits = hits;
+    }
+    
+    
+    public HashSet<String[]> getSurveyedAgents() {
+        return surveyedAgents;
+    }
+
+    public void setSurveyedAgents(HashSet<String[]> surveyedAgents) {
+        this.surveyedAgents = surveyedAgents;
+    }
+
+    public HashSet<String[]> getSurveyedThings() {
+        return surveyedThings;
+    }
+
+    public void setSurveyedThings(HashSet<String[]> surveyedThings) {
+        this.surveyedThings = surveyedThings;
     }
 
     @Override

@@ -241,8 +241,8 @@ public class NextPerceptReader {
         agentStatus.SetRoleZones(processRoleZonesSet());
         agentStatus.SetHits(processHitsSet());
 
-        processSurveyedAgentSet(); // Needs a target to store the data
-        processSurveyedThingSet(); // Needs a target to store the data
+        agentStatus.setSurveyedAgents(processSurveyedAgentSet());
+        agentStatus.setSurveyedThings(processSurveyedThingSet()); // Needs a target to store the data
     }
 
     private HashSet<NextTask> processTasksSet() {
