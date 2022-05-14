@@ -456,7 +456,7 @@ public class NextPerceptReader {
 
     private HashSet<String> processViolationsSet() {
         // violation(id) - Percept Data Format
-        // Forwards Percept Data as String
+        // Forwards Percept Data as a String
 
         /* Debug Helper - Place // before to activate 
         if (!violations.isEmpty()) {
