@@ -26,7 +26,17 @@ public class NextAgentStatus {
 
     private HashSet<Point> attachedElements;
 
-    private HashSet<NextMapTile> vision;
+    private HashSet<NextMapTile> visibleThings;
+
+    private HashSet<NextMapTile> obstacles;
+    private HashSet<NextMapTile> roleZones;
+    private HashSet<NextMapTile> goalZones;
+    private HashSet<NextMapTile> hits;
+    
+    // Let us discuss the proper target format for surveyed elements -> AVL
+    // The conversion should happen in NextPerceptReader
+    private HashSet<String[]> surveyedAgents; 
+    private HashSet<String[]> surveyedThings;
 
     public NextAgentStatus() {
         name = null;
@@ -38,8 +48,8 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
-    };
-    
+    }
+
     public void SetTeam(String teamName) {
         this.teamName = teamName;
     }
@@ -130,33 +140,71 @@ public class NextAgentStatus {
     }
 
     public void SetVision(HashSet<NextMapTile> visionElements) {
-        this.vision = visionElements;
+        this.visibleThings = visionElements;
     }
 
     public HashSet<NextMapTile> GetVision() {
-        return this.vision;
+        return this.visibleThings;
     }
 
-    public void SetGoalZones(HashSet<NextMapTile> goalZones){
+    public HashSet<NextMapTile> GetObstacles() {
+        return obstacles;
     }
-            
-    public void SetRoleZones(HashSet<NextMapTile> roleZones){
-        
-    }  
-    
-    public void SetHits(HashSet<NextMapTile> Hits){
-        
+
+    public void SetObstacles(HashSet<NextMapTile> obstacles) {
+        this.obstacles = obstacles;
+    }
+
+    public HashSet<NextMapTile> GetRoleZones() {
+        return roleZones;
+    }
+
+    public void SetRoleZones(HashSet<NextMapTile> roleZones) {
+        this.roleZones = roleZones;
+    }
+
+    public HashSet<NextMapTile> GetGoalZones() {
+        return goalZones;
+    }
+
+    public void SetGoalZones(HashSet<NextMapTile> goalZones) {
+        this.goalZones = goalZones;
+    }
+
+    public HashSet<NextMapTile> GetHits() {
+        return hits;
+    }
+
+    public void SetHits(HashSet<NextMapTile> hits) {
+        this.hits = hits;
     }
     
-    public void SetObstacles(HashSet<NextMapTile> Obstacles) {
-        
-    }
     
+    public HashSet<String[]> getSurveyedAgents() {
+        return surveyedAgents;
+    }
+
+    public void setSurveyedAgents(HashSet<String[]> surveyedAgents) {
+        this.surveyedAgents = surveyedAgents;
+    }
+
+    public HashSet<String[]> getSurveyedThings() {
+        return surveyedThings;
+    }
+
+    public void setSurveyedThings(HashSet<String[]> surveyedThings) {
+        this.surveyedThings = surveyedThings;
+    }
+
     @Override
     public String toString() {
 
         return "[ " + this.name + " ] \n \n Attached: \n" + attachedElements + " \n \n"
-                + "vision: \n" + this.vision + " \n  --------------------------------- \n";
+                + "visible Things: \n" + this.visibleThings + " \n"
+                + "obstacles: \n" + this.obstacles + " \n"
+                + "goalZones: \n" + this.goalZones + " \n"
+                + "roleZones: \n" + this.roleZones + " \n"
+                + "--------------------------------- \n";
 
     }
 }
