@@ -36,7 +36,7 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> tasks;
     private HashSet<List<Parameter>> roles;
     private HashSet<List<Parameter>> norms;
-    private HashSet<List<Parameter>> attached;  // TODO: Convert to List<Point>
+    private HashSet<List<Parameter>> attached;
     private HashSet<List<Parameter>> things;
     private HashSet<List<Parameter>> obstacles;
     private HashSet<List<Parameter>> hits;
@@ -44,9 +44,9 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> surveyedAgents;
     private HashSet<List<Parameter>> surveyedThings;
 
-    private HashSet<String> overhangNames = new HashSet<>(); // Noch nicht bearbeitete Attribute
-    private HashSet<List<Parameter>> goalZones; // TODO: Convert to List<Position>    
-    private HashSet<List<Parameter>> roleZones; // TODO: Convert to List<Position>
+    private HashSet<String> overhangNames = new HashSet<>();
+    private HashSet<List<Parameter>> goalZones; 
+    private HashSet<List<Parameter>> roleZones; 
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
