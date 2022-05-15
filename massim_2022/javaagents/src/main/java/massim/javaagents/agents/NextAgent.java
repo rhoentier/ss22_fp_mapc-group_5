@@ -1,5 +1,6 @@
 package massim.javaagents.agents;
 
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
 import java.awt.Point;
