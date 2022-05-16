@@ -101,4 +101,25 @@ public final class NextConstants
     	hit,
     	surveyed;
     }
+
+	/**
+	 * Enum for Actions
+	 * @author rhoentier
+	 *
+	 */
+	public static enum EActions {
+		skip,
+		move,
+		attach,
+		detach,
+		rotate,
+		connect,
+		disconnect,
+		request,
+		submit,
+		clear,
+		adopt,
+		survey,
+
+	}
 }
