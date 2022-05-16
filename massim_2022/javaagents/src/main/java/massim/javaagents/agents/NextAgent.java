@@ -1,10 +1,13 @@
 package massim.javaagents.agents;
 
+import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
+
 import java.awt.Point;
 import java.util.ArrayList;
+
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
@@ -13,13 +16,13 @@ import java.util.List;
 
 /**
  * First iteration of an experimental agent.
- *
- * Done: 
- * Handling of transition between simulations 
+ * <p>
+ * Done:
+ * Handling of transition between simulations
  * Basic action generation based on random movement
  * Processing of all percepts and storing in dataVaults
- *
- * ToDo: 
+ * <p>
+ * ToDo:
  * registerAgent @ Mailserver -> anmeldung für Agentenkommunikation. //
  * kombination mit Gruppenbildung?
  *
@@ -28,7 +31,7 @@ import java.util.List;
 public class NextAgent extends Agent {
 
     /*
-	 * ########## region fields
+     * ########## region fields
      */
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
     private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
@@ -49,12 +52,13 @@ public class NextAgent extends Agent {
     //PathFinding pathFinder; - ToDo
 
     /*
-	 * ##################### endregion fields
+     * ##################### endregion fields
      */
+
     /**
      * ########## region constructor.
      *
-     * @param name the agent's name
+     * @param name    the agent's name
      * @param mailbox the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
@@ -69,11 +73,11 @@ public class NextAgent extends Agent {
     }
 
     /*
-	 * ##################### endregion constructor
+     * ##################### endregion constructor
      */
 
- /*
-	 * ########## region public methods
+    /*
+     * ########## region public methods
      */
     // Original Method
     @Override
@@ -167,11 +171,12 @@ public class NextAgent extends Agent {
     }
 
     /*
-	 * ##################### endregion public methods
+     * ##################### endregion public methods
      */
- /*
-	 * ########## region private methods
+    /*
+     * ########## region private methods
      */
+
     /**
      * Selects the next Action based on the priorityMap
      *
@@ -180,8 +185,8 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction(ArrayList<Action> possibleActions) {
 
-        Action nextAction = new Action("skip" );
-        
+        Action nextAction = NextActionWrapper.createAction(NextConstants.EActions.skip);
+
         //Compares each action based on the value
         for (Action action : possibleActions) {
             if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
@@ -227,13 +232,13 @@ public class NextAgent extends Agent {
                 if (visibleThing.getThingType().contains("dispenser")) {
 
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(new Action("request", NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.createAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().contains("block")) {
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(new Action("attach", NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.createAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
                     }
                 }
             }
@@ -256,6 +261,6 @@ public class NextAgent extends Agent {
     }
 
     /*
-	 * ##################### endregion private methods
+     * ##################### endregion private methods
      */
 }
