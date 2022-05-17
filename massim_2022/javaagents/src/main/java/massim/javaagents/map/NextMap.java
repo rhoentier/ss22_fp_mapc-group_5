@@ -264,6 +264,7 @@ public class NextMap {
 
     /**
      * Check if the rotation cw or ccw is possible
+     *
      * @param direction
      * @param attachedElements
      * @return true if the rotation is possible else otherwise
@@ -271,38 +272,46 @@ public class NextMap {
     public boolean IsRotationPossible(Identifier direction, HashSet<Point> attachedElements) {
         if (direction.getValue() == "cw") {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(1, 0));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(0, -1));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(-1, 0));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(0, 1));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
 
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(-1, 0));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(0, 1));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(1, 0));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                NextMapTile mapTile = getMapTileRel(new Vector2D(0, -1));
-                if (mapTile.getThingType() == "obstacle") return false;
+                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
+                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                    return false;
             }
         }
         return true;
