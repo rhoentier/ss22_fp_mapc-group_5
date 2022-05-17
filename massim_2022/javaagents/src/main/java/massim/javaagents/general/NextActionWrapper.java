@@ -13,7 +13,7 @@ public class NextActionWrapper {
      * @param parameter2
      * @return An Action with parameter or null if a required parameter is missing
      */
-    public static Action createAction(NextConstants.EActions action, Identifier parameter1, Identifier parameter2) {
+    public static Action CreateAction(NextConstants.EActions action, Identifier parameter1, Identifier parameter2) {
         switch (action) {
             case connect: {
                 if (parameter1 != null && parameter2 != null)
@@ -35,7 +35,7 @@ public class NextActionWrapper {
      * @param parameter
      * @return An Action with parameter or null if a required parameter is missing
      */
-    public static Action createAction(NextConstants.EActions action, Identifier parameter) {
+    public static Action CreateAction(NextConstants.EActions action, Identifier parameter) {
         switch (action) {
             case move: {
                 if (parameter != null) {
@@ -94,7 +94,7 @@ public class NextActionWrapper {
                 return null;
             }
             default:
-                if (parameter == null) return createAction(action);
+                if (parameter == null) return CreateAction(action);
                 return null;
         }
 
@@ -106,7 +106,7 @@ public class NextActionWrapper {
      * @param action
      * @return An Action without a parameter
      */
-    public static Action createAction(NextConstants.EActions action) {
+    public static Action CreateAction(NextConstants.EActions action) {
         switch (action) {
             case skip: {
                 return new Action("skip");

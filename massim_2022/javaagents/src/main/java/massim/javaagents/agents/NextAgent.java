@@ -185,7 +185,7 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction(ArrayList<Action> possibleActions) {
 
-        Action nextAction = NextActionWrapper.createAction(NextConstants.EActions.skip);
+        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
         //Compares each action based on the value
         for (Action action : possibleActions) {
@@ -232,13 +232,13 @@ public class NextAgent extends Agent {
                 if (visibleThing.getThingType().contains("dispenser")) {
 
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.createAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().contains("block")) {
                     if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.createAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
                     }
                 }
             }
