@@ -64,7 +64,8 @@ public class NextAgent extends Agent {
         this.simStatus = new NextSimulationStatus();
 
         this.processor = new NextPerceptReader(this);
-
+        
+        
     }
 
     /*
@@ -79,9 +80,10 @@ public class NextAgent extends Agent {
     public void handlePercept(Percept percept) {
     }
 
-    // Original Method
+    // Original Method extended
     @Override
     public void handleMessage(Percept message, String sender) {
+        this.say(sender + message.toProlog());
     }
 
     /**
@@ -91,8 +93,29 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        processor.evaluate(getPercepts(), this);
+        
+        //this.broadcast(new Percept(" Message"), this.getName());
+        //this.sendMessage(new Percept(" Message"), "B2", this.getName());
+        
+        // Checks if a new ActionID is found and proceeds with processing of all percepts
+        for (Percept percept : getPercepts()) {
+            if (percept.getName().equals("actionID")) {
+                Parameter param = percept.getParameters().get(0);
+                if (param instanceof Numeral) {
+                    int id = ((Numeral) param).getValue().intValue();
+                    if (id > lastID) {
+                        processor.evaluate(getPercepts(), this);
+                    }
+                }
+            }
+        }    
+        
+            
+        // old evaluation activation. Can be deleted    
+        // processor.evaluate(getPercepts(), this);
 
+        // -----------------
+        
         //this.printAgentStatus();
         if (disableAgentFlag) {
             disableAgent();
@@ -157,8 +180,8 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction(ArrayList<Action> possibleActions) {
 
-        Action nextAction = new Action("skip");
-
+        Action nextAction = new Action("skip" );
+        
         //Compares each action based on the value
         for (Action action : possibleActions) {
             if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
