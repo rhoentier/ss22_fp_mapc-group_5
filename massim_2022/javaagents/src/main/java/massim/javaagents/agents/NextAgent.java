@@ -97,7 +97,6 @@ public class NextAgent extends Agent {
         //this.broadcast(new Percept(" Message"), this.getName());
         //this.sendMessage(new Percept(" Message"), "B2", this.getName());
         
-        // Proposal - AVL
         // Checks if a new ActionID is found and proceeds with processing of all percepts
         for (Percept percept : getPercepts()) {
             if (percept.getName().equals("actionID")) {
@@ -181,8 +180,8 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction(ArrayList<Action> possibleActions) {
 
-        Action nextAction = new Action("skip");
-
+        Action nextAction = new Action("skip" );
+        
         //Compares each action based on the value
         for (Action action : possibleActions) {
             if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {

@@ -17,6 +17,8 @@ import java.util.List;
 import massim.javaagents.percept.NextNorm;
 import massim.javaagents.percept.NextNormRequirement;
 import massim.javaagents.percept.NextRole;
+import massim.javaagents.percept.NextSurveyedAgent;
+import massim.javaagents.percept.NextSurveyedThing;
 import massim.javaagents.percept.NextTask;
 
 /**
@@ -45,8 +47,8 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> surveyedThings;
 
     private HashSet<String> overhangNames = new HashSet<>();
-    private HashSet<List<Parameter>> goalZones; 
-    private HashSet<List<Parameter>> roleZones; 
+    private HashSet<List<Parameter>> goalZones;
+    private HashSet<List<Parameter>> roleZones;
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
@@ -241,8 +243,8 @@ public class NextPerceptReader {
         agentStatus.SetRoleZones(processRoleZonesSet());
         agentStatus.SetHits(processHitsSet());
 
-        agentStatus.setSurveyedAgents(processSurveyedAgentSet());
-        agentStatus.setSurveyedThings(processSurveyedThingSet()); // Needs a target to store the data
+        agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
+        agentStatus.SetSurveyedThings(processSurveyedThingSet());
     }
 
     private HashSet<NextTask> processTasksSet() {
@@ -541,22 +543,22 @@ public class NextPerceptReader {
         return processedHits;
     }
 
-    private HashSet<String[]> processSurveyedAgentSet() {
-        //surveyed("agent", name, role, energy)
+    private HashSet<NextSurveyedAgent> processSurveyedAgentSet() {
+        // surveyed("agent", name, role, energy)
         // name : Identifier
         // role : Identifier
         // energy : Numeral
 
-        HashSet<String[]> processedSurveyedAgents = new HashSet<>();
+        HashSet<NextSurveyedAgent> processedSurveyedAgents = new HashSet<>();
         // Converts Percept Data to Target Data
         for (List<Parameter> SurveyedAgent : surveyedAgents) {
             try {
                 processedSurveyedAgents.add(
-                        new String[]{
+                        new NextSurveyedAgent(
                             SurveyedAgent.get(0).toProlog(),
                             SurveyedAgent.get(1).toProlog(),
-                            SurveyedAgent.get(1).toProlog()}
-                );
+                            Integer.parseInt(SurveyedAgent.get(1).toProlog())
+                        ));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
             }
@@ -570,17 +572,18 @@ public class NextPerceptReader {
 
     }
 
-    private HashSet<String[]> processSurveyedThingSet() {
+    private HashSet<NextSurveyedThing> processSurveyedThingSet() {
 
         // surveyed("dispenser"/"goal"/"role", distance)
-        HashSet<String[]> processedSurveyedThings = new HashSet<>();
+        HashSet<NextSurveyedThing> processedSurveyedThings = new HashSet<>();
         // Converts Percept Data to Target Data
         for (List<Parameter> SurveyedAgent : surveyedThings) {
             try {
                 processedSurveyedThings.add(
-                        new String[]{
-                            SurveyedAgent.get(0).toProlog(),
-                            SurveyedAgent.get(1).toProlog()}
+                        new NextSurveyedThing(
+                                SurveyedAgent.get(0).toProlog(),
+                                Integer.parseInt(SurveyedAgent.get(1).toProlog())
+                        )
                 );
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processSurveyedThingSet: \n" + e.toString());
@@ -610,6 +613,21 @@ public class NextPerceptReader {
     }
 
     private HashSet<NextNormRequirement> convertNormRequirements(HashSet<List<Parameter>> collectionOfRequirementElements) {
+        /*
+        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+
+        id : Identifier - ID of the norm
+        start : Numeral - first step the norm holds
+        end : Numeral - last step the norm holds
+            requirement:
+                type : the subject of the norm
+                name : the precise name the subject refers to, e.g., the role constructor
+                quantity : the maximum quantity that can be carried/adopted
+                details : possibly additional details
+        fine : Numeral - the energy cost of violating the norm (per step)
+
+        */
+        
         HashSet<NextNormRequirement> processedNormRequirements = new HashSet<>();
         for (List<Parameter> element : collectionOfRequirementElements) {
             processedNormRequirements.add(

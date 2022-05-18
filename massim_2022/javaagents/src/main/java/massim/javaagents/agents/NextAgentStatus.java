@@ -7,6 +7,8 @@ import java.util.List;
 
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.percept.NextSurveyedAgent;
+import massim.javaagents.percept.NextSurveyedThing;
 
 /**
  *
@@ -33,10 +35,8 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> goalZones;
     private HashSet<NextMapTile> hits;
     
-    // Let us discuss the proper target format for surveyed elements -> AVL
-    // The conversion should happen in NextPerceptReader
-    private HashSet<String[]> surveyedAgents; 
-    private HashSet<String[]> surveyedThings;
+    private HashSet<NextSurveyedAgent> surveyedAgents; 
+    private HashSet<NextSurveyedThing> surveyedThings;
 
     public NextAgentStatus() {
         name = null;
@@ -180,19 +180,19 @@ public class NextAgentStatus {
     }
     
     
-    public HashSet<String[]> getSurveyedAgents() {
+    public HashSet<NextSurveyedAgent> getSurveyedAgents() {
         return surveyedAgents;
     }
 
-    public void setSurveyedAgents(HashSet<String[]> surveyedAgents) {
+    public void SetSurveyedAgents(HashSet<NextSurveyedAgent> surveyedAgents) {
         this.surveyedAgents = surveyedAgents;
     }
 
-    public HashSet<String[]> getSurveyedThings() {
+    public HashSet<NextSurveyedThing> getSurveyedThings() {
         return surveyedThings;
     }
 
-    public void setSurveyedThings(HashSet<String[]> surveyedThings) {
+    public void SetSurveyedThings(HashSet<NextSurveyedThing> surveyedThings) {
         this.surveyedThings = surveyedThings;
     }
 
