@@ -1,22 +1,28 @@
 package massim.javaagents.map;
 
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 
 import eis.iilang.Identifier;
 import massim.javaagents.general.NextConstants;
-import massim.javaagents.map.NextMapTile;
 
 public class NextMap {
 
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
+
+    private ArrayList<String> includeObjects;
     public Boolean foundDispenser = false;
 
     public NextMap() {
-        map = new NextMapTile[20][20];
+        map = new NextMapTile[1][1];
         zeroPoint = new Vector2D(0, 0);
+        ArrayList<String> includeObjects = new ArrayList<String>(Arrays.asList("dispenser", "obstacle"));
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
@@ -26,7 +32,7 @@ public class NextMap {
      * @param agentPosition Current position of the agent relative to the starting position.
      * @param percept       Array of things as NextMapTile-objects.
      */
-    public void AddPercept(Vector2D agentPosition, NextMapTile[] percept) {
+    public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
 
         Vector2D mapTilePosition = new Vector2D();
         for (NextMapTile mapTile : percept) {
@@ -40,20 +46,29 @@ public class NextMap {
      * Print map to console with x0/y0 in top left corner. First letter of getThingType() is used for representation.
      * For example: "A": Agent, "O": Obstacle. Special character "Z" for zero point.
      */
-    public void PrintMap() {
+    public void WriteToFile(String filename) {
+        String strMap = "";
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
                 if (i == zeroPoint.x && j == zeroPoint.y) {
-                    System.out.print("Z" + "  ");
+                    strMap += "Z  ";
                 } else if (map[i][j] == null) {
-                    System.out.print(".  ");
+                    strMap += ".  ";
                 } else {
-                    System.out.print(map[i][j].getThingType().charAt(0) + "  ");
+                    strMap += map[i][j].getThingType().charAt(0) + "  ";
                 }
             }
-            System.out.println();
+            strMap += "\n";
         }
-        System.out.println();
+
+        FileWriter myWriter = null;
+        try {
+            myWriter = new FileWriter(filename);
+            myWriter.write(strMap);
+            myWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -185,8 +200,11 @@ public class NextMap {
 
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
 
-        if (existingMapTile == null || existingMapTile.getLastVisionStep() <= existingMapTile.getLastVisionStep()) {
-            this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
+        // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
+        if (maptile.getThingType().startsWith("dispenser")) {
+            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= existingMapTile.getLastVisionStep()) {
+                this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
+            }
         }
     }
 

@@ -245,6 +245,7 @@ public class NextPerceptReader {
 
         agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
         agentStatus.SetSurveyedThings(processSurveyedThingSet());
+        agentStatus.SetNextMap();
     }
 
     private HashSet<NextTask> processTasksSet() {
