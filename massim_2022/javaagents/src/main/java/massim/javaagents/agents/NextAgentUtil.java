@@ -9,7 +9,7 @@ import massim.javaagents.general.NextConstants;
 
 public final class NextAgentUtil{
 
-	static Action generateRandomMove() 
+	public static Action generateRandomMove()
 	{
 	    Random rn = new Random();
 	    String[] directions = new String[]{"n", "s", "w", "e"};
@@ -23,7 +23,7 @@ public final class NextAgentUtil{
      * @param status - #source of Information
      * @return boolean
      */
-    static boolean NextTo(Point position, NextAgentStatus status) {
+    public static boolean NextTo(Point position, NextAgentStatus status) {
         if(position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)){
             return true;
         }
@@ -46,7 +46,7 @@ public final class NextAgentUtil{
      * @param yValue - y-Value of Thing
      * @return Identifier for the direction value of an action.
      */
-    static Identifier GetDirection(Point direction) {
+    public static Identifier GetDirection(Point direction) {
         if (direction.equals(NextConstants.WestPoint)) {
             return new Identifier(NextConstants.ECardinals.w.toString());
         }
@@ -76,7 +76,7 @@ public final class NextAgentUtil{
      * @param type of Target. "dispenser", "goal", "role"
      * @return Action
      */
-    static Action GenerateSurveyThingAction(String type) {
+    public static Action GenerateSurveyThingAction(String type) {
         return new Action("survey", new Identifier(type));
     }
     /**
@@ -86,7 +86,7 @@ public final class NextAgentUtil{
      * @param String Y-Coordinate relative to the surveing Agent
      * @return Action
      */
-    static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
+    public static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
         return new Action("survey", new Identifier( "" + xPosition ),new Identifier( "" + yPosition));
     }
 }
