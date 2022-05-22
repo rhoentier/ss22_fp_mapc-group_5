@@ -1,6 +1,8 @@
 package massim.javaagents.agents;
 
 import massim.javaagents.general.NextActionWrapper;
+import massim.javaagents.intention.NextIntention;
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
 
@@ -45,6 +47,9 @@ public class NextAgent extends Agent {
     //Compilation of finished Simulations to be Processed after "deactivateAgentFlag == True"
     private List<NextSimulationStatus> finishedSimulations = new ArrayList<>();
 
+    //BDI
+    private NextIntention intention;
+
     // --- Algorithms ---
     NextPerceptReader processor; // Eismassim interpreter
     //Pathfinding algorithm
@@ -65,6 +70,8 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus();
         this.simStatus = new NextSimulationStatus();
+
+        this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
 
@@ -145,10 +152,9 @@ public class NextAgent extends Agent {
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
-            ArrayList<Action> possibleActions = new ArrayList<>();
-            generatePossibleActions(possibleActions);
+            generatePossibleActions();
 
-            return selectNextAction(possibleActions);
+            return selectNextAction();
         }
 
         return null;
@@ -178,26 +184,6 @@ public class NextAgent extends Agent {
      * ########## region private methods
      */
 
-    /**
-     * Selects the next Action based on the priorityMap
-     *
-     * @param possibleActions
-     * @return Action
-     */
-    private Action selectNextAction(ArrayList<Action> possibleActions) {
-
-        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.SKIP);
-
-        //Compares each action based on the value
-        for (Action action : possibleActions) {
-            if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
-                nextAction = action;
-            }
-        }
-
-        this.say(nextAction.toProlog());
-        return nextAction;
-    }
 
     private void disableAgent() {
         this.say("All games finished!");
@@ -213,38 +199,21 @@ public class NextAgent extends Agent {
         resetAgent();
     }
 
-    private void generatePossibleActions(ArrayList<Action> possibleActions) {
-        possibleActions.add(NextAgentUtil.generateRandomMove());
+    /**
+     * Selects the next Action based on the priorityMap
+     *
+     * @return Action
+     */
+    private Action selectNextAction() {
 
-        // Localises the distance to the next target:  "dispenser", "goal", "role"
-        possibleActions.add(NextAgentUtil.GenerateSurveyThingAction("dispenser"));
+        Action nextAction = intention.SelectNextAction();
 
-        // Survey a specific field with an agent. Get Name, Role, Energy
-        // Attributes x-Position, y-Position relative to the Agent
-        possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
+        say(nextAction.toProlog());
+        return nextAction;
+    }
 
-        //Special case: Interaction with an adjacent element.
-        for (NextMapTile visibleThing : agentStatus.GetVision()) {
-
-            Point position = visibleThing.getPoint();
-
-            if (NextAgentUtil.NextTo(position, agentStatus)) {
-
-                if (visibleThing.getThingType().contains("dispenser")) {
-
-                    if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.REQUEST, NextAgentUtil.GetDirection(position)));
-                    }
-                }
-
-                if (visibleThing.getThingType().contains("block")) {
-                    if (agentStatus.GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.ATTACH, NextAgentUtil.GetDirection(position)));
-                    }
-                }
-            }
-
-        }
+    private void generatePossibleActions() {
+        intention.GeneratePossibleActions();
     }
 
     private void resetAgent() {
