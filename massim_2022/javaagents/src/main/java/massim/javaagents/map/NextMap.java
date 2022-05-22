@@ -287,48 +287,40 @@ public class NextMap {
      * @param attachedElements
      * @return true if the rotation is possible else otherwise
      */
-    public boolean IsRotationPossible(Identifier direction, HashSet<Point> attachedElements) {
+    public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
         if (direction.getValue() == "cw") {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
-                    return false;
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                      return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
                     return false;
             }
 
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
                     return false;
             }
         }
