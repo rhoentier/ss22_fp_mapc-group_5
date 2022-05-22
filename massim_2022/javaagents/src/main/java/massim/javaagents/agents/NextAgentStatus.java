@@ -223,7 +223,15 @@ public class NextAgentStatus {
             }
 
             position.add(currentStep);
-            map.AddPercept(position, visibleThings);
+            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
+            // Only add visible things which are not attached to the agent
+            for (NextMapTile thing: visibleThings) {
+                if (!attachedElements.contains(thing.getPoint())) {
+                    visibleNotAttachedThings.add(thing);
+                }
+            }
+            map.AddPercept(position, visibleNotAttachedThings);
             //map.WriteToFile("map.txt");
         }
     }
