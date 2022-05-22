@@ -17,6 +17,7 @@ public class NextIntention {
 
     public NextIntention(NextAgent nextAgent){
         this.nextAgent = nextAgent;
+        possibleActions = new ArrayList<Action>();
     }
 
     /**
@@ -29,15 +30,18 @@ public class NextIntention {
         Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
         //Compares each action based on the value
-        for (Action action : possibleActions) {
-            if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
-                nextAction = action;
+        if (possibleActions != null) {
+            for (Action action : possibleActions) {
+                if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
+                    nextAction = action;
+                }
             }
         }
         return nextAction;
     }
 
     public void GeneratePossibleActions() {
+        possibleActions.clear();
         possibleActions.add(NextAgentUtil.generateRandomMove());
 
         // Localises the distance to the next target:  "dispenser", "goal", "role"

@@ -5,6 +5,7 @@ import java.util.Random;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
+import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 
 public final class NextAgentUtil{
@@ -13,7 +14,7 @@ public final class NextAgentUtil{
 	{
 	    Random rn = new Random();
 	    String[] directions = new String[]{"n", "s", "w", "e"};
-	    return new Action("move", new Identifier(directions[rn.nextInt(4)]));
+	    return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(directions[rn.nextInt(4)]));
 	}
 
     /**
