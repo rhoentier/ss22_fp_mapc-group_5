@@ -8,6 +8,7 @@ import java.util.Objects;
 import eis.iilang.Identifier;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.percept.NextTask;
 
 public class NextMap {
 
@@ -184,7 +185,8 @@ public class NextMap {
         // add dispenser and zones to found things
         if (mapTile != null) {
             if (mapTile.getThingType().startsWith("dispenser")) {
-                if (!foundDispensers.contains(mapTile.getThingType())) foundDispensers.add((mapTile.getThingType().substring(10)));
+                if (!foundDispensers.contains(mapTile.getThingType()))
+                    foundDispensers.add((mapTile.getThingType().substring(10)));
             } else if (mapTile.getThingType().equals("goalZone")) foundGoalZone = true;
             else if (mapTile.getThingType().equals("roleZone")) foundRoleZone = true;
         }
@@ -328,11 +330,16 @@ public class NextMap {
 
     /**
      * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone bereits bekannt sind
+     *
      * @param requiredBlocks
      * @return
      */
-    public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
+    public boolean IsTaskExecutable(HashSet<NextMapTile> requiredBlocks) {
+        HashSet<String> requiredBlocksType = new HashSet<String>();
+        for (NextMapTile mapTile : requiredBlocks) {
+            requiredBlocksType.add(mapTile.getThingType());
+        }
+        if (foundGoalZone && foundDispensers.containsAll(requiredBlocksType)) return true;
         return false;
     }
 }

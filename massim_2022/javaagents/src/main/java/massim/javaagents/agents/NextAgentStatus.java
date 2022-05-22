@@ -6,12 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
+import massim.javaagents.percept.NextTask;
 
 /**
- *
  * @author AVL
  */
 public class NextAgentStatus {
@@ -34,9 +36,16 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> roleZones;
     private HashSet<NextMapTile> goalZones;
     private HashSet<NextMapTile> hits;
-    
-    private HashSet<NextSurveyedAgent> surveyedAgents; 
+
+    private HashSet<NextSurveyedAgent> surveyedAgents;
     private HashSet<NextSurveyedThing> surveyedThings;
+
+    private Vector2D position; // Position on the map relative to the starting point
+    private NextMap map;
+
+    // Desire
+    private boolean isAbleToSolveTask;
+    private NextConstants.EDesires currentDesire;
 
     public NextAgentStatus() {
         name = null;
@@ -48,6 +57,8 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        isAbleToSolveTask = false;
+        currentDesire = NextConstants.EDesires.EXPLORE_MAP;
     }
 
     public void SetTeam(String teamName) {
@@ -178,8 +189,8 @@ public class NextAgentStatus {
     public void SetHits(HashSet<NextMapTile> hits) {
         this.hits = hits;
     }
-    
-    
+
+
     public HashSet<NextSurveyedAgent> getSurveyedAgents() {
         return surveyedAgents;
     }
@@ -195,6 +206,34 @@ public class NextAgentStatus {
     public void SetSurveyedThings(HashSet<NextSurveyedThing> surveyedThings) {
         this.surveyedThings = surveyedThings;
     }
+
+    public boolean IsAbleToSolveTask() {
+        return isAbleToSolveTask;
+    }
+
+    /**
+     * Prüft, ob eine Aufgabe erledigt werden kann und ändert das zugehörige Flag
+     *
+     * @param actualTasks
+     */
+    public void SetAbleToSolveTask(HashSet<NextTask> actualTasks) {
+        for (NextTask task : actualTasks) {
+            if (this.map.IsTaskExecutable(task.GetRequiredBlocks())) {
+                isAbleToSolveTask = true;
+                return;
+            }
+        }
+    }
+
+
+    public NextConstants.EDesires GetCurrentDesire() {
+        return currentDesire;
+    }
+
+    public void SetCurrentDesire(NextConstants.EDesires currentDesire) {
+        this.currentDesire = currentDesire;
+    }
+
 
     @Override
     public String toString() {

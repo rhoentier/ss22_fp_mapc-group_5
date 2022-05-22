@@ -67,8 +67,8 @@ public class NextAgent extends Agent {
         this.simStatus = new NextSimulationStatus();
 
         this.processor = new NextPerceptReader(this);
-        
-        
+
+
     }
 
     /*
@@ -96,10 +96,10 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        
+
         //this.broadcast(new Percept(" Message"), this.getName());
         //this.sendMessage(new Percept(" Message"), "B2", this.getName());
-        
+
         // Checks if a new ActionID is found and proceeds with processing of all percepts
         for (Percept percept : getPercepts()) {
             if (percept.getName().equals("actionID")) {
@@ -111,14 +111,16 @@ public class NextAgent extends Agent {
                     }
                 }
             }
-        }    
-        
-            
+        }
+
+        this.agentStatus.SetAbleToSolveTask(simStatus.GetTasksList());
+
+
         // old evaluation activation. Can be deleted    
         // processor.evaluate(getPercepts(), this);
 
         // -----------------
-        
+
         //this.printAgentStatus();
         if (disableAgentFlag) {
             disableAgent();
