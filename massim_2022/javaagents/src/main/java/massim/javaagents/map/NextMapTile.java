@@ -19,6 +19,8 @@ public class NextMapTile {
     private Boolean isAThing;
     private String thingType; // - (b1,b0,b2, Dispenser, Obstacle, zone...)
 
+    private Boolean isWalkable;
+
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -73,5 +75,17 @@ public class NextMapTile {
 
     public Point getPoint(){
         return new Point(positionX, positionY);
+    }
+
+    /**
+     * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
+     * entity, block, obstacle or dispenser
+     *
+     * @return
+     */
+    public Boolean isWalkable() {
+        if (isAThing && !(thingType=="marker"))
+            return false;
+        return true;
     }
 }

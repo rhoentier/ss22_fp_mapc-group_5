@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
 
@@ -38,6 +40,9 @@ public class NextAgentStatus {
     private HashSet<NextSurveyedAgent> surveyedAgents; 
     private HashSet<NextSurveyedThing> surveyedThings;
 
+    private Vector2D position; // Position on the map relative to the starting point
+    private NextMap map;
+
     public NextAgentStatus() {
         name = null;
         teamName = null;
@@ -48,6 +53,8 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        position = new Vector2D();
+        map = new NextMap();
     }
 
     public void SetTeam(String teamName) {
@@ -194,6 +201,31 @@ public class NextAgentStatus {
 
     public void SetSurveyedThings(HashSet<NextSurveyedThing> surveyedThings) {
         this.surveyedThings = surveyedThings;
+    }
+
+    public void UpdateMap() {
+        if (lastAction.equals("move") && lastActionResult.equals("success")) {
+            Vector2D currentStep = new Vector2D(0, 0);
+
+            switch (lastActionParams) {
+                case "[n]":
+                    currentStep = new Vector2D(0, -1);
+                    break;
+                case "[e]":
+                    currentStep = new Vector2D(1, 0);
+                    break;
+                case "[s]":
+                    currentStep = new Vector2D(0, 1);
+                    break;
+                case "[w]":
+                    currentStep = new Vector2D(-1, 0);
+                    break;
+            }
+
+            position.add(currentStep);
+            map.AddPercept(position, visibleThings);
+            //map.WriteToFile("map.txt");
+        }
     }
 
     @Override
