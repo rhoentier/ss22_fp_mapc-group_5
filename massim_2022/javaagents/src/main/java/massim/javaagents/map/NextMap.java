@@ -1,6 +1,7 @@
 package massim.javaagents.map;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -12,7 +13,10 @@ public class NextMap {
 
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
-    public Boolean foundDispenser = false;
+
+    public boolean foundRoleZone = false;
+    public boolean foundGoalZone = false;
+    private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap() {
         map = new NextMapTile[20][20];
@@ -80,6 +84,12 @@ public class NextMap {
                 setMapTileRel(insertAt, mapAgent2.map[i][j]);
             }
         }
+
+        // Merge found dispensers
+        foundDispensers.addAll(mapAgent2.foundDispensers);
+        // Merge found zones without generating duplicates
+        if (mapAgent2.foundRoleZone) foundRoleZone = true;
+        if (mapAgent2.foundGoalZone) foundGoalZone = true;
     }
 
     /**
@@ -165,19 +175,18 @@ public class NextMap {
      * Sets an object on the absolute position of the map.
      *
      * @param absolutePosition: Position of the map tile absolute from the top left point.
-     * @param maptile:          MapTile to add.
+     * @param mapTile:          MapTile to add.
      */
-    private void setMapTileAbs(Vector2D absolutePosition, NextMapTile maptile) {
+    private void setMapTileAbs(Vector2D absolutePosition, NextMapTile mapTile) {
 
         NextMapTile existingMapTile;
 
-        // Set flags for some thing types. Flags can be checked before accessing the array.
-        if (maptile != null) {
-            switch (maptile.getThingType()) {
-                case "dispenser":
-                    foundDispenser = true;
-                    // ToDo: Can be extended with other static "things" which should be stored as flags.
-            }
+        // add dispenser and zones to found things
+        if (mapTile != null) {
+            if (mapTile.getThingType().startsWith("dispenser")) {
+                if (!foundDispensers.contains(mapTile.getThingType())) foundDispensers.add((mapTile.getThingType().substring(10)));
+            } else if (mapTile.getThingType().equals("goalZone")) foundGoalZone = true;
+            else if (mapTile.getThingType().equals("roleZone")) foundRoleZone = true;
         }
 
         Vector2D offset = new Vector2D(extendArray(absolutePosition));
@@ -186,7 +195,7 @@ public class NextMap {
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
 
         if (existingMapTile == null || existingMapTile.getLastVisionStep() <= existingMapTile.getLastVisionStep()) {
-            this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
+            this.map[(int) absolutePosition.x][(int) absolutePosition.y] = mapTile;
         }
     }
 
@@ -315,5 +324,15 @@ public class NextMap {
             }
         }
         return true;
+    }
+
+    /**
+     * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone bereits bekannt sind
+     * @param requiredBlocks
+     * @return
+     */
+    public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
+        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
+        return false;
     }
 }
