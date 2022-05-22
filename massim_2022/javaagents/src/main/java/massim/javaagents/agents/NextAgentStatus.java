@@ -203,7 +203,7 @@ public class NextAgentStatus {
         this.surveyedThings = surveyedThings;
     }
 
-    public void SetNextMap() {
+    public void UpdateMap() {
         if (lastAction.equals("move") && lastActionResult.equals("success")) {
             Vector2D currentStep = new Vector2D(0, 0);
 

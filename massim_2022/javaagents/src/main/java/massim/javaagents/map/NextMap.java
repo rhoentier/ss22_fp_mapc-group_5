@@ -216,7 +216,7 @@ public class NextMap {
 
         // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
         if (maptile.getThingType().startsWith("dispenser")) {
-            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= existingMapTile.getLastVisionStep()) {
+            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep()) {
                 this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
             }
         }
@@ -295,7 +295,9 @@ public class NextMap {
     }
 
     /**
-     * Check if the rotation cw or ccw is possible
+     * Check if the rotation cw or ccw is possible. Note: North/South is swapped in massim. For example if the North
+     * tile (bottom) is rotated in cw-direction, it leads to West tile (left). For further explanation, see also:
+     * <a href="https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495">https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495</a>
      *
      * @param direction
      * @param attachedElements
