@@ -194,18 +194,18 @@ public class NextMap {
      * Sets an object on the absolute position of the map.
      *
      * @param absolutePosition: Position of the map tile absolute from the top left point.
-     * @param mapTile:          MapTile to add.
+     * @param maptile:          MapTile to add.
      */
-    private void setMapTileAbs(Vector2D absolutePosition, NextMapTile mapTile) {
+    private void setMapTileAbs(Vector2D absolutePosition, NextMapTile maptile) {
 
         NextMapTile existingMapTile;
 
         // add dispenser and zones to found things
-        if (mapTile != null) {
-            if (mapTile.getThingType().startsWith("dispenser")) {
-                if (!foundDispensers.contains(mapTile.getThingType())) foundDispensers.add((mapTile.getThingType().substring(10)));
-            } else if (mapTile.getThingType().equals("goalZone")) foundGoalZone = true;
-            else if (mapTile.getThingType().equals("roleZone")) foundRoleZone = true;
+        if (maptile != null) {
+            if (maptile.getThingType().startsWith("dispenser")) {
+                if (!foundDispensers.contains(maptile.getThingType())) foundDispensers.add((maptile.getThingType().substring(10)));
+            } else if (maptile.getThingType().equals("goalZone")) foundGoalZone = true;
+            else if (maptile.getThingType().equals("roleZone")) foundRoleZone = true;
         }
 
         Vector2D offset = new Vector2D(extendArray(absolutePosition));
