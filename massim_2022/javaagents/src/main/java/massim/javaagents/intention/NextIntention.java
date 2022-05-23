@@ -62,13 +62,15 @@ public class NextIntention {
                 if (visibleThing.getThingType().contains("dispenser")) {
 
                     if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.REQUEST, NextAgentUtil.GetDirection(position)));
+                        Action action = NextActionWrapper.CreateAction(NextConstants.EActions.REQUEST, NextAgentUtil.GetDirection(position));
+                        if (action != null) possibleActions.add(action);
                     }
                 }
 
                 if (visibleThing.getThingType().contains("block")) {
                     if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.ATTACH, NextAgentUtil.GetDirection(position)));
+                        Action action = NextActionWrapper.CreateAction(NextConstants.EActions.ATTACH, NextAgentUtil.GetDirection(position));
+                        if (action != null) possibleActions.add(action);
                     }
                 }
             }

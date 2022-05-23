@@ -17,11 +17,15 @@ public class NextActionWrapper {
         switch (action) {
             case CONNECT: {
                 if (parameter1 != null && parameter2 != null)
-                    return new Action("connect", parameter1, parameter2);
+                    return new Action(NextConstants.EActions.CONNECT.toString().toLowerCase(), parameter1, parameter2);
             }
             case DISCONNECT: {
                 if (parameter1 != null && parameter2 != null)
-                    return new Action(NextConstants.EActions.DISCONNECT.toString(), parameter1, parameter2);
+                    return new Action(NextConstants.EActions.DISCONNECT.toString().toLowerCase(), parameter1, parameter2);
+            }
+            case SURVEY: {
+                if (parameter1 != null && parameter2 != null)
+                    return new Action(NextConstants.EActions.SURVEY.toString().toLowerCase(), parameter1, parameter2);
             }
             default:
                 return null;
@@ -39,57 +43,57 @@ public class NextActionWrapper {
         switch (action) {
             case MOVE: {
                 if (parameter != null) {
-                    return new Action(NextConstants.EActions.MOVE.toString(), parameter);
+                    return new Action(NextConstants.EActions.MOVE.toString().toLowerCase(), parameter);
                 }
                 return null;
             }
             case ATTACH: {
                 if (parameter != null) {
-                    return new Action(NextConstants.EActions.ATTACH.toString(), parameter);
+                    return new Action(NextConstants.EActions.ATTACH.toString().toLowerCase(), parameter);
                 }
                 return null;
             }
             case DETACH: {
                 if (parameter != null) {
-                    return new Action(NextConstants.EActions.DETACH.toString(), parameter);
+                    return new Action(NextConstants.EActions.DETACH.toString().toLowerCase(), parameter);
                 }
                 return null;
             }
             case ROTATE: {
                 if (parameter != null) {
                     if (parameter.getValue() == "ccw" || parameter.getValue() == "cw") {
-                        return new Action(NextConstants.EActions.ROTATE.toString(), parameter);
+                        return new Action(NextConstants.EActions.ROTATE.toString().toLowerCase(), parameter);
                     }
                 }
                 return null;
             }
             case REQUEST: {
                 if (parameter != null) {
-                    return new Action(NextConstants.EActions.REQUEST.toString(), parameter);
+                    return new Action(NextConstants.EActions.REQUEST.toString().toLowerCase(), parameter);
                 }
                 return null;
             }
             case SUBMIT: {
                 if (parameter != null) {
-                    return new Action(NextConstants.EActions.SUBMIT.toString(), parameter);
+                    return new Action(NextConstants.EActions.SUBMIT.toString().toLowerCase(), parameter);
                 }
                 return null;
             }
             case CLEAR: {
                 if (parameter != null)
-                    return new Action(NextConstants.EActions.CLEAR.toString(), parameter);
+                    return new Action(NextConstants.EActions.CLEAR.toString().toLowerCase(), parameter);
 
                 return null;
             }
             case ADOPT: {
                 if (parameter != null)
-                    return new Action(NextConstants.EActions.ADOPT.toString(), parameter);
+                    return new Action(NextConstants.EActions.ADOPT.toString().toLowerCase(), parameter);
 
                 return null;
             }
             case SURVEY: {
                 if (parameter != null)
-                    return new Action(NextConstants.EActions.SURVEY.toString(), parameter);
+                    return new Action(NextConstants.EActions.SURVEY.toString().toLowerCase(), parameter);
 
                 return null;
             }
@@ -109,7 +113,7 @@ public class NextActionWrapper {
     public static Action CreateAction(NextConstants.EActions action) {
         switch (action) {
             case SKIP: {
-                return new Action("skip");
+                return new Action(NextConstants.EActions.SKIP.toString().toLowerCase());
             }
             default:
                 return null;

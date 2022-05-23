@@ -218,13 +218,14 @@ public class NextAgentStatus {
      *
      * @param actualTasks
      */
-    public void SetAbleToSolveTask(HashSet<NextTask> actualTasks) {
+    public boolean SetAbleToSolveTask(HashSet<NextTask> actualTasks) {
         for (NextTask task : actualTasks) {
             if (this.map.IsTaskExecutable(task.GetRequiredBlocks())) {
                 isAbleToSolveTask = true;
-                return;
+                return true;
             }
         }
+        return false;
     }
 
 

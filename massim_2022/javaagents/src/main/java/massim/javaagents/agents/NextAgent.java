@@ -119,7 +119,7 @@ public class NextAgent extends Agent {
                 }
             }
 
-            this.agentStatus.SetAbleToSolveTask(simStatus.GetTasksList());
+            agentStatus.SetAbleToSolveTask(simStatus.GetTasksList());
             
             // Reset of Data Storage after the current simulation is finished
             if (percept.getName().equals("simEnd")) {
@@ -212,6 +212,7 @@ public class NextAgent extends Agent {
         this.simStatus = new NextSimulationStatus();
         this.simStatus.SetActionID(lastID);
         this.agentStatus = new NextAgentStatus();
+        this.intention = new NextIntention(this);
         this.processor = new NextPerceptReader(this);
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
