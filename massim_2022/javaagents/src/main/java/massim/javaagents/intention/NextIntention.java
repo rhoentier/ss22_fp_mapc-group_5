@@ -9,15 +9,16 @@ import massim.javaagents.map.NextMapTile;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class NextIntention {
 
     private NextAgent nextAgent;
-    ArrayList<Action> possibleActions;
+    HashSet<Action> possibleActions;
 
     public NextIntention(NextAgent nextAgent){
         this.nextAgent = nextAgent;
-        possibleActions = new ArrayList<Action>();
+        possibleActions = new HashSet<Action>();
     }
 
     /**
@@ -27,7 +28,7 @@ public class NextIntention {
      */
     public Action SelectNextAction() {
 
-        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.SKIP);
 
         //Compares each action based on the value
         if (possibleActions != null) {
@@ -61,13 +62,13 @@ public class NextIntention {
                 if (visibleThing.getThingType().contains("dispenser")) {
 
                     if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.REQUEST, NextAgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().contains("block")) {
                     if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
-                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
+                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.ATTACH, NextAgentUtil.GetDirection(position)));
                     }
                 }
             }
