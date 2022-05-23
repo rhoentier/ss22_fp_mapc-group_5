@@ -1,7 +1,14 @@
 package massim.javaagents.map;
 
 import java.awt.*;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.util.Arrays;
+
 import java.util.ArrayList;
+
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -15,13 +22,17 @@ public class NextMap {
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
 
+
+    private ArrayList<String> includeObjects;
+    public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
     public boolean foundGoalZone = false;
     private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap() {
-        map = new NextMapTile[20][20];
+        map = new NextMapTile[1][1];
         zeroPoint = new Vector2D(0, 0);
+        ArrayList<String> includeObjects = new ArrayList<String>(Arrays.asList("dispenser", "obstacle"));
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
@@ -31,7 +42,7 @@ public class NextMap {
      * @param agentPosition Current position of the agent relative to the starting position.
      * @param percept       Array of things as NextMapTile-objects.
      */
-    public void AddPercept(Vector2D agentPosition, NextMapTile[] percept) {
+    public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
 
         Vector2D mapTilePosition = new Vector2D();
         for (NextMapTile mapTile : percept) {
@@ -45,20 +56,29 @@ public class NextMap {
      * Print map to console with x0/y0 in top left corner. First letter of getThingType() is used for representation.
      * For example: "A": Agent, "O": Obstacle. Special character "Z" for zero point.
      */
-    public void PrintMap() {
+    public void WriteToFile(String filename) {
+        String strMap = "";
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
                 if (i == zeroPoint.x && j == zeroPoint.y) {
-                    System.out.print("Z" + "  ");
+                    strMap += "Z  ";
                 } else if (map[i][j] == null) {
-                    System.out.print(".  ");
+                    strMap += ".  ";
                 } else {
-                    System.out.print(map[i][j].getThingType().charAt(0) + "  ");
+                    strMap += map[i][j].getThingType().charAt(0) + "  ";
                 }
             }
-            System.out.println();
+            strMap += "\n";
         }
-        System.out.println();
+
+        FileWriter myWriter = null;
+        try {
+            myWriter = new FileWriter(filename);
+            myWriter.write(strMap);
+            myWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -176,7 +196,7 @@ public class NextMap {
      * Sets an object on the absolute position of the map.
      *
      * @param absolutePosition: Position of the map tile absolute from the top left point.
-     * @param mapTile:          MapTile to add.
+     * @param maptile:          MapTile to add.
      */
     private void setMapTileAbs(Vector2D absolutePosition, NextMapTile mapTile) {
 
@@ -196,8 +216,12 @@ public class NextMap {
 
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
 
-        if (existingMapTile == null || existingMapTile.getLastVisionStep() <= existingMapTile.getLastVisionStep()) {
-            this.map[(int) absolutePosition.x][(int) absolutePosition.y] = mapTile;
+
+        // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
+        if (mapTile.getThingType().startsWith("dispenser")) {
+            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= mapTile.getLastVisionStep()) {
+                this.map[(int) absolutePosition.x][(int) absolutePosition.y] = mapTile;
+            }
         }
     }
 
@@ -274,54 +298,48 @@ public class NextMap {
     }
 
     /**
-     * Check if the rotation cw or ccw is possible
+     * Check if the rotation cw or ccw is possible. Note: North/South is swapped in massim. For example if the North
+     * tile (bottom) is rotated in cw-direction, it leads to West tile (left). For further explanation, see also:
+     * <a href="https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495">https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495</a>
      *
      * @param direction
      * @param attachedElements
      * @return true if the rotation is possible else otherwise
      */
-    public boolean IsRotationPossible(Identifier direction, HashSet<Point> attachedElements) {
+    public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
         if (direction.getValue() == "cw") {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
-                    return false;
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                      return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
                     return false;
             }
 
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(-1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, 1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(1, 0)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                String mapTileType = getMapTileRel(new Vector2D(0, -1)).getThingType();
-                if (mapTileType == "obstacle" || mapTileType == "block" || mapTileType == "entity" || mapTileType == "dispenser")
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
                     return false;
             }
         }

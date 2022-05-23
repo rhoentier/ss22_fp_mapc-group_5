@@ -103,7 +103,7 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-
+        
         //this.broadcast(new Percept(" Message"), this.getName());
         //this.sendMessage(new Percept(" Message"), "B2", this.getName());
 
@@ -113,41 +113,25 @@ public class NextAgent extends Agent {
                 Parameter param = percept.getParameters().get(0);
                 if (param instanceof Numeral) {
                     int id = ((Numeral) param).getValue().intValue();
-                    if (id > lastID) {
+                    if (id > lastID ) {
                         processor.evaluate(getPercepts(), this);
                     }
                 }
             }
+
+            this.agentStatus.SetAbleToSolveTask(simStatus.GetTasksList());
+            
+            // Reset of Data Storage after the current simulation is finished
+            if (percept.getName().equals("simEnd")) {
+                processor.evaluate(getPercepts(), this);
+                finishTheSimulation();
+            }
+            //Stop processing after last Simulation
+            if (percept.getName().equals("bye")) {
+                disableAgent();
+            }
         }
-
-        this.agentStatus.SetAbleToSolveTask(simStatus.GetTasksList());
-
-
-        // old evaluation activation. Can be deleted    
-        // processor.evaluate(getPercepts(), this);
-
-        // -----------------
-
-        //this.printAgentStatus();
-        if (disableAgentFlag) {
-            disableAgent();
-        }
-
-        // Skips the ActionGeneration while simulation is idle
-        if (!simStatus.GetFlagSimulationIsStarted()) {
-            return null;
-        }
-
-        // processing after the current simulation is finished
-        if (simStatus.GetFlagSimulationIsFinished()) {
-            finishTheSimulation();
-        }
-
-        // Represents losing attached Blocks after beeing deactivated.
-        if (agentStatus.GetDeactivatedFlag()) {
-            agentStatus.DropAttachedElements();
-        }
-
+                
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
@@ -158,7 +142,10 @@ public class NextAgent extends Agent {
         }
 
         return null;
+
+        
     }
+
 
     public NextAgentStatus getStatus() {
         return this.agentStatus;
@@ -187,7 +174,10 @@ public class NextAgent extends Agent {
 
     private void disableAgent() {
         this.say("All games finished!");
-
+        try{
+        Thread.sleep(10000000);
+        } catch(Exception e) {
+        }
         //System.exit(1); // Kill the window
     }
 
@@ -220,10 +210,12 @@ public class NextAgent extends Agent {
 
         this.lastID = -1;
         this.simStatus = new NextSimulationStatus();
+        this.simStatus.SetActionID(lastID);
         this.agentStatus = new NextAgentStatus();
         this.processor = new NextPerceptReader(this);
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
+        //this.roleToChangeTo=null;
     }
 
     private void printAgentStatus() {

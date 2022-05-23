@@ -59,6 +59,8 @@ public class NextAgentStatus {
         attachedElements = new HashSet<>();
         isAbleToSolveTask = false;
         currentDesire = NextConstants.EDesires.EXPLORE_MAP;
+        position = new Vector2D();
+        map = new NextMap();
     }
 
     public void SetTeam(String teamName) {
@@ -234,6 +236,39 @@ public class NextAgentStatus {
         this.currentDesire = currentDesire;
     }
 
+
+    public void UpdateMap() {
+        if (lastAction.equals("move") && lastActionResult.equals("success")) {
+            Vector2D currentStep = new Vector2D(0, 0);
+
+            switch (lastActionParams) {
+                case "[n]":
+                    currentStep = new Vector2D(0, -1);
+                    break;
+                case "[e]":
+                    currentStep = new Vector2D(1, 0);
+                    break;
+                case "[s]":
+                    currentStep = new Vector2D(0, 1);
+                    break;
+                case "[w]":
+                    currentStep = new Vector2D(-1, 0);
+                    break;
+            }
+
+            position.add(currentStep);
+            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
+            // Only add visible things which are not attached to the agent
+            for (NextMapTile thing: visibleThings) {
+                if (!attachedElements.contains(thing.getPoint())) {
+                    visibleNotAttachedThings.add(thing);
+                }
+            }
+            map.AddPercept(position, visibleNotAttachedThings);
+            //map.WriteToFile("map.txt");
+        }
+    }
 
     @Override
     public String toString() {
