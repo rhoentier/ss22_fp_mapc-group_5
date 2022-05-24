@@ -1,0 +1,12 @@
+[
+  {
+    "name": "default",
+    "vision": 5,
+    "actions": ["skip", "move", "rotate", "adopt", "detach", "clear", "survey", "request", "attach", "connect", "disconnect", "submit"],
+    "speed": [1],
+    "clear": {
+      "chance": 0.3,
+      "maxDistance": 1
+    }
+  }
+]
