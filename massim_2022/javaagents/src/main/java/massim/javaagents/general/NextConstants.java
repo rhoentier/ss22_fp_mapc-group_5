@@ -54,7 +54,7 @@ public final class NextConstants
     };
     
     /**
-     * Enum for Cardinals
+     * Enum for Cardinals (n,e,s,w)
      * @author miwo
      *
      */
@@ -122,4 +122,10 @@ public final class NextConstants
 		survey,
 
 	}
+
+    public static enum EPathFinding {
+    	simple,
+    	random,
+    	aStar
+    }
 }

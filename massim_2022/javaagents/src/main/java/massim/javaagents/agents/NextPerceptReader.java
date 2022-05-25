@@ -58,17 +58,17 @@ public class NextPerceptReader {
         clearSets();
     }
 
-    //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
-    // Nachteil: BoilerCode + Performance
-    // Hier ggf eine Exception um die komplette switch-Case packen? 
-    // Die Fehlermeldung reicht vermutlich und es muss nicht überall "team, name etc." stehen -> BoulerCode vermeiden
+    /**
+     * evaluate the percepts
+     * @param percepts
+     * @param agent
+     */
     public void evaluate(List<Percept> percepts, NextAgent agent) {
 
         clearSets(); //clearing of the containers before processing of perceipts
 
         //WARNING: ConcurrentModificationException workaround! based on FitBUT
         synchronized (percepts) {
-
             for (Percept percept : percepts) {
                 try {
 
@@ -196,7 +196,6 @@ public class NextPerceptReader {
                 } catch (Exception e) {
                     agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
                 }
-
             }
 
             // handling of unusual perception entries

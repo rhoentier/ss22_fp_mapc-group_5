@@ -1,6 +1,7 @@
 package massim.javaagents.intention;
 
 import eis.iilang.Action;
+import massim.javaagents.agents.AgentUtil;
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.general.NextActionWrapper;
@@ -42,7 +43,11 @@ public class NextIntention {
 
     public void GeneratePossibleActions() {
         possibleActions.clear();
-        possibleActions.add(NextAgentUtil.generateRandomMove());
+    	Action nextMove = AgentUtil.GenerateMove(this.nextAgent.GetPathfindingConfig().GetAlgorithm());
+    	if(nextMove != null) 
+    	{
+    		possibleActions.add(nextMove);
+        }
 
         // Localises the distance to the next target:  "dispenser", "goal", "role"
         possibleActions.add(NextAgentUtil.GenerateSurveyThingAction("dispenser"));

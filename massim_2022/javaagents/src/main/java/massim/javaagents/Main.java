@@ -49,7 +49,7 @@ public class Main {
             }
         }
         Scheduler scheduler = new Scheduler(configDir);
-
+                
         System.out.println("PHASE 2: INSTANTIATING ENVIRONMENT");
         EnvironmentInterface ei = new EnvironmentInterface(configDir + File.separator + "eismassimconfig.json");
 

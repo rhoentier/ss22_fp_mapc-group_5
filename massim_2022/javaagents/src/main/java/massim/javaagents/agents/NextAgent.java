@@ -7,11 +7,14 @@ import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
 
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
+import massim.javaagents.pathfinding.NextRandomPath;
+import massim.javaagents.pathfinding.PathfindingConfig;
 
 import java.util.List;
 
@@ -52,9 +55,9 @@ public class NextAgent extends Agent {
 
     // --- Algorithms ---
     NextPerceptReader processor; // Eismassim interpreter
-    //Pathfinding algorithm
-    //PathFinding pathFinder; - ToDo
 
+    // Pathfinding algorithm
+    PathfindingConfig pathfindingConfig;
     /*
      * ##################### endregion fields
      */
@@ -70,14 +73,14 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus();
         this.simStatus = new NextSimulationStatus();
+        this.pathfindingConfig = new PathfindingConfig("conf/NextAgents");
 
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
-
-
+        
     }
-
+   
     /*
      * ##################### endregion constructor
      */
@@ -153,6 +156,11 @@ public class NextAgent extends Agent {
         this.disableAgentFlag = true;
     }
 
+    public PathfindingConfig GetPathfindingConfig()
+    {
+    	return this.pathfindingConfig;
+    }
+    
     //Agent behavior after all simulations have finished
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
@@ -162,10 +170,13 @@ public class NextAgent extends Agent {
      * ##################### endregion public methods
      */
     /*
-     * ########## region private methods
+
+    /**
+     * Selects the next Action based on the priorityMap
+     *
+     * @param possibleActions
+     * @return Action
      */
-
-
     private void disableAgent() {
         this.say("All games finished!");
         try{
@@ -189,7 +200,6 @@ public class NextAgent extends Agent {
      * @return Action
      */
     private Action selectNextAction() {
-
         Action nextAction = intention.SelectNextAction();
 
         say(nextAction.toProlog());
