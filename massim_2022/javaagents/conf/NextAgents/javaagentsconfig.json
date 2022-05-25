@@ -6,9 +6,7 @@
       "agent-prefix":  "A",
       "entity-prefix":  "connectionA",
       "team":  "A",
-      "class": "NextAgent",
-	  "pathSteps": 0,
-	  "pathStartDirection": "n"
+      "class": "NextAgent"
     },
     {
       "count":  20,
@@ -16,9 +14,7 @@
       "agent-prefix":  "B",
       "entity-prefix":  "connectionB",
       "team":  "B",
-      "class": "NextAgent",
-	  "pathSteps": 0,
-	  "pathStartDirection": "s"
+      "class": "NextAgent"
     }
   ]
 }

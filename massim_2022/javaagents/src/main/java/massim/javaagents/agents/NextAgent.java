@@ -57,7 +57,8 @@ public class NextAgent extends Agent {
     NextPerceptReader processor; // Eismassim interpreter
 
     // Pathfinding algorithm
-    PathfindingConfig pathfindingConfig;
+    //PathfindingConfig pathfindingConfig;
+    
     /*
      * ##################### endregion fields
      */
@@ -73,8 +74,9 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus();
         this.simStatus = new NextSimulationStatus();
-        this.pathfindingConfig = new PathfindingConfig("conf/NextAgents");
-
+        PathfindingConfig.ParseConfig("conf/NextAgents");
+        
+        this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
@@ -154,11 +156,6 @@ public class NextAgent extends Agent {
 
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
-    }
-
-    public PathfindingConfig GetPathfindingConfig()
-    {
-    	return this.pathfindingConfig;
     }
     
     //Agent behavior after all simulations have finished

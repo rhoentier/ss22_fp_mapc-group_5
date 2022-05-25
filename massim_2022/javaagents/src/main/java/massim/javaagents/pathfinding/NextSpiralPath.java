@@ -19,6 +19,16 @@ public class NextSpiralPath implements INextPath
 	private int stepsToGo = 1;
 	private ECardinals lastDirection = ECardinals.n;
 	
+	public NextSpiralPath(int stepsToGo, ECardinals startDirection) 
+	{
+		if(stepsToGo > 1) {
+			this.stepsToGo = stepsToGo;
+		} else {
+			this.stepsToGo = 1;
+		}
+		this.lastDirection = startDirection;
+	}
+	
 	// #methods
 	@Override
 	public Action GenerateNextMove() 
@@ -32,7 +42,7 @@ public class NextSpiralPath implements INextPath
 		// Alle 2 Richtungswechsel die Schrittweite aendern
 		if(changeSteps == 2) 
 		{
-			stepsToGo++;
+			stepsToGo += this.stepsToGo;
 			changeSteps = 0;
 		}
 		

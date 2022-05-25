@@ -8,11 +8,13 @@ import eis.iilang.Identifier;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.NextSpiralPath;
+import massim.javaagents.pathfinding.PathfindingConfig;
 
 public final class AgentUtil{
 
 	static NextRandomPath nextRandomPath = new NextRandomPath();
-	static NextSpiralPath nextSimplePath = new NextSpiralPath();
+	static NextSpiralPath nextSimplePath = new NextSpiralPath(PathfindingConfig.GetSteps(), PathfindingConfig.GetDirection());
+	
 	static public Action GenerateMove(NextConstants.EPathFinding pathfinding) 
 	{
 		Action action = null;

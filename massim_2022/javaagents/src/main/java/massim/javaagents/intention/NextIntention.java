@@ -6,7 +6,9 @@ import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.EPathFinding;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.pathfinding.PathfindingConfig;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class NextIntention {
 
     public void GeneratePossibleActions() {
         possibleActions.clear();
-    	Action nextMove = AgentUtil.GenerateMove(this.nextAgent.GetPathfindingConfig().GetAlgorithm());
+    	Action nextMove = AgentUtil.GenerateMove(PathfindingConfig.GetAlgorithm());
     	if(nextMove != null) 
     	{
     		possibleActions.add(nextMove);
