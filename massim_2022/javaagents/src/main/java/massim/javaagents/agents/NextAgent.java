@@ -17,6 +17,8 @@ import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
 
 import java.util.List;
+import massim.javaagents.map.Vector2D;
+import massim.javaagents.pathfinding.NextAStarPath;
 
 /**
  * First iteration of an experimental agent.
@@ -58,6 +60,10 @@ public class NextAgent extends Agent {
 
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
+    NextAStarPath aStar = new NextAStarPath();
+    List<NextMapTile> aStarMemory;
+    //List<NextConstants.ECardinals> aStarMemory;
+    
     
     /*
      * ##################### endregion fields
@@ -133,13 +139,28 @@ public class NextAgent extends Agent {
                 disableAgent();
             }
         }
+        
+        
+        try{
+            this.say(agentStatus.getPosition().toString());
+            /*
+            try{
+            this.say(" " + agentStatus.getMap().MapToStringBuilder());
+            }catch( Exception e){} finally{}
+            */
+            this.say(" " + agentStatus.getMap().getSizeOfMap());
+                    
+            aStarMemory = aStar.calculatePath(agentStatus.getMap().getMapArray(), agentStatus.getPosition().getSubtracted(agentStatus.getPosition()), agentStatus.getPosition().getSubtracted(agentStatus.getPosition()).getAdded(2, 4) );
+            this.say(aStarMemory.toString());
+        } finally {
+            
+        }
                 
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
             generatePossibleActions();
-
             return selectNextAction();
         }
 
@@ -201,6 +222,7 @@ public class NextAgent extends Agent {
 
         say(nextAction.toProlog());
         return nextAction;
+        //return new Action("move", new Identifier("n"));
     }
 
     private void generatePossibleActions() {

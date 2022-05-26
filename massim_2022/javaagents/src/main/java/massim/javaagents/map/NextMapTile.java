@@ -20,7 +20,13 @@ public class NextMapTile {
     private String thingType; // - (b1,b0,b2, Dispenser, Obstacle, zone...)
 
     private Boolean isWalkable;
+    
+    // - Pathfinding Attributes
+    private boolean open = false;
+    private NextMapTile parent = null;
+    private int score = 0;
 
+    
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -88,4 +94,39 @@ public class NextMapTile {
             return false;
         return true;
     }
+    
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
+    }
+
+    public NextMapTile getParent() {
+        return parent;
+    }
+
+    public void setParent(NextMapTile parent) {
+        this.parent = parent;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public Boolean IsWalkable() {
+        return isWalkable;
+    }
+
+    public void setIsWalkable(Boolean isWalkable) {
+        this.isWalkable = isWalkable;
+    }
+    
+    
+
 }

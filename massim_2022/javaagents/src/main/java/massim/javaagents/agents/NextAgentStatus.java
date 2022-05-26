@@ -43,6 +43,14 @@ public class NextAgentStatus {
     private Vector2D position; // Position on the map relative to the starting point
     private NextMap map;
 
+    public Vector2D getPosition() {
+        return position;
+    }
+
+    public NextMap getMap() {
+        return map;
+    }
+
     public NextAgentStatus() {
         name = null;
         teamName = null;

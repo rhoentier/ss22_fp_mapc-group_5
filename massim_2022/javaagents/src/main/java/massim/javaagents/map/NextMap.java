@@ -20,7 +20,6 @@ public class NextMap {
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
 
-
     private ArrayList<String> includeObjects;
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
@@ -37,8 +36,9 @@ public class NextMap {
     /**
      * Add an array of things to the map.
      *
-     * @param agentPosition Current position of the agent relative to the starting position.
-     * @param percept       Array of things as NextMapTile-objects.
+     * @param agentPosition Current position of the agent relative to the
+     * starting position.
+     * @param percept Array of things as NextMapTile-objects.
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
 
@@ -51,8 +51,9 @@ public class NextMap {
     }
 
     /**
-     * Print map to console with x0/y0 in top left corner. First letter of getThingType() is used for representation.
-     * For example: "A": Agent, "O": Obstacle. Special character "Z" for zero point.
+     * Print map to console with x0/y0 in top left corner. First letter of
+     * getThingType() is used for representation. For example: "A": Agent, "O":
+     * Obstacle. Special character "Z" for zero point.
      */
     public void WriteToFile(String filename) {
         String strMap = "";
@@ -80,13 +81,13 @@ public class NextMap {
     }
 
     /**
-     * Merges the given map (param 1) into the existing map (this) based on position of agents and in which distance
-     * they see each other.
+     * Merges the given map (param 1) into the existing map (this) based on
+     * position of agents and in which distance they see each other.
      *
-     * @param mapAgent2      NextMap of the agent2, which is seen from agent1.
+     * @param mapAgent2 NextMap of the agent2, which is seen from agent1.
      * @param positionAgent1 Position of agent1, which sees agent2
      * @param positionAgent2 Position of agent2, which is seen from agent1.
-     * @param deltaView      Distance in which agent1 sees agent2
+     * @param deltaView Distance in which agent1 sees agent2
      */
     public void mergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
 
@@ -107,8 +108,12 @@ public class NextMap {
         // Merge found dispensers
         foundDispensers.addAll(mapAgent2.foundDispensers);
         // Merge found zones without generating duplicates
-        if (mapAgent2.foundRoleZone) foundRoleZone = true;
-        if (mapAgent2.foundGoalZone) foundGoalZone = true;
+        if (mapAgent2.foundRoleZone) {
+            foundRoleZone = true;
+        }
+        if (mapAgent2.foundGoalZone) {
+            foundGoalZone = true;
+        }
     }
 
     /**
@@ -137,8 +142,9 @@ public class NextMap {
     }
 
     /**
-     * Transforms a relative position to an absolute position. Example with grid 10/10 and zero point at 5/5.
-     * Coordinate 1/1 (relative) is transformed to 6/6 (absolute).
+     * Transforms a relative position to an absolute position. Example with grid
+     * 10/10 and zero point at 5/5. Coordinate 1/1 (relative) is transformed to
+     * 6/6 (absolute).
      *
      * @param relativeVector Relative position on the map
      * @return Absolute position on the map
@@ -148,8 +154,9 @@ public class NextMap {
     }
 
     /**
-     * Transforms an absolute position to a relative position. Example with grid 10/10 and zero point at 5/5.
-     * Coordinate 1/1 (absolute) is transformed to -4/-4 (relative).
+     * Transforms an absolute position to a relative position. Example with grid
+     * 10/10 and zero point at 5/5. Coordinate 1/1 (absolute) is transformed to
+     * -4/-4 (relative).
      *
      * @param absoluteVector Absolute position on the map
      * @return Relative position on the map
@@ -180,10 +187,12 @@ public class NextMap {
     }
 
     /**
-     * Sets an object on the position relative to the starting position of the agent.
+     * Sets an object on the position relative to the starting position of the
+     * agent.
      *
-     * @param relativePosition: Position of the map tile relative to the starting position of the agent.
-     * @param maptile:          MapTile to add.
+     * @param relativePosition: Position of the map tile relative to the
+     * starting position of the agent.
+     * @param maptile: MapTile to add.
      */
     private void setMapTileRel(Vector2D relativePosition, NextMapTile maptile) {
         Vector2D absPosition = relativeToAbsolute(relativePosition);
@@ -193,8 +202,9 @@ public class NextMap {
     /**
      * Sets an object on the absolute position of the map.
      *
-     * @param absolutePosition: Position of the map tile absolute from the top left point.
-     * @param maptile:          MapTile to add.
+     * @param absolutePosition: Position of the map tile absolute from the top
+     * left point.
+     * @param maptile: MapTile to add.
      */
     private void setMapTileAbs(Vector2D absolutePosition, NextMapTile maptile) {
 
@@ -203,16 +213,20 @@ public class NextMap {
         // add dispenser and zones to found things
         if (maptile != null) {
             if (maptile.getThingType().startsWith("dispenser")) {
-                if (!foundDispensers.contains(maptile.getThingType())) foundDispensers.add((maptile.getThingType().substring(10)));
-            } else if (maptile.getThingType().equals("goalZone")) foundGoalZone = true;
-            else if (maptile.getThingType().equals("roleZone")) foundRoleZone = true;
+                if (!foundDispensers.contains(maptile.getThingType())) {
+                    foundDispensers.add((maptile.getThingType().substring(10)));
+                }
+            } else if (maptile.getThingType().equals("goalZone")) {
+                foundGoalZone = true;
+            } else if (maptile.getThingType().equals("roleZone")) {
+                foundRoleZone = true;
+            }
         }
 
         Vector2D offset = new Vector2D(extendArray(absolutePosition));
         absolutePosition.add(offset);
 
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
-
 
         // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
         if (maptile.getThingType().startsWith("dispenser")) {
@@ -223,8 +237,9 @@ public class NextMap {
     }
 
     /**
-     * Calculates the most positive coordinate possible for the current map. If the map is of size 10/10 and the
-     * zero point is at 5/5, the most positive coordinate is at 4/4.
+     * Calculates the most positive coordinate possible for the current map. If
+     * the map is of size 10/10 and the zero point is at 5/5, the most positive
+     * coordinate is at 4/4.
      *
      * @return Vector with most positive coordinate
      */
@@ -233,8 +248,9 @@ public class NextMap {
     }
 
     /**
-     * Calculates the most negative Coordinate possible for the current map. If the map is of size 10/10 and the
-     * zero point is at 5/5, the most negative coordinate is -5/-5.
+     * Calculates the most negative Coordinate possible for the current map. If
+     * the map is of size 10/10 and the zero point is at 5/5, the most negative
+     * coordinate is -5/-5.
      *
      * @return Vector with most negative coordinate
      */
@@ -245,16 +261,19 @@ public class NextMap {
     /**
      * Calculates the size of the map.
      *
-     * @return Vector object, which represents the number of elements in x- and y-direction.
+     * @return Vector object, which represents the number of elements in x- and
+     * y-direction.
      */
-    private Vector2D getSizeOfMap() {
+    public Vector2D getSizeOfMap() {
         return new Vector2D(map.length, map[0].length);
     }
 
     /**
-     * Extends the size of the map object either in x+, x-, y+ or y- direction if the map is too small.
+     * Extends the size of the map object either in x+, x-, y+ or y- direction
+     * if the map is too small.
      *
-     * @param positionMapTile position of the map tile to be added relative to the starting position.
+     * @param positionMapTile position of the map tile to be added relative to
+     * the starting position.
      */
     private Vector2D extendArray(Vector2D positionMapTile) {
 
@@ -295,8 +314,10 @@ public class NextMap {
     }
 
     /**
-     * Check if the rotation cw or ccw is possible. Note: North/South is swapped in massim. For example if the North
-     * tile (bottom) is rotated in cw-direction, it leads to West tile (left). For further explanation, see also:
+     * Check if the rotation cw or ccw is possible. Note: North/South is swapped
+     * in massim. For example if the North tile (bottom) is rotated in
+     * cw-direction, it leads to West tile (left). For further explanation, see
+     * also:
      * <a href="https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495">https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495</a>
      *
      * @param direction
@@ -306,50 +327,91 @@ public class NextMap {
     public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
         if (direction.getValue() == "cw") {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
-                      return false;
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable()) {
+                    return false;
+                }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable()) {
                     return false;
+                }
             }
 
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable()) {
                     return false;
+                }
             }
         }
         return true;
     }
 
     /**
-     * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone bereits bekannt sind
+     * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone
+     * bereits bekannt sind
+     *
      * @param requiredBlocks
      * @return
      */
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
+        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) {
+            return true;
+        }
         return false;
+    }
+
+    public NextMapTile[][] getMapArray() {
+        return map;
+    }
+
+    public String MapToStringBuilder() {
+        StringBuilder stringForReturn = new StringBuilder();
+
+        for (NextMapTile[] tile : map) {
+            StringBuilder subString = new StringBuilder();
+
+            for (int col = 0; col < map[0].length; col++) {
+                if (tile[col] != null) {
+                    if (tile[col].IsWalkable() != null) {
+                        if (tile[col].IsWalkable()) {
+                            subString.append("_");
+                        } else {
+                            subString.append("X");
+                        }
+                    }
+                } else {
+                    subString.append("#");
+                }
+            }
+
+            stringForReturn.append(subString + "\n");
+        }
+        return "NextMap:" + "\n" + stringForReturn;
     }
 }
