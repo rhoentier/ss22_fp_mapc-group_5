@@ -352,4 +352,11 @@ public class NextMap {
         if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
         return false;
     }
+
+    public NextMapTile[][] getMap() {
+        return map;
+    }
+
+    
+    
 }
