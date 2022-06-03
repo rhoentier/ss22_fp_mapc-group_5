@@ -21,7 +21,7 @@ public class NextMap {
     private Vector2D zeroPoint;
 
 
-    private ArrayList<String> includeObjects;
+    private HashSet<String> excludeThingTypes;
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
     public boolean foundGoalZone = false;
@@ -30,7 +30,7 @@ public class NextMap {
     public NextMap() {
         map = new NextMapTile[1][1];
         zeroPoint = new Vector2D(0, 0);
-        ArrayList<String> includeObjects = new ArrayList<String>(Arrays.asList("dispenser", "obstacle"));
+        excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
@@ -232,12 +232,16 @@ public class NextMap {
 
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
 
+        // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
+        boolean addMaptile = true;
+        for (String e : excludeThingTypes) {
+            if (maptile.getThingType().startsWith(e))
+                addMaptile = false;
+        }
 
-        // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
-        if (maptile.getThingType().startsWith("dispenser")) {
-            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep()) {
+        // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
+        if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
                 this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
-            }
         }
     }
 
