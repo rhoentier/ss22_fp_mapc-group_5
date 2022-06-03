@@ -21,7 +21,7 @@ public class NextMap {
     private Vector2D zeroPoint;
 
 
-    private ArrayList<String> includeObjects;
+    private HashSet<String> excludeThingTypes;
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
     public boolean foundGoalZone = false;
@@ -30,7 +30,7 @@ public class NextMap {
     public NextMap() {
         map = new NextMapTile[1][1];
         zeroPoint = new Vector2D(0, 0);
-        ArrayList<String> includeObjects = new ArrayList<String>(Arrays.asList("dispenser", "obstacle"));
+        excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
@@ -88,7 +88,7 @@ public class NextMap {
      * @param positionAgent2 Position of agent2, which is seen from agent1.
      * @param deltaView      Distance in which agent1 sees agent2
      */
-    public void mergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
+    public void MergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
 
         // Calculate vector from starting point of agent1 (on map1) to absolute zero on map2
         Vector2D displacementVector = new Vector2D(positionAgent1);
@@ -96,8 +96,8 @@ public class NextMap {
         displacementVector.subtract(positionAgent2);
         displacementVector.subtract(mapAgent2.zeroPoint);
 
-        for (int i = 0; i < mapAgent2.getSizeOfMap().x; i++) {
-            for (int j = 0; j < mapAgent2.getSizeOfMap().y; j++) {
+        for (int i = 0; i < mapAgent2.GetSizeOfMap().x; i++) {
+            for (int j = 0; j < mapAgent2.GetSizeOfMap().y; j++) {
                 Vector2D insertAt = new Vector2D(displacementVector);
                 insertAt.add(i, j);
                 setMapTileRel(insertAt, mapAgent2.map[i][j]);
@@ -115,12 +115,13 @@ public class NextMap {
      * Finds the relative position of a map tile with a specific thing type
      *
      * @param thingType Thing type to be found, e.g. "dispenser"
+     * @return Relative position of the nearest tile
      */
-    public Vector2D getNearest(String thingType, Vector2D agentPosition) {
+    public Vector2D GetNearest(String thingType, Vector2D agentPosition) {
         double shortestDistanceSoFar = Double.POSITIVE_INFINITY;
         double currentDistance;
         Vector2D absolutePosition = null;
-        Vector2D agentPositionAbs = relativeToAbsolute(agentPosition);
+        Vector2D agentPositionAbs = RelativeToAbsolute(agentPosition);
 
         for (int i = 0; i < this.map.length; i++) {
             for (int j = 0; j < this.map[i].length; j++) {
@@ -137,14 +138,32 @@ public class NextMap {
     }
 
     /**
+     * Calculates the size of the map.
+     *
+     * @return Vector object, which represents the number of elements in x- and y-direction.
+     */
+    public Vector2D GetSizeOfMap() {
+        return new Vector2D(map.length, map[0].length);
+    }
+
+    /**
      * Transforms a relative position to an absolute position. Example with grid 10/10 and zero point at 5/5.
      * Coordinate 1/1 (relative) is transformed to 6/6 (absolute).
      *
      * @param relativeVector Relative position on the map
      * @return Absolute position on the map
      */
-    private Vector2D relativeToAbsolute(Vector2D relativeVector) {
+    public Vector2D RelativeToAbsolute(Vector2D relativeVector) {
         return new Vector2D(relativeVector).getAdded(zeroPoint);
+    }
+
+    /**
+     * Returns the map with coordinates 0/0 in upper left corner
+     *
+     * @return Internal Map
+     */
+    public NextMapTile[][] GetMap() {
+       return map;
     }
 
     /**
@@ -175,7 +194,7 @@ public class NextMap {
      * @return maptile object
      */
     private NextMapTile getMapTileRel(Vector2D relativePosition) {
-        Vector2D absolutePosition = relativeToAbsolute(relativePosition);
+        Vector2D absolutePosition = RelativeToAbsolute(relativePosition);
         return getMapTileAbs(absolutePosition);
     }
 
@@ -186,7 +205,7 @@ public class NextMap {
      * @param maptile:          MapTile to add.
      */
     private void setMapTileRel(Vector2D relativePosition, NextMapTile maptile) {
-        Vector2D absPosition = relativeToAbsolute(relativePosition);
+        Vector2D absPosition = RelativeToAbsolute(relativePosition);
         setMapTileAbs(absPosition, maptile);
     }
 
@@ -213,12 +232,16 @@ public class NextMap {
 
         existingMapTile = this.map[(int) absolutePosition.x][(int) absolutePosition.y];
 
+        // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
+        boolean addMaptile = true;
+        for (String e : excludeThingTypes) {
+            if (maptile.getThingType().startsWith(e))
+                addMaptile = false;
+        }
 
-        // ToDo: Intruduce an exclude funtionlity to not store highly dynamic things like entities. At the moment, just dispensers are stored
-        if (maptile.getThingType().startsWith("dispenser")) {
-            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep()) {
+        // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
+        if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
                 this.map[(int) absolutePosition.x][(int) absolutePosition.y] = maptile;
-            }
         }
     }
 
@@ -243,15 +266,6 @@ public class NextMap {
     }
 
     /**
-     * Calculates the size of the map.
-     *
-     * @return Vector object, which represents the number of elements in x- and y-direction.
-     */
-    private Vector2D getSizeOfMap() {
-        return new Vector2D(map.length, map[0].length);
-    }
-
-    /**
      * Extends the size of the map object either in x+, x-, y+ or y- direction if the map is too small.
      *
      * @param positionMapTile position of the map tile to be added relative to the starting position.
@@ -261,7 +275,7 @@ public class NextMap {
         int minExtend = 1;
         Vector2D numExtend = new Vector2D(0, 0);
         Vector2D offset = new Vector2D(0, 0);
-        Vector2D sizeOfMap = getSizeOfMap();
+        Vector2D sizeOfMap = GetSizeOfMap();
 
         if (positionMapTile.x >= map.length) {
             numExtend.x = Math.max(positionMapTile.x - map.length + 1, minExtend);
@@ -304,9 +318,10 @@ public class NextMap {
      * @return true if the rotation is possible else otherwise
      */
     public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
+        // ToDo: For the future, extend functionality if multiple blocks are attached in one direction
         if (direction.getValue() == "cw") {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                       return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
@@ -314,7 +329,7 @@ public class NextMap {
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
@@ -324,7 +339,7 @@ public class NextMap {
 
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
@@ -332,7 +347,7 @@ public class NextMap {
                     return false;
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
                     return false;
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
