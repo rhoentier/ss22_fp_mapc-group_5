@@ -158,6 +158,15 @@ public class NextMap {
     }
 
     /**
+     * Returns the map with coordinates 0/0 in upper left corner
+     *
+     * @return Internal Map
+     */
+    public NextMapTile[][] GetMap() {
+       return map;
+    }
+
+    /**
      * Transforms an absolute position to a relative position. Example with grid 10/10 and zero point at 5/5.
      * Coordinate 1/1 (absolute) is transformed to -4/-4 (relative).
      *

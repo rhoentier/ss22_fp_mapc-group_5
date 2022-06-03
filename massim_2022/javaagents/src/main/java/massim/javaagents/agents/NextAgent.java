@@ -133,7 +133,10 @@ public class NextAgent extends Agent {
                 disableAgent();
             }
         }
-                
+
+        // Update internal map with new percept
+        agentStatus.UpdateMap();
+
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();

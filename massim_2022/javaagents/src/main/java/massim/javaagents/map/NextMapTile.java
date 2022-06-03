@@ -84,8 +84,6 @@ public class NextMapTile {
      * @return
      */
     public Boolean isWalkable() {
-        if (isAThing && !(thingType=="marker"))
-            return false;
-        return true;
+        return !thingType.equals("obstacle") && !thingType.equals("entity") && !thingType.startsWith("block");
     }
 }
