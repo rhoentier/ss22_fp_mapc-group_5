@@ -1,0 +1,16 @@
+{
+    "simultaneous" : 1,
+    "chance": 100,
+    "subjects" : [
+        {
+            "name" : "Carry",
+            "announcement" : [10, 20],
+            "duration" : [100, 200],
+            "punishment": [10, 20],
+            "weight": 15,
+            "optional": {
+                "quantity": [1,1]
+            }          
+        }
+    ]
+}

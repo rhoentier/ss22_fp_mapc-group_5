@@ -140,8 +140,11 @@ public class NextAgent extends Agent {
             }
         }
         
-        
-        
+        // Update internal map with new percept
+        agentStatus.UpdateMap();
+
+
+        //Experimental part for Pathfinder implementation 
         try{
             this.say(agentStatus.getPosition().toString());
             /*
@@ -156,7 +159,7 @@ public class NextAgent extends Agent {
         } finally {
             
         }
-                
+
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();

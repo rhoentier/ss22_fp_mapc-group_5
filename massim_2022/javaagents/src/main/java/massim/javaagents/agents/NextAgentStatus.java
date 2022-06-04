@@ -240,6 +240,8 @@ public class NextAgentStatus {
                 }
             }
             map.AddPercept(position, visibleNotAttachedThings);
+            map.AddPercept(position, obstacles);
+
             //map.WriteToFile("map.txt");
         }
     }
