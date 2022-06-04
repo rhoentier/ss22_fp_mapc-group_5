@@ -14,22 +14,18 @@ import massim.javaagents.MailService;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextRandomPath;
+import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
 
 import java.util.List;
-import massim.javaagents.pathfinding.NextManhattanPath;
 
 /**
  * First iteration of an experimental agent.
  * <p>
- * Done:
- * Handling of transition between simulations
- * Basic action generation based on random movement
- * Processing of all percepts and storing in dataVaults
+ * Done: Handling of transition between simulations Basic action generation
+ * based on random movement Processing of all percepts and storing in dataVaults
  * <p>
- * ToDo:
- * registerAgent @ Mailserver -> anmeldung für Agentenkommunikation. //
- * kombination mit Gruppenbildung?
+ * ToDo: Gruppenbildung
  *
  * @author Alexander Lorenz
  */
@@ -59,18 +55,16 @@ public class NextAgent extends Agent {
 
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
-    
     private NextManhattanPath manhattanPath = new NextManhattanPath();
     private ArrayList<Action> pathMemory = new ArrayList<>();
-    
+
     /*
      * ##################### endregion fields
      */
-
     /**
      * ########## region constructor.
      *
-     * @param name    the agent's name
+     * @param name the agent's name
      * @param mailbox the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
@@ -79,19 +73,19 @@ public class NextAgent extends Agent {
         this.agentStatus = new NextAgentStatus();
         this.simStatus = new NextSimulationStatus();
         PathfindingConfig.ParseConfig("conf/NextAgents");
-        
+
         this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
-        
+
     }
-   
+
     /*
      * ##################### endregion constructor
      */
 
-    /*
+ /*
      * ########## region public methods
      */
     // Original Method
@@ -112,17 +106,16 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-        
+
         //this.broadcast(new Percept(" Message"), this.getName());
         //this.sendMessage(new Percept(" Message"), "B2", this.getName());
-
         // Checks if a new ActionID is found and proceeds with processing of all percepts
         for (Percept percept : getPercepts()) {
             if (percept.getName().equals("actionID")) {
                 Parameter param = percept.getParameters().get(0);
                 if (param instanceof Numeral) {
                     int id = ((Numeral) param).getValue().intValue();
-                    if (id > lastID ) {
+                    if (id > lastID) {
                         processor.evaluate(getPercepts(), this);
                     }
                 }
@@ -138,34 +131,38 @@ public class NextAgent extends Agent {
             }
         }
 
-        // Update internal map with new percept
-        agentStatus.UpdateMap();
         
-        //Experimental part for Pathfinder implementation 
-        try{
-            this.say(agentStatus.GetPosition().toString());
-            /*
-            try{
-            this.say(" " + agentStatus.getMap().MapToStringBuilder());
-            }catch( Exception e){} finally{}
-            */
-            this.say(" " + agentStatus.GetSizeOfMap());
-                    
-            //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
-            pathMemory = manhattanPath.calculatePath(2, 4);
-            
-            this.say(pathMemory.toString());
-        } finally {
-            
+        //Experimental part for Pathfinder implementation - For testing only
+        if (pathMemory.isEmpty()) {
+            try {
+                this.say(agentStatus.GetPosition().toString());
+                /*
+                    try{
+                    this.say(" " + agentStatus.getMap().MapToStringBuilder());
+                    }catch( Exception e){} finally{}
+                 */
+                this.say(" " + agentStatus.GetSizeOfMap());
+                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
+                pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
+
+                this.say(pathMemory.toString());
+            } catch (Exception e) {
+                this.say("Path generation failed: " + e);
+            }
         }
 
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
+            
+            // Update internal map with new percept
+            agentStatus.UpdateMap();
+
 
             generatePossibleActions();
 
-            return selectNextAction();
+            //return selectNextAction();
+            return selectNextActionTest();
         }
 
         return null;
@@ -182,7 +179,7 @@ public class NextAgent extends Agent {
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
     }
-    
+
     //Agent behavior after all simulations have finished
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
@@ -191,19 +188,17 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion public methods
      */
-    /*
+ /*
 
     /**
-     * Selects the next Action based on the priorityMap
-     *
-     * @param possibleActions
-     * @return Action
+     * Stops the Agent. 
+     * Is disabled to keep the logdata visible. 
      */
     private void disableAgent() {
         this.say("All games finished!");
-        try{
-        Thread.sleep(10000000);
-        } catch(Exception e) {
+        try {
+            Thread.sleep(10000000);
+        } catch (Exception e) {
         }
         //System.exit(1); // Kill the window
     }
@@ -223,7 +218,18 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
-
+        
+        say(nextAction.toProlog());
+        return nextAction;
+    }
+    
+    // PATHFINDING EVALUATION 
+    private Action selectNextActionTest() {
+        Action nextAction = intention.SelectNextAction();
+        
+        if(!pathMemory.isEmpty()){
+            nextAction = pathMemory.remove(0);
+        }
         say(nextAction.toProlog());
         return nextAction;
     }
