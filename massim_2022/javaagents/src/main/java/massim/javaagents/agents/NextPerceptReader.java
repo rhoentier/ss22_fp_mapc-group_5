@@ -236,10 +236,11 @@ public class NextPerceptReader {
 
         agentStatus.SetAttachedElements(processAttachedSet());
 
-        agentStatus.SetVision(processThingsSet());
-        agentStatus.SetObstacles(processObstaclesSet());
+        agentStatus.SetVision(processThingsSet()); //
+        agentStatus.SetObstacles(processObstaclesSet()); 
         agentStatus.SetGoalZones(processGoalZonesSet());
         agentStatus.SetRoleZones(processRoleZonesSet());
+        
         agentStatus.SetHits(processHitsSet());
 
         agentStatus.SetSurveyedAgents(processSurveyedAgentSet());

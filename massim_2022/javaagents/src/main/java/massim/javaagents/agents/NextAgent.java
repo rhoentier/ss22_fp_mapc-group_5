@@ -141,6 +141,7 @@ public class NextAgent extends Agent {
         }
         
         
+        
         try{
             this.say(agentStatus.getPosition().toString());
             /*
