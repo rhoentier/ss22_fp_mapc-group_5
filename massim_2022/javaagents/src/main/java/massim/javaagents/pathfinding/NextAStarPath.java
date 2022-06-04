@@ -1,5 +1,6 @@
 package massim.javaagents.pathfinding;
 
+import eis.iilang.Action;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.general.NextConstants;
@@ -26,7 +27,7 @@ public class NextAStarPath {
     private NextMapTile currentTile;
     private int[] targetPosition;
 
-    public List<NextMapTile> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
+    public List<Action> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
 
 //    public List<NextConstants.ECardinals> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
         this.map = map;
@@ -106,7 +107,7 @@ public class NextAStarPath {
         }
 
         if (routeAvailable) {
-            return getPath(currentTile);
+            //return getPath(currentTile);
         }
         return new ArrayList<>();
 

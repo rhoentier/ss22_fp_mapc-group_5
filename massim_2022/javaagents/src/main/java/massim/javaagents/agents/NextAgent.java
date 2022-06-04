@@ -60,7 +60,7 @@ public class NextAgent extends Agent {
 
     private NextManhattanPath manhattanPath = new NextManhattanPath();
     private NextAStarPath aStar = new NextAStarPath();
-    private ArrayList<Action> pathMemory = new ArrayList<>();
+    private List<Action> pathMemory = new ArrayList<>();
 
     /*
      * ##################### endregion fields
@@ -146,30 +146,13 @@ public class NextAgent extends Agent {
                     }catch( Exception e){} finally{}
                  */
                 this.say(" " + agentStatus.GetSizeOfMap());
-                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
-                pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
+                pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10) );
+                //pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
 
                 this.say(pathMemory.toString());
             } catch (Exception e) {
                 this.say("Path generation failed: " + e);
             }
-        }
-
-
-        //Experimental part for Pathfinder implementation 
-        try{
-            this.say(agentStatus.getPosition().toString());
-            /*
-            try{
-            this.say(" " + agentStatus.getMap().MapToStringBuilder());
-            }catch( Exception e){} finally{}
-            */
-            this.say(" " + agentStatus.getMap().getSizeOfMap());
-                    
-            pathMemory = aStar.calculatePath(agentStatus.getMap().getMapArray(), agentStatus.getPosition().getSubtracted(agentStatus.getPosition()), agentStatus.getPosition().getSubtracted(agentStatus.getPosition()).getAdded(2, 4) );
-            this.say(aStarMemory.toString());
-        } finally {
-            
         }
 
         // ActionGeneration is started on a new ActionID only
