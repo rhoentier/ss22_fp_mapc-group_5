@@ -10,13 +10,34 @@ import massim.javaagents.general.NextConstants;
 
 public final class NextAgentUtil{
 
-	public static Action generateRandomMove()
+	public static Action GenerateRandomMove()
 	{
-	    Random rn = new Random();
 	    String[] directions = new String[]{"n", "s", "w", "e"};
-	    return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(directions[rn.nextInt(4)]));
+	    return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(directions[GenerateRandomNumber(4)]));
 	}
 
+        public static int GenerateRandomNumber(int range) {
+            Random rn = new Random();
+	    return rn.nextInt(range);
+        }
+        public static Action GenerateNorthMove()
+	{
+            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("n"));
+	}
+        public static Action GenerateSouthMove()
+	{
+            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("s"));
+	}
+        public static Action GenerateWestMove()
+	{
+            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("w"));
+	}
+        public static Action GenerateEastMove()
+	{
+            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("e"));
+	}
+
+        
     /**
      * Reports, if a Thing is next to the Agent
      *

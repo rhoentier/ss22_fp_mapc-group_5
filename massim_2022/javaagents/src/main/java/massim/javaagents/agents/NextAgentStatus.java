@@ -246,6 +246,33 @@ public class NextAgentStatus {
         }
     }
 
+    /**
+     * Returns the position of the Agent on the Map, based on absolute origin
+     * @return  Vector2D 
+     */
+    public Vector2D GetPosition() {
+        return map.RelativeToAbsolute(position);
+    }
+
+    /**
+     * Returns the mapArray stored n the local NextMap instance.
+     * Is used in pathfinding algorithms
+     * 
+     * @return Array of MapTiles
+     */
+    
+    public NextMapTile[][] GetMapArray() {
+        return map.GetMap();
+    }
+    
+    /**
+     * Returns the size of the NextMap instance
+     * @return Vector2D with the X Y Dimensions
+     */
+    public Vector2D GetSizeOfMap() {
+        return map.GetSizeOfMap();
+    }
+    
     @Override
     public String toString() {
 
