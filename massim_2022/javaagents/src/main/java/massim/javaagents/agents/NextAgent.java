@@ -17,6 +17,7 @@ import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
 
 import java.util.List;
+import massim.javaagents.pathfinding.NextManhattanPath;
 
 /**
  * First iteration of an experimental agent.
@@ -58,6 +59,9 @@ public class NextAgent extends Agent {
 
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
+    
+    private NextManhattanPath manhattanPath = new NextManhattanPath();
+    private ArrayList<Action> pathMemory = new ArrayList<>();
     
     /*
      * ##################### endregion fields
@@ -136,6 +140,24 @@ public class NextAgent extends Agent {
 
         // Update internal map with new percept
         agentStatus.UpdateMap();
+        
+        //Experimental part for Pathfinder implementation 
+        try{
+            this.say(agentStatus.GetPosition().toString());
+            /*
+            try{
+            this.say(" " + agentStatus.getMap().MapToStringBuilder());
+            }catch( Exception e){} finally{}
+            */
+            this.say(" " + agentStatus.GetSizeOfMap());
+                    
+            //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
+            pathMemory = manhattanPath.calculatePath(2, 4);
+            
+            this.say(pathMemory.toString());
+        } finally {
+            
+        }
 
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
