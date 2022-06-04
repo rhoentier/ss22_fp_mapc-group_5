@@ -349,7 +349,7 @@ public class NextMap {
      */
     public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
         // ToDo: For the future, extend functionality if multiple blocks are attached in one direction
-        if (direction.getValue() == "cw") {
+        if (direction.getValue().equals("cw")) {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
                 if (!getMapTileRel(position.getAdded(1, 0)).isWalkable()) {
                       return false;
