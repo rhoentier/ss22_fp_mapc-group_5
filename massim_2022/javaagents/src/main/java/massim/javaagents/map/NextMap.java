@@ -416,16 +416,18 @@ public class NextMap {
         return map.clone();
     }
     
-    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] map, Vector2D position) {
-        int mapWidth = map.length;
-        int mapHeight = map[0].length;
-        Vector2D offset = position.clone();
-        offset.subtract(mapWidth / 2, mapWidth / 2);
-        NextMapTile[][] tempMap = new NextMapTile[mapHeight][mapWidth];
-
+    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
+        int mapWidth = mapOld.length;
+        int mapHeight = mapOld[0].length;
+        int xOffset = (int)position.x  - ((int)(mapWidth / 2));
+        int yOffset = (int)position.y - ((int)(mapHeight / 2)); 
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][ mapHeight];
+        
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
-                tempMap[x][y] = map [(x-(int)offset.x)%(mapWidth-1)][(y-(int)offset.y)%(mapHeight-1)];
+                int oldX = (x-xOffset+mapWidth)%(mapWidth-1);
+                int oldY = (y-yOffset+mapHeight)%(mapHeight-1);
+                tempMap[x][y] = mapOld [oldX][oldY];
             }
         }
         return tempMap;

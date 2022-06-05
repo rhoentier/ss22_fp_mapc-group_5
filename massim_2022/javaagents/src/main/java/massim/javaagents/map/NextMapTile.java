@@ -93,7 +93,7 @@ public class NextMapTile {
      *
      * @return
      */
-    public Boolean isWalkable() {
+    public Boolean IsWalkable() {
         return !thingType.equals("obstacle") && !thingType.equals("entity") && !thingType.equals("unknown") && !thingType.startsWith("block");
     }
     

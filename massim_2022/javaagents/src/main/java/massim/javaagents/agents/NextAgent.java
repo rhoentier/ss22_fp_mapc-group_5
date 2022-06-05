@@ -138,16 +138,18 @@ public class NextAgent extends Agent {
         
         //Experimental part for Pathfinder implementation - For testing only
         if (pathMemory.isEmpty()) {
+            //this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.GetMapArray(),agentStatus.GetPosition())));
+                    
             try {
                 this.say(agentStatus.GetPosition().toString());
                 ///*
                     try{ 
                     
-                    //    this.say(" " + agentStatus.getMap().MapToStringBuilder());
-                        
-                    //this.say(" " + NextMap.MapToStringBuilder(agentStatus.getMap().GetMapArray()));
-                    this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.getMap().GetMapArray(),agentStatus.GetPosition())));
+                        //this.say(" " + agentStatus.GetMap().MapToStringBuilder());
+                        //this.say(" " + NextMap.MapToStringBuilder(agentStatus.GetMapArray()));
+                    this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.GetMapArray(), agentStatus.GetPosition())));
                     
+                    //RelativeToAbsolute(position)
                     
                     }catch( Exception e){
                     this.say(" " + e);
@@ -174,7 +176,7 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //return selectNextAction();
-            return selectNextActionTest();
+            return selectNextActionTest();  // For Testing purposes only
         }
 
         return null;

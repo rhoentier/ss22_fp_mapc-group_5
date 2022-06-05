@@ -265,6 +265,16 @@ public class NextAgentStatus {
     public Vector2D GetPosition() {
         return map.RelativeToAbsolute(position);
     }
+    
+     /**
+     * Returns the map stored n the local NextMap instance.
+     * 
+     * @return Array of MapTiles
+     */
+    
+    public NextMap GetMap() {
+        return map;
+    }
 
     /**
      * Returns the mapArray stored n the local NextMap instance.
@@ -274,7 +284,7 @@ public class NextAgentStatus {
      */
     
     public NextMapTile[][] GetMapArray() {
-        return map.GetMap();
+        return map.GetMapArray();
     }
     
     /**
