@@ -140,13 +140,21 @@ public class NextAgent extends Agent {
         if (pathMemory.isEmpty()) {
             try {
                 this.say(agentStatus.GetPosition().toString());
-                /*
-                    try{
-                    this.say(" " + agentStatus.getMap().MapToStringBuilder());
-                    }catch( Exception e){} finally{}
-                 */
+                ///*
+                    try{ 
+                    
+                    //    this.say(" " + agentStatus.getMap().MapToStringBuilder());
+                        
+                    //this.say(" " + NextMap.MapToStringBuilder(agentStatus.getMap().GetMapArray()));
+                    this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.getMap().GetMapArray(),agentStatus.GetPosition())));
+                    
+                    
+                    }catch( Exception e){
+                    this.say(" " + e);
+                    } finally{}
+                //*/
                 this.say(" " + agentStatus.GetSizeOfMap());
-                pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10) );
+                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10) );
                 //pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
 
                 this.say(pathMemory.toString());
@@ -227,7 +235,7 @@ public class NextAgent extends Agent {
         return nextAction;
     }
     
-    // PATHFINDING EVALUATION 
+    // PATHFINDING EVALUATION - NUR ZUM TESTEN
     private Action selectNextActionTest() {
         Action nextAction = intention.SelectNextAction();
         

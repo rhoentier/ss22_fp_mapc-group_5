@@ -351,43 +351,43 @@ public class NextMap {
         // ToDo: For the future, extend functionality if multiple blocks are attached in one direction
         if (direction.getValue().equals("cw")) {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
                       return false;
                 }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
                     return false;
                 }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
                     return false;
                 }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
                     return false;
                 }
             }
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
                     return false;
                 }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
                     return false;
                 }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
                     return false;
                 }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable()) {
+                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
                     return false;
                 }
             }
@@ -409,20 +409,40 @@ public class NextMap {
         return false;
     }
 
-    public NextMapTile[][] getMapArray() {
-        return map;
+    public NextMapTile[][] GetMapArray() {
+        return map.clone();
     }
+    
+    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] map, Vector2D position) {
+        int mapWidth = map.length;
+        int mapHeight = map[0].length;
+        Vector2D offset = position.clone();
+        offset.subtract(mapWidth / 2, mapWidth / 2);
+        NextMapTile[][] tempMap = new NextMapTile[mapHeight][mapWidth];
 
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                tempMap[x][y] = map [(x-(int)offset.x)%(mapWidth-1)][(y-(int)offset.y)%(mapHeight-1)];
+            }
+        }
+        return tempMap;
+    }
+    
     public String MapToStringBuilder() {
+        return MapToStringBuilder(this.map);
+    }
+        
+
+    public static String MapToStringBuilder( NextMapTile[][] map) {
         StringBuilder stringForReturn = new StringBuilder();
 
-        for (NextMapTile[] tile : map) {
+        for (int y = 0; y < map[0].length; y++) {
             StringBuilder subString = new StringBuilder();
 
-            for (int col = 0; col < map[0].length; col++) {
-                if (tile[col] != null) {
-                    if (tile[col].IsWalkable() != null) {
-                        if (tile[col].IsWalkable()) {
+            for (int x = 0; x < map.length; x++) {
+                if (map[x][y] != null) {
+                    if (map[x][y].IsWalkable() != null) {
+                        if (map[x][y].IsWalkable()) {
                             subString.append("_");
                         } else {
                             subString.append("X");
@@ -432,7 +452,7 @@ public class NextMap {
                     subString.append("#");
                 }
             }
-
+            
             stringForReturn.append(subString + "\n");
         }
         return "NextMap:" + "\n" + stringForReturn;

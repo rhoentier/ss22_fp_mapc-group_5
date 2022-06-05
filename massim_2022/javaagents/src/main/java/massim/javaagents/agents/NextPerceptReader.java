@@ -1,19 +1,14 @@
 package massim.javaagents.agents;
 
-import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
-import massim.javaagents.percept.NextNorm;
-import massim.javaagents.percept.NextNormRequirement;
-import massim.javaagents.percept.NextRole;
-import massim.javaagents.percept.NextTask;
-
-import massim.javaagents.general.NextConstants;
-import massim.javaagents.general.NextConstants.EPercepts;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import massim.javaagents.map.NextMapTile;
+import massim.javaagents.general.NextConstants;
 import massim.javaagents.percept.NextNorm;
 import massim.javaagents.percept.NextNormRequirement;
 import massim.javaagents.percept.NextRole;

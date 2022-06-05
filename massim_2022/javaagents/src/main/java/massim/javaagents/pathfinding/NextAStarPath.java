@@ -12,9 +12,7 @@ import java.util.PriorityQueue;
 import massim.javaagents.map.Vector2D;
 
 /**
- * Basic target oriented pathfinding algorithm
- *
- * Based on https://github.com/Qualia91/AStarAlg
+ * Basic A* pathfinding algorithm Based on https://github.com/Qualia91/AStarAlg
  *
  * @author AVL
  */
@@ -29,15 +27,18 @@ public class NextAStarPath {
 
     public List<Action> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
 
-//    public List<NextConstants.ECardinals> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
-        this.map = map;
         this.mapWidth = map.length;
         this.mapHeight = map[0].length;
-        this.targetPosition = new int[]{(int) target.x, (int) target.y};
+        Vector2D offset = startpoint.clone();
+        offset.subtract(mapWidth / 2, mapWidth / 2);
+
+        this.map = map;
+        shiftMap(offset);
+
+        this.targetPosition = new int[]{(int) (target.x - offset.x), (int) (target.y - offset.y)};
 
         //this.targetPosition = new int[]{(int) target.x, (int) target.y};
-        fillAllTiles();
-
+        //fillAllTiles();
         resetAllTiles();
 
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
@@ -126,11 +127,11 @@ public class NextAStarPath {
     }
 
     private void fillAllTiles() {
-        for (int x = 0; x < mapWidth; x++) {
-            for (int y = 0; y < mapHeight; y++) {
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
                 if (map[x][y] == null) {
                     map[x][y] = new NextMapTile(x, y, 0);
-                    map[x][y].setIsWalkable(Boolean.FALSE);
+                    //map[x][y].setIsWalkable(Boolean.FALSE);
                 }
             }
         }
@@ -139,7 +140,7 @@ public class NextAStarPath {
     private boolean validTile(int nextX, int nextY) {
         if (nextX >= 0 && nextX < mapWidth) {
             if (nextY >= 0 && nextY < mapHeight) {
-                return map[nextX][nextY].isOpen() && map[nextX][nextY].isWalkable() && map[nextX][nextY] != null;
+                return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkable() && map[nextX][nextY] != null;
             }
         }
         return false;
@@ -148,7 +149,7 @@ public class NextAStarPath {
     private int getScoreOfTile(NextMapTile tile, int currentScore) {
         int guessScoreLeft = distanceScoreAway(tile);
         int extraMovementCost = 0;
-        if (!tile.isWalkable()) {
+        if (!tile.IsWalkable()) {
 
             // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
             extraMovementCost += 1000;
@@ -160,7 +161,7 @@ public class NextAStarPath {
     private int distanceScoreAway(NextMapTile currentTile) {
         return Math.abs(targetPosition[0] - currentTile.getPositionX()) + Math.abs(targetPosition[1] - currentTile.getPositionY());
     }
-    
+
     private List<NextMapTile> getPath(NextMapTile currentTile) {
         List<NextMapTile> path = new ArrayList<>();
         while (currentTile != null) {
@@ -168,5 +169,16 @@ public class NextAStarPath {
             currentTile = currentTile.getParent();
         }
         return path;
+    }
+
+    private void shiftMap(Vector2D offset) {
+        NextMapTile[][] tempMap = new NextMapTile[mapHeight][mapWidth];
+
+        for (int y = 0; y < map[0].length; y++) {
+            for (int x = 0; x < map.length; x++) {
+                tempMap[x][y] = map [(x-(int)offset.x)%mapWidth][(y-(int)offset.y)%mapHeight];
+            }
+        }
+        this.map = tempMap;
     }
 }
