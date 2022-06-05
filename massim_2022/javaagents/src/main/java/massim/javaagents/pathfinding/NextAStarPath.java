@@ -25,20 +25,21 @@ public class NextAStarPath {
     private NextMapTile currentTile;
     private int[] targetPosition;
 
-    public List<Action> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
+    public List<NextMapTile> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
+
+//          public List<Action> calculatePath(NextMapTile[][] map, Vector2D startpoint, Vector2D target) {
 
         this.mapWidth = map.length;
         this.mapHeight = map[0].length;
-        Vector2D offset = startpoint.clone();
-        offset.subtract(mapWidth / 2, mapWidth / 2);
+        
+        this.map = NextMap.CenterMapAroundPosition(map, startpoint);
+        
+        int targetX = (int)target.x  + (int)startpoint.x - ((int)(mapWidth / 2));
+        int targetY = (int)target.y  + (int)startpoint.y - ((int)(mapHeight / 2));
+        
+        this.targetPosition = new int[]{(int) targetX % (mapWidth-1), (int) targetX % (mapHeight-1)};
 
-        this.map = map;
-        shiftMap(offset);
-
-        this.targetPosition = new int[]{(int) (target.x - offset.x), (int) (target.y - offset.y)};
-
-        //this.targetPosition = new int[]{(int) target.x, (int) target.y};
-        //fillAllTiles();
+        //fillAllTiles(); // - Not needed anymore. handled in Map
         resetAllTiles();
 
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
@@ -49,7 +50,7 @@ public class NextAStarPath {
         }
         );
 
-        queue.add(map[(int) startpoint.x][(int) startpoint.y]);
+        queue.add(map[(int) (mapWidth / 2)][(int) (mapHeight / 2)]);
 
         boolean routeAvailable = false;
 
@@ -108,7 +109,7 @@ public class NextAStarPath {
         }
 
         if (routeAvailable) {
-            //return getPath(currentTile);
+            return getPath(currentTile);
         }
         return new ArrayList<>();
 
@@ -121,17 +122,6 @@ public class NextAStarPath {
                     tile[col].setOpen(true);
                     tile[col].setParent(null);
                     tile[col].setScore(0);
-                }
-            }
-        }
-    }
-
-    private void fillAllTiles() {
-        for (int y = 0; y < mapHeight; y++) {
-            for (int x = 0; x < mapWidth; x++) {
-                if (map[x][y] == null) {
-                    map[x][y] = new NextMapTile(x, y, 0);
-                    //map[x][y].setIsWalkable(Boolean.FALSE);
                 }
             }
         }
@@ -169,16 +159,5 @@ public class NextAStarPath {
             currentTile = currentTile.getParent();
         }
         return path;
-    }
-
-    private void shiftMap(Vector2D offset) {
-        NextMapTile[][] tempMap = new NextMapTile[mapHeight][mapWidth];
-
-        for (int y = 0; y < map[0].length; y++) {
-            for (int x = 0; x < map.length; x++) {
-                tempMap[x][y] = map [(x-(int)offset.x)%mapWidth][(y-(int)offset.y)%mapHeight];
-            }
-        }
-        this.map = tempMap;
     }
 }

@@ -417,6 +417,10 @@ public class NextMap {
     }
     
     public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
+        if(mapOld.length == 1 && mapOld[0].length == 1 ) {
+            return mapOld;      
+        }
+        
         int mapWidth = mapOld.length;
         int mapHeight = mapOld[0].length;
         int xOffset = (int)position.x  - ((int)(mapWidth / 2));

@@ -144,27 +144,27 @@ public class NextAgent extends Agent {
                 this.say(agentStatus.GetPosition().toString());
                 ///*
                     try{ 
-                    
-                        //this.say(" " + agentStatus.GetMap().MapToStringBuilder());
-                        //this.say(" " + NextMap.MapToStringBuilder(agentStatus.GetMapArray()));
+                    //this.say(" " + agentStatus.GetMap().MapToStringBuilder());
+                    //this.say(" " + NextMap.MapToStringBuilder(agentStatus.GetMapArray()));
                     this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.GetMapArray(), agentStatus.GetPosition())));
                     
                     //RelativeToAbsolute(position)
-                    
                     }catch( Exception e){
                     this.say(" " + e);
                     } finally{}
                 //*/
                 this.say(" " + agentStatus.GetSizeOfMap());
-                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10) );
-                //pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
-
-                this.say(pathMemory.toString());
+                //pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(3,4) );
+                List<NextMapTile> pathMemoryA;
+                pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11)-5,NextAgentUtil.GenerateRandomNumber(11)-5) );
+                // pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
+                this.say(pathMemoryA.toString());
+                
             } catch (Exception e) {
                 this.say("Path generation failed: " + e);
             }
         }
-
+        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
