@@ -29,6 +29,8 @@ public class NextMap {
 
     public NextMap() {
         map = new NextMapTile[1][1];
+        map[0][0] = new NextMapTile(0, 0, 0, "unknown");
+
         zeroPoint = new Vector2D(0, 0);
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
@@ -58,13 +60,7 @@ public class NextMap {
         String strMap = "";
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                if (i == zeroPoint.x && j == zeroPoint.y) {
-                    strMap += "Z  ";
-                } else if (map[i][j] == null) {
-                    strMap += ".  ";
-                } else {
-                    strMap += map[i][j].getThingType().charAt(0) + "  ";
-                }
+                strMap += map[i][j].getThingType().charAt(0) + "  ";
             }
             strMap += "\n";
         }
@@ -272,7 +268,7 @@ public class NextMap {
      */
     private Vector2D extendArray(Vector2D positionMapTile) {
 
-        int minExtend = 1;
+        int minExtend = 1; // ToDo: Should be extended in the future for higher efficiency. 1 is good for debugging.
         Vector2D numExtend = new Vector2D(0, 0);
         Vector2D offset = new Vector2D(0, 0);
         Vector2D sizeOfMap = GetSizeOfMap();
@@ -294,7 +290,14 @@ public class NextMap {
         if (numExtend.getLength() > 0) {
             sizeOfMap.add(numExtend);
 
+            // Create extended array + fill with "unknown" maptiles
             NextMapTile[][] tmp = new NextMapTile[(int) sizeOfMap.x][(int) sizeOfMap.y];
+            for (int i = 0; i < tmp.length; i++) {
+                for (int j = 0; j < tmp[i].length; j++) {
+                    // Note: X/Y are normally relative to the agents position. Here, they are set to 0.
+                    tmp[i][j] = new NextMapTile(0, 0, 0, "unknown");
+                }
+            }
 
             // Copy existing map to tmp map
             for (int i = 0; i < this.map.length; i++) {
