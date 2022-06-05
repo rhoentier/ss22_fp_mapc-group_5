@@ -17,7 +17,7 @@ public class NextActionWrapper {
         switch (action) {
             case connect: {
                 if (parameter1 != null && parameter2 != null)
-                    return new Action("connect", parameter1, parameter2);
+                    return new Action(NextConstants.EActions.connect.toString(), parameter1, parameter2);
             }
             case disconnect: {
                 if (parameter1 != null && parameter2 != null)

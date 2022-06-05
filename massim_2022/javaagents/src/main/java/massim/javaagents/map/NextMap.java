@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import eis.iilang.Identifier;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
 
 public class NextMap {
 
@@ -366,5 +367,38 @@ public class NextMap {
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
         if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
         return false;
+    }
+
+    public Boolean IsObstacleInNextStep(Vector2D position, ECardinals direction) {
+		var x = position.getAdded(0, 1);
+		var d = this.map;
+		
+		
+    	switch(direction) {
+    	case n:
+    		//Vector2D newPosition = agentPosition.getAdded(1, 0);
+    		
+//            if (attachedElements.contains(NextConstants.EastPoint)) {
+//                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
+//                    return false;
+//            }
+//            if (attachedElements.contains(NextConstants.SouthPoint)) {
+//                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+//                    return false;
+//            }
+//            if (attachedElements.contains(NextConstants.WestPoint)) {
+//                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
+//                    return false;
+//            }
+    		break;
+    	case e:
+    		break;
+		case s:
+    		break;
+    	case w:
+        	break;
+	}
+    	
+    	return false;
     }
 }

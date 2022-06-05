@@ -1,12 +1,21 @@
 package massim.javaagents.agents;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Vector;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.map.NextMapTile;
+import massim.javaagents.map.Vector2D;
+import massim.javaagents.pathfinding.NextManhattanPath;
+import massim.javaagents.percept.NextTask;
 
 public final class NextAgentUtil{
 
@@ -110,5 +119,70 @@ public final class NextAgentUtil{
      */
     public static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
         return new Action("survey", new Identifier( "" + xPosition ),new Identifier( "" + yPosition));
+    }
+    
+    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst)
+    {
+    	ArrayList<NextTask> result = null;
+    	Iterator<NextTask> it = taskList.iterator();
+    	//result = it.next(); // Erster Task nehmen
+    	
+    	while(it.hasNext())
+    	{
+    		NextTask nextTask = it.next();
+    		Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
+    		while (nextMapIt.hasNext()) {
+    			NextMapTile nextMapTile = nextMapIt.next();
+    			if(dispenserLst.contains(nextMapTile))
+    			{
+    				result.add(nextTask);
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    public static ArrayList<EAgentTask> fillAgentTasks()
+    {
+		ArrayList<EAgentTask> newAgentTasks = new ArrayList<EAgentTask>();
+	    newAgentTasks.add(EAgentTask.exploreMap);
+	    newAgentTasks.add(EAgentTask.goToDispenser);
+	    newAgentTasks.add(EAgentTask.goToEndzone);
+    	return newAgentTasks;
+    }
+    
+    public static Vector2D GetDispenserFromType(HashSet<NextMapTile> dispenser, String type)
+    {
+    	Vector2D result = new Vector2D();
+    	Iterator<NextMapTile> it = dispenser.iterator();
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();
+    		if(next.getThingType().contains(type))
+    		{
+    			result = new Vector2D(next.getPositionX(), next.getPositionY());
+    		}
+    	}
+    	return result;
+    }
+    
+    public static ArrayList<Action> GetNearestGoalZone(HashSet<NextMapTile> goalzones)
+    {
+    	NextManhattanPath manhattanPath = new NextManhattanPath();
+    	ArrayList<Action> list = new ArrayList<Action>();
+    	Iterator<NextMapTile> it = goalzones.iterator();
+    	list = manhattanPath.calculatePath((int) it.next().getPositionX(), (int)it.next().getPositionY());
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();    		
+    		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+    		if(calcList.size() < list.size())
+    		{
+    			list = calcList;
+    		}
+
+    	}
+		return list;
     }
 }

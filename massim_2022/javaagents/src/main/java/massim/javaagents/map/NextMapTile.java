@@ -2,6 +2,8 @@ package massim.javaagents.map;
 
 import java.awt.Point;
 
+import massim.javaagents.general.NextConstants.ECardinals;
+
 /**
  * The Atomic element of a Massim Map
  *
@@ -76,6 +78,10 @@ public class NextMapTile {
     public Point getPoint(){
         return new Point(positionX, positionY);
     }
+    
+    public Vector2D getPosition(){
+        return new Vector2D(positionX, positionY);
+    }
 
     /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
@@ -85,5 +91,10 @@ public class NextMapTile {
      */
     public Boolean isWalkable() {
         return !thingType.equals("obstacle") && !thingType.equals("entity") && !thingType.startsWith("block");
+    }
+    
+    public Boolean IsObstacle()
+    {
+    	return thingType.equals("obstacle");
     }
 }

@@ -3,9 +3,11 @@ package massim.javaagents.agents;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
@@ -39,6 +41,8 @@ public class NextAgentStatus {
     
     private HashSet<NextSurveyedAgent> surveyedAgents; 
     private HashSet<NextSurveyedThing> surveyedThings;
+    
+    private HashSet<NextMapTile> dispenser;
 
     private Vector2D position; // Position on the map relative to the starting point
     private NextMap map;
@@ -55,6 +59,7 @@ public class NextAgentStatus {
         attachedElements = new HashSet<>();
         position = new Vector2D();
         map = new NextMap();
+        dispenser = new HashSet<NextMapTile>();
     }
 
     public void SetTeam(String teamName) {
@@ -275,5 +280,44 @@ public class NextAgentStatus {
                 + "roleZones: \n" + this.roleZones + " \n"
                 + "--------------------------------- \n";
 
+    }
+    
+    public HashSet<NextMapTile> GetDispenser() {
+        return dispenser;
+    }
+
+    public void SetDispenser(HashSet<NextMapTile> dispenser) {
+        this.dispenser = dispenser;
+    }
+    
+    public Boolean IsObstacleInNextStep(Vector2D position, ECardinals direction) {
+    	Vector2D newAgentPosition = new Vector2D(); 
+    	switch(direction) {
+    	case n:
+    		newAgentPosition = position.getAdded(1, 0);
+    		break;
+    	case e:
+    		newAgentPosition = position.getAdded(0, 1);
+    		break;
+		case s:
+    		newAgentPosition = position.getAdded(-1, 0);
+    		break;
+    	case w:
+    		newAgentPosition = position.getAdded(0, -1);
+        	break;
+    	}
+    	
+    	Iterator<NextMapTile> it = GetObstacles().iterator();
+    	
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();
+    		//Vector2D nextPosition = map.RelativeToAbsolute(next.getPosition());
+    		Vector2D zero = new Vector2D();
+    		if(zero.equals(newAgentPosition)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }

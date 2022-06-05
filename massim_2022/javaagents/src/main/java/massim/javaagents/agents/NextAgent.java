@@ -12,12 +12,18 @@ import java.util.ArrayList;
 
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.EActions;
+import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
+import massim.javaagents.percept.NextTask;
 
 import java.util.List;
+
+import javax.lang.model.element.ModuleElement.DirectiveKind;
 
 /**
  * First iteration of an experimental agent.
@@ -56,8 +62,14 @@ public class NextAgent extends Agent {
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
     private NextManhattanPath manhattanPath = new NextManhattanPath();
-    private ArrayList<Action> pathMemory = new ArrayList<>();
+    public ArrayList<Action> pathMemory = new ArrayList<>();
 
+    // Tasks
+    // TODO miri: Properties dazu
+    public NextTask isActiveTask = null;
+    public ArrayList<EAgentTask> agentTasks = new ArrayList<EAgentTask>();
+    public EAgentTask agentTask;
+    
     /*
      * ##################### endregion fields
      */
@@ -78,7 +90,9 @@ public class NextAgent extends Agent {
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
-
+        
+        this.agentTasks = NextAgentUtil.fillAgentTasks();
+        this.agentTask = EAgentTask.exploreMap;
     }
 
     /*
@@ -133,23 +147,23 @@ public class NextAgent extends Agent {
 
         
         //Experimental part for Pathfinder implementation - For testing only
-        if (pathMemory.isEmpty()) {
-            try {
-                this.say(agentStatus.GetPosition().toString());
-                /*
-                    try{
-                    this.say(" " + agentStatus.getMap().MapToStringBuilder());
-                    }catch( Exception e){} finally{}
-                 */
-                this.say(" " + agentStatus.GetSizeOfMap());
-                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
-                pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
-
-                this.say(pathMemory.toString());
-            } catch (Exception e) {
-                this.say("Path generation failed: " + e);
-            }
-        }
+//        if (pathMemory.isEmpty()) {
+//            try {
+//                this.say(agentStatus.GetPosition().toString());
+//                /*
+//                    try{
+//                    this.say(" " + agentStatus.getMap().MapToStringBuilder());
+//                    }catch( Exception e){} finally{}
+//                 */
+//                this.say(" " + agentStatus.GetSizeOfMap());
+//                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
+//                pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
+//
+//                this.say(pathMemory.toString());
+//            } catch (Exception e) {
+//                this.say("Path generation failed: " + e);
+//            }
+//        }
 
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
@@ -157,7 +171,6 @@ public class NextAgent extends Agent {
             
             // Update internal map with new percept
             agentStatus.UpdateMap();
-
 
             generatePossibleActions();
 
@@ -184,7 +197,7 @@ public class NextAgent extends Agent {
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
     }
-
+    
     /*
      * ##################### endregion public methods
      */
@@ -228,12 +241,22 @@ public class NextAgent extends Agent {
         Action nextAction = intention.SelectNextAction();
         
         if(!pathMemory.isEmpty()){
-            nextAction = pathMemory.remove(0);
+        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
+        	Action currentAction = pathMemory.get(0);
+
+        	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
+
+        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
+        	{        		
+        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier(direction));
+        	} else {        		
+        		nextAction = pathMemory.remove(0);
+        	}
         }
         say(nextAction.toProlog());
         return nextAction;
     }
-
+    
     private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
