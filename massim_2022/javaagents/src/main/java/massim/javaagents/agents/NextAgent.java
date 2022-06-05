@@ -74,7 +74,7 @@ public class NextAgent extends Agent {
     public NextAgent(String name, MailService mailbox) {
         super(name, mailbox);
 
-        this.agentStatus = new NextAgentStatus();
+        this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();
         PathfindingConfig.ParseConfig("conf/NextAgents");
 
@@ -256,7 +256,7 @@ public class NextAgent extends Agent {
         this.lastID = -1;
         this.simStatus = new NextSimulationStatus();
         this.simStatus.SetActionID(lastID);
-        this.agentStatus = new NextAgentStatus();
+        this.agentStatus = new NextAgentStatus(this);
         this.processor = new NextPerceptReader(this);
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
