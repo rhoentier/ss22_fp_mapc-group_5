@@ -123,7 +123,6 @@ public final class NextAgentUtil{
     
     public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int actualSteps)
     {
-    	// Erster Schritt nur Task mit einem Block !
     	ArrayList<NextTask> result = new ArrayList<NextTask>();
     	Iterator<NextTask> it = taskList.iterator();
     	
@@ -148,15 +147,6 @@ public final class NextAgentUtil{
     		}
     	}
     	return result;
-    }
-    
-    public static ArrayList<EAgentTask> fillAgentTasks()
-    {
-		ArrayList<EAgentTask> newAgentTasks = new ArrayList<EAgentTask>();
-	    newAgentTasks.add(EAgentTask.exploreMap);
-	    newAgentTasks.add(EAgentTask.goToDispenser);
-	    newAgentTasks.add(EAgentTask.goToEndzone);
-    	return newAgentTasks;
     }
     
     public static Vector2D GetDispenserFromType(HashSet<NextMapTile> dispenser, String type)
@@ -197,16 +187,15 @@ public final class NextAgentUtil{
 		return list;
     }
     
-    public static Boolean AgentInGoalZone(HashSet<NextMapTile> goalzones)
+    public static Boolean IsAgentInGoalZone(HashSet<NextMapTile> goalzones)
     {
     	Iterator<NextMapTile> it = goalzones.iterator();
     	
     	while(it.hasNext())
     	{
-    		NextMapTile next = it.next();    		
-    		Vector2D nextPosition = next.getPosition();
-    		Vector2D newAgentPosition = new Vector2D();
-    		if(newAgentPosition.equals(nextPosition)) {
+    		NextMapTile next = it.next();    
+    		// Agent at (0,0)
+    		if(new Vector2D().equals(next.getPosition())) {
     			return true;
     		}
     	}
@@ -220,11 +209,11 @@ public final class NextAgentUtil{
 	    	HashSet<Point> attachedElements = nextAgent.getStatus().GetAttachedElements();
 	    	HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
 	    	    	
-	    	Iterator<Point> it = attachedElements.iterator();
-	    	Point next = it.next();
+	    	Iterator<Point> attachElementIterator = attachedElements.iterator();
+	    	Point next = attachElementIterator.next();
 	    	
-	    	Iterator<NextMapTile> itActiveTask = activeTask.iterator();
-	    	NextMapTile nextActiveTask = itActiveTask.next();
+	    	Iterator<NextMapTile> activeTaskIterator = activeTask.iterator();
+	    	NextMapTile nextActiveTask = activeTaskIterator.next();
 	    	
 	    	if(next.equals(nextActiveTask.getPoint()))
 	    	{
@@ -235,13 +224,8 @@ public final class NextAgentUtil{
     	return false;
     }
     
-    public static Boolean IsTaskActive(NextAgent nextAgent)
+    public static Boolean IsTaskActive(NextTask activeTask, int actualSteps)
     {
-    	NextTask activeTask = nextAgent.GetActiveTask();
-    	long deadline = nextAgent.getSimulationStatus().GetDeadline();
-    	int totalSteps = nextAgent.getSimulationStatus().GetTotalSteps();
-    	int actualSteps = nextAgent.getSimulationStatus().GetActualStep();
-    	
     	if(actualSteps <= activeTask.GetDeadline())
     		return true;
     	return false;
@@ -253,7 +237,7 @@ public final class NextAgentUtil{
     	while(blocksIt.hasNext())
     	{
     		NextMapTile next = blocksIt.next();
-    		if(next.getThingType().equals(thingType))
+    		if(thingType.contains(next.getThingType()))
     			return true;
     	}
     	return false;

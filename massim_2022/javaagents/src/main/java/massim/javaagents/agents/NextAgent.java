@@ -66,7 +66,6 @@ public class NextAgent extends Agent {
 
     // Tasks
     private NextTask activeTask = null;
-    private ArrayList<EAgentTask> agentTasks = new ArrayList<EAgentTask>();
     private EAgentTask agentTask;
     
     /*
@@ -90,7 +89,6 @@ public class NextAgent extends Agent {
 
         this.processor = new NextPerceptReader(this);
         
-        this.agentTasks = NextAgentUtil.fillAgentTasks();
         this.agentTask = EAgentTask.exploreMap;
     }
 
@@ -164,6 +162,10 @@ public class NextAgent extends Agent {
 //            }
 //        }
 
+        // Pathfinding
+        
+        
+        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
@@ -171,6 +173,10 @@ public class NextAgent extends Agent {
             // Update internal map with new percept
             agentStatus.UpdateMap();
 
+            clearPossibleActions();
+            
+            generatePathMemory();
+            
             generatePossibleActions();
 
             //return selectNextAction();
@@ -205,16 +211,6 @@ public class NextAgent extends Agent {
     public void SetActiveTask(NextTask activeTask)
     {
     	this.activeTask = activeTask;
-    }
-    
-    public ArrayList<EAgentTask> GetAgentTaskList()
-    {
-    	return this.agentTasks;
-    }
-    
-    public void SetAgentTaskList(ArrayList<EAgentTask> agentTasks)
-    {
-    	this.agentTasks = agentTasks;
     }
     
     public EAgentTask GetAgentTask() {
@@ -271,7 +267,7 @@ public class NextAgent extends Agent {
 	        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
 	        	Action currentAction = pathMemory.get(0);
 	
-	        	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
+	        	//String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
 	
 	        	// TODO miri Clear der Bloecke implementieren
 	//        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
@@ -288,6 +284,15 @@ public class NextAgent extends Agent {
     
     private void generatePossibleActions() {
         intention.GeneratePossibleActions();
+    }
+    
+    private void generatePathMemory() {
+    	intention.GeneratePathMemory();
+    }
+    
+    private void clearPossibleActions()
+    {
+    	intention.ClearPossibleActions();
     }
 
     private void resetAgent() {
