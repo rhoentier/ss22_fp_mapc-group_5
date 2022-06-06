@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
+import java.util.ArrayList;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EAgentTask;
@@ -29,6 +30,9 @@ public final class NextAgentUtil{
             Random rn = new Random();
 	    return rn.nextInt(range);
         }
+        
+
+                
         public static Action GenerateNorthMove()
 	{
             return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("n"));

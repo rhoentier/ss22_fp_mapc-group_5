@@ -11,6 +11,7 @@ import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
+import massim.javaagents.percept.NextRole;
 import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
 
@@ -20,6 +21,7 @@ import massim.javaagents.percept.NextSurveyedThing;
  */
 public class NextAgentStatus {
 
+    private NextAgent nextAgent;
     private String name;
     private String teamName;
     private String lastAction;
@@ -47,7 +49,8 @@ public class NextAgentStatus {
     private Vector2D position; // Position on the map relative to the starting point
     private NextMap map;
 
-    public NextAgentStatus() {
+    public NextAgentStatus(NextAgent nextAgent) {
+        this.nextAgent = nextAgent;
         name = null;
         teamName = null;
         lastAction = null;
@@ -228,9 +231,26 @@ public class NextAgentStatus {
             }
 
             position.add(currentStep);
-            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
+            // Init all tiles within view
+            HashSet<NextMapTile> view = new HashSet<>();
+
+            int vision = 5; // ToDo: Get vision from agent
+            //String roleString = agent.getStatus().GetRole();
+            //HashSet<NextRole> roles = agent.getSimulationStatus().GetRolesList();
+
+            for (int i = -1 * vision; i <= vision; i++) {
+                for (int j = -1 * vision; j <= vision; j++) {
+                    if (Math.abs(i) + Math.abs(j) <= vision) {
+                        view.add(new NextMapTile(i, j, nextAgent.getSimulationStatus().GetActualStep(), "free"));
+                    }
+                }
+            }
+            map.AddPercept(position, view);
 
             // Only add visible things which are not attached to the agent
+            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
             for (NextMapTile thing: visibleThings) {
                 if (!attachedElements.contains(thing.getPoint())) {
                     visibleNotAttachedThings.add(thing);
@@ -250,6 +270,16 @@ public class NextAgentStatus {
     public Vector2D GetPosition() {
         return map.RelativeToAbsolute(position);
     }
+    
+     /**
+     * Returns the map stored n the local NextMap instance.
+     * 
+     * @return Array of MapTiles
+     */
+    
+    public NextMap GetMap() {
+        return map;
+    }
 
     /**
      * Returns the mapArray stored n the local NextMap instance.
@@ -259,7 +289,7 @@ public class NextAgentStatus {
      */
     
     public NextMapTile[][] GetMapArray() {
-        return map.GetMap();
+        return map.GetMapArray();
     }
     
     /**
