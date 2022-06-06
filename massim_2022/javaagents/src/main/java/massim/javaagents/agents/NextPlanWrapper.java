@@ -16,8 +16,7 @@ public class NextPlanWrapper {
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
         {
         	// TODO miri GetGoalZones 
-        	// agentStatus.GetMap().GetGoalZones
-        	if(!nextAgentStatus.GetGoalZones().isEmpty()) // knowing endzone
+        	if(!nextAgentStatus.GetMap().GetMapTiles("goalZone", nextAgentStatus.GetPosition()).isEmpty()) // knowing endzone
         	{
         		return EAgentTask.goToEndzone;
         	} 
@@ -30,7 +29,7 @@ public class NextPlanWrapper {
         {
         	// Kenn ich einen Dispenser vom aktuellen Tasktyp
         	/// TODO miri GetDispenserFromType(type)
-        	if(!nextAgentStatus.GetDispenser().isEmpty())
+        	if(!nextAgentStatus.GetMap().GetMapTiles("dispenser", nextAgentStatus.GetPosition()).isEmpty())
         	{
         		return EAgentTask.goToDispenser;
         	} 

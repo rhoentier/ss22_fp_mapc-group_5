@@ -144,40 +144,16 @@ public class NextAgent extends Agent {
                 disableAgent();
             }
         }
-
-        
-        //Experimental part for Pathfinder implementation - For testing only
-//        if (pathMemory.isEmpty()) {
-//            try {
-//                this.say(agentStatus.GetPosition().toString());
-//                /*
-//                    try{
-//                    this.say(" " + agentStatus.getMap().MapToStringBuilder());
-//                    }catch( Exception e){} finally{}
-//                 */
-//                this.say(" " + agentStatus.GetSizeOfMap());
-//                //pathMemory = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(2, 4) );
-//                pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
-//
-//                this.say(pathMemory.toString());
-//            } catch (Exception e) {
-//                this.say("Path generation failed: " + e);
-//            }
-//        }
-
-        // Pathfinding
-        
-        
         
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
             //Experimental part for Pathfinder implementation - For testing only
-            if (pathMemory.isEmpty()) {
-                Vector2D target = agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
-                pathMemory = calculatePath(target);
-            }
+//            if (pathMemory.isEmpty()) {
+//                Vector2D target = agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
+//                pathMemory = calculatePath(target);
+//            }
             
             // Update internal map with new percept
             agentStatus.UpdateMap();
@@ -230,6 +206,16 @@ public class NextAgent extends Agent {
     {
     	this.agentTask = agentTask;
     }
+    
+    public List<Action> GetPathMemory()
+    {
+    	return this.pathMemory;
+    }
+    
+    public void SetPathMemory(List<Action> pathMemory)
+    {
+    	this.pathMemory = pathMemory;
+    }
     /*
      * ##################### endregion public methods
      */
@@ -271,14 +257,13 @@ public class NextAgent extends Agent {
     // PATHFINDING EVALUATION - NUR ZUM TESTEN
     private Action selectNextActionTest() {
         Action nextAction = intention.SelectNextAction();
-        if(!nextAction.getName().contains("submit")) {
+        if(!nextAction.getName().contains("submit")) 
+        {
 	        if(!pathMemory.isEmpty()){
-	        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
-	        	Action currentAction = pathMemory.get(0);
-	
-	        	//String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-	
 	        	// TODO miri Clear der Bloecke implementieren
+	        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
+	        	//Action currentAction = pathMemory.get(0);
+	        	//String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
 	//        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
 	//        	{        		
 	//        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier(direction));
@@ -286,9 +271,9 @@ public class NextAgent extends Agent {
 	        		nextAction = pathMemory.remove(0);
 	//        	}
 	        }
+        }
         say(nextAction.toProlog());
         return nextAction;
-        //return new Action("move", new Identifier("n"));
     }
     
     private void generatePossibleActions() {
@@ -323,7 +308,7 @@ public class NextAgent extends Agent {
         this.say(agentStatus.toString());
     }
 
-    private List<Action> calculatePath(Vector2D target) {
+    public List<Action> calculatePath(Vector2D target) {
         // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
         
         Boolean targetIsOnMap = agentStatus.GetMap().containsPoint(target);

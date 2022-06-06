@@ -168,6 +168,33 @@ public final class NextAgentUtil{
     	return result;
     }
     
+    //For testing only
+    public static NextMapTile GetNearestGoalZoneMapTile(HashSet<NextMapTile> goalzones)
+    {
+    	// TODO hier noch schauen, dass er in die Goalzone läuft
+    	NextManhattanPath manhattanPath = new NextManhattanPath();
+    	ArrayList<Action> list = new ArrayList<Action>();
+    	Iterator<NextMapTile> it = goalzones.iterator();
+    	NextMapTile nearestMapTile = null;
+    	
+    	NextMapTile next = it.next();    		
+		list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+		nearestMapTile = next;
+		
+    	while(it.hasNext())
+    	{
+    		next = it.next();
+    		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+    		if(calcList.size() < list.size())
+    		{
+    			list = calcList;
+    			nearestMapTile = next;
+    		}
+
+    	}
+		return nearestMapTile;
+    }
+    
     public static ArrayList<Action> GetNearestGoalZone(HashSet<NextMapTile> goalzones)
     {
     	// TODO hier noch schauen, dass er in die Goalzone läuft
@@ -180,7 +207,7 @@ public final class NextAgentUtil{
 		
     	while(it.hasNext())
     	{
-    		it.next();
+    		next = it.next();
     		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
     		if(calcList.size() < list.size())
     		{

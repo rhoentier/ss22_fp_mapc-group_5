@@ -14,7 +14,6 @@ import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.general.NextConstants.EPathFinding;
-import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -81,7 +80,7 @@ public class NextIntention {
 	
 	                    if (nextAgent.getStatus().GetAttachedElementsAmount() < 1) {
 	                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
-	                        nextAgent.pathMemory.clear();
+	                        //nextAgent.pathMemory.clear();
 	                    }
 	                }
 	
@@ -104,7 +103,7 @@ public class NextIntention {
             	{
             		// TODO miri schlauer rotieren, auch merhere Blöcke - ISSUE
             		possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
-            		this.nextAgent.pathMemory.clear();
+            		this.nextAgent.SetPathMemory(new ArrayList<>());
             	}
             }
         }
@@ -155,7 +154,7 @@ public class NextIntention {
         // Status changed - Clear pathMemory
         if(this.nextAgent.GetAgentTask() != oldTask)
         {
-        	nextAgent.pathMemory.clear();
+        	this.nextAgent.SetPathMemory(new ArrayList<>());
         }
         
         // Move to..
@@ -180,9 +179,10 @@ public class NextIntention {
 	        		);
 	        	
 	        	// Only new pathMemory, if the current Path is empty
-	        	if (this.nextAgent.pathMemory.isEmpty()) {
-	                this.nextAgent.pathMemory = manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y);
-                    if(this.nextAgent.pathMemory.size() == 0) 
+	        	if (this.nextAgent.GetPathMemory().isEmpty()) {
+//	        		this.nextAgent.SetPathMemory(this.nextAgent.calculatePath(foundDispenser));
+	                this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
+                    if(this.nextAgent.GetPathMemory().size() == 0) 
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback
                     }
@@ -190,9 +190,12 @@ public class NextIntention {
 	            break;
 	        case goToEndzone:
 	        	// Route zur Endzone
-	        	if (this.nextAgent.pathMemory.isEmpty()) {
-	                this.nextAgent.pathMemory = NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones());
-                    if(this.nextAgent.pathMemory.size() == 0)
+	        	if (this.nextAgent.GetPathMemory().isEmpty()) {
+//	        		this.nextAgent.SetPathMemory(
+//	        				this.nextAgent.calculatePath(NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones()).getPosition())
+//	        		);
+	                this.nextAgent.SetPathMemory(NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones()));
+                    if(this.nextAgent.GetPathMemory().size() == 0)
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback
                     }
