@@ -294,16 +294,20 @@ public class NextAgentStatus {
     	Vector2D newAgentPosition = new Vector2D(); 
     	switch(direction) {
     	case n:
-    		newAgentPosition = position.getAdded(1, 0);
+    		newAgentPosition = position.getAdded(-1, 0);
+    		newAgentPosition = new Vector2D(-1, 0);
     		break;
     	case e:
-    		newAgentPosition = position.getAdded(0, 1);
+    		newAgentPosition = position.getAdded(1, 0);
+    		newAgentPosition = new Vector2D(1, 0);
     		break;
 		case s:
-    		newAgentPosition = position.getAdded(-1, 0);
+    		newAgentPosition = position.getAdded(0, -1);
+    		newAgentPosition = new Vector2D(0, -1);
     		break;
     	case w:
-    		newAgentPosition = position.getAdded(0, -1);
+    		newAgentPosition = position.getAdded(-1, 0);
+    		newAgentPosition = new Vector2D(-1, 0);
         	break;
     	}
     	
@@ -312,9 +316,8 @@ public class NextAgentStatus {
     	while(it.hasNext())
     	{
     		NextMapTile next = it.next();
-    		//Vector2D nextPosition = map.RelativeToAbsolute(next.getPosition());
-    		Vector2D zero = new Vector2D();
-    		if(zero.equals(newAgentPosition)) {
+    		Vector2D nextPosition = next.getPosition();
+    		if(newAgentPosition.equals(nextPosition)) {
     			return true;
     		}
     	}

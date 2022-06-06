@@ -121,25 +121,32 @@ public final class NextAgentUtil{
         return new Action("survey", new Identifier( "" + xPosition ),new Identifier( "" + yPosition));
     }
     
-    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst)
+    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int actualSteps)
     {
-    	ArrayList<NextTask> result = null;
+    	// Erster Schritt nur Task mit einem Block !
+    	ArrayList<NextTask> result = new ArrayList<NextTask>();
     	Iterator<NextTask> it = taskList.iterator();
-    	//result = it.next(); // Erster Task nehmen
     	
     	while(it.hasNext())
     	{
     		NextTask nextTask = it.next();
-    		Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
-    		while (nextMapIt.hasNext()) {
-    			NextMapTile nextMapTile = nextMapIt.next();
-    			if(dispenserLst.contains(nextMapTile))
-    			{
-    				result.add(nextTask);
-    			}
+    		if(nextTask.GetRequiredBlocks().size() == 1) { // Nur Tasks mit einem Block
+	    		Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
+	    		while (nextMapIt.hasNext()) {
+	    			NextMapTile nextMapTile = nextMapIt.next();
+	    			Iterator<NextMapTile> nextDispenserIt = dispenserLst.iterator();
+	    			while(nextDispenserIt.hasNext())
+	    			{
+	    				NextMapTile nextDispenserMapTile = nextDispenserIt.next();
+	    				if(nextDispenserMapTile.getThingType().contains(nextMapTile.getThingType())
+	    						&& actualSteps < nextTask.GetDeadline())
+	    				{
+	    					result.add(nextTask);	    					
+	    				}
+	    			}
+	    		}
     		}
     	}
-    	
     	return result;
     }
     
@@ -169,13 +176,17 @@ public final class NextAgentUtil{
     
     public static ArrayList<Action> GetNearestGoalZone(HashSet<NextMapTile> goalzones)
     {
+    	// TODO hier noch schauen, dass er in die Goalzone läuft
     	NextManhattanPath manhattanPath = new NextManhattanPath();
     	ArrayList<Action> list = new ArrayList<Action>();
     	Iterator<NextMapTile> it = goalzones.iterator();
-    	list = manhattanPath.calculatePath((int) it.next().getPositionX(), (int)it.next().getPositionY());
+    	
+    	NextMapTile next = it.next();    		
+		list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+		
     	while(it.hasNext())
     	{
-    		NextMapTile next = it.next();    		
+    		it.next();
     		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
     		if(calcList.size() < list.size())
     		{
@@ -184,5 +195,67 @@ public final class NextAgentUtil{
 
     	}
 		return list;
+    }
+    
+    public static Boolean AgentInGoalZone(HashSet<NextMapTile> goalzones)
+    {
+    	Iterator<NextMapTile> it = goalzones.iterator();
+    	
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();    		
+    		Vector2D nextPosition = next.getPosition();
+    		Vector2D newAgentPosition = new Vector2D();
+    		if(newAgentPosition.equals(nextPosition)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public static Boolean IsBlockInCorrectPosition(NextAgent nextAgent)
+    {
+    	// TODO miri Vergleich aller Blöcke - derzeit nur mit 1
+    	if(nextAgent.GetActiveTask() != null) {
+	    	HashSet<Point> attachedElements = nextAgent.getStatus().GetAttachedElements();
+	    	HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
+	    	    	
+	    	Iterator<Point> it = attachedElements.iterator();
+	    	Point next = it.next();
+	    	
+	    	Iterator<NextMapTile> itActiveTask = activeTask.iterator();
+	    	NextMapTile nextActiveTask = itActiveTask.next();
+	    	
+	    	if(next.equals(nextActiveTask.getPoint()))
+	    	{
+	    		return true;
+	    	}
+    	}
+    	
+    	return false;
+    }
+    
+    public static Boolean IsTaskActive(NextAgent nextAgent)
+    {
+    	NextTask activeTask = nextAgent.GetActiveTask();
+    	long deadline = nextAgent.getSimulationStatus().GetDeadline();
+    	int totalSteps = nextAgent.getSimulationStatus().GetTotalSteps();
+    	int actualSteps = nextAgent.getSimulationStatus().GetActualStep();
+    	
+    	if(actualSteps <= activeTask.GetDeadline())
+    		return true;
+    	return false;
+    }
+    
+    public static Boolean IsCorrectBlockType(NextTask nextTask, String thingType)
+    {
+    	Iterator<NextMapTile> blocksIt = nextTask.GetRequiredBlocks().iterator();
+    	while(blocksIt.hasNext())
+    	{
+    		NextMapTile next = blocksIt.next();
+    		if(next.getThingType().equals(thingType))
+    			return true;
+    	}
+    	return false;
     }
 }
