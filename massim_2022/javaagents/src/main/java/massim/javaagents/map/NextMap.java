@@ -169,6 +169,29 @@ public class NextMap {
     }
 
     /**
+     * Get a list of all maptile objects of a specific type.
+     * @param thingType Filter for specific thing types, e.g. "dispenser" or "obstacle"
+     * @param position Relative position of the agent (stored in NextAgentStatus)
+     * @return HashSet of Maptiles
+     */
+    public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
+
+        // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
+        updateXY(position);
+
+        HashSet<NextMapTile> maptileList = new HashSet<>();
+
+        for (int i = 0; i < this.map.length; i++) {
+            for (int j = 0; j < this.map[i].length; j++) {
+                if (map[i][j].getThingType().startsWith(thingType)) {
+                    maptileList.add(map[i][j]);
+                }
+            }
+        }
+        return maptileList;
+    }
+
+    /**
      * Transforms an absolute position to a relative position. Example with grid 10/10 and zero point at 5/5.
      * Coordinate 1/1 (absolute) is transformed to -4/-4 (relative).
      *
@@ -337,6 +360,23 @@ public class NextMap {
             this.map = tmp;
         }
         return offset;
+    }
+
+    /** Updates x/y position of each map tile relative to the position of the agent
+     *
+     *  @param position relative position of the agent
+     */
+    private void updateXY(Vector2D position) {
+
+        Vector2D absAgentPos = RelativeToAbsolute(position);
+        int absX = (int)absAgentPos.x;
+        int absY = (int)absAgentPos.y;
+
+        for (int i = 0; i < this.map.length; i++) {
+            for (int j = 0; j < this.map[i].length; j++) {
+                this.map[i][j].setPosition(new Vector2D(i-absX, j-absY));
+            }
+        }
     }
 
     /**
