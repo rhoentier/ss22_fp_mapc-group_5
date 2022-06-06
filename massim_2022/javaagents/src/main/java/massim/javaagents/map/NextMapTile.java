@@ -121,6 +121,14 @@ public class NextMapTile {
         this.score = score;
     }
 
+    public void setPositionX(Integer positionX) {
+        this.positionX = positionX;
+    }
+
+    public void setPositionY(Integer positionY) {
+        this.positionY = positionY;
+    }
+
     
     
 

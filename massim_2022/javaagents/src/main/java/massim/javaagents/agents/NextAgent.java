@@ -57,7 +57,6 @@ public class NextAgent extends Agent {
 
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
-
     private NextManhattanPath manhattanPath = new NextManhattanPath();
     private NextAStarPath aStar = new NextAStarPath();
     private List<Action> pathMemory = new ArrayList<>();
@@ -135,43 +134,18 @@ public class NextAgent extends Agent {
             }
         }
 
-        
-        //Experimental part for Pathfinder implementation - For testing only
-        if (pathMemory.isEmpty()) {
-            //this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.GetMapArray(),agentStatus.GetPosition())));
-                    
-            try {
-                this.say(agentStatus.GetPosition().toString());
-                ///*
-                    try{ 
-                    //this.say(" " + agentStatus.GetMap().MapToStringBuilder());
-                    //this.say(" " + NextMap.MapToStringBuilder(agentStatus.GetMapArray()));
-                    this.say(" " + NextMap.MapToStringBuilder(NextMap.CenterMapAroundPosition(agentStatus.GetMapArray(), agentStatus.GetPosition())));
-                    
-                    //RelativeToAbsolute(position)
-                    }catch( Exception e){
-                    this.say(" " + e);
-                    } finally{}
-                //*/
-                this.say(" " + agentStatus.GetSizeOfMap());
-                //pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(3,4) );
-                List<NextMapTile> pathMemoryA;
-                pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11)-5,NextAgentUtil.GenerateRandomNumber(11)-5) );
-                // pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
-                this.say(pathMemoryA.toString());
-                
-            } catch (Exception e) {
-                this.say("Path generation failed: " + e);
-            }
-        }
-        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
+
+            //Experimental part for Pathfinder implementation - For testing only
+            if (pathMemory.isEmpty()) {
+                Vector2D target = agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
+                pathMemory = calculatePath(target);
+            }
             
             // Update internal map with new percept
             agentStatus.UpdateMap();
-
 
             generatePossibleActions();
 
@@ -232,16 +206,16 @@ public class NextAgent extends Agent {
      */
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
-        
+
         say(nextAction.toProlog());
         return nextAction;
     }
-    
+
     // PATHFINDING EVALUATION - NUR ZUM TESTEN
     private Action selectNextActionTest() {
         Action nextAction = intention.SelectNextAction();
-        
-        if(!pathMemory.isEmpty()){
+
+        if (!pathMemory.isEmpty() && !(pathMemory == null)) {
             nextAction = pathMemory.remove(0);
         }
         say(nextAction.toProlog());
@@ -263,10 +237,39 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         //this.roleToChangeTo=null;
+
+        pathMemory = new ArrayList<>();
+
     }
 
     private void printAgentStatus() {
         this.say(agentStatus.toString());
+    }
+
+    private List<Action> calculatePath(Vector2D target) {
+        // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
+        
+        Boolean targetIsOnMap = agentStatus.GetMap().containsPoint(target);
+        try {
+            if (targetIsOnMap && !agentStatus.GetMapArray()[(int)target.x][(int)target.y].getThingType().equals("unknown")) {
+                List<Action> pathMemoryA;
+                pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), target);
+                // this.say("A* path:" + pathMemoryA);
+                return pathMemoryA;
+            
+            } else {
+                List<Action> pathMemoryB;
+                int targetX = (int) (target.x - agentStatus.GetPosition().x);
+                int targetY = (int) (target.y - agentStatus.GetPosition().y);
+                // this.say("Values path: " + targetX +" "+ targetY);
+                pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
+                // this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);
+                return pathMemoryB; 
+            }
+        } catch (Exception e) {
+            this.say("Path generation failed: " + e);
+        }
+        return null;
     }
 
     /*

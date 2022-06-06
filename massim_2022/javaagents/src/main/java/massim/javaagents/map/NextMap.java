@@ -431,7 +431,11 @@ public class NextMap {
             for (int x = 0; x < mapWidth; x++) {
                 int oldX = (x-xOffset+mapWidth)%(mapWidth-1);
                 int oldY = (y-yOffset+mapHeight)%(mapHeight-1);
-                tempMap[x][y] = mapOld [oldX][oldY];
+                tempMap[x][y] = new NextMapTile(
+                        x,
+                        y,
+                        mapOld[oldX][oldY].getLastVisionStep(),
+                        mapOld[oldX][oldY].getThingType());
             }
         }
         return tempMap;
@@ -465,5 +469,18 @@ public class NextMap {
             stringForReturn.append(subString + "\n");
         }
         return "NextMap:" + "\n" + stringForReturn;
+    }
+
+    public Boolean containsPoint(Vector2D target) {
+        int xPosition = (int)target.x;
+        int yPosition = (int)target.y;
+        
+        if( xPosition >= 0 && xPosition < map.length ) {
+            if( yPosition >= 0 && yPosition < map[0].length ){
+                return true;
+            }
+        }
+    
+        return false;
     }
 }
