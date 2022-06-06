@@ -19,7 +19,17 @@ public class NextMapTile {
     private Boolean isAThing;
     private String thingType; // - (b1,b0,b2, Dispenser, Obstacle, zone...)
 
-    private Boolean isWalkable;
+    // - Pathfinding Attributes
+    private boolean open = false;
+    private NextMapTile parent = null;
+    private int score = 0;
+    
+    
+    public NextMapTile() {
+        this.lastVisionStep = -2;
+        this.thingType = "unknown";
+    }
+    
 
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
@@ -79,11 +89,47 @@ public class NextMapTile {
 
     /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
-     * entity, block, obstacle or dispenser
+     * entity, block, obstacle
      *
      * @return
      */
-    public Boolean isWalkable() {
+    public Boolean IsWalkable() {
         return !thingType.equals("obstacle") && !thingType.equals("entity") && !thingType.equals("unknown") && !thingType.startsWith("block");
     }
+    
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
+    }
+
+    public NextMapTile getParent() {
+        return parent;
+    }
+
+    public void setParent(NextMapTile parent) {
+        this.parent = parent;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void setPositionX(Integer positionX) {
+        this.positionX = positionX;
+    }
+
+    public void setPositionY(Integer positionY) {
+        this.positionY = positionY;
+    }
+
+    
+    
+
 }
