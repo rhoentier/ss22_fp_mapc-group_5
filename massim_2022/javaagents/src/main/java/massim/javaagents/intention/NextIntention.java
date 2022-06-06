@@ -31,6 +31,7 @@ public class NextIntention {
     public Action SelectNextAction() {
 
         Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+        
 
         //Compares each action based on the value
         if (possibleActions != null) {

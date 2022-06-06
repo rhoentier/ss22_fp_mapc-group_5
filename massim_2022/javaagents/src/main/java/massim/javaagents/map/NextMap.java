@@ -39,8 +39,9 @@ public class NextMap {
     /**
      * Add an array of things to the map.
      *
-     * @param agentPosition Current position of the agent relative to the starting position.
-     * @param percept       Array of things as NextMapTile-objects.
+     * @param agentPosition Current position of the agent relative to the
+     * starting position.
+     * @param percept Array of things as NextMapTile-objects.
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
 
@@ -53,8 +54,9 @@ public class NextMap {
     }
 
     /**
-     * Print map to console with x0/y0 in top left corner. First letter of getThingType() is used for representation.
-     * For example: "A": Agent, "O": Obstacle. Special character "Z" for zero point.
+     * Print map to console with x0/y0 in top left corner. First letter of
+     * getThingType() is used for representation. For example: "A": Agent, "O":
+     * Obstacle. Special character "Z" for zero point.
      */
     public void WriteToFile(String filename) {
         String strMap = "";
@@ -76,13 +78,13 @@ public class NextMap {
     }
 
     /**
-     * Merges the given map (param 1) into the existing map (this) based on position of agents and in which distance
-     * they see each other.
+     * Merges the given map (param 1) into the existing map (this) based on
+     * position of agents and in which distance they see each other.
      *
-     * @param mapAgent2      NextMap of the agent2, which is seen from agent1.
+     * @param mapAgent2 NextMap of the agent2, which is seen from agent1.
      * @param positionAgent1 Position of agent1, which sees agent2
      * @param positionAgent2 Position of agent2, which is seen from agent1.
-     * @param deltaView      Distance in which agent1 sees agent2
+     * @param deltaView Distance in which agent1 sees agent2
      */
     public void MergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
 
@@ -103,8 +105,12 @@ public class NextMap {
         // Merge found dispensers
         foundDispensers.addAll(mapAgent2.foundDispensers);
         // Merge found zones without generating duplicates
-        if (mapAgent2.foundRoleZone) foundRoleZone = true;
-        if (mapAgent2.foundGoalZone) foundGoalZone = true;
+        if (mapAgent2.foundRoleZone) {
+            foundRoleZone = true;
+        }
+        if (mapAgent2.foundGoalZone) {
+            foundGoalZone = true;
+        }
     }
 
     /**
@@ -195,10 +201,12 @@ public class NextMap {
     }
 
     /**
-     * Sets an object on the position relative to the starting position of the agent.
+     * Sets an object on the position relative to the starting position of the
+     * agent.
      *
-     * @param relativePosition: Position of the map tile relative to the starting position of the agent.
-     * @param maptile:          MapTile to add.
+     * @param relativePosition: Position of the map tile relative to the
+     * starting position of the agent.
+     * @param maptile: MapTile to add.
      */
     private void setMapTileRel(Vector2D relativePosition, NextMapTile maptile) {
         Vector2D absPosition = RelativeToAbsolute(relativePosition);
@@ -208,8 +216,9 @@ public class NextMap {
     /**
      * Sets an object on the absolute position of the map.
      *
-     * @param absolutePosition: Position of the map tile absolute from the top left point.
-     * @param maptile:          MapTile to add.
+     * @param absolutePosition: Position of the map tile absolute from the top
+     * left point.
+     * @param maptile: MapTile to add.
      */
     private void setMapTileAbs(Vector2D absolutePosition, NextMapTile maptile) {
 
@@ -218,9 +227,14 @@ public class NextMap {
         // add dispenser and zones to found things
         if (maptile != null) {
             if (maptile.getThingType().startsWith("dispenser")) {
-                if (!foundDispensers.contains(maptile.getThingType())) foundDispensers.add((maptile.getThingType().substring(10)));
-            } else if (maptile.getThingType().equals("goalZone")) foundGoalZone = true;
-            else if (maptile.getThingType().equals("roleZone")) foundRoleZone = true;
+                if (!foundDispensers.contains(maptile.getThingType())) {
+                    foundDispensers.add((maptile.getThingType().substring(10)));
+                }
+            } else if (maptile.getThingType().equals("goalZone")) {
+                foundGoalZone = true;
+            } else if (maptile.getThingType().equals("roleZone")) {
+                foundRoleZone = true;
+            }
         }
 
         Vector2D offset = new Vector2D(extendArray(absolutePosition));
@@ -242,8 +256,9 @@ public class NextMap {
     }
 
     /**
-     * Calculates the most positive coordinate possible for the current map. If the map is of size 10/10 and the
-     * zero point is at 5/5, the most positive coordinate is at 4/4.
+     * Calculates the most positive coordinate possible for the current map. If
+     * the map is of size 10/10 and the zero point is at 5/5, the most positive
+     * coordinate is at 4/4.
      *
      * @return Vector with most positive coordinate
      */
@@ -252,8 +267,9 @@ public class NextMap {
     }
 
     /**
-     * Calculates the most negative Coordinate possible for the current map. If the map is of size 10/10 and the
-     * zero point is at 5/5, the most negative coordinate is -5/-5.
+     * Calculates the most negative Coordinate possible for the current map. If
+     * the map is of size 10/10 and the zero point is at 5/5, the most negative
+     * coordinate is -5/-5.
      *
      * @return Vector with most negative coordinate
      */
@@ -262,9 +278,21 @@ public class NextMap {
     }
 
     /**
-     * Extends the size of the map object either in x+, x-, y+ or y- direction if the map is too small.
+     * Calculates the size of the map.
      *
-     * @param positionMapTile position of the map tile to be added relative to the starting position.
+     * @return Vector object, which represents the number of elements in x- and
+     * y-direction.
+     */
+    public Vector2D getSizeOfMap() {
+        return new Vector2D(map.length, map[0].length);
+    }
+
+    /**
+     * Extends the size of the map object either in x+, x-, y+ or y- direction
+     * if the map is too small.
+     *
+     * @param positionMapTile position of the map tile to be added relative to
+     * the starting position.
      */
     private Vector2D extendArray(Vector2D positionMapTile) {
 
@@ -312,8 +340,10 @@ public class NextMap {
     }
 
     /**
-     * Check if the rotation cw or ccw is possible. Note: North/South is swapped in massim. For example if the North
-     * tile (bottom) is rotated in cw-direction, it leads to West tile (left). For further explanation, see also:
+     * Check if the rotation cw or ccw is possible. Note: North/South is swapped
+     * in massim. For example if the North tile (bottom) is rotated in
+     * cw-direction, it leads to West tile (left). For further explanation, see
+     * also:
      * <a href="https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495">https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495</a>
      *
      * @param direction
@@ -322,52 +352,135 @@ public class NextMap {
      */
     public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
         // ToDo: For the future, extend functionality if multiple blocks are attached in one direction
-        if (direction.getValue() == "cw") {
+        if (direction.getValue().equals("cw")) {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
                       return false;
+                }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
                     return false;
+                }
             }
-
         } else {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).isWalkable())
+                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
                     return false;
+                }
             }
             if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).isWalkable())
+                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
                     return false;
+                }
             }
         }
         return true;
     }
 
     /**
-     * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone bereits bekannt sind
+     * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone
+     * bereits bekannt sind
+     *
      * @param requiredBlocks
      * @return
      */
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) return true;
+        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) {
+            return true;
+        }
+        return false;
+    }
+
+    public NextMapTile[][] GetMapArray() {
+        return map.clone();
+    }
+    
+    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
+        if(mapOld.length == 1 && mapOld[0].length == 1 ) {
+            return mapOld;      
+        }
+        
+        int mapWidth = mapOld.length;
+        int mapHeight = mapOld[0].length;
+        int xOffset = (int)position.x  - ((int)(mapWidth / 2));
+        int yOffset = (int)position.y - ((int)(mapHeight / 2)); 
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][ mapHeight];
+        
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                int oldX = (x-xOffset+mapWidth)%(mapWidth-1);
+                int oldY = (y-yOffset+mapHeight)%(mapHeight-1);
+                tempMap[x][y] = new NextMapTile(
+                        x,
+                        y,
+                        mapOld[oldX][oldY].getLastVisionStep(),
+                        mapOld[oldX][oldY].getThingType());
+            }
+        }
+        return tempMap;
+    }
+    
+    public String MapToStringBuilder() {
+        return MapToStringBuilder(this.map);
+    }
+        
+
+    public static String MapToStringBuilder( NextMapTile[][] map) {
+        StringBuilder stringForReturn = new StringBuilder();
+
+        for (int y = 0; y < map[0].length; y++) {
+            StringBuilder subString = new StringBuilder();
+
+            for (int x = 0; x < map.length; x++) {
+                if (map[x][y] != null) {
+                    if (map[x][y].IsWalkable() != null) {
+                        if (map[x][y].IsWalkable()) {
+                            subString.append("_");
+                        } else {
+                            subString.append("X");
+                        }
+                    }
+                } else {
+                    subString.append("#");
+                }
+            }
+            
+            stringForReturn.append(subString + "\n");
+        }
+        return "NextMap:" + "\n" + stringForReturn;
+    }
+
+    public Boolean containsPoint(Vector2D target) {
+        int xPosition = (int)target.x;
+        int yPosition = (int)target.y;
+        
+        if( xPosition >= 0 && xPosition < map.length ) {
+            if( yPosition >= 0 && yPosition < map[0].length ){
+                return true;
+            }
+        }
+    
         return false;
     }
 }
