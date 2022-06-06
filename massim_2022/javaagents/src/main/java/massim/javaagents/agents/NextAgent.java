@@ -254,7 +254,7 @@ public class NextAgent extends Agent {
             if (targetIsOnMap && !agentStatus.GetMapArray()[(int)target.x][(int)target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), target);
-                // this.say("A* path:" + pathMemoryA);
+                 this.say("A* path:" + pathMemoryA);
                 return pathMemoryA;
             
             } else {
@@ -263,7 +263,7 @@ public class NextAgent extends Agent {
                 int targetY = (int) (target.y - agentStatus.GetPosition().y);
                 // this.say("Values path: " + targetX +" "+ targetY);
                 pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
-                // this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);
+                 this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);
                 return pathMemoryB; 
             }
         } catch (Exception e) {
