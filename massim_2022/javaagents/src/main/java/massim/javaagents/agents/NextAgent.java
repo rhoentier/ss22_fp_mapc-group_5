@@ -251,7 +251,7 @@ public class NextAgent extends Agent {
         
         Boolean targetIsOnMap = agentStatus.GetMap().containsPoint(target);
         try {
-            if (targetIsOnMap && !agentStatus.GetMapArray()[(int)target.x][(int)target.y].getThingType().equals("unknown")) {
+            if (targetIsOnMap && !agentStatus.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), target);
                  this.say("A* path:" + pathMemoryA);
@@ -259,8 +259,8 @@ public class NextAgent extends Agent {
             
             } else {
                 List<Action> pathMemoryB;
-                int targetX = (int) (target.x - agentStatus.GetPosition().x);
-                int targetY = (int) (target.y - agentStatus.GetPosition().y);
+                int targetX = target.x - agentStatus.GetPosition().x;
+                int targetY = target.y - agentStatus.GetPosition().y;
                 // this.say("Values path: " + targetX +" "+ targetY);
                 pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
                  this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);

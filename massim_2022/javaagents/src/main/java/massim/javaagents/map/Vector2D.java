@@ -3,12 +3,12 @@ package massim.javaagents.map;
 
 public class Vector2D {
 
-    public double x;
-    public double y;
+    public int x;
+    public int y;
 
     public Vector2D() { }
 
-    public Vector2D(double x, double y) {
+    public Vector2D(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -17,7 +17,7 @@ public class Vector2D {
         set(v);
     }
 
-    public void set(double x, double y) {
+    public void set(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -32,8 +32,8 @@ public class Vector2D {
         y = 0;
     }
 
-    public double[] getComponents() {
-        return new double[]{x, y};
+    public int[] getComponents() {
+        return new int[]{x, y};
     }
 
     public double getLength() {
@@ -44,27 +44,27 @@ public class Vector2D {
         return (x * x + y * y);
     }
 
-    public double distanceSq(double vx, double vy) {
+    public double distanceSq(int vx, int vy) {
         vx -= x;
         vy -= y;
         return (vx * vx + vy * vy);
     }
 
     public double distanceSq(Vector2D v) {
-        double vx = v.x - this.x;
-        double vy = v.y - this.y;
+        int vx = v.x - this.x;
+        int vy = v.y - this.y;
         return (vx * vx + vy * vy);
     }
 
-    public double distance(double vx, double vy) {
+    public double distance(int vx, int vy) {
         vx -= x;
         vy -= y;
         return Math.sqrt(vx * vx + vy * vy);
     }
 
     public double distance(Vector2D v) {
-        double vx = v.x - this.x;
-        double vy = v.y - this.y;
+        int vx = v.x - this.x;
+        int vy = v.y - this.y;
         return Math.sqrt(vx * vx + vy * vy);
     }
 
@@ -72,6 +72,9 @@ public class Vector2D {
         return Math.atan2(y, x);
     }
 
+    // Methoden bzgl. Normalize auskommentiert, da mit int nicht unterstützt
+
+    /*
     public void normalize() {
         double magnitude = getLength();
         x /= magnitude;
@@ -83,16 +86,18 @@ public class Vector2D {
         return new Vector2D(x / magnitude, y / magnitude);
     }
 
+
     public static Vector2D toCartesian(double magnitude, double angle) {
         return new Vector2D(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
     }
+    */
 
     public void add(Vector2D v) {
         this.x += v.x;
         this.y += v.y;
     }
 
-    public void add(double vx, double vy) {
+    public void add(int vx, int vy) {
         this.x += vx;
         this.y += vy;
     }
@@ -105,7 +110,7 @@ public class Vector2D {
         return new Vector2D(this.x + v.x, this.y + v.y);
     }
 
-    public Vector2D getAdded(double vx, double vy) {
+    public Vector2D getAdded(int vx, int vy) {
         return new Vector2D(this.x += vx, this.y += vy);
     }
 
@@ -114,7 +119,7 @@ public class Vector2D {
         this.y -= v.y;
     }
 
-    public void subtract(double vx, double vy) {
+    public void subtract(int vx, int vy) {
         this.x -= vx;
         this.y -= vy;
     }
@@ -127,49 +132,49 @@ public class Vector2D {
         return new Vector2D(this.x - v.x, this.y - v.y);
     }
 
-    public void multiply(double scalar) {
+    public void multiply(int scalar) {
         x *= scalar;
         y *= scalar;
     }
 
-    public Vector2D getMultiplied(double scalar) {
+    public Vector2D getMultiplied(int scalar) {
         return new Vector2D(x * scalar, y * scalar);
     }
 
-    public void divide(double scalar) {
+    public void divide(int scalar) {
         x /= scalar;
         y /= scalar;
     }
 
-    public Vector2D getDivided(double scalar) {
+    public Vector2D getDivided(int scalar) {
         return new Vector2D(x / scalar, y / scalar);
     }
 
-    public Vector2D getPerp() {
+    public Vector2D getPerpendicular() {
         return new Vector2D(-y, x);
     }
 
-    public double dot(Vector2D v) {
+    public int dot(Vector2D v) {
         return (this.x * v.x + this.y * v.y);
     }
 
-    public double dot(double vx, double vy) {
+    public int dot(int vx, int vy) {
         return (this.x * vx + this.y * vy);
     }
 
-    public static double dot(Vector2D v1, Vector2D v2) {
+    public static int dot(Vector2D v1, Vector2D v2) {
         return v1.x * v2.x + v1.y * v2.y;
     }
 
-    public double cross(Vector2D v) {
+    public int cross(Vector2D v) {
         return (this.x * v.y - this.y * v.x);
     }
 
-    public double cross(double vx, double vy) {
+    public int cross(int vx, int vy) {
         return (this.x * vy - this.y * vx);
     }
 
-    public static double cross(Vector2D v1, Vector2D v2) {
+    public static int cross(Vector2D v1, Vector2D v2) {
         return (v1.x * v2.y - v1.y * v2.x);
     }
 
@@ -177,7 +182,7 @@ public class Vector2D {
         return (this.dot(v) / this.getLength());
     }
 
-    public double project(double vx, double vy) {
+    public double project(int vx, int vy) {
         return (this.dot(vx, vy) / this.getLength());
     }
 
@@ -185,18 +190,10 @@ public class Vector2D {
         return (dot(v1, v2) / v1.getLength());
     }
 
-    public Vector2D getProjectedVector(Vector2D v) {
-        return this.getNormalized().getMultiplied(this.dot(v) / this.getLength());
-    }
+    // Methoden bzgl. Rotate auskommentiert, da mit int nicht unterstützt
+    // Methoden könnten umgeschrieben werden auf cw / ccw in 90 Grad Schritten
 
-    public Vector2D getProjectedVector(double vx, double vy) {
-        return this.getNormalized().getMultiplied(this.dot(vx, vy) / this.getLength());
-    }
-
-    public static Vector2D getProjectedVector(Vector2D v1, Vector2D v2) {
-        return v1.getNormalized().getMultiplied(Vector2D.dot(v1, v2) / v1.getLength());
-    }
-
+    /*
     public void rotateBy(double angle) {
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
@@ -218,6 +215,7 @@ public class Vector2D {
     public Vector2D getRotatedTo(double angle) {
         return toCartesian(getLength(), angle);
     }
+    */
 
     public void reverse() {
         x = -x;
@@ -238,8 +236,7 @@ public class Vector2D {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Vector2D) {
-            Vector2D v = (Vector2D) obj;
+        if (obj instanceof Vector2D v) {
             return (x == v.x) && (y == v.y);
         }
         return false;

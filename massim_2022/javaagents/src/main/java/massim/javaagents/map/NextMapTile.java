@@ -59,6 +59,10 @@ public class NextMapTile {
     public Integer getPositionY() {
         return positionY;
     }
+    public void setPosition(Vector2D pos) {
+        this.positionX = pos.x;
+        this.positionY = pos.y;
+    }
 
     public String getThingType() {
         if (isAThing) {
