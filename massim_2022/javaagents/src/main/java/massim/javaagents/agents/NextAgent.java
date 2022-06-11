@@ -138,6 +138,8 @@ public class NextAgent extends Agent {
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
+            //System.out.println(NextMap.MapToStringBuilder(this.agentStatus.GetMapArray()));
+            
             //Experimental part for Pathfinder implementation - For testing only
             if (pathMemory.isEmpty()) {
                 Vector2D target = agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
@@ -254,7 +256,7 @@ public class NextAgent extends Agent {
             if (targetIsOnMap && !agentStatus.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(agentStatus.GetMapArray(), agentStatus.GetPosition(), target);
-                // this.say("A* path:" + pathMemoryA);
+                 this.say("A* path:" + pathMemoryA);
                 return pathMemoryA;
             
             } else {
@@ -263,7 +265,7 @@ public class NextAgent extends Agent {
                 int targetY = target.y - agentStatus.GetPosition().y;
                 // this.say("Values path: " + targetX +" "+ targetY);
                 pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
-                // this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);
+                 this.say("Direct path: " + pathMemoryB.size() +" "+ pathMemoryB);
                 return pathMemoryB; 
             }
         } catch (Exception e) {

@@ -481,6 +481,34 @@ public class NextMap {
         return tempMap;
     }
     
+    /**
+     * Creates a copy of the map and transforms the maptiles to absolte position 
+     * 
+     * @param mapOld
+     * @return Returns an copy of the map with NextMapTiles using absolute coordinates.
+     */
+    public static NextMapTile[][] copyAbsoluteMap(NextMapTile[][] mapOld) {
+        if(mapOld.length == 1 && mapOld[0].length == 1 ) {
+            return mapOld;      
+        }
+        
+        int mapWidth = mapOld.length;
+        int mapHeight = mapOld[0].length;
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][ mapHeight];
+        
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                tempMap[x][y] = new NextMapTile(
+                        x,
+                        y,
+                        mapOld[x][y].getLastVisionStep(),
+                        mapOld[x][y].getThingType());
+            }
+        }
+        return tempMap;
+    }
+    
+    
     public String MapToStringBuilder() {
         return MapToStringBuilder(this.map);
     }

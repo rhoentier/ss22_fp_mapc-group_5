@@ -20,10 +20,6 @@
 
   "teams" : {
     "1" : {"prefix" : "Team", "password" : "Team1"},
-    "2" : {"prefix" : "Team", "password" : "Team2"},
-    "3" : {"prefix" : "Team", "password" : "Team3"},
-    "4" : {"prefix" : "Team", "password" : "Team4"},
-    "5" : {"prefix" : "Team", "password" : "Team5"},
-    "6" : {"prefix" : "Team", "password" : "Team6"}
+    "5" : {"prefix" : "Team", "password" : "Team5"}
   }
 }
