@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import eis.iilang.Identifier;
+import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
 
 public class NextMap {
@@ -20,16 +21,20 @@ public class NextMap {
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
 
-
+    private HashSet<NextAgent> agents;
     private HashSet<String> excludeThingTypes;
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
     public boolean foundGoalZone = false;
     private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
-    public NextMap() {
+    public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
+
+        // Create new list of agents; Add this agent to list
+        agents = new HashSet<>();
+        agents.add(agent);
 
         zeroPoint = new Vector2D(0, 0);
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
@@ -539,7 +544,7 @@ public class NextMap {
         return "NextMap:" + "\n" + stringForReturn;
     }
 
-    public Boolean containsPoint(Vector2D target) {
+    public Boolean ContainsPoint(Vector2D target) {
         int xPosition = target.x;
         int yPosition = target.y;
         
