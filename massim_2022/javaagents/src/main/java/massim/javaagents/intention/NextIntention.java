@@ -60,7 +60,7 @@ public class NextIntention {
         possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
 
         //Special case: Interaction with an adjacent element.
-        for (NextMapTile visibleThing : nextAgent.getStatus().GetVision()) {
+        for (NextMapTile visibleThing : nextAgent.getStatus().GetVisibleThings()) {
 
             Point position = visibleThing.getPoint();
 
