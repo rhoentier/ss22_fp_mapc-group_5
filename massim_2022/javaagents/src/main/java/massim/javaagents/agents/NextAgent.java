@@ -138,6 +138,8 @@ public class NextAgent extends Agent {
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
+            //System.out.println(NextMap.MapToStringBuilder(this.agentStatus.GetMapArray()));
+            
             //Experimental part for Pathfinder implementation - For testing only
             if (pathMemory.isEmpty()) {
                 Vector2D target = agentStatus.GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);

@@ -14,7 +14,7 @@ import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
 
 /**
- *
+ * 
  * @author AVL
  */
 public class NextAgentStatus {

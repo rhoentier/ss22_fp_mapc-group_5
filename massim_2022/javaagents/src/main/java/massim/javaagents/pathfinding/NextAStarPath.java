@@ -27,41 +27,43 @@ public class NextAStarPath {
     private int[] targetPosition;
     private int[] localStartPoint;
 
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target){
+    private Boolean centerTheMap;
+
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target) {
         return calculatePath(originalMap, startpoint, target, false);
     }
-            
-            
+
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap) {
 
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
+        this.centerTheMap = centerTheMap;
 
         if (this.mapWidth == 1 && mapHeight == 1) {
             System.out.println("Map is to small");
             return new ArrayList<>();
         }
-        
-        /* //- Centering the map 
-        this.map = NextMap.CenterMapAroundPosition(originalMap, startpoint);
 
-        int targetX = ((int) (target.x - startpoint.x + ((mapWidth / 2))) % mapWidth) - 1;
-        int targetY = ((int) (target.y - startpoint.y + ((mapHeight / 2))) % mapHeight) - 1;
-        this.localStartPoint = new int[]{(int) (mapWidth / 2), (int) (mapHeight / 2)};
-        */
-        
-        // - A Star without map shift
-        this.map = originalMap;
-        int targetX = (int) target.x;
-        int targetY = (int) target.y;
-        this.localStartPoint = new int[]{(int) startpoint.x, (int) startpoint.y};
-        
-        
+        if (centerTheMap) {
+            //- Centering the map 
+            this.map = NextMap.CenterMapAroundPosition(originalMap, startpoint);
+            int targetX = ((target.x - startpoint.x + ((mapWidth / 2))) % mapWidth); //- 1;
+            int targetY = ((target.y - startpoint.y + ((mapHeight / 2))) % mapHeight); //- 1;
+            this.localStartPoint = new int[]{(mapWidth / 2), (mapHeight / 2)};
+            this.targetPosition = new int[]{targetX, targetY};
+        } else {
+            // - A Star without map shift
+            this.map = NextMap.copyAbsoluteMap(originalMap);
+            int targetX = target.x;
+            int targetY = target.y;
+            this.localStartPoint = new int[]{startpoint.x, startpoint.y};
+            this.targetPosition = new int[]{targetX, targetY};
+        }
+
         //System.out.println("iNPUT" + startpoint + " " + target);
         //System.out.println("Map - " + mapWidth + " " + mapHeight);
-        //System.out.println("Output - " + targetX + " " + targetY);
-        this.targetPosition = new int[]{targetX, targetY};
-
+        //System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
+        //System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
         
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");
@@ -78,7 +80,7 @@ public class NextAStarPath {
             }
         });
 
-        queue.add(this.map[localStartPoint[0]][localStartPoint[1]]);
+        queue.add(this.map[this.localStartPoint[0]][this.localStartPoint[1]]);
 
         boolean routeAvailable = false;
 
@@ -90,6 +92,7 @@ public class NextAStarPath {
                     break;
                 }
                 currentTile = queue.remove();
+                //System.out.println("Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
             } while (!currentTile.isOpen());
 
             currentTile.setOpen(false);
@@ -109,7 +112,7 @@ public class NextAStarPath {
             // loop through neighbours and get scores. add these onto temp open list
             int smallestScore = 9999999;
             for (int x = -1; x <= 1; x += 2) {
-                int nextX = currentX + x;
+                int nextX = (currentX + x) % mapWidth;
                 // currentY is now nextY
                 if (validTile(nextX, currentY)) {
                     int score = getScoreOfTile(map[nextX][currentY], currentScore);
@@ -120,12 +123,14 @@ public class NextAStarPath {
                     thisTile.setScore(score);
                     queue.add(thisTile);
                     thisTile.setParent(currentTile);
+                    //System.out.println("Trggered-2");
+                
                 }
             }
 
             for (int y = -1; y <= 1; y += 2) {
                 // currentX is now nextX
-                int nextY = currentY + y;
+                int nextY = (currentY + y) % mapHeight;
                 if (validTile(currentX, nextY)) {
                     int score = getScoreOfTile(map[currentX][nextY], currentScore);
                     if (score < smallestScore) {
@@ -135,13 +140,14 @@ public class NextAStarPath {
                     thisTile.setScore(score);
                     queue.add(thisTile);
                     thisTile.setParent(currentTile);
+                    //System.out.println("Trggered-3");
                 }
             }
         }
 
         if (routeAvailable) {
 
-            System.out.println("Convert to TargetData");
+            //System.out.println("Convert to TargetData");
             //System.out.println("Start:" + localStartPoint[0] +" " + localStartPoint[1]);
 
             // ---- Retrieve Path
