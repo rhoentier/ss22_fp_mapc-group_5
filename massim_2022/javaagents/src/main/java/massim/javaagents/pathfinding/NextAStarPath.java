@@ -27,7 +27,12 @@ public class NextAStarPath {
     private int[] targetPosition;
     private int[] localStartPoint;
 
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target) {
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target){
+        return calculatePath(originalMap, startpoint, target, false);
+    }
+            
+            
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap) {
 
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
