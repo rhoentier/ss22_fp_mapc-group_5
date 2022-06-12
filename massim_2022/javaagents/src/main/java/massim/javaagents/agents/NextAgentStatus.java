@@ -14,6 +14,9 @@ import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
 
 /**
+ * Part of Agent Belief System
+ * 
+ * Agent related status values
  * 
  * @author AVL
  */
@@ -41,6 +44,8 @@ public class NextAgentStatus {
     
     private HashSet<NextSurveyedAgent> surveyedAgents; 
     private HashSet<NextSurveyedThing> surveyedThings;
+    
+    private NextRole currentRole;
 
 
 
@@ -55,6 +60,15 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        currentRole = new NextRole("dummy", 0, null, null, 0, 0);
+    }
+
+    public NextRole GetCurrentRole() {
+        return currentRole;
+    }
+
+    public void SetCurrentRole(NextRole currentRole) {
+        this.currentRole = currentRole;
     }
 
     public void SetTeam(String teamName) {
