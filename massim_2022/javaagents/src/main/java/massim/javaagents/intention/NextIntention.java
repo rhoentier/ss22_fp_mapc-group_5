@@ -60,21 +60,21 @@ public class NextIntention {
         possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
 
         //Special case: Interaction with an adjacent element.
-        for (NextMapTile visibleThing : nextAgent.getStatus().GetVisibleThings()) {
+        for (NextMapTile visibleThing : nextAgent.getAgentStatus().GetVisibleThings()) {
 
             Point position = visibleThing.getPoint();
 
-            if (NextAgentUtil.NextTo(position, nextAgent.getStatus())) {
+            if (NextAgentUtil.NextTo(position, nextAgent.getAgentStatus())) {
 
                 if (visibleThing.getThingType().contains("dispenser")) {
 
-                    if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
+                    if (nextAgent.getAgentStatus().GetAttachedElementsAmount() < 2) {
                         possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
                     }
                 }
 
                 if (visibleThing.getThingType().contains("block")) {
-                    if (nextAgent.getStatus().GetAttachedElementsAmount() < 2) {
+                    if (nextAgent.getAgentStatus().GetAttachedElementsAmount() < 2) {
                         possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
                     }
                 }
