@@ -229,7 +229,7 @@ public class NextPerceptReader {
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
 
-        agentStatus.SetAttachedElements(processAttachedSet());
+        agentStatus.SetVisibleAttachedElements(processAttachedSet());
 
         agentStatus.SetVision(processThingsSet()); //
         agentStatus.SetObstacles(processObstaclesSet()); 
