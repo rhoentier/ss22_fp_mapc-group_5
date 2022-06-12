@@ -333,7 +333,7 @@ public class NextAgent extends Agent {
             map.AddPercept(position, visibleNotAttachedThings);
             map.AddPercept(position, agentStatus.GetObstacles());
 
-            map.WriteToFile("map.txt");
+            //map.WriteToFile("map.txt");
         }
     }
 
