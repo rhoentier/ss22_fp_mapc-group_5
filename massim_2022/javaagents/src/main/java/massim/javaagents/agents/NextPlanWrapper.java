@@ -15,7 +15,6 @@ public class NextPlanWrapper {
 		
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
         {
-        	// TODO miri GetGoalZones 
         	if(!nextAgent.GetMap().GetMapTiles("goalZone", nextAgent.GetPosition()).isEmpty()) // knowing endzone
         	{
         		return EAgentTask.goToEndzone;
@@ -38,11 +37,5 @@ public class NextPlanWrapper {
         		return EAgentTask.exploreMap;
         	}
         }
-	}
-	
-	private void resetAfterInactiveTask(NextAgent nextAgent)
-	{
-		nextAgent.SetActiveTask(null);
-		
 	}
 }

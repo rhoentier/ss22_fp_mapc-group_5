@@ -238,7 +238,37 @@ public class NextAgentStatus {
         this.dispenser = dispenser;
     }
     
-    public ArrayList<NextMapTile> IsObstacleInNextStep(ECardinals direction) {
+    public NextMapTile IsObstacleInNextStep(ECardinals direction) {
+    	Vector2D newAgentPosition = new Vector2D(); 
+    	switch(direction) {
+    	case n:
+    		newAgentPosition = new Vector2D(0, -1);
+    		break;
+    	case e:
+    		newAgentPosition = new Vector2D(1, 0);
+    		break;
+		case s:
+    		newAgentPosition = new Vector2D(0, 1);
+    		break;
+    	case w:
+    		newAgentPosition = new Vector2D(-1, 0);
+        	break;
+    	}
+    	
+    	Iterator<NextMapTile> it = GetObstacles().iterator();
+    	
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();
+    		Vector2D nextPosition = next.getPosition();
+    		if(newAgentPosition.equals(nextPosition)) {
+    			return next;
+    		}
+    	}
+    	return null;
+    }
+    	
+	public Boolean IsNextStepPossible(ECardinals direction) {
     	ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>(); 
     	HashSet<Point> attachedElements = this.nextAgent.getAgentStatus().GetAttachedElements();
     	ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
@@ -248,7 +278,7 @@ public class NextAgentStatus {
     		// **O****
 			// **XA***
 			// *******
-    		newDirection = new Vector2D(0 ,-1);
+    		newDirection = new Vector2D(0 , -1);
     		newAgentPositionLst.add(newDirection); // no block			
 			if(!attachedElements.isEmpty()) {
 				Iterator<Point> attachedElementsIt = attachedElements.iterator();
@@ -324,7 +354,8 @@ public class NextAgentStatus {
 //    			return next;
 //    		}
     	}
-    	return result;
+    	return result.size() > 0 ? false : true;
+    	//return result;
     }
     
 }

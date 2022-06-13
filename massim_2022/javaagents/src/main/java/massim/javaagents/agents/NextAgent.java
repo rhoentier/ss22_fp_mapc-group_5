@@ -16,6 +16,7 @@ import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
+import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
@@ -260,7 +261,6 @@ public class NextAgent extends Agent {
 //    	}
 	}
 
-
     /**
      * Stops the Agent. 
      * Closes the agent window 
@@ -295,31 +295,43 @@ public class NextAgent extends Agent {
     private Action selectNextActionTest() {
         Action nextAction = intention.SelectNextAction();
 
-        if(!pathMemory.isEmpty()){
+        if(!pathMemory.isEmpty())
+        {
         	Action currentAction = pathMemory.get(0);
         	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-        	ArrayList<NextMapTile> obstacle = this.getAgentStatus().IsObstacleInNextStep(ECardinals.valueOf(direction));
-        	if(obstacle.size() > 0)
-        	{
-        		/// TODO miri: Hier is noch der Wurm drin
-        		// Block rotieren, wenn er nicht hinter mir ist (sonst pass ich nicht durchs loch) 
-        		//IsRotationPossible
-        		if(obstacle.size() == 1 && !this.getAgentStatus().GetLastActionResult().contains("success")) {
-        			// no block, clear 
-        			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.get(0).getPositionX()),new Identifier("" + obstacle.get(0).getPositionY()));
+        	NextMapTile obstacle = this.getAgentStatus().IsObstacleInNextStep(ECardinals.valueOf(direction));
+        	if(obstacle != null)
+        	{        		
+        		if(agentStatus.GetAttachedElementsAmount() == 0) // no block
+        		{
+        			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
         		} 
-        		else {
-        			if(!this.getAgentStatus().GetLastActionResult().contains("success")) {
-        				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-        			}
-        			// rotieren
-//        			if(this.GetMap().IsRotationPossible(new Identifier(direction), this.GetPosition(), agentStatus.GetAttachedElements()))
-//        			{
-//        				
-//        			}
+        		else if(agentStatus.IsNextStepPossible(ECardinals.valueOf(direction))) // Step possible
+        		{
+            		nextAction = pathMemory.remove(0);
         		}
-        		
-        	} else {        		
+        		else if((agentStatus.GetLastAction().contains("clear") && !agentStatus.GetLastActionResult().contains("success") 
+        				|| agentStatus.GetAttachedElementsAmount() <= 1 )) // block
+         		{
+         			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
+         		}
+        		else if(agentStatus.GetLastAction().contains("rotate") && !agentStatus.GetLastActionResult().contains("success")) // rotate
+        		{
+        			// TODO miri check, ob ich rotieren kann (Methode gibts schon)
+    				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+        		}
+        		else // Was dann?
+        		{
+        			// Randomstep
+        			nextAction = new NextRandomPath().GenerateNextMove();
+        		}
+        	} 
+        	else {    
+        		if(agentStatus.GetLastAction().contains("move") && !agentStatus.GetLastActionResult().contains("success")
+        				&& agentStatus.GetLastActionParams().equals(currentAction.getParameters().toString()))
+				{
+        			nextAction = NextActionWrapper.CreateAction(EActions.skip);
+				}
         		nextAction = pathMemory.remove(0);
         	}
         }

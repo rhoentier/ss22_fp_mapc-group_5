@@ -211,6 +211,29 @@ public final class NextAgentUtil{
 		return list;
     }
     
+    //noch nicht getestet
+    public static ArrayList<Action> GetNearestRoleZone(HashSet<NextMapTile> roleZone)
+    {
+    	NextManhattanPath manhattanPath = new NextManhattanPath();
+    	ArrayList<Action> list = new ArrayList<Action>();
+    	Iterator<NextMapTile> it = roleZone.iterator();
+    	
+    	NextMapTile next = it.next();    		
+		list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+		
+    	while(it.hasNext())
+    	{
+    		next = it.next();
+    		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+    		if(calcList.size() < list.size())
+    		{
+    			list = calcList;
+    		}
+
+    	}
+		return list;
+    }
+    
     public static Boolean IsAgentInGoalZone(HashSet<NextMapTile> goalzones)
     {
     	Iterator<NextMapTile> it = goalzones.iterator();

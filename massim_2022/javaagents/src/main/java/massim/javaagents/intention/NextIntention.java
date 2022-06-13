@@ -109,8 +109,16 @@ public class NextIntention {
             	{
             		// TODO miri schlauer rotieren, auch mehreren Blöcke - ISSUE
 //            		if(this.nextAgent.GetMap().IsRotationPossible(new Identifier("cw"), this.nextAgent.GetPosition(), nextAgentStatus.GetAttachedElements()))
-//            		{            			
-            			possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
+//            		{            		
+            		if(nextAgentStatus.GetLastAction().contains("rotate") && !nextAgentStatus.GetLastActionResult().contains("success")
+            				&& nextAgentStatus.GetLastActionParams().equals("cw"))
+    				{
+            			possibleActions.add(
+            				new Action(EActions.clear.toString(), new Identifier("" + visibleThing.getPositionX()),new Identifier("" + visibleThing.getPositionY()+1))
+            			);
+                 		
+    				}
+        			possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
 //            		}
             	}
             	this.nextAgent.ClearPathMemory();
@@ -203,6 +211,21 @@ public class NextIntention {
                     }
 	            }
 	        	break;
+	        case goToRolezone: //ungetestet
+	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+//	        		this.nextAgent.SetPathMemory(
+//	        				this.nextAgent.calculatePath(NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones()).getPosition())
+//	        		);
+	                this.nextAgent.SetPathMemory(
+	                		NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition()))
+	                );
+                    if(this.nextAgent.GetPathMemory().size() == 0)
+                    {
+                    	possibleActions.add(generateDefaultAction()); //fallback
+                    }
+	            }
+	        	break;
+	        	
 			default:
 				break;
         }
