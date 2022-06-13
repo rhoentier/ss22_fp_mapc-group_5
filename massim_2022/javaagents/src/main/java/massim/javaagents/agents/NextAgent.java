@@ -298,13 +298,26 @@ public class NextAgent extends Agent {
         if(!pathMemory.isEmpty()){
         	Action currentAction = pathMemory.get(0);
         	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-        	NextMapTile obstacle = this.getAgentStatus().IsObstacleInNextStep(ECardinals.valueOf(direction));
-        	if(obstacle != null)
+        	ArrayList<NextMapTile> obstacle = this.getAgentStatus().IsObstacleInNextStep(ECardinals.valueOf(direction));
+        	if(obstacle.size() > 0)
         	{
+        		/// TODO miri: Hier is noch der Wurm drin
         		// Block rotieren, wenn er nicht hinter mir ist (sonst pass ich nicht durchs loch) 
         		//IsRotationPossible
-        		        			
-        			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
+        		if(obstacle.size() == 1 && !this.getAgentStatus().GetLastActionResult().contains("success")) {
+        			// no block, clear 
+        			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.get(0).getPositionX()),new Identifier("" + obstacle.get(0).getPositionY()));
+        		} 
+        		else {
+        			if(!this.getAgentStatus().GetLastActionResult().contains("success")) {
+        				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+        			}
+        			// rotieren
+//        			if(this.GetMap().IsRotationPossible(new Identifier(direction), this.GetPosition(), agentStatus.GetAttachedElements()))
+//        			{
+//        				
+//        			}
+        		}
         		
         	} else {        		
         		nextAction = pathMemory.remove(0);

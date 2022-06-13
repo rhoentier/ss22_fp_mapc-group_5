@@ -21,9 +21,8 @@ import massim.javaagents.percept.NextSurveyedThing;
  * Agent related status values
  * 
  * @author AVL
- * @param <E>
  */
-public class NextAgentStatus<E> {
+public class NextAgentStatus {
 
     private NextAgent nextAgent;
     private String name;
@@ -239,23 +238,23 @@ public class NextAgentStatus<E> {
         this.dispenser = dispenser;
     }
     
-    public NextMapTile IsObstacleInNextStep(ECardinals direction) {
+    public ArrayList<NextMapTile> IsObstacleInNextStep(ECardinals direction) {
     	ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>(); 
     	HashSet<Point> attachedElements = this.nextAgent.getAgentStatus().GetAttachedElements();
-    	NextMapTile result = null;
+    	ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
+    	Vector2D newDirection = new Vector2D(0,0);
     	switch(direction) {
     	case n:
     		// **O****
 			// **XA***
 			// *******
-			if(attachedElements.isEmpty()) {
-				newAgentPositionLst.add(new Vector2D(0 ,-1)); // no block			
-			}
-			else {
+    		newDirection = new Vector2D(0 ,-1);
+    		newAgentPositionLst.add(newDirection); // no block			
+			if(!attachedElements.isEmpty()) {
 				Iterator<Point> attachedElementsIt = attachedElements.iterator();
 				while(attachedElementsIt.hasNext()) {
 					Point next = attachedElementsIt.next();
-					newAgentPositionLst.add(new Vector2D(next.getLocation().x, next.getLocation().y)); 		
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 		
 				}
 			}
     		//newAgentPosition = new Vector2D(0, -1);
@@ -264,14 +263,14 @@ public class NextAgentStatus<E> {
     		// *******
 			// **XAO**
 			// *******
-			if(attachedElements.isEmpty()) {
-				newAgentPositionLst.add(new Vector2D(1, 0)); // no block			
-			}
-			else {
+    		newDirection = new Vector2D(1, 0);
+    		newAgentPositionLst.add(newDirection); // no block				
+			if(!attachedElements.isEmpty())
+			{
 				Iterator<Point> attachedElementsIt = attachedElements.iterator();
 				while(attachedElementsIt.hasNext()) {
 					Point next = attachedElementsIt.next();
-					newAgentPositionLst.add(new Vector2D(next.getLocation().x, next.getLocation().y)); 		
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 
 				}
 			}
     		//newAgentPosition = new Vector2D(1, 0);
@@ -280,14 +279,13 @@ public class NextAgentStatus<E> {
 			// *******
 			// **XA***
 			// **OO***
-			if(attachedElements.isEmpty()) {
-				newAgentPositionLst.add(new Vector2D(0, 1)); // no block			
-			}
-			else {
+    		newDirection = new Vector2D(0 ,1);
+    		newAgentPositionLst.add(newDirection); // no block		
+			if(!attachedElements.isEmpty()) {
 				Iterator<Point> attachedElementsIt = attachedElements.iterator();
 				while(attachedElementsIt.hasNext()) {
 					Point next = attachedElementsIt.next();
-					newAgentPositionLst.add(new Vector2D(next.getLocation().x, next.getLocation().y)); 		
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 	
 				}
 			}
     		//newAgentPosition = new Vector2D(0, 1);
@@ -296,14 +294,13 @@ public class NextAgentStatus<E> {
     		// *******
 			// *ODA***
 			// *******
-			if(attachedElements.isEmpty()) {
-				newAgentPositionLst.add(new Vector2D(-1, 0)); // no block			
-			}
-			else {
+    		newDirection = new Vector2D(-1 ,0);
+    		newAgentPositionLst.add(newDirection); // no block					
+			if(!attachedElements.isEmpty()) {
 				Iterator<Point> attachedElementsIt = attachedElements.iterator();
 				while(attachedElementsIt.hasNext()) {
 					Point next = attachedElementsIt.next();
-					newAgentPositionLst.add(new Vector2D(next.getLocation().x, next.getLocation().y)); 		
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 	
 				}
 			}
     		//newAgentPosition = new Vector2D(-1, 0);
@@ -311,7 +308,6 @@ public class NextAgentStatus<E> {
     	}
     	
 //		newAgentPositionLstArrayList.add(new Vector2D());
-    	
     	Iterator<NextMapTile> it = GetObstacles().iterator();
     	while(it.hasNext())
     	{
@@ -321,14 +317,14 @@ public class NextAgentStatus<E> {
     		for (Iterator<Vector2D> iterator = newAgentPositionLst.iterator(); iterator.hasNext();) {
     			Vector2D point = iterator.next();
 				if(point.equals(nextPosition)) {
-    				return next;
+    				result.add(next);
     			}
 			}
 //    		if(newAgentPositionLstArrayList.equals(nextPosition)) {
 //    			return next;
 //    		}
     	}
-    	return null;
+    	return result;
     }
     
 }

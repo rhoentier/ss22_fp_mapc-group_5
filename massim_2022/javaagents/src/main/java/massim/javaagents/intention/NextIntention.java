@@ -108,10 +108,10 @@ public class NextIntention {
             	else 
             	{
             		// TODO miri schlauer rotieren, auch mehreren Blöcke - ISSUE
-            		if(this.nextAgent.GetMap().IsRotationPossible(new Identifier("cw"), this.nextAgent.GetPosition(), nextAgentStatus.GetAttachedElements()))
-            		{            			
+//            		if(this.nextAgent.GetMap().IsRotationPossible(new Identifier("cw"), this.nextAgent.GetPosition(), nextAgentStatus.GetAttachedElements()))
+//            		{            			
             			possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
-            		}
+//            		}
             	}
             	this.nextAgent.ClearPathMemory();
             }
