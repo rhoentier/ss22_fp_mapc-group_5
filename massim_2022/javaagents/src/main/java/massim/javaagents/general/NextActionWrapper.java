@@ -23,6 +23,10 @@ public class NextActionWrapper {
                 if (parameter1 != null && parameter2 != null)
                     return new Action(NextConstants.EActions.disconnect.toString(), parameter1, parameter2);
             }
+            case clear: {
+                if (parameter1 != null && parameter2 != null)
+                    return new Action(NextConstants.EActions.clear.toString(), parameter1, parameter2);
+            }
             default:
                 return null;
         }
@@ -73,12 +77,6 @@ public class NextActionWrapper {
                 if (parameter != null) {
                     return new Action(NextConstants.EActions.submit.toString(), parameter);
                 }
-                return null;
-            }
-            case clear: {
-                if (parameter != null)
-                    return new Action(NextConstants.EActions.clear.toString(), parameter);
-
                 return null;
             }
             case adopt: {

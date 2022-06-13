@@ -216,6 +216,11 @@ public class NextAgent extends Agent {
     {
     	this.pathMemory = pathMemory;
     }
+    
+    public void ClearPathMemory()
+    {
+    	this.pathMemory = new ArrayList<Action>();
+    }
     /*
      * ##################### endregion public methods
      */
@@ -257,20 +262,18 @@ public class NextAgent extends Agent {
     // PATHFINDING EVALUATION - NUR ZUM TESTEN
     private Action selectNextActionTest() {
         Action nextAction = intention.SelectNextAction();
-        if(!nextAction.getName().contains("submit")) 
-        {
-	        if(!pathMemory.isEmpty()){
-	        	// TODO miri Clear der Bloecke implementieren
-	        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
-	        	//Action currentAction = pathMemory.get(0);
-	        	//String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-	//        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
-	//        	{        		
-	//        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier(direction));
-	//        	} else {        		
-	        		nextAction = pathMemory.remove(0);
-	//        	}
-	        }
+
+        if(!pathMemory.isEmpty()){
+        	// TODO miri Clear der Bloecke implementieren
+        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
+        	Action currentAction = pathMemory.get(0);
+        	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
+//        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
+//        	{        		
+//        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier( "" + 0 ),new Identifier( "" + 1));
+//        	} else {        		
+        		nextAction = pathMemory.remove(0);
+//        	}
         }
         say(nextAction.toProlog());
         return nextAction;

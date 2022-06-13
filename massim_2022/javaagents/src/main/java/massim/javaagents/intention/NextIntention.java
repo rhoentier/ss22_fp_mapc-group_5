@@ -17,6 +17,7 @@ import massim.javaagents.general.NextConstants.EPathFinding;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
+import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
@@ -80,14 +81,15 @@ public class NextIntention {
 	
 	                    if (nextAgent.getStatus().GetAttachedElementsAmount() < 1) {
 	                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
-	                        //nextAgent.pathMemory.clear();
+	                        this.nextAgent.ClearPathMemory();
 	                    }
 	                }
 	
 	                if (visibleThing.getThingType().contains("block") && this.nextAgent.GetActiveTask() != null) {
 	                	if (nextAgent.getStatus().GetAttachedElementsAmount() < 1) {
 	                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
-	                    }
+	                        this.nextAgent.ClearPathMemory();
+	                	}
 	                }
             	}
             }
@@ -103,8 +105,8 @@ public class NextIntention {
             	{
             		// TODO miri schlauer rotieren, auch merhere Blöcke - ISSUE
             		possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
-            		this.nextAgent.SetPathMemory(new ArrayList<>());
             	}
+            	this.nextAgent.ClearPathMemory();
             }
         }
     }
@@ -144,25 +146,26 @@ public class NextIntention {
 	    	this.nextAgent.SetAgentTask(EAgentTask.exploreMap);
 	    	
 	    	// TODO miri: Mehrere Blöcke fallen lassen
-	    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
-	    	{
-	    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
-	    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
-	    	}
+	    	// Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
+//	    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
+//	    	{
+//	    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
+//	    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
+//	    	}
 	    }
  		
         // Status changed - Clear pathMemory
         if(this.nextAgent.GetAgentTask() != oldTask)
         {
-        	this.nextAgent.SetPathMemory(new ArrayList<>());
+        	this.nextAgent.ClearPathMemory();
         }
         
         // Move to..
         switch(this.nextAgent.GetAgentTask()) {
 	        case exploreMap:
-	        	//this.nextAgent.pathMemory = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);
-	        	
-	        	possibleActions.add(generateDefaultAction());
+	        	if(this.nextAgent.GetPathMemory().isEmpty()) {
+	        		this.nextAgent.SetPathMemory(NextPathfindingUtil.GenerateExploreActions());
+	        	}
 	        	break;
 	        case goToDispenser:
 	        	
@@ -171,21 +174,22 @@ public class NextIntention {
 	        	 *  Hier noch schauen, welchen typ block ich noch nicht hab bzw suchen will. können mehere in einem Task sein
 	        	 *  Derzeit nehm ich nur den ersten Task
 	        	 */
-	        	Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
-	        	
-	        	Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
-	        			nextAgentStatus.GetDispenser(), //TODO miri->hier noch von der MAOP holen
-	        			requiredBlockIterator.next().getThingType()
-	        		);
-	        	
-	        	// Only new pathMemory, if the current Path is empty
-	        	if (this.nextAgent.GetPathMemory().isEmpty()) {
-//	        		this.nextAgent.SetPathMemory(this.nextAgent.calculatePath(foundDispenser));
-	                this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
-                    if(this.nextAgent.GetPathMemory().size() == 0) 
-                    {
-                    	possibleActions.add(generateDefaultAction()); //fallback
-                    }
+
+		        	Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
+		        	
+		        	Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
+		        			nextAgentStatus.GetDispenser(), //TODO miri->hier noch von der MAOP holen
+		        			requiredBlockIterator.next().getThingType()
+		        		);
+
+		        	// Only new pathMemory, if the current Path is empty
+		        	if (this.nextAgent.GetPathMemory().isEmpty()) {
+	//	        		this.nextAgent.SetPathMemory(this.nextAgent.calculatePath(foundDispenser));
+		                this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
+	                    if(this.nextAgent.GetPathMemory().size() == 0) 
+	                    {
+	                    	possibleActions.add(generateDefaultAction()); //fallback
+	                    }
 	            }
 	            break;
 	        case goToEndzone:

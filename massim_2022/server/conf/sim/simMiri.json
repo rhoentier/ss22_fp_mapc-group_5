@@ -2,12 +2,12 @@
   "NOsetup" : "conf/setup/test.txt",
 
   "steps" : 750,
-  "randomSeed" : 18,
+  "randomSeed" : 22,
   "randomFail" : 0,
   "entities" : {"standard" : 1},
   "clusterBounds" : [1,3],
 
-  "roles" : "$(roles/rolesTurnier2.json)",
+  "roles" : "$(roles/rolesMiri.json)",
 
   "clearEnergyCost" : 2,
   "deactivatedDuration" : 10,
@@ -22,7 +22,8 @@
     "height" : 64,
     "width" : 64,      
     "instructions": [
-      ["line-border", 1]
+      ["line-border", 1],
+      ["cave", 0.5, 4, 5, 4]
     ],
     "goals": {
       "number" : 2,
@@ -39,7 +40,7 @@
   "dispensers" : [5, 10],
 
   "tasks" : {
-    "size" : [1, 2],
+    "size" : [1, 1],
     "concurrent" : 4,
     "iterations" : [5, 10],
     "maxDuration" : [100, 200]
