@@ -6,6 +6,7 @@ import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.NextMapUtil;
 import eis.iilang.*;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 import massim.javaagents.MailService;
@@ -302,8 +303,9 @@ public class NextAgent extends Agent {
         	{
         		// Block rotieren, wenn er nicht hinter mir ist (sonst pass ich nicht durchs loch) 
         		//IsRotationPossible
+        		        			
+        			nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
         		
-        		nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
         	} else {        		
         		nextAction = pathMemory.remove(0);
         	}
@@ -311,8 +313,8 @@ public class NextAgent extends Agent {
         say(nextAction.toProlog());
         return nextAction;
     }
-    
-    private void generatePossibleActions() {
+
+	private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
     
