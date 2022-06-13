@@ -7,24 +7,14 @@ import massim.javaagents.percept.NextRole;
 import massim.javaagents.percept.NextTask;
 
 /**
- *
+ * Part of Agent Belief System
+ * 
+ * Simulation related status values
  * @author AVL
  */
+
 public class NextSimulationStatus {
 
-    /*
-    public Set<TaskInfo> tasksList = new HashSet<>();
-    public Set<NormInfo> normsInfo = new HashSet<>();
-    -- public long score;
-    -- public String lastAction;
-    -- public String lastActionResult;
-    public List<String> lastActionParams = new ArrayList<>();
-    -- public List<Position> attachedThings = new ArrayList<>();
- 
-    public JSONArray stepEvents;
-    public List<Position> goalZones = new ArrayList<>();
-    public List<Position> roleZones = new ArrayList<>();
-     */
     private Boolean simulationIsFinished;
     private Boolean simulationIsStarted;
 

@@ -16,7 +16,10 @@ import massim.javaagents.percept.NextSurveyedAgent;
 import massim.javaagents.percept.NextSurveyedThing;
 
 /**
- *
+ * Part of Agent Belief System
+ * 
+ * Agent related status values
+ * 
  * @author AVL
  */
 public class NextAgentStatus {
@@ -45,9 +48,9 @@ public class NextAgentStatus {
     private HashSet<NextSurveyedThing> surveyedThings;
     
     private HashSet<NextMapTile> dispenser;
+    private NextRole currentRole;
 
-    private Vector2D position; // Position on the map relative to the starting point
-    private NextMap map;
+
 
     public NextAgentStatus(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
@@ -63,6 +66,15 @@ public class NextAgentStatus {
         position = new Vector2D();
         map = new NextMap();
         dispenser = new HashSet<NextMapTile>();
+        currentRole = new NextRole("dummy", 0, null, null, 0, 0);
+    }
+
+    public NextRole GetCurrentRole() {
+        return currentRole;
+    }
+
+    public void SetCurrentRole(NextRole currentRole) {
+        this.currentRole = currentRole;
     }
 
     public void SetTeam(String teamName) {
@@ -158,7 +170,7 @@ public class NextAgentStatus {
         this.visibleThings = visionElements;
     }
 
-    public HashSet<NextMapTile> GetVision() {
+    public HashSet<NextMapTile> GetVisibleThings() {
         return this.visibleThings;
     }
 
@@ -193,8 +205,7 @@ public class NextAgentStatus {
     public void SetHits(HashSet<NextMapTile> hits) {
         this.hits = hits;
     }
-    
-    
+
     public HashSet<NextSurveyedAgent> getSurveyedAgents() {
         return surveyedAgents;
     }
@@ -211,95 +222,6 @@ public class NextAgentStatus {
         this.surveyedThings = surveyedThings;
     }
 
-    public void UpdateMap() {
-        if (lastAction.equals("move") && lastActionResult.equals("success")) {
-            Vector2D currentStep = new Vector2D(0, 0);
-
-            switch (lastActionParams) {
-                case "[n]":
-                    currentStep = new Vector2D(0, -1);
-                    break;
-                case "[e]":
-                    currentStep = new Vector2D(1, 0);
-                    break;
-                case "[s]":
-                    currentStep = new Vector2D(0, 1);
-                    break;
-                case "[w]":
-                    currentStep = new Vector2D(-1, 0);
-                    break;
-            }
-
-            position.add(currentStep);
-
-            // Init all tiles within view
-            HashSet<NextMapTile> view = new HashSet<>();
-
-            int vision = 5; // ToDo: Get vision from agent
-            //String roleString = agent.getStatus().GetRole();
-            //HashSet<NextRole> roles = agent.getSimulationStatus().GetRolesList();
-
-            for (int i = -1 * vision; i <= vision; i++) {
-                for (int j = -1 * vision; j <= vision; j++) {
-                    if (Math.abs(i) + Math.abs(j) <= vision) {
-                        view.add(new NextMapTile(i, j, nextAgent.getSimulationStatus().GetActualStep(), "free"));
-                    }
-                }
-            }
-            map.AddPercept(position, view);
-
-            // Only add visible things which are not attached to the agent
-            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
-
-            for (NextMapTile thing: visibleThings) {
-                if (!attachedElements.contains(thing.getPoint())) {
-                    visibleNotAttachedThings.add(thing);
-                }
-            }
-            map.AddPercept(position, visibleNotAttachedThings);
-            map.AddPercept(position, obstacles);
-
-            //map.WriteToFile("map.txt");
-        }
-    }
-
-    /**
-     * Returns the position of the Agent on the Map, based on absolute origin
-     * @return  Vector2D 
-     */
-    public Vector2D GetPosition() {
-        return map.RelativeToAbsolute(position);
-    }
-    
-     /**
-     * Returns the map stored n the local NextMap instance.
-     * 
-     * @return Array of MapTiles
-     */
-    
-    public NextMap GetMap() {
-        return map;
-    }
-
-    /**
-     * Returns the mapArray stored n the local NextMap instance.
-     * Is used in pathfinding algorithms
-     * 
-     * @return Array of MapTiles
-     */
-    
-    public NextMapTile[][] GetMapArray() {
-        return map.GetMapArray();
-    }
-    
-    /**
-     * Returns the size of the NextMap instance
-     * @return Vector2D with the X Y Dimensions
-     */
-    public Vector2D GetSizeOfMap() {
-        return map.GetSizeOfMap();
-    }
-    
     @Override
     public String toString() {
 

@@ -51,7 +51,7 @@ public class NextPerceptReader {
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
         this.simStatus = agent.getSimulationStatus();
-        this.agentStatus = agent.getStatus();
+        this.agentStatus = agent.getAgentStatus();
 
         clearSets();
     }
