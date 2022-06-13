@@ -183,7 +183,7 @@ public class NextMap {
     public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
 
         // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
-        updateXY(position);
+        //updateXY(position);
 
         HashSet<NextMapTile> maptileList = new HashSet<>();
 
@@ -258,6 +258,7 @@ public class NextMap {
             if (maptile.getThingType().startsWith("dispenser")) {
                 if (!foundDispensers.contains(maptile.getThingType())) {
                     foundDispensers.add((maptile.getThingType().substring(10)));
+                	foundDispenser = true;
                 }
             } else if (maptile.getThingType().equals("goalZone")) {
                 foundGoalZone = true;
@@ -556,5 +557,17 @@ public class NextMap {
         }
     
         return false;
+    }
+    
+    public Boolean IsGoalZoneAvailable() {
+    	return foundGoalZone;
+    }
+    
+    public Boolean IsRoleZoneAvailable() {
+    	return foundRoleZone;
+    }
+    
+    public Boolean IsDispenserAvailable() {
+    	return foundDispenser;
     }
 }

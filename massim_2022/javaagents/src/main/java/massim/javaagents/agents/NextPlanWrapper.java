@@ -9,14 +9,14 @@ public class NextPlanWrapper {
 
 	public static EAgentTask GenerateNewPlan(NextAgent nextAgent)
 	{
-		NextAgentStatus nextAgentStatus = nextAgent.getStatus();
+		NextAgentStatus nextAgentStatus = nextAgent.getAgentStatus();
 		NextSimulationStatus nextSimulationStatus = nextAgent.getSimulationStatus();
 		EAgentTask oldTask = nextAgent.GetAgentTask();
 		
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
         {
         	// TODO miri GetGoalZones 
-        	if(!nextAgentStatus.GetMap().GetMapTiles("goalZone", nextAgentStatus.GetPosition()).isEmpty()) // knowing endzone
+        	if(!nextAgent.GetMap().GetMapTiles("goalZone", nextAgent.GetPosition()).isEmpty()) // knowing endzone
         	{
         		return EAgentTask.goToEndzone;
         	} 
@@ -29,7 +29,7 @@ public class NextPlanWrapper {
         {
         	// Kenn ich einen Dispenser vom aktuellen Tasktyp
         	/// TODO miri GetDispenserFromType(type)
-        	if(!nextAgentStatus.GetMap().GetMapTiles("dispenser", nextAgentStatus.GetPosition()).isEmpty())
+        	if(!nextAgent.GetMap().GetMapTiles("dispenser", nextAgent.GetPosition()).isEmpty())
         	{
         		return EAgentTask.goToDispenser;
         	} 

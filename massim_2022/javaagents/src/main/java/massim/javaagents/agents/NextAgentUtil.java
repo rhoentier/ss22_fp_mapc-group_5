@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Vector;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
-import java.util.ArrayList;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
-import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -26,29 +23,27 @@ public final class NextAgentUtil{
 	    return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(directions[GenerateRandomNumber(4)]));
 	}
 
-        public static int GenerateRandomNumber(int range) {
-            Random rn = new Random();
-	    return rn.nextInt(range);
-        }
-        
-
-                
-        public static Action GenerateNorthMove()
-	{
-            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("n"));
-	}
-        public static Action GenerateSouthMove()
-	{
-            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("s"));
-	}
-        public static Action GenerateWestMove()
-	{
-            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("w"));
-	}
-        public static Action GenerateEastMove()
-	{
-            return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("e"));
-	}
+    public static int GenerateRandomNumber(int range) {
+        Random rn = new Random();
+        return rn.nextInt(range);
+    }
+              
+    public static Action GenerateNorthMove()
+    {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("n"));
+    }
+    public static Action GenerateSouthMove()
+    {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("s"));
+    }
+    public static Action GenerateWestMove()
+    {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("w"));
+    }
+    public static Action GenerateEastMove()
+    {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("e"));
+    }
 
         
     /**
@@ -171,7 +166,6 @@ public final class NextAgentUtil{
     //For testing only
     public static NextMapTile GetNearestGoalZoneMapTile(HashSet<NextMapTile> goalzones)
     {
-    	// TODO hier noch schauen, dass er in die Goalzone läuft
     	NextManhattanPath manhattanPath = new NextManhattanPath();
     	ArrayList<Action> list = new ArrayList<Action>();
     	Iterator<NextMapTile> it = goalzones.iterator();
@@ -197,7 +191,6 @@ public final class NextAgentUtil{
     
     public static ArrayList<Action> GetNearestGoalZone(HashSet<NextMapTile> goalzones)
     {
-    	// TODO hier noch schauen, dass er in die Goalzone läuft
     	NextManhattanPath manhattanPath = new NextManhattanPath();
     	ArrayList<Action> list = new ArrayList<Action>();
     	Iterator<NextMapTile> it = goalzones.iterator();
@@ -237,7 +230,7 @@ public final class NextAgentUtil{
     {
     	// TODO miri Vergleich aller Blöcke - derzeit nur mit 1
     	if(nextAgent.GetActiveTask() != null) {
-	    	HashSet<Point> attachedElements = nextAgent.getStatus().GetAttachedElements();
+	    	HashSet<Point> attachedElements = nextAgent.getAgentStatus().GetAttachedElements();
 	    	HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
 	    	    	
 	    	Iterator<Point> attachElementIterator = attachedElements.iterator();
@@ -255,11 +248,20 @@ public final class NextAgentUtil{
     	return false;
     }
     
-    public static Boolean IsTaskActive(NextTask activeTask, int actualSteps)
+    public static Boolean IsTaskActive(NextAgent nextAgent, int actualSteps)
     {
-    	if(actualSteps <= activeTask.GetDeadline())
-    		return true;
-    	return false;
+    	NextTask activeTask = nextAgent.GetActiveTask();
+    	Iterator<NextTask> taskListIt = nextAgent.getSimulationStatus().GetTasksList().iterator();
+    	Boolean isInTakslist = false;
+    	while(taskListIt.hasNext()) {
+    		NextTask next = taskListIt.next();
+    		if(next.GetName().equals(activeTask.GetName()) && actualSteps <= activeTask.GetDeadline() )
+    		{
+    			isInTakslist = true;
+    			break;
+    		}
+    	}
+    	return isInTakslist;
     }
     
     public static Boolean IsCorrectBlockType(NextTask nextTask, String thingType)

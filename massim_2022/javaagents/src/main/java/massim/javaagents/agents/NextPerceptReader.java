@@ -130,6 +130,9 @@ public class NextPerceptReader {
                             break;
                         case lastAction:
                             agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
+                            if(agentStatus.GetLastAction() != "") {
+                            	agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+                            }
                             break;
                         case lastActionResult:
                             agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
@@ -250,7 +253,7 @@ public class NextPerceptReader {
     
     private HashSet<NextMapTile> convertDispenserFromVision() {
 		HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
-		for(NextMapTile mapTile : agentStatus.GetVision())
+		for(NextMapTile mapTile : agentStatus.GetVisibleThings())
 		{
 			try {
 				if(mapTile.getThingType().contains("dispenser"))

@@ -1,33 +1,30 @@
 package massim.javaagents.agents;
 
-import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.intention.NextIntention;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.map.NextMapUtil;
 import eis.iilang.*;
 
-import java.awt.Point;
-import java.io.File;
 import java.util.ArrayList;
 
 import massim.javaagents.MailService;
-import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
-import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
 
-import javax.lang.model.element.ModuleElement.DirectiveKind;
 
 /**
  * First iteration of an experimental agent.
@@ -66,7 +63,7 @@ public class NextAgent extends Agent {
 
     // Pathfinding algorithm
     //PathfindingConfig pathfindingConfig;
-    private NextManhattanPath manhattanPath = new NextManhattanPath(); // Manhattan distance based path gemeration
+    private NextManhattanPath manhattanPath = new NextManhattanPath(); // Manhattan distance based path generation
     private NextAStarPath aStar = new NextAStarPath();  // A*Star based path gemeration
     private List<Action> pathMemory = new ArrayList<>();    // storing 
 
@@ -141,15 +138,16 @@ public class NextAgent extends Agent {
             
             //System.out.println(NextMap.MapToStringBuilder(this.agentStatus.GetMapArray()));
             
-            if (pathMemory.isEmpty()) {
-                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
-                pathMemory = calculatePath(target);
-            }
+//            if (pathMemory.isEmpty()) {
+//                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
+//                pathMemory = calculatePath(target);
+//            }
 
             updateInternalBeliefs();
 
             clearPossibleActions();
             
+            // new path
             generatePathMemory();
             
             generatePossibleActions();
@@ -162,7 +160,7 @@ public class NextAgent extends Agent {
         return null;
     }
 
-    /**
+	/**
      * Getter for local NextAgentStatus
      * @return NextAgentStatus
      */
@@ -229,10 +227,13 @@ public class NextAgent extends Agent {
     {
     	this.pathMemory = new ArrayList<Action>();
     }
-
     
     public Vector2D GetPosition() {
         return map.RelativeToAbsolute(position);
+    }
+    
+    public NextMap GetMap() {
+    	return this.map;
     }
 
     /*
@@ -242,7 +243,23 @@ public class NextAgent extends Agent {
     /*
      * ########## region private methods
      */
-    
+
+    private void resetAfterInactiveTask() {
+    	this.SetActiveTask(null);
+    	this.clearPossibleActions();
+    	this.ClearPathMemory();
+    	this.SetAgentTask(EAgentTask.exploreMap);
+    	
+    	// TODO miri: Mehrere Blöcke fallen lassen
+    	// Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
+//    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
+//    	{
+//    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
+//    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
+//    	}
+	}
+
+
     /**
      * Stops the Agent. 
      * Closes the agent window 
@@ -278,16 +295,18 @@ public class NextAgent extends Agent {
         Action nextAction = intention.SelectNextAction();
 
         if(!pathMemory.isEmpty()){
-        	// TODO miri Clear der Bloecke implementieren
-        	// Wenn ich meinen Schritt nicht gehen kann, dann will ich den Block zerstören
         	Action currentAction = pathMemory.get(0);
         	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-//        	if(this.getStatus().IsObstacleInNextStep(this.getStatus().GetPosition(), ECardinals.valueOf(direction)))
-//        	{        		
-//        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier( "" + 0 ),new Identifier( "" + 1));
-//        	} else {        		
+        	NextMapTile obstacle = this.getAgentStatus().IsObstacleInNextStep(ECardinals.valueOf(direction));
+        	if(obstacle != null)
+        	{
+        		// Block rotieren, wenn er nicht hinter mir ist (sonst pass ich nicht durchs loch) 
+        		//IsRotationPossible
+        		
+        		nextAction = new Action(EActions.clear.toString(), new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
+        	} else {        		
         		nextAction = pathMemory.remove(0);
-//        	}
+        	}
         }
         say(nextAction.toProlog());
         return nextAction;
@@ -390,6 +409,14 @@ public class NextAgent extends Agent {
             for (int i = -1 * vision; i <= vision; i++) {
                 for (int j = -1 * vision; j <= vision; j++) {
                     if (Math.abs(i) + Math.abs(j) <= vision) {
+                    	HashSet<NextMapTile> goalZone = agentStatus.GetGoalZones();
+                    	Iterator<NextMapTile> goalZoneIt = agentStatus.GetGoalZones().iterator();
+                    	while(goalZoneIt.hasNext()) {
+                    		NextMapTile next = goalZoneIt.next();
+                    		if(i == next.getPositionX() && j == next.getPositionY()) {
+                                view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "goalZone"));
+                    		}
+                    	}
                         view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "free"));
                     }
                 }

@@ -14,15 +14,15 @@ public class NextPathfindingUtil {
 		
 		// detect randomPoint to go
 		NextManhattanPath manhattanPath = new NextManhattanPath();
-		//steps = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);	
+		steps = manhattanPath.calculatePath(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10);	
 		
 		// Zum testen
-		steps.add(new Action("move", new Identifier("w")));
-		steps.add(new Action("move", new Identifier("w")));
-		steps.add(new Action("move", new Identifier("w")));
-		steps.add(new Action("move", new Identifier("w")));
-		steps.add(new Action("move", new Identifier("w")));
-		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
+//		steps.add(new Action("move", new Identifier("w")));
 		System.out.println("--- Neuer Weg entdeckt");
 		return steps;		
 	}

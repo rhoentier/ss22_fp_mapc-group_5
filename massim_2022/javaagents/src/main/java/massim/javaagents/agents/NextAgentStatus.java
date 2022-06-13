@@ -50,8 +50,6 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> dispenser;
     private NextRole currentRole;
 
-
-
     public NextAgentStatus(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
         name = null;
@@ -63,8 +61,6 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
-        position = new Vector2D();
-        map = new NextMap();
         dispenser = new HashSet<NextMapTile>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
@@ -242,7 +238,7 @@ public class NextAgentStatus {
         this.dispenser = dispenser;
     }
     
-    public Boolean IsObstacleInNextStep(Vector2D position, ECardinals direction) {
+    public NextMapTile IsObstacleInNextStep(ECardinals direction) {
     	Vector2D newAgentPosition = new Vector2D(); 
     	switch(direction) {
     	case n:
@@ -270,9 +266,9 @@ public class NextAgentStatus {
     		NextMapTile next = it.next();
     		Vector2D nextPosition = next.getPosition();
     		if(newAgentPosition.equals(nextPosition)) {
-    			return true;
+    			return next;
     		}
     	}
-    	return false;
+    	return null;
     }
 }
