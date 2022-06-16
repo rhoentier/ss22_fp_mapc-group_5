@@ -59,7 +59,12 @@ public class NextMapTile {
     public Integer getPositionY() {
         return positionY;
     }
-    public void setPosition(Vector2D pos) {
+
+    public Vector2D GetPosition() {
+        return new Vector2D(positionX, positionY);
+    }
+
+    public void SetPosition(Vector2D pos) {
         this.positionX = pos.x;
         this.positionY = pos.y;
     }

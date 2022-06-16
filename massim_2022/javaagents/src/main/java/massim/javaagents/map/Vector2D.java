@@ -226,6 +226,13 @@ public class Vector2D {
         return new Vector2D(-x, -y);
     }
 
+    public void mod(Vector2D range) {
+        x += range.x;
+        y += range.y;
+
+        x %= range.x;
+        y %= range.y;
+    }
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);

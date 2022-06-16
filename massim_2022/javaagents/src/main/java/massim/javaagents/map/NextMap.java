@@ -21,7 +21,7 @@ public class NextMap {
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
 
-    private HashSet<NextAgent> agents;
+    private NextAgent agent;
     private HashSet<String> excludeThingTypes;
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
@@ -32,9 +32,7 @@ public class NextMap {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
 
-        // Create new list of agents; Add this agent to list
-        agents = new HashSet<>();
-        agents.add(agent);
+        this.agent = agent;
 
         zeroPoint = new Vector2D(0, 0);
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
@@ -43,18 +41,15 @@ public class NextMap {
 
     /**
      * Add an array of things to the map.
-     *
-     * @param agentPosition Current position of the agent relative to the
-     * starting position.
+     * @param agentPosition Current position of the agent
      * @param percept Array of things as NextMapTile-objects.
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
 
-        Vector2D mapTilePosition = new Vector2D();
-        for (NextMapTile mapTile : percept) {
-            mapTilePosition.set(agentPosition);
-            mapTilePosition.add(mapTile.getPositionX(), mapTile.getPositionY());
-            setMapTileRel(mapTilePosition, mapTile);
+        Vector2D maptilePosition;
+        for (NextMapTile maptile : percept) {
+            maptilePosition = agent.GetPosition().getAdded(maptile.GetPosition());
+            setMapTileAbs(maptilePosition, maptile);
         }
     }
 
@@ -67,7 +62,7 @@ public class NextMap {
         String strMap = "";
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                strMap += map[i][j].getThingType().charAt(0) + "  ";
+                strMap += map[i][j].getThingType().charAt(0) + " ";
             }
             strMap += "\n";
         }
@@ -93,6 +88,7 @@ public class NextMap {
      */
     public void MergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
 
+        // ToDo: Rework needed due to change from relative to absolute positons
         // Calculate vector from starting point of agent1 (on map1) to absolute zero on map2
         Vector2D displacementVector = new Vector2D(positionAgent1);
         displacementVector.add(deltaView);
@@ -103,7 +99,7 @@ public class NextMap {
             for (int j = 0; j < mapAgent2.GetSizeOfMap().y; j++) {
                 Vector2D insertAt = new Vector2D(displacementVector);
                 insertAt.add(i, j);
-                setMapTileRel(insertAt, mapAgent2.map[i][j]);
+                setMapTileAbs(insertAt, mapAgent2.map[i][j]);
             }
         }
 
@@ -128,12 +124,11 @@ public class NextMap {
         double shortestDistanceSoFar = Double.POSITIVE_INFINITY;
         double currentDistance;
         Vector2D absolutePosition = null;
-        Vector2D agentPositionAbs = RelativeToAbsolute(agentPosition);
 
         for (int i = 0; i < this.map.length; i++) {
             for (int j = 0; j < this.map[i].length; j++) {
                 if (Objects.equals(getMapTileAbs(new Vector2D(i, j)).getThingType(), thingType)) {
-                    currentDistance = agentPositionAbs.distance(new Vector2D(i, j));
+                    currentDistance = agentPosition.distance(new Vector2D(i, j));
                     if (currentDistance < shortestDistanceSoFar) {
                         shortestDistanceSoFar = currentDistance;
                         absolutePosition = new Vector2D(i, j);
@@ -141,7 +136,7 @@ public class NextMap {
                 }
             }
         }
-        return absoluteToRelative(absolutePosition);
+        return absolutePosition;
     }
 
     /**
@@ -162,6 +157,9 @@ public class NextMap {
      */
     public Vector2D RelativeToAbsolute(Vector2D relativeVector) {
         return new Vector2D(relativeVector).getAdded(zeroPoint);
+    }
+    public void SetMapTileAbs(Vector2D maptilePosition, NextMapTile maptile) {
+        setMapTileAbs(maptilePosition, maptile);
     }
 
     /**
@@ -197,17 +195,6 @@ public class NextMap {
     }
 
     /**
-     * Transforms an absolute position to a relative position. Example with grid 10/10 and zero point at 5/5.
-     * Coordinate 1/1 (absolute) is transformed to -4/-4 (relative).
-     *
-     * @param absoluteVector Absolute position on the map
-     * @return Relative position on the map
-     */
-    private Vector2D absoluteToRelative(Vector2D absoluteVector) {
-        return new Vector2D(absoluteVector).getSubtracted(zeroPoint);
-    }
-
-    /**
      * Returns a map tile at an absolute position
      *
      * @param absolutePosition
@@ -218,39 +205,11 @@ public class NextMap {
     }
 
     /**
-     * Returns a map tile at a relative position
-     *
-     * @param relativePosition
-     * @return maptile object
-     */
-    private NextMapTile getMapTileRel(Vector2D relativePosition) {
-        Vector2D absolutePosition = RelativeToAbsolute(relativePosition);
-        return getMapTileAbs(absolutePosition);
-    }
-
-    /**
-     * Sets an object on the position relative to the starting position of the
-     * agent.
-     *
-     * @param relativePosition: Position of the map tile relative to the
-     * starting position of the agent.
-     * @param maptile: MapTile to add.
-     */
-    private void setMapTileRel(Vector2D relativePosition, NextMapTile maptile) {
-        Vector2D absPosition = RelativeToAbsolute(relativePosition);
-        setMapTileAbs(absPosition, maptile);
-    }
-
-    /**
      * Sets an object on the absolute position of the map.
      *
-     * @param absolutePosition: Position of the map tile absolute from the top
-     * left point.
      * @param maptile: MapTile to add.
      */
-    private void setMapTileAbs(Vector2D absolutePosition, NextMapTile maptile) {
-
-        NextMapTile existingMapTile;
+    private void setMapTileAbs(Vector2D maptilePosition, NextMapTile maptile) {
 
         // add dispenser and zones to found things
         if (maptile != null) {
@@ -265,10 +224,15 @@ public class NextMap {
             }
         }
 
-        Vector2D offset = new Vector2D(extendArray(absolutePosition));
-        absolutePosition.add(offset);
+        NextMapTile existingMapTile;
 
-        existingMapTile = this.map[absolutePosition.x][absolutePosition.y];
+        Vector2D moveArray = new Vector2D(extendArray(maptilePosition));
+
+        agent.MovePosition(moveArray);
+
+        maptilePosition.add(moveArray);
+
+        existingMapTile = getMapTileAbs(maptilePosition);
 
         // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
         boolean addMaptile = true;
@@ -279,7 +243,7 @@ public class NextMap {
 
         // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
         if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
-                this.map[absolutePosition.x][absolutePosition.y] = maptile;
+                this.map[maptilePosition.x][maptilePosition.y] = maptile;
         }
     }
 
@@ -332,18 +296,18 @@ public class NextMap {
         if (positionMapTile.x >= map.length) {
             numExtend.x = Math.max(positionMapTile.x - map.length + 1, minExtend);
         } else if (positionMapTile.x < 0) {
-            numExtend.x = Math.max(Math.abs(positionMapTile.x), minExtend);
+            numExtend.x = Math.max(-1 * positionMapTile.x, minExtend);
             offset.x = numExtend.x;
         }
 
         if (positionMapTile.y >= map[0].length) {
             numExtend.y = Math.max(positionMapTile.y - map[0].length + 1, minExtend);
         } else if (positionMapTile.y < 0) {
-            numExtend.y = Math.max(Math.abs(positionMapTile.y), minExtend);
+            numExtend.y = Math.max(-1 * positionMapTile.y, minExtend);
             offset.y = numExtend.y;
         }
 
-        if (numExtend.getLength() > 0) {
+        if (!numExtend.equals(new Vector2D(0, 0))) {
             sizeOfMap.add(numExtend);
 
             // Create extended array + fill with "unknown" maptiles
@@ -379,10 +343,11 @@ public class NextMap {
 
         for (int i = 0; i < this.map.length; i++) {
             for (int j = 0; j < this.map[i].length; j++) {
-                this.map[i][j].setPosition(new Vector2D(i-absX, j-absY));
+                this.map[i][j].SetPosition(new Vector2D(i-absX, j-absY));
             }
         }
     }
+
 
     /**
      * Check if the rotation cw or ccw is possible. Note: North/South is swapped
@@ -395,8 +360,12 @@ public class NextMap {
      * @param attachedElements
      * @return true if the rotation is possible else otherwise
      */
+
+    /*
     public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
-        // ToDo: For the future, extend functionality if multiple blocks are attached in one direction
+        //
+        ToDo: General rework of rotation (maybe outside map)
+        ToDo: For the future, extend functionality if multiple blocks are attached in one direction
         if (direction.getValue().equals("cw")) {
             if (attachedElements.contains(NextConstants.NorthPoint)) {
                 if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
@@ -442,6 +411,7 @@ public class NextMap {
         }
         return true;
     }
+    */
 
     /**
      * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone
