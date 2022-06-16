@@ -4,6 +4,7 @@ import eis.iilang.Action;
 import static java.lang.Math.abs;
 import java.util.ArrayList;
 import massim.javaagents.agents.NextAgentUtil;
+import massim.javaagents.map.Vector2D;
 
 /**
  * Basic Pathcalculation based on Manhattan distance

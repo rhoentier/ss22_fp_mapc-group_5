@@ -3,9 +3,11 @@ package massim.javaagents.agents;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
@@ -45,9 +47,8 @@ public class NextAgentStatus {
     private HashSet<NextSurveyedAgent> surveyedAgents; 
     private HashSet<NextSurveyedThing> surveyedThings;
     
+    private HashSet<NextMapTile> dispenser;
     private NextRole currentRole;
-
-
 
     public NextAgentStatus(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
@@ -60,6 +61,7 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        dispenser = new HashSet<NextMapTile>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
 
@@ -227,4 +229,12 @@ public class NextAgentStatus {
                 + "--------------------------------- \n";
 
     }
+    
+    public HashSet<NextMapTile> GetDispenser() {
+        return dispenser;
+    }
+
+    public void SetDispenser(HashSet<NextMapTile> dispenser) {
+        this.dispenser = dispenser;
+    }        
 }
