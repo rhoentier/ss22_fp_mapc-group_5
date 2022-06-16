@@ -24,9 +24,9 @@ public class NextMap {
 
     private HashSet<NextAgent> agents;
     private HashSet<String> excludeThingTypes;
-    public Boolean foundDispenser = false;
-    public boolean foundRoleZone = false;
-    public boolean foundGoalZone = false;
+    private Boolean foundDispenser = false;
+    private boolean foundRoleZone = false;
+    private boolean foundGoalZone = false;
     private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextAgent agent) {
@@ -183,7 +183,7 @@ public class NextMap {
     public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
 
         // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
-        //updateXY(position);
+        updateXY(position);
 
         HashSet<NextMapTile> maptileList = new HashSet<>();
 

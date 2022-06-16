@@ -2,11 +2,10 @@ package massim.javaagents.intention;
 
 import eis.iilang.Action;
 import eis.iilang.Identifier;
-import massim.javaagents.agents.AgentUtil;
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextAgentStatus;
 import massim.javaagents.agents.NextAgentUtil;
-import massim.javaagents.agents.NextPlanWrapper;
+import massim.javaagents.general.NextPlanWrapper;
 import massim.javaagents.agents.NextSimulationStatus;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
@@ -111,12 +110,12 @@ public class NextIntention {
 //            		if(this.nextAgent.GetMap().IsRotationPossible(new Identifier("cw"), this.nextAgent.GetPosition(), nextAgentStatus.GetAttachedElements()))
 //            		{            		
             		if(nextAgentStatus.GetLastAction().contains("rotate") && !nextAgentStatus.GetLastActionResult().contains("success")
-            				&& nextAgentStatus.GetLastActionParams().equals("cw"))
+            				&& nextAgentStatus.GetLastActionParams().contains("cw"))
     				{
-            			possibleActions.add(
-            				new Action(EActions.clear.toString(), new Identifier("" + visibleThing.getPositionX()),new Identifier("" + visibleThing.getPositionY()+1))
-            			);
-                 		
+//            			possibleActions.add(
+//            				new Action(EActions.clear.toString(), new Identifier("" + visibleThing.getPositionX()),new Identifier("" + visibleThing.getPositionY()+1))
+//            			);
+                 		possibleActions.add(generateDefaultAction());
     				}
         			possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
 //            		}
@@ -128,7 +127,7 @@ public class NextIntention {
     
     private Action generateDefaultAction()
     {
-    	Action nextMove = AgentUtil.GenerateMove(PathfindingConfig.GetAlgorithm());
+    	Action nextMove = NextAgentUtil.GenerateRandomMove();
     	return nextMove;
     }
     
@@ -137,7 +136,7 @@ public class NextIntention {
     	//evaluateLastStep();
 		NextSimulationStatus nextSimulationStatus = nextAgent.getSimulationStatus();
 		EAgentTask oldTask = nextAgent.GetAgentTask();
-        
+
         // Task is active
  		if(nextAgent.GetActiveTask() != null && NextAgentUtil.IsTaskActive(nextAgent, nextSimulationStatus.GetActualStep()))
         {
@@ -169,18 +168,21 @@ public class NextIntention {
         switch(this.nextAgent.GetAgentTask()) {
 	        case exploreMap:
 	        	if(this.nextAgent.GetPathMemory().isEmpty()) {
-	        		this.nextAgent.SetPathMemory(NextPathfindingUtil.GenerateExploreActions());
+	        		//this.nextAgent.SetPathMemory(NextPathfindingUtil.GenerateExploreActions());
+	        		this.nextAgent.SetPathMemory(
+	        				this.nextAgent.CalculatePath(new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10))
+	        		);
 	        	}
 	        	break;
 	        case goToDispenser:
 	        	
 	        	/***
-	        	 * TODO miri
+	        	 * TODO 
 	        	 *  Hier noch schauen, welchen typ block ich noch nicht hab bzw suchen will. können mehere in einem Task sein
 	        	 *  Derzeit nehm ich nur den ersten Task
 	        	 */	        	
 	        	// Only new pathMemory, if the current Path is empty
-	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsDispenserAvailable()) {
+	        	if (this.nextAgent.GetPathMemory().isEmpty()) {
 		        	Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
 		        	
 		        	Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
@@ -188,8 +190,8 @@ public class NextIntention {
 		        			requiredBlockIterator.next().getThingType()
 		        		);
 
-	//	        		this.nextAgent.SetPathMemory(this.nextAgent.calculatePath(foundDispenser));
-		                this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
+		        		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(foundDispenser));
+		                //this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
 	                    if(this.nextAgent.GetPathMemory().size() == 0) 
 	                    {
 	                    	possibleActions.add(generateDefaultAction()); //fallback
@@ -199,12 +201,14 @@ public class NextIntention {
 	        case goToEndzone:
 	        	// Route zur Endzone
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
-//	        		this.nextAgent.SetPathMemory(
-//	        				this.nextAgent.calculatePath(NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones()).getPosition())
-//	        		);
-	                this.nextAgent.SetPathMemory(
-	                		NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition()))
-	                );
+	        		this.nextAgent.SetPathMemory(
+	        				this.nextAgent.CalculatePath(
+	        						NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition())) 
+	        				)
+	        		);
+//	                this.nextAgent.SetPathMemory(
+//	                		NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition()))
+//	                );
                     if(this.nextAgent.GetPathMemory().size() == 0)
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback
@@ -213,12 +217,14 @@ public class NextIntention {
 	        	break;
 	        case goToRolezone: //ungetestet
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
-//	        		this.nextAgent.SetPathMemory(
-//	        				this.nextAgent.calculatePath(NextAgentUtil.GetNearestGoalZone(nextAgentStatus.GetGoalZones()).getPosition())
-//	        		);
-	                this.nextAgent.SetPathMemory(
-	                		NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition()))
-	                );
+	        		this.nextAgent.SetPathMemory(
+	        				this.nextAgent.CalculatePath(
+	        						NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition())) 
+	        				)
+	        		);
+//	                this.nextAgent.SetPathMemory(
+//	                		NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition()))
+//	                );
                     if(this.nextAgent.GetPathMemory().size() == 0)
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback

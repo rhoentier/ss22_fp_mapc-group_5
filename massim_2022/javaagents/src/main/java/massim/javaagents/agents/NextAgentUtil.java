@@ -10,6 +10,8 @@ import eis.iilang.Action;
 import eis.iilang.Identifier;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -163,6 +165,17 @@ public final class NextAgentUtil{
     	return result;
     }
     
+    private static HashSet<String> getBlockTypes(HashSet<NextMapTile> list)
+    {
+    	HashSet<String> blockTypes = new HashSet<String>();
+    	Iterator<NextMapTile> blocksIt = list.iterator();
+    	while(blocksIt.hasNext()) {
+    		NextMapTile next = blocksIt.next();
+    		blockTypes.add(next.getThingType());
+    	}
+    	return blockTypes;
+    }
+    
     //For testing only
     public static NextMapTile GetNearestGoalZoneMapTile(HashSet<NextMapTile> goalzones)
     {
@@ -189,34 +202,38 @@ public final class NextAgentUtil{
 		return nearestMapTile;
     }
     
-    public static ArrayList<Action> GetNearestGoalZone(HashSet<NextMapTile> goalzones)
+    public static Vector2D GetNearestGoalZone(HashSet<NextMapTile> goalzones)
     {
     	NextManhattanPath manhattanPath = new NextManhattanPath();
     	ArrayList<Action> list = new ArrayList<Action>();
     	Iterator<NextMapTile> it = goalzones.iterator();
+    	Vector2D result = new Vector2D();
     	
-    	NextMapTile next = it.next();    		
-		list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
-		
-    	while(it.hasNext())
-    	{
-    		next = it.next();
-    		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
-    		if(calcList.size() < list.size())
-    		{
-    			list = calcList;
-    		}
-
+    	if(it.hasNext()) {
+	    	NextMapTile next = it.next();    		
+			list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+			
+	    	while(it.hasNext())
+	    	{
+	    		next = it.next();
+	    		ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
+	    		if(calcList.size() < list.size())
+	    		{
+	    			list = calcList;
+	    			result = next.getPosition();
+	    		}
+	
+	    	}
     	}
-		return list;
+		return result;
     }
     
-    //noch nicht getestet
-    public static ArrayList<Action> GetNearestRoleZone(HashSet<NextMapTile> roleZone)
+    public static Vector2D GetNearestRoleZone(HashSet<NextMapTile> roleZone)
     {
     	NextManhattanPath manhattanPath = new NextManhattanPath();
     	ArrayList<Action> list = new ArrayList<Action>();
     	Iterator<NextMapTile> it = roleZone.iterator();
+    	Vector2D result = new Vector2D();
     	
     	NextMapTile next = it.next();    		
 		list = manhattanPath.calculatePath((int) next.getPositionX(), (int)next.getPositionY());
@@ -228,10 +245,11 @@ public final class NextAgentUtil{
     		if(calcList.size() < list.size())
     		{
     			list = calcList;
+    			result = next.getPosition();
     		}
 
     	}
-		return list;
+		return result;
     }
     
     public static Boolean IsAgentInGoalZone(HashSet<NextMapTile> goalzones)
@@ -297,5 +315,201 @@ public final class NextAgentUtil{
     			return true;
     	}
     	return false;
+    }
+    
+    public static NextMapTile IsObstacleInNextStep(ECardinals direction, HashSet<NextMapTile> obstacle) {
+    	Vector2D newAgentPosition = new Vector2D(); 
+    	switch(direction) {
+    	case n:
+    		newAgentPosition = new Vector2D(0, -1);
+    		break;
+    	case e:
+    		newAgentPosition = new Vector2D(1, 0);
+    		break;
+		case s:
+    		newAgentPosition = new Vector2D(0, 1);
+    		break;
+    	case w:
+    		newAgentPosition = new Vector2D(-1, 0);
+        	break;
+    	}
+    	
+    	Iterator<NextMapTile> it = obstacle.iterator();
+    	
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();
+    		Vector2D nextPosition = next.getPosition();
+    		if(newAgentPosition.equals(nextPosition)) {
+    			return next;
+    		}
+    	}
+    	return null;
+    }
+    
+    public Vector2D NextDirection(ECardinals direction) {
+    	Vector2D newPosition = new Vector2D(); 
+    	switch(direction) {
+    	case n:
+    		newPosition = new Vector2D(0, -1);
+    		break;
+    	case e:
+    		newPosition = new Vector2D(1, 0);
+    		break;
+		case s:
+    		newPosition = new Vector2D(0, 1);
+    		break;
+    	case w:
+    		newPosition = new Vector2D(-1, 0);
+        	break;
+    	}
+    	
+    	return newPosition;
+    }
+    
+    public static Boolean IsBlockBehindMe(ECardinals direction, Point block)
+    {
+    	Vector2D newBlockPosition = new Vector2D(); 
+    	switch(direction) { // In die Richtung, in die ich gehen mag
+    	case n:
+    		newBlockPosition = new Vector2D(0, 1);
+    		break;
+    	case e:
+    		newBlockPosition = new Vector2D(-1, 0);
+    		break;
+		case s:
+			newBlockPosition = new Vector2D(0, -1);
+    		break;
+    	case w:
+    		newBlockPosition = new Vector2D(1, 0);
+        	break;
+    	}
+    	Vector2D blockPosition = new Vector2D(block.x, block.y); 
+    	return blockPosition.equals(newBlockPosition);
+    }
+    
+    public static Boolean IsBlockInFrontOfMe(ECardinals direction, Point block)
+    {
+    	Vector2D newBlockPosition = new Vector2D(); 
+    	switch(direction) { // In die Richtung, in die ich gehen mag
+    	case n:
+    		newBlockPosition = new Vector2D(0, -1);
+    		break;
+    	case e:
+    		newBlockPosition = new Vector2D(1, 0);
+    		break;
+		case s:
+			newBlockPosition = new Vector2D(0, 1);
+    		break;
+    	case w:
+    		newBlockPosition = new Vector2D(-1, 0);
+        	break;
+    	}
+    	Vector2D blockPosition = new Vector2D(block.x, block.y); 
+    	return blockPosition.equals(newBlockPosition);
+    }
+        
+	public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Point> attachedElements, HashSet<NextMapTile> obstacles) {
+    	ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>(); 
+    	ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
+    	Vector2D newDirection = new Vector2D(0,0);
+    	switch(direction) {
+    	case n:
+    		// **O****
+			// **XA***
+			// *******
+    		newDirection = new Vector2D(0 , -1);
+    		newAgentPositionLst.add(newDirection); // no block			
+			if(!attachedElements.isEmpty()) {
+				Iterator<Point> attachedElementsIt = attachedElements.iterator();
+				while(attachedElementsIt.hasNext()) {
+					Point next = attachedElementsIt.next();
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 		
+				}
+			}
+    		//newAgentPosition = new Vector2D(0, -1);
+    		break;
+    	case e:
+    		// *******
+			// **XAO**
+			// *******
+    		newDirection = new Vector2D(1, 0);
+    		newAgentPositionLst.add(newDirection); // no block				
+			if(!attachedElements.isEmpty())
+			{
+				Iterator<Point> attachedElementsIt = attachedElements.iterator();
+				while(attachedElementsIt.hasNext()) {
+					Point next = attachedElementsIt.next();
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 
+				}
+			}
+    		//newAgentPosition = new Vector2D(1, 0);
+    		break;
+		case s:
+			// *******
+			// **XA***
+			// **OO***
+    		newDirection = new Vector2D(0 ,1);
+    		newAgentPositionLst.add(newDirection); // no block		
+			if(!attachedElements.isEmpty()) {
+				Iterator<Point> attachedElementsIt = attachedElements.iterator();
+				while(attachedElementsIt.hasNext()) {
+					Point next = attachedElementsIt.next();
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 	
+				}
+			}
+    		//newAgentPosition = new Vector2D(0, 1);
+    		break;
+    	case w:
+    		// *******
+			// *ODA***
+			// *******
+    		newDirection = new Vector2D(-1 ,0);
+    		newAgentPositionLst.add(newDirection); // no block					
+			if(!attachedElements.isEmpty()) {
+				Iterator<Point> attachedElementsIt = attachedElements.iterator();
+				while(attachedElementsIt.hasNext()) {
+					Point next = attachedElementsIt.next();
+					newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y)); 	
+				}
+			}
+    		//newAgentPosition = new Vector2D(-1, 0);
+        	break;
+    	}
+    	
+//		newAgentPositionLstArrayList.add(new Vector2D());
+    	Iterator<NextMapTile> it = obstacles.iterator();
+    	while(it.hasNext())
+    	{
+    		NextMapTile next = it.next();
+    		Vector2D nextPosition = next.getPosition();
+    		
+    		for (Iterator<Vector2D> iterator = newAgentPositionLst.iterator(); iterator.hasNext();) {
+    			Vector2D point = iterator.next();
+				if(point.equals(nextPosition)) {
+    				result.add(next);
+    			}
+			}
+//    		if(newAgentPositionLstArrayList.equals(nextPosition)) {
+//    			return next;
+//    		}
+    	}
+    	return result.size() > 0 ? false : true;
+    	//return result;
+    }
+    
+    public static Vector2D GetOppositeDirection(ECardinals direction)
+    {
+    	switch(direction) {
+    	case n:
+    		return new Vector2D(0, 1);
+    	case e:
+    		return new Vector2D(-1, 0);
+    	case s:
+    		return new Vector2D(0, -1);
+    	case w:
+    		return new Vector2D(1, 0);
+    	}
+		return null;
     }
 }

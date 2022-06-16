@@ -5,6 +5,7 @@
 package massim.javaagents.percept;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import massim.javaagents.map.NextMapTile;
 
@@ -65,7 +66,6 @@ public class NextTask {
     public String toString() {
         return "NextTask{" + "name=" + name + ", deadline=" + deadline + ", reward=" + reward + ", requiredBlocks=" + requiredBlocks + '}';
     }
-    
-    
+
     
 }

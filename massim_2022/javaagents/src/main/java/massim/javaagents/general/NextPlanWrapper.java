@@ -1,21 +1,22 @@
-package massim.javaagents.agents;
+package massim.javaagents.general;
 
-import java.util.ArrayList;
-
+import massim.javaagents.agents.NextAgent;
+import massim.javaagents.agents.NextAgentStatus;
 import massim.javaagents.general.NextConstants.EAgentTask;
-import massim.javaagents.percept.NextTask;
+import massim.javaagents.map.NextMap;
+import massim.javaagents.map.Vector2D;
 
 public class NextPlanWrapper {
 
 	public static EAgentTask GenerateNewPlan(NextAgent nextAgent)
 	{
 		NextAgentStatus nextAgentStatus = nextAgent.getAgentStatus();
-		NextSimulationStatus nextSimulationStatus = nextAgent.getSimulationStatus();
-		EAgentTask oldTask = nextAgent.GetAgentTask();
-		
+		NextMap map = nextAgent.GetMap();
+		Vector2D position = nextAgent.GetPosition();
+
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
         {
-        	if(!nextAgent.GetMap().GetMapTiles("goalZone", nextAgent.GetPosition()).isEmpty()) // knowing endzone
+        	if(map.IsGoalZoneAvailable()) // knowing endzone
         	{
         		return EAgentTask.goToEndzone;
         	} 
@@ -26,9 +27,8 @@ public class NextPlanWrapper {
         } 
         else 
         {
-        	// Kenn ich einen Dispenser vom aktuellen Tasktyp
-        	/// TODO miri GetDispenserFromType(type)
-        	if(!nextAgent.GetMap().GetMapTiles("dispenser", nextAgent.GetPosition()).isEmpty())
+        	// TODO: Hier fehlt noch die Verarbeitung, ob ich zu dem Dispenser muss oder ob ich ihn für meinen Task nicht brauche
+        	if(map.IsDispenserAvailable())
         	{
         		return EAgentTask.goToDispenser;
         	} 
