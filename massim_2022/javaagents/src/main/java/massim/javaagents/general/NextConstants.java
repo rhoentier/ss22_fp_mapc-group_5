@@ -128,4 +128,11 @@ public final class NextConstants
     	random,
     	aStar
     }
+    
+    public static enum EAgentTask {
+    	exploreMap,
+    	goToDispenser,
+    	goToEndzone,
+    	goToRolezone,
+    }
 }
