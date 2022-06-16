@@ -1,57 +1,22 @@
-# Treffen 8 Protokoll
+# Treffen 8 Protokoll, 06.06.2022
 
-## Top 1: Aktueller Stand | Was haben wir gemacht
+## Top 1: Aktueller Stand vor Turnier diskutiert
 
-### Sebastian
-- Sebastian hat Vector2D von double auf int umgestellt
-- Map war im AgentStatus und ist nun direkt im NextAgent
-    - Kann bald in die Gruppe ausgelagert werden
+- Karte wird für A* verwendet und dabei zentriert (A)
+- Kann noch Probleme bereiten (wenn die Kartengröße noch nicht bekannt ist) (A/S)
+- A überlegt sich was wie man das ändern kann, damit es auch bei (noch) unbekannter Kartengröße funktioniert
+- Problem des Vector2D als double nochmal aufgebracht (A). Vector2D wird in int geändert (übernimmt S)
 
+## Top 2: Miri zeigt aktuelle Umsetzung
 
-### Alexander
-- Änderung von A* wegen Anpassung in NextMap und Vector2D
-- A* läuft auf Karte, die als Kreis angelegt ist
-- Refactoring von step()
-- Dokumentation einiger Methoden, zum Beispiel in NextAgent
+- Agents finden nahe Ziele, wenn diese innerhalb der Vision liegen und können einzelne Tasks erfüllen
+- Agent nutzt aktuell nur die Informationen aus dem Percept (nur Vision und nicht die NextMap)
+- Verbesserung für die Zukunft: Wegfindung über die NextMap (bzw. auf dieser Datenbasis)
+- Sebastian gibt Miri Bescheid wie am besten vorzugehen ist. Es wird eine Methode getThingType(dispensers, ... endzone) geben
 
+## Top 3: ToDos
 
-### Miri
-- Wegfinden mit Blöcke kaputt hauen
-- Auswahl von einem beliebigen Task mit einem Block
-- Weg zum Dispenser/Goalzone (Rolezone is eingebaut aber noch nicht getestet)
-- Abgabe der Tasks
-
-
-### Steffen
-- Vorstellung vorbereitet: Task- und Rollenauswahl
-
-
-## Top 2: Aufgaben für nächste Woche
-- Alexander
-    - A* optimieren, damit Rolleneigenschaften (clear) mit eingebaut werden sollen (evtl. nächste Woche oder so)
-    - Dokumentation weiter machen
-- Miri
-    - Bugfixing
-    - Clevere Auswahl der Tasks
-    - Tasks mit mehreren Blöcken
-    - Cleveres rotieren
-    - Den Block beim Clear so drehen, dass Agent durch die Lücke passe
-    - Testen mit mehreren Agenten
-    - Pathfinding einbauen 
-    - Weg zur Rolezone
-- Sebastian
-    - Gruppe erstellen
-    - NextMap in eine Gruppe einarbeiten
-- Steffen und Alexander
-    - Möglichkeit Pläne zu erstellen und abzuspeichern
-    - Rollenauswahl
-- Steffen
-    - Prüfung, wann ein Rollentausch sinnvoll ist
- 
-
-## Top 3: Sonstiges und weitere Fragen
-- Problem mit Gruppen:
-    - Statische Liste mit den Gruppen, damit alle Agenten Zugriff drauf haben
-- Problem mit Rotation:
-    - Rotation wirft bei Miri immer eine Exception
-- MR von Steffen
+- NextMap eine Ebene nach oben (also Entity von NextAgent und nicht NextAgentStatus) (S)
+- NextMap später eventuell auf Gruppenebene (noch nicht final festgelegt) (S)
+- Methode zum Zugriff auf MapTiles einbauen (S)
+- Datenbasis von NextMap noch für morgiges Turnier berücksichtigen, falls es zeitlich klappt (M)
