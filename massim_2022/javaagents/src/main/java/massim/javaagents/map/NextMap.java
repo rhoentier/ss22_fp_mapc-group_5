@@ -452,10 +452,12 @@ public class NextMap {
      * @param requiredBlocks
      * @return
      */
-    public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) {
-            return true;
+    public boolean IsTaskExecutable(HashSet<NextMapTile> requiredBlocks) {
+        HashSet<String> requiredBlocksType = new HashSet<String>();
+        for (NextMapTile mapTile : requiredBlocks) {
+            requiredBlocksType.add(mapTile.getThingType());
         }
+        if (foundGoalZone && foundDispensers.containsAll(requiredBlocksType)) return true;
         return false;
     }
 

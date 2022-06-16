@@ -131,8 +131,10 @@ public final class NextConstants
     
     public static enum EAgentTask {
     	exploreMap,
+		carryBlog,
     	goToDispenser,
-    	goToEndzone,
+		goToGoalzone,
     	goToRolezone,
+		solveTask,
     }
 }

@@ -11,14 +11,10 @@ import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
-import massim.javaagents.general.NextConstants.ECardinals;
-import massim.javaagents.general.NextConstants.EPathFinding;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
-import massim.javaagents.pathfinding.NextPathfindingUtil;
-import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.awt.*;
@@ -198,7 +194,7 @@ public class NextIntention {
 	                    }
 	            }
 	            break;
-	        case goToEndzone:
+	        case goToGoalzone:
 	        	// Route zur Endzone
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
