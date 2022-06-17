@@ -22,6 +22,7 @@ import massim.javaagents.percept.NextTask;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
@@ -152,7 +153,7 @@ public class NextAgent extends Agent {
             generatePathMemory();
             
             generatePossibleActions();
-
+            
             //return selectNextAction(); // nextAactionSelection V1
             
             return selectNextActionTest();  // For Testing purposes only
@@ -549,4 +550,5 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion private methods
      */
+
 }
