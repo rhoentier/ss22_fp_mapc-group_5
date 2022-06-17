@@ -3,9 +3,11 @@ package massim.javaagents.agents;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
@@ -48,7 +50,9 @@ public class NextAgentStatus {
     
     private HashSet<NextSurveyedAgent> surveyedAgents;  // Unsorted list of NextSurveyedAgent Instances containing information about the last surveyed action
     private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing distance to the targeted elements.
-    
+
+    private HashSet<NextMapTile> dispenser;
+    private NextRole currentRole;
 
     /*
      * ##################### endregion fields
@@ -59,6 +63,7 @@ public class NextAgentStatus {
      * @param nextAgent - instance of parent agent
      */
     
+
     public NextAgentStatus(NextAgent nextAgent) {
         this.nextAgent = nextAgent; 
         name = null;
@@ -70,6 +75,7 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        dispenser = new HashSet<NextMapTile>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
     
@@ -250,6 +256,15 @@ public class NextAgentStatus {
                 + "--------------------------------- \n";
 
     }
+    
+    
+    public HashSet<NextMapTile> GetDispenser() {
+        return dispenser;
+    }
+
+    public void SetDispenser(HashSet<NextMapTile> dispenser) {
+        this.dispenser = dispenser;
+    }        
     
     /*
      * ##################### endregion public methods

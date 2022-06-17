@@ -15,6 +15,7 @@ import java.util.Objects;
 import eis.iilang.Identifier;
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.general.NextConstants.ECardinals;
 
 public class NextMap {
 
@@ -23,9 +24,9 @@ public class NextMap {
 
     private HashSet<NextAgent> agents;
     private HashSet<String> excludeThingTypes;
-    public Boolean foundDispenser = false;
-    public boolean foundRoleZone = false;
-    public boolean foundGoalZone = false;
+    private Boolean foundDispenser = false;
+    private boolean foundRoleZone = false;
+    private boolean foundGoalZone = false;
     private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextAgent agent) {
@@ -257,6 +258,7 @@ public class NextMap {
             if (maptile.getThingType().startsWith("dispenser")) {
                 if (!foundDispensers.contains(maptile.getThingType())) {
                     foundDispensers.add((maptile.getThingType().substring(10)));
+                	foundDispenser = true;
                 }
             } else if (maptile.getThingType().equals("goalZone")) {
                 foundGoalZone = true;
@@ -555,5 +557,17 @@ public class NextMap {
         }
     
         return false;
+    }
+    
+    public Boolean IsGoalZoneAvailable() {
+    	return foundGoalZone;
+    }
+    
+    public Boolean IsRoleZoneAvailable() {
+    	return foundRoleZone;
+    }
+    
+    public Boolean IsDispenserAvailable() {
+    	return foundDispenser;
     }
 }

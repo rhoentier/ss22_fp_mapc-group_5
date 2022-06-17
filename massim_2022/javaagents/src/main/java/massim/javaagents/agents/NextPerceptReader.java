@@ -5,6 +5,7 @@ import eis.iilang.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.map.NextMapTile;
@@ -44,6 +45,8 @@ public class NextPerceptReader {
     private HashSet<String> overhangNames = new HashSet<>();
     private HashSet<List<Parameter>> goalZones;
     private HashSet<List<Parameter>> roleZones;
+    
+    private HashSet<Parameter> dispenser;
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
@@ -127,6 +130,9 @@ public class NextPerceptReader {
                             break;
                         case lastAction:
                             agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
+                            if(agentStatus.GetLastAction() != "") {
+                            	agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+                            }
                             break;
                         case lastActionResult:
                             agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
@@ -205,7 +211,7 @@ public class NextPerceptReader {
         }
     }
 
-    private void clearSets() {
+	private void clearSets() {
         //clearing of the containers before processing of percepts
         attached = new HashSet<>();
         tasks = new HashSet<>();
@@ -220,6 +226,7 @@ public class NextPerceptReader {
         hits = new HashSet<>();
         surveyedAgents = new HashSet<>();
         surveyedThings = new HashSet<>();
+        dispenser = new HashSet<>();
     }
 
     private void convertGeneratedSets() {
@@ -240,7 +247,25 @@ public class NextPerceptReader {
 
         agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
         agentStatus.SetSurveyedThings(processSurveyedThingSet());
+        
+        agentStatus.SetDispenser(convertDispenserFromVision());
     }
+    
+    private HashSet<NextMapTile> convertDispenserFromVision() {
+		HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
+		for(NextMapTile mapTile : agentStatus.GetVisibleThings())
+		{
+			try {
+				if(mapTile.getThingType().contains("dispenser"))
+				{
+					collectionOfDispenser.add(mapTile);
+				}
+			} catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
+			}
+		}
+		return collectionOfDispenser;
+	}
 
     private HashSet<NextTask> processTasksSet() {
         // task(name, deadline, reward, [req(x,y,type),...])
