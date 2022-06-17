@@ -512,4 +512,8 @@ public final class NextAgentUtil{
     	}
 		return null;
     }
+    
+    public static int ManhattanDistance(Vector2D origin, Vector2D target) {
+        return Math.abs(target.x-origin.x) + Math.abs(target.y-origin.y);
+    }
 }

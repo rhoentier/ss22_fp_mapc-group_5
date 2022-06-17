@@ -19,7 +19,7 @@ import massim.javaagents.percept.NextTask;
 
 /**
  * The basic Interpreter of Server Communication Protocoll
- *
+ * <p>
  * Handling of all documented Percepts, The conversion of sets into the target
  * format + saving in external Data Storage
  *

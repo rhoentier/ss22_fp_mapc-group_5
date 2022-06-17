@@ -190,7 +190,10 @@ public class NextMap {
         for (int i = 0; i < this.map.length; i++) {
             for (int j = 0; j < this.map[i].length; j++) {
                 if (map[i][j].getThingType().startsWith(thingType)) {
+                    map[i][j].setPositionX(i); // Temporal fix to update internal X,Y position
+                    map[i][j].setPositionY(j); // Temporal fix to update internal X,Y position
                     maptileList.add(map[i][j]);
+                    
                 }
             }
         }
@@ -568,6 +571,7 @@ public class NextMap {
     }
     
     public Boolean IsDispenserAvailable() {
+        System.out.println("IsDispenserAvailable: \n" + foundDispenser);
     	return foundDispenser;
     }
 }

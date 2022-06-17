@@ -2,7 +2,7 @@
   "server" : {
     "tournamentMode" : "round-robin",
     "teamsPerMatch" : 1,
-    "launch" : "key",
+    "launch" : "5s",
     "port" : 12300,
     "backlog" : 10000,
     "agentTimeout" : 2000,
@@ -19,6 +19,7 @@
   ],
 
   "teams" : {
-    "5" : {"prefix" : "Team", "password" : "Team5"}
+    "A" : {"prefix" : "agent", "password" : "1"},
+    "B" : {"prefix" : "agent", "password" : "1"}
   }
 }

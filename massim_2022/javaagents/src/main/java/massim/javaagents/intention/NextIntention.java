@@ -97,8 +97,9 @@ public class NextIntention {
             	}
             }
             // submit block, if its in the right direction
-            if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains("entity-5")
-            		&& NextAgentUtil.IsAgentInGoalZone(nextAgentStatus.GetGoalZones()) )
+            // original //if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains("entity-5")
+            if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains(this.nextAgentStatus.GetTeamName())
+                    && NextAgentUtil.IsAgentInGoalZone(nextAgentStatus.GetGoalZones()) )
             {
             	if(NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) 
             	{
@@ -170,7 +171,11 @@ public class NextIntention {
 	        	if(this.nextAgent.GetPathMemory().isEmpty()) {
 	        		//this.nextAgent.SetPathMemory(NextPathfindingUtil.GenerateExploreActions());
 	        		this.nextAgent.SetPathMemory(
-	        				this.nextAgent.CalculatePath(new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10))
+                                        this.nextAgent.CalculatePath(
+                                                new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().x,NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().y)
+                                        )
+	        		
+	        		// original Version		// this.nextAgent.CalculatePath(new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10))
 	        		);
 	        	}
 	        	break;
@@ -189,8 +194,8 @@ public class NextIntention {
 		        			map.GetMapTiles("dispenser", this.nextAgent.GetPosition()),
 		        			requiredBlockIterator.next().getThingType()
 		        		);
-
-		        		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(foundDispenser));
+                                        System.out.println("\n \n \n \n foundDispenser -> " + foundDispenser);
+		        		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
 		                //this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
 	                    if(this.nextAgent.GetPathMemory().size() == 0) 
 	                    {

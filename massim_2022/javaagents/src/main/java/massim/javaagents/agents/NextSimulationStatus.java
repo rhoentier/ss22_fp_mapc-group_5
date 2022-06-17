@@ -8,9 +8,10 @@ import massim.javaagents.percept.NextTask;
 
 /**
  * Part of Agent Belief System
- * 
+ * <p>
  * Simulation related status values
- * @author AVL
+ * 
+ * @author Alexander Lorenz
  */
 
 public class NextSimulationStatus {

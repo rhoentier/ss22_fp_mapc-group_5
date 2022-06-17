@@ -60,10 +60,10 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
 
-        //System.out.println("iNPUT" + startpoint + " " + target);
-        //System.out.println("Map - " + mapWidth + " " + mapHeight);
-        //System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
-        //System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
+        System.out.println("iNPUT" + startpoint + " " + target);
+        System.out.println("Map - " + mapWidth + " " + mapHeight);
+        System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
+        System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
         
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");

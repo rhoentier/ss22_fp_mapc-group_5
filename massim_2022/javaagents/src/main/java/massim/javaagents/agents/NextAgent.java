@@ -35,7 +35,6 @@ import massim.javaagents.percept.NextRole;
  * <p>
  * ToDo: Gruppenbildung
  *
- * @author Alexander Lorenz
  */
 public class NextAgent extends Agent {
 
@@ -69,7 +68,7 @@ public class NextAgent extends Agent {
     private List<Action> pathMemory = new ArrayList<>();    // storing 
 
     // Map
-    private Vector2D position; // Position on the map relative to the starting point
+    private Vector2D position; // Absolute Position on the map
     private NextMap map;
 
     // Tasks
@@ -141,7 +140,7 @@ public class NextAgent extends Agent {
             
 //            if (pathMemory.isEmpty()) {
 //                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
-//                pathMemory = calculatePath(target);
+//                pathMemory = CalculatePath(target);
 //            }
 
             updateInternalBeliefs();
@@ -155,13 +154,16 @@ public class NextAgent extends Agent {
 
             //return selectNextAction(); // nextAactionSelection V1
             
+            if(this.agentTask != null){
+                System.out.println("TASK: \n" + agentTask.toString());
+            }
             return selectNextActionTest();  // For Testing purposes only
         }
 
         return null;
     }
 
-	/**
+    /**
      * Getter for local NextAgentStatus
      * @return NextAgentStatus
      */
@@ -231,6 +233,7 @@ public class NextAgent extends Agent {
     
     public Vector2D GetPosition() {
         return map.RelativeToAbsolute(position);
+        //return position;
     }
     
     public NextMap GetMap() {
@@ -301,7 +304,9 @@ public class NextAgent extends Agent {
         	NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
         	if(obstacle != null) // obstacle vor mir
         	{        
-        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));      			
+                        //Option - Clear action wird deaktiviert, damit die karte nicht zu groß wird 
+        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
+                        //pathMemory.clear();
         	} 
         	else 
         	{             	
@@ -423,6 +428,34 @@ public class NextAgent extends Agent {
         return null;
     }
 
+    /**
+     * Calculate Path to the Target, ending on a free Tile next to it
+     * @param target
+     * @return 
+     */
+    public List<Action> CalculatePathNextToTarget(Vector2D target){
+        
+        //Optimale Position auswählen 
+        
+        try{
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        } catch(Exception e){
+            this.say("CalculatePathNextToTarget:" + e);
+        }
+        return CalculatePath(new Vector2D(target.x,target.y));
+    }
+            
     /**
      * Transfer the recieved percept data to the general map
      */
