@@ -299,7 +299,7 @@ public class NextAgent extends Agent {
      */
     private void updateMap() {
         if (agentStatus.GetLastAction().equals("move") && agentStatus.GetLastActionResult().equals("success")) {
-            System.out.println("POSITION before analyzing last step: " + position);
+
             Vector2D lastStep = new Vector2D(0, 0);
 
             switch (agentStatus.GetLastActionParams()) {
@@ -347,9 +347,9 @@ public class NextAgent extends Agent {
             map.AddPercept(position, agentStatus.GetObstacles());
 
             // Only for debugging
-            /*
-            map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
 
+            map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
+/*
             try {
                 Thread.sleep(0); // Wait for 2 seconds
             } catch (InterruptedException e) {

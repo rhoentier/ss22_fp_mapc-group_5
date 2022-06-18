@@ -1,28 +1,26 @@
 package massim.javaagents.map;
 
-import java.awt.*;
-
 import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.Arrays;
 
-import java.util.ArrayList;
-
 import java.util.HashSet;
 import java.util.Objects;
 
-import eis.iilang.Identifier;
 import massim.javaagents.agents.NextAgent;
-import massim.javaagents.general.NextConstants;
 
 public class NextMap {
 
     private NextMapTile[][] map;
     private Vector2D zeroPoint;
-
     private NextAgent agent;
     private HashSet<String> excludeThingTypes;
+
+    private HashSet<NextMapTile> dispensers = new HashSet<>();
+    private HashSet<NextMapTile> goalZones = new HashSet<>();
+    private HashSet<NextMapTile> roleZones = new HashSet<>();
+
     public Boolean foundDispenser = false;
     public boolean foundRoleZone = false;
     public boolean foundGoalZone = false;
@@ -36,41 +34,43 @@ public class NextMap {
 
         zeroPoint = new Vector2D(0, 0);
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
+
         // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
     /**
      * Add an array of things to the map.
-     * @param agentPosition Current position of the agent
-     * @param percept Array of things as NextMapTile-objects.
+     * @param agentPosition Current position of the agent (absolute)
+     * @param percept Array of things as NextMapTiles. Position within NextMapTile is local (rel. to the agents position)
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
-
         Vector2D maptilePosition;
         for (NextMapTile maptile : percept) {
-            maptilePosition = agent.GetPosition().getAdded(maptile.GetPosition());
-            setMapTileAbs(maptilePosition, maptile);
+            maptile.SetPosition(agent.GetPosition().getAdded(maptile.GetPosition()));
+            //maptilePosition = agent.GetPosition().getAdded(maptile.GetPosition());
+            setMapTileAbs(maptile);
         }
     }
 
     /**
-     * Print map to console with x0/y0 in top left corner. First letter of
-     * getThingType() is used for representation. For example: "A": Agent, "O":
-     * Obstacle. Special character "Z" for zero point.
+     * Write map to file with 0/0 in top left corner. First letter of getThingType()
+     * is used for representation. For example: agent -> a, obstacle -> o, dispenser -> d
+     *
+     * @param filename File for export
      */
     public void WriteToFile(String filename) {
-        String strMap = "";
+        StringBuilder strMap = new StringBuilder();
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                strMap += map[i][j].getThingType().charAt(0) + " ";
+                strMap.append(map[i][j].getThingType().charAt(0)).append(" ");
             }
-            strMap += "\n";
+            strMap.append("\n");
         }
 
-        FileWriter myWriter = null;
+        FileWriter myWriter;
         try {
             myWriter = new FileWriter(filename);
-            myWriter.write(strMap);
+            myWriter.write(strMap.toString());
             myWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -99,7 +99,7 @@ public class NextMap {
             for (int j = 0; j < mapAgent2.GetSizeOfMap().y; j++) {
                 Vector2D insertAt = new Vector2D(displacementVector);
                 insertAt.add(i, j);
-                setMapTileAbs(insertAt, mapAgent2.map[i][j]);
+                //setMapTileAbs(insertAt, mapAgent2.map[i][j]);
             }
         }
 
@@ -112,31 +112,6 @@ public class NextMap {
         if (mapAgent2.foundGoalZone) {
             foundGoalZone = true;
         }
-    }
-
-    /**
-     * Finds the relative position of a map tile with a specific thing type
-     *
-     * @param thingType Thing type to be found, e.g. "dispenser"
-     * @return Relative position of the nearest tile
-     */
-    public Vector2D GetNearest(String thingType, Vector2D agentPosition) {
-        double shortestDistanceSoFar = Double.POSITIVE_INFINITY;
-        double currentDistance;
-        Vector2D absolutePosition = null;
-
-        for (int i = 0; i < this.map.length; i++) {
-            for (int j = 0; j < this.map[i].length; j++) {
-                if (Objects.equals(getMapTileAbs(new Vector2D(i, j)).getThingType(), thingType)) {
-                    currentDistance = agentPosition.distance(new Vector2D(i, j));
-                    if (currentDistance < shortestDistanceSoFar) {
-                        shortestDistanceSoFar = currentDistance;
-                        absolutePosition = new Vector2D(i, j);
-                    }
-                }
-            }
-        }
-        return absolutePosition;
     }
 
     /**
@@ -158,9 +133,6 @@ public class NextMap {
     public Vector2D RelativeToAbsolute(Vector2D relativeVector) {
         return new Vector2D(relativeVector).getAdded(zeroPoint);
     }
-    public void SetMapTileAbs(Vector2D maptilePosition, NextMapTile maptile) {
-        setMapTileAbs(maptilePosition, maptile);
-    }
 
     /**
      * Returns the map with coordinates 0/0 in upper left corner
@@ -171,28 +143,11 @@ public class NextMap {
        return map;
     }
 
-    /**
-     * Get a list of all maptile objects of a specific type.
-     * @param thingType Filter for specific thing types, e.g. "dispenser" or "obstacle"
-     * @param position Relative position of the agent (stored in NextAgentStatus)
-     * @return HashSet of Maptiles
-     */
-    public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
+    public HashSet<NextMapTile> GetDispensers() {return dispensers;}
 
-        // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
-        updateXY(position);
+    public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
 
-        HashSet<NextMapTile> maptileList = new HashSet<>();
-
-        for (int i = 0; i < this.map.length; i++) {
-            for (int j = 0; j < this.map[i].length; j++) {
-                if (map[i][j].getThingType().startsWith(thingType)) {
-                    maptileList.add(map[i][j]);
-                }
-            }
-        }
-        return maptileList;
-    }
+    public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
 
     /**
      * Returns a map tile at an absolute position
@@ -209,30 +164,16 @@ public class NextMap {
      *
      * @param maptile: MapTile to add.
      */
-    private void setMapTileAbs(Vector2D maptilePosition, NextMapTile maptile) {
-
-        // add dispenser and zones to found things
-        if (maptile != null) {
-            if (maptile.getThingType().startsWith("dispenser")) {
-                if (!foundDispensers.contains(maptile.getThingType())) {
-                    foundDispensers.add((maptile.getThingType().substring(10)));
-                }
-            } else if (maptile.getThingType().equals("goalZone")) {
-                foundGoalZone = true;
-            } else if (maptile.getThingType().equals("roleZone")) {
-                foundRoleZone = true;
-            }
-        }
+    private void setMapTileAbs(NextMapTile maptile) {
 
         NextMapTile existingMapTile;
 
-        Vector2D moveArray = new Vector2D(extendArray(maptilePosition));
+        Vector2D moveArray = new Vector2D(extendArray(maptile.GetPosition()));
 
         agent.MovePosition(moveArray);
+        maptile.MovePosition(moveArray);
 
-        maptilePosition.add(moveArray);
-
-        existingMapTile = getMapTileAbs(maptilePosition);
+        existingMapTile = getMapTileAbs(maptile.GetPosition());
 
         // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
         boolean addMaptile = true;
@@ -242,41 +183,32 @@ public class NextMap {
         }
 
         // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
+
         if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
-                this.map[maptilePosition.x][maptilePosition.y] = maptile;
+            this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+
+            switch (maptile.getThingType().substring(0,4)) {
+                case "disp":
+                    addTo(dispensers, maptile);
+                    foundDispensers.add((maptile.getThingType().substring(10)));
+                case "goal":
+                    addTo(goalZones, maptile);
+                    foundGoalZone = true;
+                case "role":
+                    addTo(roleZones, maptile);
+                    foundRoleZone = true;
+            }
+            System.out.println("DISPENSERS: "  + dispensers);
         }
     }
 
-    /**
-     * Calculates the most positive coordinate possible for the current map. If
-     * the map is of size 10/10 and the zero point is at 5/5, the most positive
-     * coordinate is at 4/4.
-     *
-     * @return Vector with most positive coordinate
-     */
-    private Vector2D getPositiveExtend() {
-        return new Vector2D(map.length - zeroPoint.x - 1, map[0].length - zeroPoint.y - 1);
-    }
-
-    /**
-     * Calculates the most negative Coordinate possible for the current map. If
-     * the map is of size 10/10 and the zero point is at 5/5, the most negative
-     * coordinate is -5/-5.
-     *
-     * @return Vector with most negative coordinate
-     */
-    private Vector2D getNegativeExtend() {
-        return zeroPoint.getReversed();
-    }
-
-    /**
-     * Calculates the size of the map.
-     *
-     * @return Vector object, which represents the number of elements in x- and
-     * y-direction.
-     */
-    public Vector2D getSizeOfMap() {
-        return new Vector2D(map.length, map[0].length);
+    private void addTo(HashSet<NextMapTile> hashSet, NextMapTile maptile) {
+        for (NextMapTile mt : hashSet) {
+            if (maptile.GetPosition().equals(mt.GetPosition())) {
+                return;
+            }
+        }
+        hashSet.add(maptile.Clone());
     }
 
     /**
@@ -325,29 +257,22 @@ public class NextMap {
                     tmp[i + offset.x][j + offset.y] = this.map[i][j];
                 }
             }
-            this.zeroPoint.add(offset.x, offset.y);
+
             this.map = tmp;
+
+            // Move existing dispensers, goalZones and roleZones
+            for (NextMapTile disp : dispensers) {
+                disp.MovePosition(offset);
+            }
+            for (NextMapTile goal : goalZones) {
+                goal.MovePosition(offset);
+            }
+            for (NextMapTile role : roleZones) {
+                role.MovePosition(offset);
+            }
         }
         return offset;
     }
-
-    /** Updates x/y position of each map tile relative to the position of the agent
-     *
-     *  @param position relative position of the agent
-     */
-    private void updateXY(Vector2D position) {
-
-        Vector2D absAgentPos = RelativeToAbsolute(position);
-        int absX = absAgentPos.x;
-        int absY = absAgentPos.y;
-
-        for (int i = 0; i < this.map.length; i++) {
-            for (int j = 0; j < this.map[i].length; j++) {
-                this.map[i][j].SetPosition(new Vector2D(i-absX, j-absY));
-            }
-        }
-    }
-
 
     /**
      * Check if the rotation cw or ccw is possible. Note: North/South is swapped

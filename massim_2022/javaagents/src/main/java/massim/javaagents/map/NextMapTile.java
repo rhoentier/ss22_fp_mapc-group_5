@@ -69,6 +69,11 @@ public class NextMapTile {
         this.positionY = pos.y;
     }
 
+    public void MovePosition(Vector2D moveBy) {
+        this.positionX += moveBy.x;
+        this.positionY += moveBy.y;
+    }
+
     public String getThingType() {
         if (isAThing) {
             return thingType;
@@ -85,7 +90,7 @@ public class NextMapTile {
         if (isAThing) {
             return "[ " + this.positionX + ", " + this.positionY + " ]\n"
                     + "Last Step: " + this.lastVisionStep + "\n"
-                    + "Type: " + thingType;
+                    + "Type: " + thingType + "\n";
 
         }
         return "[ " + this.positionX + ", " + this.positionY + " ]\n"
@@ -138,7 +143,11 @@ public class NextMapTile {
         this.positionY = positionY;
     }
 
-    
-    
+    public NextMapTile Clone() {
+        return new NextMapTile(this.positionX, this.positionY, this.lastVisionStep, this.thingType);
+    }
 
+    public void SetLastVisionStep(Integer lastVisionStep) {
+        this.lastVisionStep = lastVisionStep;
+    }
 }
