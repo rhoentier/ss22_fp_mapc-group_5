@@ -77,7 +77,7 @@ public class NextIntention {
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Point position = visibleThing.getPoint();
+            Vector2D position = visibleThing.getPoint();
 
             
             if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
@@ -152,7 +152,7 @@ public class NextIntention {
 	    	resetAfterInactiveTask();
 	    	
 	    	// dispenser available for task?
-	    	HashSet<NextMapTile> dispatcherLst = nextAgent.GetMap().GetMapTiles("dispenser", nextAgent.GetPosition());
+	    	HashSet<NextMapTile> dispatcherLst = nextAgent.GetMap().GetDispensers();
 	    	if(!dispatcherLst.isEmpty())
 	    	{
 	    		ArrayList<NextTask> selectedTask = NextAgentUtil.EvaluatePossibleTask(nextSimulationStatus.GetTasksList(), 
@@ -191,7 +191,7 @@ public class NextIntention {
 		        	Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
 		        	
 		        	Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
-		        			map.GetMapTiles("dispenser", this.nextAgent.GetPosition()),
+		        			map.GetDispensers(),
 		        			requiredBlockIterator.next().getThingType()
 		        		);
 
@@ -208,7 +208,7 @@ public class NextIntention {
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition())) 
+	        						NextAgentUtil.GetNearestGoalZone(map.GetGoalZones())
 	        				)
 	        		);
 //	                this.nextAgent.SetPathMemory(
@@ -224,7 +224,7 @@ public class NextIntention {
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition())) 
+	        						NextAgentUtil.GetNearestRoleZone(map.GetRoleZones())
 	        				)
 	        		);
 //	                this.nextAgent.SetPathMemory(
