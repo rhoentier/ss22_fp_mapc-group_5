@@ -1,6 +1,5 @@
 package massim.javaagents.agents;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.ECardinals;
-import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -55,7 +53,7 @@ public final class NextAgentUtil {
      * @param status - #source of Information
      * @return boolean
      */
-    public static boolean NextTo(Point position, NextAgentStatus status) {
+    public static boolean NextTo(Vector2D position, NextAgentStatus status) {
         if (position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)) {
             return true;
         }
@@ -78,7 +76,7 @@ public final class NextAgentUtil {
      * @param yValue - y-Value of Thing
      * @return Identifier for the direction value of an action.
      */
-    public static Identifier GetDirection(Point direction) {
+    public static Identifier GetDirection(Vector2D direction) {
         if (direction.equals(NextConstants.WestPoint)) {
             return new Identifier(NextConstants.ECardinals.w.toString());
         }
@@ -332,11 +330,11 @@ public final class NextAgentUtil {
     public static Boolean IsBlockInCorrectPosition(NextAgent nextAgent) {
         // TODO miri Vergleich aller Blöcke - derzeit nur mit 1
         if (nextAgent.GetActiveTask() != null) {
-            HashSet<Point> attachedElements = nextAgent.getAgentStatus().GetAttachedElements();
+            HashSet<Vector2D> attachedElements = nextAgent.getAgentStatus().GetAttachedElements();
             HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
 
-            Iterator<Point> attachElementIterator = attachedElements.iterator();
-            Point next = attachElementIterator.next();
+            Iterator<Vector2D> attachElementIterator = attachedElements.iterator();
+            Vector2D next = attachElementIterator.next();
 
             Iterator<NextMapTile> activeTaskIterator = activeTask.iterator();
             NextMapTile nextActiveTask = activeTaskIterator.next();
@@ -423,7 +421,7 @@ public final class NextAgentUtil {
         return newPosition;
     }
 
-    public static Boolean IsBlockBehindMe(ECardinals direction, Point block) {
+    public static Boolean IsBlockBehindMe(ECardinals direction, Vector2D block) {
         Vector2D newBlockPosition = new Vector2D();
         switch (direction) { // In die Richtung, in die ich gehen mag
             case n:
@@ -443,7 +441,7 @@ public final class NextAgentUtil {
         return blockPosition.equals(newBlockPosition);
     }
 
-    public static Boolean IsBlockInFrontOfMe(ECardinals direction, Point block) {
+    public static Boolean IsBlockInFrontOfMe(ECardinals direction, Vector2D block) {
         Vector2D newBlockPosition = new Vector2D();
         switch (direction) { // In die Richtung, in die ich gehen mag
             case n:
@@ -463,7 +461,7 @@ public final class NextAgentUtil {
         return blockPosition.equals(newBlockPosition);
     }
 
-    public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Point> attachedElements, HashSet<NextMapTile> obstacles) {
+    public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> obstacles) {
         ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>();
         ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
         Vector2D newDirection = new Vector2D(0, 0);
@@ -475,10 +473,10 @@ public final class NextAgentUtil {
                 newDirection = new Vector2D(0, -1);
                 newAgentPositionLst.add(newDirection); // no block			
                 if (!attachedElements.isEmpty()) {
-                    Iterator<Point> attachedElementsIt = attachedElements.iterator();
+                    Iterator<Vector2D> attachedElementsIt = attachedElements.iterator();
                     while (attachedElementsIt.hasNext()) {
-                        Point next = attachedElementsIt.next();
-                        newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y));
+                        Vector2D next = attachedElementsIt.next();
+                        newAgentPositionLst.add(new Vector2D(next.x + newDirection.x, next.y + newDirection.y));
                     }
                 }
                 //newAgentPosition = new Vector2D(0, -1);
@@ -490,10 +488,10 @@ public final class NextAgentUtil {
                 newDirection = new Vector2D(1, 0);
                 newAgentPositionLst.add(newDirection); // no block				
                 if (!attachedElements.isEmpty()) {
-                    Iterator<Point> attachedElementsIt = attachedElements.iterator();
+                    Iterator<Vector2D> attachedElementsIt = attachedElements.iterator();
                     while (attachedElementsIt.hasNext()) {
-                        Point next = attachedElementsIt.next();
-                        newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y));
+                        Vector2D next = attachedElementsIt.next();
+                        newAgentPositionLst.add(new Vector2D(next.x + newDirection.x, next.y + newDirection.y));
                     }
                 }
                 //newAgentPosition = new Vector2D(1, 0);
@@ -505,10 +503,10 @@ public final class NextAgentUtil {
                 newDirection = new Vector2D(0, 1);
                 newAgentPositionLst.add(newDirection); // no block		
                 if (!attachedElements.isEmpty()) {
-                    Iterator<Point> attachedElementsIt = attachedElements.iterator();
+                    Iterator<Vector2D> attachedElementsIt = attachedElements.iterator();
                     while (attachedElementsIt.hasNext()) {
-                        Point next = attachedElementsIt.next();
-                        newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y));
+                        Vector2D next = attachedElementsIt.next();
+                        newAgentPositionLst.add(new Vector2D(next.x + newDirection.x, next.y + newDirection.y));
                     }
                 }
                 //newAgentPosition = new Vector2D(0, 1);
@@ -520,10 +518,10 @@ public final class NextAgentUtil {
                 newDirection = new Vector2D(-1, 0);
                 newAgentPositionLst.add(newDirection); // no block					
                 if (!attachedElements.isEmpty()) {
-                    Iterator<Point> attachedElementsIt = attachedElements.iterator();
+                    Iterator<Vector2D> attachedElementsIt = attachedElements.iterator();
                     while (attachedElementsIt.hasNext()) {
-                        Point next = attachedElementsIt.next();
-                        newAgentPositionLst.add(new Vector2D(next.getLocation().x + newDirection.x, next.getLocation().y + newDirection.y));
+                        Vector2D next = attachedElementsIt.next();
+                        newAgentPositionLst.add(new Vector2D(next.x + newDirection.x, next.y + newDirection.y));
                     }
                 }
                 //newAgentPosition = new Vector2D(-1, 0);

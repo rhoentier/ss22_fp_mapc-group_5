@@ -1,6 +1,5 @@
 package massim.javaagents.agents;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,8 +39,8 @@ public class NextAgentStatus {
     private String role;                    // Name of current role
     private NextRole currentRole;           // Full NextRole instance with attributes 
     
-    private HashSet<Point> attachedElements;            // Unsorted unfiltered list of elements, attached to the agent
-    private HashSet<Point> visibleAttachedElements;     // Unsorted unfiltered list of all visible attached elements
+    private HashSet<Vector2D> attachedElements;            // Unsorted unfiltered list of elements, attached to the agent
+    private HashSet<Vector2D> visibleAttachedElements;     // Unsorted unfiltered list of all visible attached elements
 
     private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
     private HashSet<NextMapTile> obstacles;             // Unsorted list of visible obstacles as NextMapTile
@@ -86,6 +85,7 @@ public class NextAgentStatus {
      * ########## region public methods
      */
 
+     /*  To Delete - backup for Testing
     // compare attached elements to NextConstants directions and convert to array ?
     public void SetAttachedElements(HashSet<Point> attachedElements) {
         this.attachedElements = new HashSet();
@@ -97,6 +97,19 @@ public class NextAgentStatus {
                 this.attachedElements.add(attached);
             }
         }
+    }
+*/
+    // compare attached elements to NextConstants directions and convert to array ?
+    public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
+            this.attachedElements = new HashSet();
+            for (Vector2D attached : attachedElements) {
+                if (attached.equals(NextConstants.WestPoint)
+                        || attached.equals(NextConstants.NorthPoint)
+                        || attached.equals(NextConstants.EastPoint)
+                        || attached.equals(NextConstants.SouthPoint)) {
+                    this.attachedElements.add(attached);
+                }
+            }
     }
 
     //---------------- Getter and Setter
@@ -173,16 +186,16 @@ public class NextAgentStatus {
         return this.lastActionParams;
     }
 
-    public HashSet<Point> GetVisibleAttachedElements() {
+    public HashSet<Vector2D> GetVisibleAttachedElements() {
         return visibleAttachedElements;
     }
 
-    public void SetVisibleAttachedElements(HashSet<Point> visibleAttachedElements) {
+    public void SetVisibleAttachedElements(HashSet<Vector2D> visibleAttachedElements) {
         this.visibleAttachedElements = visibleAttachedElements;
         SetAttachedElements(visibleAttachedElements);
     }
 
-    public HashSet<Point> GetAttachedElements() {
+    public HashSet<Vector2D> GetAttachedElements() {
         return this.attachedElements;
     }
 

@@ -1,16 +1,17 @@
 package massim.javaagents.general;
 
-import java.awt.Point;
+import massim.javaagents.map.Vector2D;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public final class NextConstants {
 
     //--- General Directions ----
-    public final static Point WestPoint = new Point(-1, 0);
-    public final static Point EastPoint = new Point(1, 0);
-    public final static Point SouthPoint = new Point(0, 1);
-    public final static Point NorthPoint = new Point(0, -1);
+    public final static Vector2D WestPoint = new Vector2D(-1, 0);
+    public final static Vector2D EastPoint = new Vector2D(1, 0);
+    public final static Vector2D SouthPoint = new Vector2D(0, 1);
+    public final static Vector2D NorthPoint = new Vector2D(0, -1);
 
 
     /**
