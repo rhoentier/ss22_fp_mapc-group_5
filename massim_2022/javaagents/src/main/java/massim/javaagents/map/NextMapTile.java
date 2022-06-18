@@ -1,7 +1,5 @@
 package massim.javaagents.map;
 
-import java.awt.Point;
-
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
@@ -99,8 +97,8 @@ public class NextMapTile {
                 + "Last Step: " + this.lastVisionStep;
     }
 
-    public Point getPoint(){
-        return new Point(positionX, positionY);
+    public Vector2D getPoint(){
+        return new Vector2D(positionX, positionY);
     }
     
     public Vector2D getPosition(){

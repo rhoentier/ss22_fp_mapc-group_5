@@ -495,9 +495,9 @@ public class NextAgent extends Agent {
             map.AddPercept(position, agentStatus.GetObstacles());
 
             // Only for debugging
-
+            /*
             map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
-/*
+
             try {
                 Thread.sleep(0); // Wait for 2 seconds
             } catch (InterruptedException e) {

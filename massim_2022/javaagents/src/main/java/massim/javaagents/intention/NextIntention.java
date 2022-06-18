@@ -77,7 +77,7 @@ public class NextIntention {
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Point position = visibleThing.getPoint();
+            Vector2D position = visibleThing.getPoint();
 
             
             if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
