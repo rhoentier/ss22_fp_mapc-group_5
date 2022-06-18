@@ -154,7 +154,7 @@ public class NextAgent extends Agent {
             
             generatePossibleActions();
             
-            //return selectNextAction(); // nextAactionSelection V1
+            //return selectNextAction(); // ----nextAactionSelection V1
             
             if(this.agentTask != null){
                 System.out.println("TASK: \n" + agentTask.toString());
@@ -368,8 +368,8 @@ public class NextAgent extends Agent {
         say(nextAction.toProlog());
         return nextAction;
     }
-
-	private void generatePossibleActions() {
+    
+    private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
     

@@ -144,8 +144,8 @@ public class NextIntention {
 
         // Task is active
  		if(nextAgent.GetActiveTask() != null && NextAgentUtil.IsTaskActive(nextAgent, nextSimulationStatus.GetActualStep()))
-        {
- 			this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
+            {   
+                	this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
 	    } 
 	    else 
 	    {
