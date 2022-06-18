@@ -176,7 +176,8 @@ public final class NextAgentUtil {
         while (it.hasNext()) {
             NextMapTile next = it.next();
             if (next.getThingType().contains(type)) {
-                result = new Vector2D(next.getPositionX(), next.getPositionY());
+                result = next.GetPosition();  // AVL - Trying a different approach
+                //result = new Vector2D(next.getPositionX(), next.getPositionY());
             }
         }
         return result;

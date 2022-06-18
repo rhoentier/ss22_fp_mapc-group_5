@@ -443,15 +443,18 @@ public class NextMap {
     }
     
     public Boolean IsGoalZoneAvailable() {
-    	return foundGoalZone;
+    	return !goalZones.isEmpty();
+        //return foundGoalZone;
     }
     
     public Boolean IsRoleZoneAvailable() {
-    	return foundRoleZone;
+        return !roleZones.isEmpty();
+    	//return foundRoleZone;
     }
     
     public Boolean IsDispenserAvailable() {
-        System.out.println("IsDispenserAvailable: \n" + foundDispenser);
-    	return foundDispenser;
+        return !dispensers.isEmpty();
+        //System.out.println("IsDispenserAvailable: \n" + foundDispenser);
+    	//return foundDispenser;
     }
 }

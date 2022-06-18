@@ -77,7 +77,7 @@ public class NextIntention {
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Vector2D position = visibleThing.getPoint();
+            Vector2D position = visibleThing.getPosition(); //.getPoint();
 
             if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
 
@@ -144,8 +144,8 @@ public class NextIntention {
 
         // Task is active
  		if(nextAgent.GetActiveTask() != null && NextAgentUtil.IsTaskActive(nextAgent, nextSimulationStatus.GetActualStep()))
-        {
- 			this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
+            {   
+                	this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
 	    } 
 	    else 
 	    {
@@ -198,8 +198,7 @@ public class NextIntention {
 		        			map.GetDispensers(),
 		        			requiredBlockIterator.next().getThingType()
 		        		);
-                                        System.out.println("\n \n \n \n foundDispenser -> " + foundDispenser);
-		        		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
+                                        this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
 		                //this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
 	                    if(this.nextAgent.GetPathMemory().size() == 0) 
 	                    {
