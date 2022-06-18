@@ -60,9 +60,12 @@ public class NextMap {
      */
     public void WriteToFile(String filename) {
         StringBuilder strMap = new StringBuilder();
+        String pos;
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                strMap.append(map[i][j].getThingType().charAt(0)).append(" ");
+                //pos = map[i][j].getPositionX().toString();
+                //pos += "/" + map[i][j].getPositionY().toString() + " ";
+                strMap.append(map[i][j].getThingType().charAt(0)).append(" "); //.append(pos);
             }
             strMap.append("\n");
         }
@@ -247,14 +250,17 @@ public class NextMap {
             for (int i = 0; i < tmp.length; i++) {
                 for (int j = 0; j < tmp[i].length; j++) {
                     // Note: X/Y are normally relative to the agents position. Here, they are set to 0.
-                    tmp[i][j] = new NextMapTile(0, 0, 0, "unknown");
+                    tmp[i][j] = new NextMapTile(i, j, 0, "unknown");
                 }
             }
 
             // Copy existing map to tmp map
+            NextMapTile newMapTile;
             for (int i = 0; i < this.map.length; i++) {
                 for (int j = 0; j < this.map[i].length; j++) {
-                    tmp[i + offset.x][j + offset.y] = this.map[i][j];
+                    newMapTile = this.map[i][j].Clone();
+                    newMapTile.MovePosition(offset);
+                    tmp[i + offset.x][j + offset.y] = newMapTile;
                 }
             }
 
