@@ -16,7 +16,6 @@ import massim.javaagents.general.NextConstants.ECardinals;
 public class NextMap {
 
     private NextMapTile[][] map;
-    private Vector2D zeroPoint;
     private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
@@ -24,9 +23,9 @@ public class NextMap {
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
 
-    public Boolean foundDispenser = false;
-    public boolean foundRoleZone = false;
-    public boolean foundGoalZone = false;
+    private boolean foundDispenser = false;
+    private boolean foundRoleZone = false;
+    private boolean foundGoalZone = false;
 
     private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
@@ -36,10 +35,7 @@ public class NextMap {
 
         this.agent = agent;
 
-        zeroPoint = new Vector2D(0, 0);
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
-
-        // ToDo: If implementation should be more efficient: Store separate list for static things instead of flags.
     }
 
     /**
@@ -51,8 +47,7 @@ public class NextMap {
         Vector2D maptilePosition;
         for (NextMapTile maptile : percept) {
             maptile.SetPosition(agent.GetPosition().getAdded(maptile.GetPosition()));
-            //maptilePosition = agent.GetPosition().getAdded(maptile.GetPosition());
-            setMapTileAbs(maptile);
+            setMapTile(maptile);
         }
     }
 
@@ -85,44 +80,7 @@ public class NextMap {
     }
 
     /**
-     * Merges the given map (param 1) into the existing map (this) based on
-     * position of agents and in which distance they see each other.
-     *
-     * @param mapAgent2 NextMap of the agent2, which is seen from agent1.
-     * @param positionAgent1 Position of agent1, which sees agent2
-     * @param positionAgent2 Position of agent2, which is seen from agent1.
-     * @param deltaView Distance in which agent1 sees agent2
-     */
-    public void MergeMap(NextMap mapAgent2, Vector2D positionAgent1, Vector2D positionAgent2, Vector2D deltaView) {
-
-        // ToDo: Rework needed due to change from relative to absolute positons
-        // Calculate vector from starting point of agent1 (on map1) to absolute zero on map2
-        Vector2D displacementVector = new Vector2D(positionAgent1);
-        displacementVector.add(deltaView);
-        displacementVector.subtract(positionAgent2);
-        displacementVector.subtract(mapAgent2.zeroPoint);
-
-        for (int i = 0; i < mapAgent2.GetSizeOfMap().x; i++) {
-            for (int j = 0; j < mapAgent2.GetSizeOfMap().y; j++) {
-                Vector2D insertAt = new Vector2D(displacementVector);
-                insertAt.add(i, j);
-                //setMapTileAbs(insertAt, mapAgent2.map[i][j]);
-            }
-        }
-
-        // Merge found dispensers
-        foundDispensers.addAll(mapAgent2.foundDispensers);
-        // Merge found zones without generating duplicates
-        if (mapAgent2.foundRoleZone) {
-            foundRoleZone = true;
-        }
-        if (mapAgent2.foundGoalZone) {
-            foundGoalZone = true;
-        }
-    }
-
-    /**
-     * Calculates the size of the map.
+     * Returns the size of the map.
      *
      * @return Vector object, which represents the number of elements in x- and y-direction.
      */
@@ -131,39 +89,30 @@ public class NextMap {
     }
 
     /**
-     * Transforms a relative position to an absolute position. Example with grid 10/10 and zero point at 5/5.
-     * Coordinate 1/1 (relative) is transformed to 6/6 (absolute).
-     *
-     * @param relativeVector Relative position on the map
-     * @return Absolute position on the map
+     * Returns all dispensers found so far as NextMapTiles. X/Y of each maptile is the position on the map
+     * @return Dispensers
      */
-    public Vector2D RelativeToAbsolute(Vector2D relativeVector) {
-        return new Vector2D(relativeVector).getAdded(zeroPoint);
-    }
-
-    /**
-     * Returns the map with coordinates 0/0 in upper left corner
-     *
-     * @return Internal Map
-     */
-    public NextMapTile[][] GetMap() {
-       return map;
-    }
-
     public HashSet<NextMapTile> GetDispensers() {return dispensers;}
 
+    /**
+     * Returns all RoleZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
+     * @return RoleZones
+     */
     public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
 
+    /**
+     * Returns all GoalZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
+     * @return GoalZones
+     */
     public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
 
     /**
-     * Returns a map tile at an absolute position
-     *
-     * @param absolutePosition
+     * Returns a map tile at a position on the map with 0/0 in top left corner
+     * @param position
      * @return maptile object
      */
-    private NextMapTile getMapTileAbs(Vector2D absolutePosition) {
-        return map[absolutePosition.x][absolutePosition.y];
+    public NextMapTile GetMapTile(Vector2D position) {
+        return map[position.x][position.y];
     }
 
     /**
@@ -171,7 +120,7 @@ public class NextMap {
      *
      * @param maptile: MapTile to add.
      */
-    private void setMapTileAbs(NextMapTile maptile) {
+    public void setMapTile(NextMapTile maptile) {
 
         NextMapTile existingMapTile;
 
@@ -180,7 +129,7 @@ public class NextMap {
         agent.MovePosition(moveArray);
         maptile.MovePosition(moveArray);
 
-        existingMapTile = getMapTileAbs(maptile.GetPosition());
+        existingMapTile = GetMapTile(maptile.GetPosition());
 
         // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
         boolean addMaptile = true;
@@ -197,6 +146,7 @@ public class NextMap {
             switch (maptile.getThingType().substring(0,4)) {
                 case "disp":
                     addTo(dispensers, maptile);
+                    foundDispenser = true;
                     foundDispensers.add((maptile.getThingType().substring(10)));
                 case "goal":
                     addTo(goalZones, maptile);
@@ -205,10 +155,14 @@ public class NextMap {
                     addTo(roleZones, maptile);
                     foundRoleZone = true;
             }
-            System.out.println("DISPENSERS: "  + dispensers);
         }
     }
 
+    /**
+     * Helper Function to add dispensers, goalZones and role Zones to their list
+     * @param hashSet HashSet to which the maptile should be added
+     * @param maptile maptile to be added
+     */
     private void addTo(HashSet<NextMapTile> hashSet, NextMapTile maptile) {
         for (NextMapTile mt : hashSet) {
             if (maptile.GetPosition().equals(mt.GetPosition())) {
@@ -219,11 +173,9 @@ public class NextMap {
     }
 
     /**
-     * Extends the size of the map object either in x+, x-, y+ or y- direction
-     * if the map is too small.
+     * Extends the size of the map object either in x+, x-, y+ or y- direction if the map is too small.
      *
-     * @param positionMapTile position of the map tile to be added relative to
-     * the starting position.
+     * @param positionMapTile position of the map tile to be added relative to the upper left corner
      */
     private Vector2D extendArray(Vector2D positionMapTile) {
 
@@ -232,6 +184,7 @@ public class NextMap {
         Vector2D offset = new Vector2D(0, 0);
         Vector2D sizeOfMap = GetSizeOfMap();
 
+        // Find if extension is needed in x-direction
         if (positionMapTile.x >= map.length) {
             numExtend.x = Math.max(positionMapTile.x - map.length + 1, minExtend);
         } else if (positionMapTile.x < 0) {
@@ -239,6 +192,7 @@ public class NextMap {
             offset.x = numExtend.x;
         }
 
+        // Find if extension is needed in y-direction
         if (positionMapTile.y >= map[0].length) {
             numExtend.y = Math.max(positionMapTile.y - map[0].length + 1, minExtend);
         } else if (positionMapTile.y < 0) {
@@ -268,6 +222,7 @@ public class NextMap {
                 }
             }
 
+            // Replace existing map
             this.map = tmp;
 
             // Move existing dispensers, goalZones and roleZones
@@ -362,6 +317,10 @@ public class NextMap {
         return false;
     }
 
+    /**
+     * Returns the map with coordinates 0/0 in upper left corner
+     * @return Map
+     */
     public NextMapTile[][] GetMapArray() {
         return map.clone();
     }
@@ -417,12 +376,10 @@ public class NextMap {
         }
         return tempMap;
     }
-    
-    
+
     public String MapToStringBuilder() {
         return MapToStringBuilder(this.map);
     }
-        
 
     public static String MapToStringBuilder( NextMapTile[][] map) {
         StringBuilder stringForReturn = new StringBuilder();
