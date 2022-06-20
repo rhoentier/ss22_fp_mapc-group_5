@@ -74,7 +74,7 @@ public class NextAgent extends Agent {
 
     // Tasks
     private NextTask activeTask = null;
-    private EAgentTask agentTask;
+    private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
     
     /*
      * ##################### endregion fields
@@ -154,12 +154,18 @@ public class NextAgent extends Agent {
             
             generatePossibleActions();
             
-            if(this.agentTask != null){
-                System.out.println("TASK: \n" + agentTask.toString());
-            }
-            System.out.println("activeTask : \n" + this.GetActiveTask());
+            System.out.println("Goalzones: " + map.GetGoalZones());
+            System.out.println("RoleZones: " + map.GetRoleZones());
+            System.out.println("Dispensers: " + map.GetDispensers());
             
+            if(this.agentActivity != null){
+                System.out.println("AgentActivity: \n" + agentActivity.toString());
+            }
+            if(this.activeTask != null){
+                System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
+            }
             return selectNextAction(); 
+            
         }
 
         return null;
@@ -210,12 +216,12 @@ public class NextAgent extends Agent {
     }
     
     public EAgentTask GetAgentTask() {
-    	return this.agentTask;
+    	return this.agentActivity;
     }
     
     public void SetAgentTask(EAgentTask agentTask)
     {
-    	this.agentTask = agentTask;
+    	this.agentActivity = agentTask;
     }
     
     public List<Action> GetPathMemory()
@@ -489,17 +495,17 @@ public class NextAgent extends Agent {
                     	while(goalZoneIt.hasNext()) {
                     		NextMapTile next = goalZoneIt.next();
                     		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "goalZone"));
+                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "goalZone"));
                     		}
                     	}
                     	Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
                     	while(roleZoneIt.hasNext()) {
                     		NextMapTile next = roleZoneIt.next();
                     		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "roleZone"));
+                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "roleZone"));
                     		}
                     	}
-                        view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "free"));
+                        view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "free"));
                     }
                 }
             }

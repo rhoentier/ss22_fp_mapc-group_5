@@ -137,12 +137,13 @@ public final class NextAgentUtil {
         return new Action("survey", new Identifier("" + xPosition), new Identifier("" + yPosition));
     }
 
-    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int actualSteps) {
+    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int currentStep) {
         ArrayList<NextTask> result = new ArrayList<NextTask>();
         Iterator<NextTask> it = taskList.iterator();
-
+                
         while (it.hasNext()) {
             NextTask nextTask = it.next();
+            
             if (nextTask.GetRequiredBlocks().size() == 1) { // Nur Tasks mit einem Block
                 Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
                 while (nextMapIt.hasNext()) {
@@ -151,7 +152,7 @@ public final class NextAgentUtil {
                     while (nextDispenserIt.hasNext()) {
                         NextMapTile nextDispenserMapTile = nextDispenserIt.next();
                         if (nextDispenserMapTile.getThingType().contains(nextMapTile.getThingType())
-                                && actualSteps < nextTask.GetDeadline()) {
+                                && currentStep < nextTask.GetDeadline()) {
                             result.add(nextTask);
                         }
                     }

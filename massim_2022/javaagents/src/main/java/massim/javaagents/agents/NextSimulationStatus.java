@@ -22,7 +22,7 @@ public class NextSimulationStatus {
     private Integer actionID = -1;
     private Integer teamSize;
     private Integer totalSteps;
-    private Integer actualStep;
+    private Integer currentStep;
     private Integer ranking;
     private long score;
     private long timestamp;
@@ -89,12 +89,12 @@ public class NextSimulationStatus {
         return totalSteps;
     }
 
-    public void SetActualStep(Integer actualStep) {
-        this.actualStep = actualStep;
+    public void SetCurrentStep(Integer currentStep) {
+        this.currentStep = currentStep;
     }
 
-    public Integer GetActualStep() {
-        return actualStep;
+    public Integer GetCurrentStep() {
+        return currentStep;
     }
 
     public void SetRanking(Integer ranking) {
