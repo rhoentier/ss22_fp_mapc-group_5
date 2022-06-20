@@ -77,33 +77,31 @@ public class NextIntention {
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Vector2D position = visibleThing.getPosition(); //.getPoint();
+            Vector2D position = visibleThing.getPosition();
 
-            if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
-
+            if (visibleThing.getThingType().contains("dispenser")
+            		&& NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null
+            		&& NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())) 
+            {
             	// Block für den aktiven Task überhaupt tragbar?
-            	if(NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())) 
-            	{
-	                if (visibleThing.getThingType().contains("dispenser")) {
-	
-	                    if (nextAgentStatus.GetAttachedElementsAmount() < 1) {
-	                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
-	                        this.nextAgent.ClearPathMemory();
-	                    }
-	                }
-	
-	                if (visibleThing.getThingType().contains("block") && this.nextAgent.GetActiveTask() != null) {
-	                	if (nextAgentStatus.GetAttachedElementsAmount() < 1) {
-	                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
-	                        this.nextAgent.ClearPathMemory();
-	                	}
-	                }
-            	}
+                if (visibleThing.getThingType().contains("dispenser")) {
+
+                    if (nextAgentStatus.GetAttachedElementsAmount() < 1) {
+                        possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.GetDirection(position)));
+                        this.nextAgent.ClearPathMemory();
+                    }
+                }
+
+                if (visibleThing.getThingType().contains("block") && this.nextAgent.GetActiveTask() != null
+                		&& nextAgentStatus.GetAttachedElementsAmount() < 1) {
+                    possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
+                    this.nextAgent.ClearPathMemory();
+                }
             }
             // submit block, if its in the right direction
             // original //if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains("entity-5")
-            if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains(this.nextAgentStatus.GetTeamName())
-                    && NextAgentUtil.IsAgentInGoalZone(nextAgentStatus.GetGoalZones()) )
+            if(nextAgentStatus.GetAttachedElementsAmount() > 0 //&& visibleThing.getThingType().contains("entity-5")
+            		&& NextAgentUtil.IsAgentInGoalZone(nextAgent.GetMap().GetGoalZones()) )
             {
             	if(NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) 
             	{
@@ -144,8 +142,8 @@ public class NextIntention {
 
         // Task is active
  		if(nextAgent.GetActiveTask() != null && NextAgentUtil.IsTaskActive(nextAgent, nextSimulationStatus.GetActualStep()))
-            {   
-                	this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
+        {   
+        	this.nextAgent.SetAgentTask(NextPlanWrapper.GenerateNewPlan(this.nextAgent));
 	    } 
 	    else 
 	    {
@@ -175,9 +173,9 @@ public class NextIntention {
 	        	if(this.nextAgent.GetPathMemory().isEmpty()) {
 	        		//this.nextAgent.SetPathMemory(NextPathfindingUtil.GenerateExploreActions());
 	        		this.nextAgent.SetPathMemory(
-                                        this.nextAgent.CalculatePath(
-                                                new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().x,NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().y)
-                                        )
+                        this.nextAgent.CalculatePath(
+                                new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().x,NextAgentUtil.GenerateRandomNumber(21)-10 + this.nextAgent.GetPosition().y)
+                        )
 	        		
 	        		// original Version		// this.nextAgent.CalculatePath(new Vector2D(NextAgentUtil.GenerateRandomNumber(21)-10,NextAgentUtil.GenerateRandomNumber(21)-10))
 	        		);
@@ -198,8 +196,7 @@ public class NextIntention {
 		        			map.GetDispensers(),
 		        			requiredBlockIterator.next().getThingType()
 		        		);
-                                        this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
-		                //this.nextAgent.SetPathMemory(manhattanPath.calculatePath((int)foundDispenser.x, (int)foundDispenser.y));
+                        this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
 	                    if(this.nextAgent.GetPathMemory().size() == 0) 
 	                    {
 	                    	possibleActions.add(generateDefaultAction()); //fallback
@@ -211,28 +208,22 @@ public class NextIntention {
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestGoalZone(map.GetGoalZones())
+	        						NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())
 	        				)
 	        		);
-//	                this.nextAgent.SetPathMemory(
-//	                		NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition()))
-//	                );
                     if(this.nextAgent.GetPathMemory().size() == 0)
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback
                     }
 	            }
 	        	break;
-	        case goToRolezone: //ungetestet
+	        case goToRolezone:
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestRoleZone(map.GetRoleZones())
+	        						NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())
 	        				)
 	        		);
-//	                this.nextAgent.SetPathMemory(
-//	                		NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition()))
-//	                );
                     if(this.nextAgent.GetPathMemory().size() == 0)
                     {
                     	possibleActions.add(generateDefaultAction()); //fallback

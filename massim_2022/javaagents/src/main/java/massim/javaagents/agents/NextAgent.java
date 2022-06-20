@@ -154,12 +154,10 @@ public class NextAgent extends Agent {
             
             generatePossibleActions();
             
-            //return selectNextAction(); // ----nextAactionSelection V1
-            
             if(this.agentTask != null){
                 System.out.println("TASK: \n" + agentTask.toString());
             }
-            return selectNextActionTest();  // For Testing purposes only
+            return selectNextAction();  // For Testing purposes only
         }
 
         return null;
@@ -293,14 +291,6 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        say(nextAction.toProlog());
-        return nextAction;
-    }
-
-    // PATHFINDING EVALUATION - NUR ZUM TESTEN
-    private Action selectNextActionTest() {
-        Action nextAction = intention.SelectNextAction();
-
         if(!pathMemory.isEmpty())
         {
         	Action currentAction = pathMemory.get(0);
@@ -357,7 +347,7 @@ public class NextAgent extends Agent {
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
                 		}
                 		else // Was dann?
-                			{
+                		{
                 			// Randomstep
                 			nextAction = new NextRandomPath().GenerateNextMove();
                 		}
@@ -517,7 +507,7 @@ public class NextAgent extends Agent {
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
 
             for (NextMapTile thing : agentStatus.GetVisibleThings()) {
-                if (!agentStatus.GetAttachedElements().contains(thing.getPoint())) {
+                if (!agentStatus.GetAttachedElements().contains(thing.getPosition())) {
                     visibleNotAttachedThings.add(thing);
                 }
             }
@@ -547,7 +537,6 @@ public class NextAgent extends Agent {
 
         // Update internal map with new percept
         updateMap();
-
     }
 
     /**
