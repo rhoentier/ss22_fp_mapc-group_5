@@ -209,29 +209,12 @@ public final class NextAgentUtil {
         return blockTypes;
     }
 
-    //For testing only
-    public static NextMapTile GetNearestGoalZoneMapTile(HashSet<NextMapTile> goalzones) {
-        NextManhattanPath manhattanPath = new NextManhattanPath();
-        ArrayList<Action> list = new ArrayList<Action>();
-        Iterator<NextMapTile> it = goalzones.iterator();
-        NextMapTile nearestMapTile = null;
-
-        NextMapTile next = it.next();
-        list = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
-        nearestMapTile = next;
-
-        while (it.hasNext()) {
-            next = it.next();
-            ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
-            if (calcList.size() < list.size()) {
-                list = calcList;
-                nearestMapTile = next;
-            }
-
-        }
-        return nearestMapTile;
-    }
-
+    /**
+     * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     * @param goalzones
+     * @return
+     */
+    @Deprecated
     public static Vector2D GetNearestGoalZone(HashSet<NextMapTile> goalzones) {
         NextManhattanPath manhattanPath = new NextManhattanPath();
         ArrayList<Action> list = new ArrayList<Action>();
@@ -255,6 +238,12 @@ public final class NextAgentUtil {
         return result;
     }
 
+    /**
+     * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     * @param goalzones
+     * @return
+     */
+    @Deprecated
     public static Vector2D GetNearestRoleZone(HashSet<NextMapTile> roleZone) {
         NextManhattanPath manhattanPath = new NextManhattanPath();
         ArrayList<Action> list = new ArrayList<Action>();
@@ -272,6 +261,30 @@ public final class NextAgentUtil {
                 result = next.getPosition();
             }
 
+        }
+        return result;
+    }
+    
+    /**
+     * Usefully for all Zones
+     * @param zone
+     * @return Vector2D Position of nearest Zone
+     */
+    public static Vector2D GetNearestZone(Vector2D agentPosition, HashSet<NextMapTile> zone) {
+        int smallestDistance = 0;
+        Iterator<NextMapTile> it = zone.iterator();
+        Vector2D result = new Vector2D();
+
+        NextMapTile next = it.next();
+        smallestDistance = ManhattanDistance(agentPosition, next.getPosition());
+
+        while (it.hasNext()) {
+            next = it.next();
+            int calcDistance = ManhattanDistance(agentPosition, next.getPosition());
+            if (calcDistance < smallestDistance) {
+            	smallestDistance = calcDistance;
+                result = next.getPosition();
+            }
         }
         return result;
     }
@@ -356,7 +369,7 @@ public final class NextAgentUtil {
             Iterator<NextMapTile> activeTaskIterator = activeTask.iterator();
             NextMapTile nextActiveTask = activeTaskIterator.next();
 
-            if (next.equals(nextActiveTask.getPoint())) {
+            if (next.equals(nextActiveTask.getPosition())) {
                 return true;
             }
         }
