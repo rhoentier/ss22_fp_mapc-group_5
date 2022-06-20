@@ -50,10 +50,11 @@ public final class NextAgentUtil {
      * Reports, if a Thing is next to the Agent
      *
      * @param position - x-Value, y-Value of a Thing
-     * @param status - #source of Information
+     * @param agent - the Agent to be compared to
      * @return boolean
      */
-    public static boolean NextTo(Vector2D position, NextAgentStatus status) {
+    public static boolean NextToUsingLocalView(Vector2D position, NextAgent agent) {
+        NextAgentStatus status = agent.getAgentStatus();
         if (position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)) {
             return true;
         }
@@ -68,7 +69,22 @@ public final class NextAgentUtil {
         }
         return false;
     }
-
+    
+    /**
+     * Reports, if a Thing is next to the Agent using Absolute coordinates
+     *
+     * @param position - x-Value, y-Value of a Thing
+     * @param status - #source of Information
+     * @return boolean
+     */
+    ///**
+    public static boolean NextToUsingAbsoluteValues(Vector2D position, NextAgent agent) {
+        Vector2D newPosition = position.clone();
+        newPosition.subtract(agent.GetPosition());
+        return NextToUsingLocalView(position, agent);
+    }
+    //*/
+    
     /**
      * Returns the direction for an action
      *

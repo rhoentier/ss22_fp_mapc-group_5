@@ -159,6 +159,8 @@ public class NextAgent extends Agent {
             if(this.agentTask != null){
                 System.out.println("TASK: \n" + agentTask.toString());
             }
+            System.out.println("activeTask : \n" + this.GetActiveTask());
+            
             return selectNextActionTest();  // For Testing purposes only
         }
 

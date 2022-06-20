@@ -77,9 +77,9 @@ public class NextIntention {
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Vector2D position = visibleThing.getPosition(); //.getPoint();
+            Vector2D position = visibleThing.getPosition().clone(); //.getPoint();
 
-            if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
+            if (NextAgentUtil.NextToUsingLocalView(position, nextAgent) && nextAgent.GetActiveTask() != null ) {
 
             	// Block für den aktiven Task überhaupt tragbar?
             	if(NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())) 
