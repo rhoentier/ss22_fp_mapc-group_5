@@ -27,7 +27,7 @@ public class NextMap {
     private boolean foundRoleZone = false;
     private boolean foundGoalZone = false;
 
-    private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
+    private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
@@ -170,13 +170,16 @@ public class NextMap {
                 case "disp":
                     addTo(dispensers, maptile);
                     foundDispenser = true;
-                    foundDispensers.add((maptile.getThingType().substring(10)));
+                    availableDispensers.add((maptile.getThingType().substring(10)));
+                    break;
                 case "goal":
                     addTo(goalZones, maptile);
                     foundGoalZone = true;
+                    break;
                 case "role":
                     addTo(roleZones, maptile);
                     foundRoleZone = true;
+                    break;
             }
         }
     }
@@ -334,7 +337,7 @@ public class NextMap {
      * @return
      */
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocks)) {
+        if (foundGoalZone && availableDispensers.containsAll(requiredBlocks)) {
             return true;
         }
         return false;

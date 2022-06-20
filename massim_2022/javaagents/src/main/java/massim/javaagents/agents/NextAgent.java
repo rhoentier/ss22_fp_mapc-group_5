@@ -154,9 +154,11 @@ public class NextAgent extends Agent {
             
             generatePossibleActions();
             
+            /*
             System.out.println("Goalzones: " + map.GetGoalZones());
             System.out.println("RoleZones: " + map.GetRoleZones());
             System.out.println("Dispensers: " + map.GetDispensers());
+            */
             
             if(this.agentActivity != null){
                 System.out.println("AgentActivity: \n" + agentActivity.toString());

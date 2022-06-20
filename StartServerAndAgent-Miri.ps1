@@ -6,6 +6,6 @@ Start-Process -FilePath java -ArgumentList '-jar .\massim_2022\server\target\ser
 Start-Sleep -s 1
 
 Write-Host "Starting Agents"
-Start-Process -FilePath java -ArgumentList '-jar .\massim_2022\javaagents\target\javaagents-2022-1.0-jar-with-dependencies.jar .\massim_2022\javaagents\conf\NextAgents'
+Start-Process -FilePath java -ArgumentList '-jar .\massim_2022\javaagents\target\javaagents-2022-1.0-jar-with-dependencies.jar .\massim_2022\javaagents\conf\NextMiri'
 
 Exit
