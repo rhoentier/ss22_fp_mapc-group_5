@@ -59,12 +59,15 @@ public class NextAStarPath {
             this.localStartPoint = new int[]{startpoint.x, startpoint.y};
             this.targetPosition = new int[]{targetX, targetY};
         }
-
-        //System.out.println("iNPUT" + startpoint + " " + target);
-        //System.out.println("Map - " + mapWidth + " " + mapHeight);
-        //System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
-        //System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
         
+        /* - Debugging helper
+        System.out.println("iNPUT" + startpoint + " " + target);
+        System.out.println("Map - " + mapWidth + " " + mapHeight);
+        System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
+        System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
+        System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
+        //*/
+
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");
             return new ArrayList<>();
@@ -239,19 +242,20 @@ public class NextAStarPath {
     private List<Action> convertVectorToAction(List<Vector2D> vectorList) {
         List<Action> processedActions = new ArrayList<>();
         for (Vector2D target : vectorList) {
-            if ((int) target.x == NextConstants.WestPoint.x && (int) target.y == NextConstants.WestPoint.y) {
+            if (target.equals(NextConstants.WestPoint)) {
+            //if ( target.x ==  NextConstants.WestPoint.x && (int) target.y == NextConstants.WestPoint.y) {
                 processedActions.add(NextAgentUtil.GenerateWestMove());
             }
-            //if (target.equals(NextConstants.NorthPoint)) {
-            if ((int) target.x == NextConstants.NorthPoint.x && (int) target.y == NextConstants.NorthPoint.y) {
+            if (target.equals(NextConstants.NorthPoint)) {
+            //if ((int) target.x == NextConstants.NorthPoint.x && (int) target.y == NextConstants.NorthPoint.y) {
                 processedActions.add(NextAgentUtil.GenerateNorthMove());
             }
-            //if (target.equals(NextConstants.EastPoint)) {
-            if ((int) target.x == NextConstants.EastPoint.x && (int) target.y == NextConstants.EastPoint.y) {
+            if (target.equals(NextConstants.EastPoint)) {
+            //if ((int) target.x == NextConstants.EastPoint.x && (int) target.y == NextConstants.EastPoint.y) {
                 processedActions.add(NextAgentUtil.GenerateEastMove());
             }
-            //if (target.equals(NextConstants.SouthPoint)) {
-            if ((int) target.x == NextConstants.SouthPoint.x && (int) target.y == NextConstants.SouthPoint.y) {
+            if (target.equals(NextConstants.SouthPoint)) {
+            //if ((int) target.x == NextConstants.SouthPoint.x && (int) target.y == NextConstants.SouthPoint.y) {
                 processedActions.add(NextAgentUtil.GenerateSouthMove());
             }
         }

@@ -36,7 +36,6 @@ import massim.javaagents.percept.NextRole;
  * <p>
  * ToDo: Gruppenbildung
  *
- * @author Alexander Lorenz
  */
 public class NextAgent extends Agent {
 
@@ -70,12 +69,12 @@ public class NextAgent extends Agent {
     private List<Action> pathMemory = new ArrayList<>();    // storing 
 
     // Map
-    private Vector2D position; // Position on the map. 0/0 is always in top left corner
+    private Vector2D position; // Absolute Position on the map. 0/0 is always in top left corner
     private NextMap map;
 
     // Tasks
     private NextTask activeTask = null;
-    private EAgentTask agentTask;
+    private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
     
     /*
      * ##################### endregion fields
@@ -143,7 +142,7 @@ public class NextAgent extends Agent {
             
 //            if (pathMemory.isEmpty()) {
 //                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
-//                pathMemory = calculatePath(target);
+//                pathMemory = CalculatePath(target);
 //            }
 
             updateInternalBeliefs();
@@ -155,15 +154,26 @@ public class NextAgent extends Agent {
             
             generatePossibleActions();
             
-            //return selectNextAction(); // nextAactionSelection V1
+            /*
+            System.out.println("Goalzones: " + map.GetGoalZones());
+            System.out.println("RoleZones: " + map.GetRoleZones());
+            System.out.println("Dispensers: " + map.GetDispensers());
+            */
             
-            return selectNextActionTest();  // For Testing purposes only
+            if(this.agentActivity != null){
+                System.out.println("AgentActivity: \n" + agentActivity.toString());
+            }
+            if(this.activeTask != null){
+                System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
+            }
+            return selectNextAction(); 
+            
         }
 
         return null;
     }
 
-	/**
+    /**
      * Getter for local NextAgentStatus
      * @return NextAgentStatus
      */
@@ -208,12 +218,12 @@ public class NextAgent extends Agent {
     }
     
     public EAgentTask GetAgentTask() {
-    	return this.agentTask;
+    	return this.agentActivity;
     }
     
     public void SetAgentTask(EAgentTask agentTask)
     {
-    	this.agentTask = agentTask;
+    	this.agentActivity = agentTask;
     }
     
     public List<Action> GetPathMemory()
@@ -291,14 +301,6 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        say(nextAction.toProlog());
-        return nextAction;
-    }
-
-    // PATHFINDING EVALUATION - NUR ZUM TESTEN
-    private Action selectNextActionTest() {
-        Action nextAction = intention.SelectNextAction();
-
         if(!pathMemory.isEmpty())
         {
         	Action currentAction = pathMemory.get(0);
@@ -306,7 +308,9 @@ public class NextAgent extends Agent {
         	NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
         	if(obstacle != null) // obstacle vor mir
         	{        
-        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));      			
+                        //Option - Clear action wird deaktiviert, damit die karte nicht zu groß wird 
+        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
+                        //pathMemory.clear();
         	} 
         	else 
         	{             	
@@ -353,7 +357,7 @@ public class NextAgent extends Agent {
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
                 		}
                 		else // Was dann?
-                			{
+                		{
                 			// Randomstep
                 			nextAction = new NextRandomPath().GenerateNextMove();
                 		}
@@ -364,8 +368,8 @@ public class NextAgent extends Agent {
         say(nextAction.toProlog());
         return nextAction;
     }
-
-	private void generatePossibleActions() {
+    
+    private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
     
@@ -429,6 +433,34 @@ public class NextAgent extends Agent {
     }
 
     /**
+     * Calculate Path to the Target, ending on a free Tile next to it
+     * @param target
+     * @return 
+     */
+    public List<Action> CalculatePathNextToTarget(Vector2D target){
+        
+        //ToDo - Optimale Position je nach Ausgangslage auswählen 
+        
+        try{
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
+            return CalculatePath(new Vector2D(target.x+1,target.y));
+        }
+        } catch(Exception e){
+            this.say("CalculatePathNextToTarget:" + e);
+        }
+        return CalculatePath(new Vector2D(target.x,target.y));
+    }
+            
+    /**
      * Transfer the recieved percept data to the general map
      */
     private void updateMap() {
@@ -465,17 +497,17 @@ public class NextAgent extends Agent {
                     	while(goalZoneIt.hasNext()) {
                     		NextMapTile next = goalZoneIt.next();
                     		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "goalZone"));
+                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "goalZone"));
                     		}
                     	}
                     	Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
                     	while(roleZoneIt.hasNext()) {
                     		NextMapTile next = roleZoneIt.next();
                     		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "roleZone"));
+                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "roleZone"));
                     		}
                     	}
-                        view.add(new NextMapTile(i, j, getSimulationStatus().GetActualStep(), "free"));
+                        view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "free"));
                     }
                 }
             }
@@ -485,7 +517,7 @@ public class NextAgent extends Agent {
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
 
             for (NextMapTile thing : agentStatus.GetVisibleThings()) {
-                if (!agentStatus.GetAttachedElements().contains(thing.getPoint())) {
+                if (!agentStatus.GetAttachedElements().contains(thing.getPosition())) {
                     visibleNotAttachedThings.add(thing);
                 }
             }
@@ -515,7 +547,6 @@ public class NextAgent extends Agent {
 
         // Update internal map with new percept
         updateMap();
-
     }
 
     /**

@@ -16,9 +16,10 @@ import massim.javaagents.percept.NextSurveyedThing;
 
 /**
  * Part of Agent Belief System
+ * <p>
  * Agent related status values
  * 
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextAgentStatus {
     
@@ -61,7 +62,6 @@ public class NextAgentStatus {
      * @param nextAgent - instance of parent agent
      */
     
-
     public NextAgentStatus(NextAgent nextAgent) {
         this.nextAgent = nextAgent; 
         name = null;
@@ -85,6 +85,35 @@ public class NextAgentStatus {
      * ########## region public methods
      */
 
+     /*  To Delete - backup for Testing
+    // compare attached elements to NextConstants directions and convert to array ?
+    public void SetAttachedElements(HashSet<Point> attachedElements) {
+        this.attachedElements = new HashSet();
+        for (Point attached : attachedElements) {
+            if (attached.equals(NextConstants.WestPoint)
+                    || attached.equals(NextConstants.NorthPoint)
+                    || attached.equals(NextConstants.EastPoint)
+                    || attached.equals(NextConstants.SouthPoint)) {
+                this.attachedElements.add(attached);
+            }
+        }
+    }
+*/
+    // compare attached elements to NextConstants directions and convert to array ?
+    public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
+            this.attachedElements = new HashSet();
+            for (Vector2D attached : attachedElements) {
+                if (attached.equals(NextConstants.WestPoint)
+                        || attached.equals(NextConstants.NorthPoint)
+                        || attached.equals(NextConstants.EastPoint)
+                        || attached.equals(NextConstants.SouthPoint)) {
+                    this.attachedElements.add(attached);
+                }
+            }
+    }
+
+    //---------------- Getter and Setter
+    
     public NextRole GetCurrentRole() {
         return currentRole;
     }
@@ -166,19 +195,6 @@ public class NextAgentStatus {
         SetAttachedElements(visibleAttachedElements);
     }
 
-    // compare attached elements to NextConstants directions and convert to array ?
-    public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
-        this.attachedElements = new HashSet();
-        for (Vector2D attached : attachedElements) {
-            if (attached.equals(NextConstants.WestPoint)
-                    || attached.equals(NextConstants.NorthPoint)
-                    || attached.equals(NextConstants.EastPoint)
-                    || attached.equals(NextConstants.SouthPoint)) {
-                this.attachedElements.add(attached);
-            }
-        }
-    }
-
     public HashSet<Vector2D> GetAttachedElements() {
         return this.attachedElements;
     }
@@ -242,6 +258,14 @@ public class NextAgentStatus {
     public void SetSurveyedThings(HashSet<NextSurveyedThing> surveyedThings) {
         this.surveyedThings = surveyedThings;
     }
+    
+    public HashSet<NextMapTile> GetDispenser() {
+        return dispenser;
+    }
+
+    public void SetDispenser(HashSet<NextMapTile> dispenser) {
+        this.dispenser = dispenser;
+    }
 
     @Override
     public String toString() {
@@ -254,15 +278,6 @@ public class NextAgentStatus {
                 + "--------------------------------- \n";
 
     }
-    
-    
-    public HashSet<NextMapTile> GetDispenser() {
-        return dispenser;
-    }
-
-    public void SetDispenser(HashSet<NextMapTile> dispenser) {
-        this.dispenser = dispenser;
-    }        
     
     /*
      * ##################### endregion public methods
