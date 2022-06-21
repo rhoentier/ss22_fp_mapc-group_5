@@ -203,7 +203,7 @@ public class NextIntention {
 	                    }
 	            }
 	            break;
-	        case goToEndzone:
+			case goToGoalzone:
 	        	// Route zur Endzone
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
