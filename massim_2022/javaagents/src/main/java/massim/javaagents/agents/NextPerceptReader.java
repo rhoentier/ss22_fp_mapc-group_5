@@ -2,14 +2,13 @@ package massim.javaagents.agents;
 
 import eis.iilang.*;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextNorm;
 import massim.javaagents.percept.NextNormRequirement;
 import massim.javaagents.percept.NextRole;
@@ -236,7 +235,7 @@ public class NextPerceptReader {
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
 
-        agentStatus.SetAttachedElements(processAttachedSet());
+        agentStatus.SetVisibleAttachedElements(processAttachedSet());
 
         agentStatus.SetVision(processThingsSet()); //
         agentStatus.SetObstacles(processObstaclesSet()); 
@@ -388,13 +387,13 @@ public class NextPerceptReader {
 
     }
 
-    private HashSet<Point> processAttachedSet() {
+    private HashSet<Vector2D> processAttachedSet() {
         // attached(x, y) - Percept Data Format
-        HashSet<Point> processedAttachedSet = new HashSet<>();
+        HashSet<Vector2D> processedAttachedSet = new HashSet<>();
         // Converts percept data to attached points. All visible attached elements are processed.
         for (List<Parameter> zone : attached) {
             try {
-                processedAttachedSet.add(new Point(
+                processedAttachedSet.add(new Vector2D(
                         Integer.parseInt(zone.get(0).toProlog()),
                         Integer.parseInt(zone.get(1).toProlog())
                 ));

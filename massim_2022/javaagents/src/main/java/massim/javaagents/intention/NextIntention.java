@@ -11,16 +11,21 @@ import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.general.NextConstants.ECardinals;
+import massim.javaagents.general.NextConstants.EPathFinding;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
+import massim.javaagents.pathfinding.NextPathfindingUtil;
+import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import massim.javaagents.percept.NextRole;
 
 public class NextIntention {
 
@@ -65,12 +70,16 @@ public class NextIntention {
         // Survey a specific field with an agent. Get Name, Role, Energy
         // Attributes x-Position, y-Position relative to the Agent
         //possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
+        
+        //Example for an Rolechange action
+        exampleRoleChangeAction();
 
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            Point position = visibleThing.getPoint();
+            Vector2D position = visibleThing.getPoint();
 
+            
             if (NextAgentUtil.NextTo(position, nextAgentStatus) && nextAgent.GetActiveTask() != null ) {
 
             	// Block für den aktiven Task überhaupt tragbar?
@@ -143,7 +152,7 @@ public class NextIntention {
 	    	resetAfterInactiveTask();
 	    	
 	    	// dispenser available for task?
-	    	HashSet<NextMapTile> dispatcherLst = nextAgent.GetMap().GetMapTiles("dispenser", nextAgent.GetPosition());
+	    	HashSet<NextMapTile> dispatcherLst = nextAgent.GetMap().GetDispensers();
 	    	if(!dispatcherLst.isEmpty())
 	    	{
 	    		ArrayList<NextTask> selectedTask = NextAgentUtil.EvaluatePossibleTask(nextSimulationStatus.GetTasksList(), 
@@ -182,7 +191,7 @@ public class NextIntention {
 		        	Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
 		        	
 		        	Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
-		        			map.GetMapTiles("dispenser", this.nextAgent.GetPosition()),
+		        			map.GetDispensers(),
 		        			requiredBlockIterator.next().getThingType()
 		        		);
 
@@ -194,12 +203,12 @@ public class NextIntention {
 	                    }
 	            }
 	            break;
-	        case goToGoalzone:
+	        case goToEndzone:
 	        	// Route zur Endzone
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestGoalZone(map.GetMapTiles("goalZone", this.nextAgent.GetPosition())) 
+	        						NextAgentUtil.GetNearestGoalZone(map.GetGoalZones())
 	        				)
 	        		);
 //	                this.nextAgent.SetPathMemory(
@@ -215,7 +224,7 @@ public class NextIntention {
 	        	if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
 	        		this.nextAgent.SetPathMemory(
 	        				this.nextAgent.CalculatePath(
-	        						NextAgentUtil.GetNearestRoleZone(map.GetMapTiles("roleZone", this.nextAgent.GetPosition())) 
+	        						NextAgentUtil.GetNearestRoleZone(map.GetRoleZones())
 	        				)
 	        		);
 //	                this.nextAgent.SetPathMemory(
@@ -247,6 +256,34 @@ public class NextIntention {
 //    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
 //    	}
 	}
+    
+    /**
+     *  Beispiel für Rollenwechsel
+     */
+    private void exampleRoleChangeAction() {
+        NextRole roleToChangeTo = null;
+        
+        // Initialise a RoleChange if in RoleZone
+        if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(this.nextAgentStatus.GetRoleZones())) {
+            // desiredActions - have to be filled in Desires processing
+            // roleToChangeTo - should be selected in Desires processing
+                    HashSet<NextConstants.EActions> desiredActions = new HashSet<>();
+                    desiredActions.add(NextConstants.EActions.attach);
+                    desiredActions.add(NextConstants.EActions.request);
+                    desiredActions.add(NextConstants.EActions.submit);
+                    try {
+                        roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions, nextAgent.getSimulationStatus().GetRolesList());
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+
+            if (roleToChangeTo != null) {
+                if (!roleToChangeTo.GetName().equals(nextAgentStatus.GetRole())) {
+                    possibleActions.add(NextAgentUtil.GenerateRoleChangeAction(roleToChangeTo));
+                }
+            }
+        }
+    }
     
     private Boolean evaluateLastStep() {
 		String lastAction = this.nextAgentStatus.GetLastAction(); // e.g. move

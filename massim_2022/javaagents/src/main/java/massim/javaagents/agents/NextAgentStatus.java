@@ -1,6 +1,5 @@
 package massim.javaagents.agents;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,41 +16,54 @@ import massim.javaagents.percept.NextSurveyedThing;
 
 /**
  * Part of Agent Belief System
- * 
  * Agent related status values
  * 
  * @author AVL
  */
 public class NextAgentStatus {
-
-    private NextAgent nextAgent;
-    private String name;
-    private String teamName;
-    private String lastAction;
-    private String lastActionResult;
-    private String lastActionParams;
-
-    private int energy;
-    private boolean deactivated;
-    private String role;
-
-    private HashSet<Point> attachedElements;
-
-    private HashSet<NextMapTile> visibleThings;
-
-    private HashSet<NextMapTile> obstacles;
-    private HashSet<NextMapTile> roleZones;
-    private HashSet<NextMapTile> goalZones;
-    private HashSet<NextMapTile> hits;
     
-    private HashSet<NextSurveyedAgent> surveyedAgents; 
-    private HashSet<NextSurveyedThing> surveyedThings;
+     /*
+     * ########## region fields
+     */
+
+    private final NextAgent nextAgent;      //instance of parent agent
+    private String name;                    // Agent Name
+    private String teamName;                // Name of the agents team
+    private String lastAction;              // Type of agents action in last step
+    private String lastActionResult;        // Result of agents last action
+    private String lastActionParams;        // List of parameters for last action 
+
+    private int energy;                     // Agents current energy level
+    private boolean deactivated;            // Flag if agent is deactivated
+    private String role;                    // Name of current role
+    private NextRole currentRole;           // Full NextRole instance with attributes 
     
+    private HashSet<Vector2D> attachedElements;            // Unsorted unfiltered list of elements, attached to the agent
+    private HashSet<Vector2D> visibleAttachedElements;     // Unsorted unfiltered list of all visible attached elements
+
+    private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
+    private HashSet<NextMapTile> obstacles;             // Unsorted list of visible obstacles as NextMapTile
+    private HashSet<NextMapTile> roleZones;             // Unsorted list of visible zones for rolechange
+    private HashSet<NextMapTile> goalZones;             // Unsorted list of visible zones for submitting a task
+    private HashSet<NextMapTile> hits;                  // Unsorted list of hit origin - the position where the damage came from (might be off if the agent moved during the previous step)
+    
+    private HashSet<NextSurveyedAgent> surveyedAgents;  // Unsorted list of NextSurveyedAgent Instances containing information about the last surveyed action
+    private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing distance to the targeted elements.
+
     private HashSet<NextMapTile> dispenser;
-    private NextRole currentRole;
+
+    /*
+     * ##################### endregion fields
+     */
+
+    /**
+     * ########## region constructor.
+     * @param nextAgent - instance of parent agent
+     */
+    
 
     public NextAgentStatus(NextAgent nextAgent) {
-        this.nextAgent = nextAgent;
+        this.nextAgent = nextAgent; 
         name = null;
         teamName = null;
         lastAction = null;
@@ -64,6 +76,14 @@ public class NextAgentStatus {
         dispenser = new HashSet<NextMapTile>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
+    
+     /*
+     * ##################### endregion constructor
+     */
+    
+    /*
+     * ########## region public methods
+     */
 
     public NextRole GetCurrentRole() {
         return currentRole;
@@ -137,10 +157,19 @@ public class NextAgentStatus {
         return this.lastActionParams;
     }
 
+    public HashSet<Vector2D> GetVisibleAttachedElements() {
+        return visibleAttachedElements;
+    }
+
+    public void SetVisibleAttachedElements(HashSet<Vector2D> visibleAttachedElements) {
+        this.visibleAttachedElements = visibleAttachedElements;
+        SetAttachedElements(visibleAttachedElements);
+    }
+
     // compare attached elements to NextConstants directions and convert to array ?
-    public void SetAttachedElements(HashSet<Point> attachedElements) {
+    public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
         this.attachedElements = new HashSet();
-        for (Point attached : attachedElements) {
+        for (Vector2D attached : attachedElements) {
             if (attached.equals(NextConstants.WestPoint)
                     || attached.equals(NextConstants.NorthPoint)
                     || attached.equals(NextConstants.EastPoint)
@@ -150,16 +179,12 @@ public class NextAgentStatus {
         }
     }
 
-    public HashSet<Point> GetAttachedElements() {
+    public HashSet<Vector2D> GetAttachedElements() {
         return this.attachedElements;
     }
 
     public Integer GetAttachedElementsAmount() {
         return this.attachedElements.size();
-    }
-
-    public void DropAttachedElements() {
-        this.attachedElements = new HashSet<>();
     }
 
     public void SetVision(HashSet<NextMapTile> visionElements) {
@@ -210,7 +235,7 @@ public class NextAgentStatus {
         this.surveyedAgents = surveyedAgents;
     }
 
-    public HashSet<NextSurveyedThing> getSurveyedThings() {
+    public HashSet<NextSurveyedThing> GetSurveyedThings() {
         return surveyedThings;
     }
 
@@ -230,6 +255,7 @@ public class NextAgentStatus {
 
     }
     
+    
     public HashSet<NextMapTile> GetDispenser() {
         return dispenser;
     }
@@ -237,4 +263,17 @@ public class NextAgentStatus {
     public void SetDispenser(HashSet<NextMapTile> dispenser) {
         this.dispenser = dispenser;
     }        
+    
+    /*
+     * ##################### endregion public methods
+     */
+
+    /*
+     * ########## region private methods
+     */
+
+
+    /*
+     * ##################### endregion private methods
+     */
 }

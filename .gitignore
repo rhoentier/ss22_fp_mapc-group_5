@@ -3,3 +3,8 @@ logs/*
 replays/*
 results/*
 .idea/*
+
+#ignore tex files
+*.aux
+*.synctex.gz
+*.toc

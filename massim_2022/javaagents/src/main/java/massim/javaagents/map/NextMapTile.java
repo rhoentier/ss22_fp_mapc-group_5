@@ -1,7 +1,5 @@
 package massim.javaagents.map;
 
-import java.awt.Point;
-
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
@@ -61,9 +59,19 @@ public class NextMapTile {
     public Integer getPositionY() {
         return positionY;
     }
-    public void setPosition(Vector2D pos) {
+
+    public Vector2D GetPosition() {
+        return new Vector2D(positionX, positionY);
+    }
+
+    public void SetPosition(Vector2D pos) {
         this.positionX = pos.x;
         this.positionY = pos.y;
+    }
+
+    public void MovePosition(Vector2D moveBy) {
+        this.positionX += moveBy.x;
+        this.positionY += moveBy.y;
     }
 
     public String getThingType() {
@@ -82,15 +90,15 @@ public class NextMapTile {
         if (isAThing) {
             return "[ " + this.positionX + ", " + this.positionY + " ]\n"
                     + "Last Step: " + this.lastVisionStep + "\n"
-                    + "Type: " + thingType;
+                    + "Type: " + thingType + "\n";
 
         }
         return "[ " + this.positionX + ", " + this.positionY + " ]\n"
                 + "Last Step: " + this.lastVisionStep;
     }
 
-    public Point getPoint(){
-        return new Point(positionX, positionY);
+    public Vector2D getPoint(){
+        return new Vector2D(positionX, positionY);
     }
     
     public Vector2D getPosition(){
@@ -142,4 +150,13 @@ public class NextMapTile {
     public void setPositionY(Integer positionY) {
         this.positionY = positionY;
     }
+
+    public NextMapTile Clone() {
+        return new NextMapTile(this.positionX, this.positionY, this.lastVisionStep, this.thingType);
+    }
+
+    public void SetLastVisionStep(Integer lastVisionStep) {
+        this.lastVisionStep = lastVisionStep;
+    }
+
 }
