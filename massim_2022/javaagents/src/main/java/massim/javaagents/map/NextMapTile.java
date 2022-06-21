@@ -96,10 +96,6 @@ public class NextMapTile {
         return "[ " + this.positionX + ", " + this.positionY + " ]\n"
                 + "Last Step: " + this.lastVisionStep;
     }
-
-    public Vector2D getPoint(){
-        return new Vector2D(positionX, positionY);
-    }
     
     public Vector2D getPosition(){
         return new Vector2D(positionX, positionY);
