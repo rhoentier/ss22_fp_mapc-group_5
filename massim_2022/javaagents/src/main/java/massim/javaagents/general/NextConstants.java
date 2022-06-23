@@ -20,6 +20,7 @@ public final class NextConstants {
      * @author miwo
      *
      */
+    /*
     public static enum EPriorityMap {
         SUBMIT,
         ATTACH,
@@ -34,9 +35,10 @@ public final class NextConstants {
         CLEAR,
         SKIPT,
     }
+*/
 
     /**
-     * Priotiy selection to be used by Agents
+     * selection Priotiy to be used by Agents
      */
     public final static Map<String, Integer> PriorityMap = new HashMap<String, Integer>() {
         {
@@ -49,7 +51,7 @@ public final class NextConstants {
             put("rotate", 60);
             put("connect", 70);
             put("survey", 80);
-            put("adopt", 90);
+            put("adopt", 90);   
             put("disconnect", 100);
             put("clear", 110);
             put("skip", 1000);

@@ -27,7 +27,7 @@ public class NextMap {
     private boolean foundRoleZone = false;
     private boolean foundGoalZone = false;
 
-    private HashSet<String> foundDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
+    private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
@@ -100,10 +100,33 @@ public class NextMap {
      */
     public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
 
+    
     /**
      * Returns all GoalZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
      * @return GoalZones
      */
+    /*
+     public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
+
+        // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
+        updateXY(position);
+
+        HashSet<NextMapTile> maptileList = new HashSet<>();
+
+        for (int i = 0; i < this.map.length; i++) {
+            for (int j = 0; j < this.map[i].length; j++) {
+                if (map[i][j].getThingType().startsWith(thingType)) {
+                    map[i][j].setPositionX(i); // Temporal fix to update internal X,Y position
+                    map[i][j].setPositionY(j); // Temporal fix to update internal X,Y position
+                    maptileList.add(map[i][j]);
+                    
+                }
+            }
+        }
+        return maptileList;
+    }
+
+    */
     public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
 
     /**
@@ -147,13 +170,16 @@ public class NextMap {
                 case "disp":
                     addTo(dispensers, maptile);
                     foundDispenser = true;
-                    foundDispensers.add((maptile.getThingType().substring(10)));
+                    availableDispensers.add((maptile.getThingType().substring(10)));
+                    break;
                 case "goal":
                     addTo(goalZones, maptile);
                     foundGoalZone = true;
+                    break;
                 case "role":
                     addTo(roleZones, maptile);
                     foundRoleZone = true;
+                    break;
             }
         }
     }
@@ -310,12 +336,10 @@ public class NextMap {
      * @param requiredBlocks
      * @return
      */
-    public boolean IsTaskExecutable(HashSet<NextMapTile> requiredBlocks) {
-        HashSet<String> requiredBlocksType = new HashSet<String>();
-        for (NextMapTile mapTile : requiredBlocks) {
-            requiredBlocksType.add(mapTile.getThingType());
+    public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
+        if (foundGoalZone && availableDispensers.containsAll(requiredBlocks)) {
+            return true;
         }
-        if (foundGoalZone && foundDispensers.containsAll(requiredBlocksType)) return true;
         return false;
     }
 
@@ -422,14 +446,18 @@ public class NextMap {
     }
     
     public Boolean IsGoalZoneAvailable() {
-    	return foundGoalZone;
+    	return !goalZones.isEmpty();
+        //return foundGoalZone;
     }
     
     public Boolean IsRoleZoneAvailable() {
-    	return foundRoleZone;
+        return !roleZones.isEmpty();
+    	//return foundRoleZone;
     }
     
     public Boolean IsDispenserAvailable() {
-    	return foundDispenser;
+        return !dispensers.isEmpty();
+        //System.out.println("IsDispenserAvailable: \n" + foundDispenser);
+    	//return foundDispenser;
     }
 }

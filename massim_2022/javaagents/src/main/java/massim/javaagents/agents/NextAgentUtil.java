@@ -50,10 +50,11 @@ public final class NextAgentUtil {
      * Reports, if a Thing is next to the Agent
      *
      * @param position - x-Value, y-Value of a Thing
-     * @param status - #source of Information
+     * @param agent - the Agent to be compared to
      * @return boolean
      */
-    public static boolean NextTo(Vector2D position, NextAgentStatus status) {
+    public static boolean NextToUsingLocalView(Vector2D position, NextAgent agent) {
+        NextAgentStatus status = agent.getAgentStatus();
         if (position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)) {
             return true;
         }
@@ -68,7 +69,22 @@ public final class NextAgentUtil {
         }
         return false;
     }
-
+    
+    /**
+     * Reports, if a Thing is next to the Agent using Absolute coordinates
+     *
+     * @param position - x-Value, y-Value of a Thing
+     * @param status - #source of Information
+     * @return boolean
+     */
+    ///**
+    public static boolean NextToUsingAbsoluteValues(Vector2D position, NextAgent agent) {
+        Vector2D newPosition = position.clone();
+        newPosition.subtract(agent.GetPosition());
+        return NextToUsingLocalView(position, agent);
+    }
+    //*/
+    
     /**
      * Returns the direction for an action
      *
@@ -121,12 +137,13 @@ public final class NextAgentUtil {
         return new Action("survey", new Identifier("" + xPosition), new Identifier("" + yPosition));
     }
 
-    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int actualSteps) {
+    public static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int currentStep) {
         ArrayList<NextTask> result = new ArrayList<NextTask>();
         Iterator<NextTask> it = taskList.iterator();
-
+                
         while (it.hasNext()) {
             NextTask nextTask = it.next();
+            
             if (nextTask.GetRequiredBlocks().size() == 1) { // Nur Tasks mit einem Block
                 Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
                 while (nextMapIt.hasNext()) {
@@ -135,7 +152,7 @@ public final class NextAgentUtil {
                     while (nextDispenserIt.hasNext()) {
                         NextMapTile nextDispenserMapTile = nextDispenserIt.next();
                         if (nextDispenserMapTile.getThingType().contains(nextMapTile.getThingType())
-                                && actualSteps < nextTask.GetDeadline()) {
+                                && currentStep < nextTask.GetDeadline()) {
                             result.add(nextTask);
                         }
                     }
@@ -176,7 +193,8 @@ public final class NextAgentUtil {
         while (it.hasNext()) {
             NextMapTile next = it.next();
             if (next.getThingType().contains(type)) {
-                result = new Vector2D(next.getPositionX(), next.getPositionY());
+                result = next.GetPosition();  // AVL - Trying a different approach
+                //result = new Vector2D(next.getPositionX(), next.getPositionY());
             }
         }
         return result;
@@ -192,29 +210,12 @@ public final class NextAgentUtil {
         return blockTypes;
     }
 
-    //For testing only
-    public static NextMapTile GetNearestGoalZoneMapTile(HashSet<NextMapTile> goalzones) {
-        NextManhattanPath manhattanPath = new NextManhattanPath();
-        ArrayList<Action> list = new ArrayList<Action>();
-        Iterator<NextMapTile> it = goalzones.iterator();
-        NextMapTile nearestMapTile = null;
-
-        NextMapTile next = it.next();
-        list = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
-        nearestMapTile = next;
-
-        while (it.hasNext()) {
-            next = it.next();
-            ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
-            if (calcList.size() < list.size()) {
-                list = calcList;
-                nearestMapTile = next;
-            }
-
-        }
-        return nearestMapTile;
-    }
-
+    /**
+     * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     * @param goalzones
+     * @return
+     */
+    @Deprecated
     public static Vector2D GetNearestGoalZone(HashSet<NextMapTile> goalzones) {
         NextManhattanPath manhattanPath = new NextManhattanPath();
         ArrayList<Action> list = new ArrayList<Action>();
@@ -238,6 +239,12 @@ public final class NextAgentUtil {
         return result;
     }
 
+    /**
+     * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     * @param goalzones
+     * @return
+     */
+    @Deprecated
     public static Vector2D GetNearestRoleZone(HashSet<NextMapTile> roleZone) {
         NextManhattanPath manhattanPath = new NextManhattanPath();
         ArrayList<Action> list = new ArrayList<Action>();
@@ -255,6 +262,30 @@ public final class NextAgentUtil {
                 result = next.getPosition();
             }
 
+        }
+        return result;
+    }
+    
+    /**
+     * Usefully for all Zones
+     * @param zone
+     * @return Vector2D Position of nearest Zone
+     */
+    public static Vector2D GetNearestZone(Vector2D agentPosition, HashSet<NextMapTile> zone) {
+        int smallestDistance = 0;
+        Iterator<NextMapTile> it = zone.iterator();
+        Vector2D result = new Vector2D();
+
+        NextMapTile next = it.next();
+        smallestDistance = ManhattanDistance(agentPosition, next.getPosition());
+
+        while (it.hasNext()) {
+            next = it.next();
+            int calcDistance = ManhattanDistance(agentPosition, next.getPosition());
+            if (calcDistance < smallestDistance) {
+            	smallestDistance = calcDistance;
+                result = next.getPosition();
+            }
         }
         return result;
     }
@@ -339,7 +370,7 @@ public final class NextAgentUtil {
             Iterator<NextMapTile> activeTaskIterator = activeTask.iterator();
             NextMapTile nextActiveTask = activeTaskIterator.next();
 
-            if (next.equals(nextActiveTask.getPoint())) {
+            if (next.equals(nextActiveTask.getPosition())) {
                 return true;
             }
         }
@@ -560,5 +591,9 @@ public final class NextAgentUtil {
                 return new Vector2D(1, 0);
         }
         return null;
+    }
+    
+    public static int ManhattanDistance(Vector2D origin, Vector2D target) {
+        return Math.abs(target.x-origin.x) + Math.abs(target.y-origin.y);
     }
 }

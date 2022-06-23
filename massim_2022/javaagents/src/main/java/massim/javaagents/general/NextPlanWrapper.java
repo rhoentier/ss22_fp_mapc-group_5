@@ -12,7 +12,6 @@ public class NextPlanWrapper {
 	{
 		NextAgentStatus nextAgentStatus = nextAgent.getAgentStatus();
 		NextMap map = nextAgent.GetMap();
-		Vector2D position = nextAgent.GetPosition();
 
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
         {
