@@ -242,6 +242,11 @@ public class NextAgent extends Agent {
     public void MovePosition(Vector2D vector) {
         this.position.add(vector);
     }
+
+    public int GetCarryableBlocks(){
+        return (int) agentStatus.GetCurrentRole().GetSpeed().stream().filter(speed -> speed > 0).count();
+    }
+
     /*
      * ##################### endregion public methods
      */
