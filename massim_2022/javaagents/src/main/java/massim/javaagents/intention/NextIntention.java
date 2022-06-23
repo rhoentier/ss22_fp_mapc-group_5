@@ -49,6 +49,8 @@ public class NextIntention {
 
         Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
+        //System.out.println("Actions : ------" + possibleActions.toString());
+
         //Compares each action based on the value
         if (possibleActions != null) {
             for (Action action : possibleActions) {
@@ -70,8 +72,7 @@ public class NextIntention {
         // Attributes x-Position, y-Position relative to the Agent
         //possibleActions.add(NextAgentUtil.GenerateSurveyAgentAction(0, 0));
         //Example for an Rolechange action
-        exampleRoleChangeAction();
-
+        // ->  exampleRoleChangeAction();
         //Special case: Interaction with an adjacent element.
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
@@ -101,7 +102,8 @@ public class NextIntention {
             // submit block, if its in the right direction
             // original //if(nextAgentStatus.GetAttachedElementsAmount() > 0 && visibleThing.getThingType().contains("entity-5")
             if (nextAgentStatus.GetAttachedElementsAmount() > 0 //&& visibleThing.getThingType().contains("entity-5")
-                    && NextAgentUtil.IsAgentInGoalZone(nextAgent.GetMap().GetGoalZones())) {
+                    //    && NextAgentUtil.IsAgentInGoalZone(nextAgent.GetMap().GetGoalZones())) {
+                    && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgent.getAgentStatus().GetGoalZones())) {
                 if (NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) {
                     possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
                 } else {
