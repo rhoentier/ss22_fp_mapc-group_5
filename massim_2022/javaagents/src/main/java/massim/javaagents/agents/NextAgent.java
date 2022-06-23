@@ -6,6 +6,7 @@ import massim.javaagents.map.NextMapTile;
 import eis.iilang.*;
 
 import java.awt.Point;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import massim.javaagents.MailService;
@@ -126,7 +127,7 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
-
+        long startTime = Instant.now().toEpochMilli();
         processServerData();
 
         //this.broadcast(new Percept(" Message"), this.getName());
@@ -149,23 +150,28 @@ public class NextAgent extends Agent {
 
             clearPossibleActions();
             
+            
+            /*
+            if(pathMemory.isEmpty()) {
+            System.out.println("Goalzones: " + map.GetGoalZones());
+            //System.out.println("RoleZones: " + map.GetRoleZones());
+            System.out.println("Dispensers: " + map.GetDispensers());
+            }
+            //*/
+            
             // new path
             generatePathMemory();
             
             generatePossibleActions();
-            
-            /*
-            System.out.println("Goalzones: " + map.GetGoalZones());
-            System.out.println("RoleZones: " + map.GetRoleZones());
-            System.out.println("Dispensers: " + map.GetDispensers());
-            */
-            
+                        
             if(this.agentActivity != null){
                 System.out.println("AgentActivity: \n" + agentActivity.toString());
             }
             if(this.activeTask != null){
                 System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
             }
+                        
+            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms" );
             return selectNextAction(); 
             
         }
@@ -305,6 +311,7 @@ public class NextAgent extends Agent {
         {
         	Action currentAction = pathMemory.get(0);
         	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
+                
         	NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
         	if(obstacle != null) // obstacle vor mir
         	{        

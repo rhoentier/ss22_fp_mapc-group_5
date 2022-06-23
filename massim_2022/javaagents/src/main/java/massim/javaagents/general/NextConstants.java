@@ -51,7 +51,7 @@ public final class NextConstants {
             put("rotate", 60);
             put("connect", 70);
             put("survey", 80);
-            put("adopt", 90);
+            put("adopt", 90);   
             put("disconnect", 100);
             put("clear", 110);
             put("skip", 1000);
