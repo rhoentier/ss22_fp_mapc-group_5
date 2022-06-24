@@ -14,6 +14,7 @@ import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.general.NextConstants.ECardinals;
+import massim.javaagents.plans.NextTaskPlanner;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
@@ -59,6 +60,8 @@ public class NextAgent extends Agent {
 
     //BDI
     private NextIntention intention;
+    private NextTaskPlanner taskPlanner;
+
 
     // --- Algorithms ---
     NextPerceptReader processor; // Eismassim interpreter
@@ -100,6 +103,7 @@ public class NextAgent extends Agent {
 
         this.position = new Vector2D(0, 0);
         this.map = new NextMap(this);
+        taskPlanner = new NextTaskPlanner(this);
 
     }
 
@@ -138,9 +142,9 @@ public class NextAgent extends Agent {
             lastID = simStatus.GetActionID();
 
             // ----- Experimental part for Pathfinder implementation - For testing only
-            
+
             //System.out.println(NextMap.MapToStringBuilder(this.agentStatus.GetMapArray()));
-            
+
 //            if (pathMemory.isEmpty()) {
 //                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
 //                pathMemory = CalculatePath(target);
@@ -149,8 +153,8 @@ public class NextAgent extends Agent {
             updateInternalBeliefs();
 
             clearPossibleActions();
-            
-            
+
+
             /*
             if(pathMemory.isEmpty()) {
             System.out.println("Goalzones: " + map.GetGoalZones());
@@ -158,19 +162,19 @@ public class NextAgent extends Agent {
             System.out.println("Dispensers: " + map.GetDispensers());
             }
             //*/
-            
+
             // new path
             generatePathMemory();
             
             generatePossibleActions();
-                        
+
             if(this.agentActivity != null){
                 System.out.println("AgentActivity: \n" + agentActivity.toString());
             }
             if(this.activeTask != null){
                 System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
             }
-                        
+
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms" );
             return selectNextAction(); 
             
@@ -559,6 +563,9 @@ public class NextAgent extends Agent {
 
         // Update internal map with new percept
         updateMap();
+
+        // Update Tasks at taskPlanner
+        updateTasks();
     }
 
     /**
@@ -603,7 +610,14 @@ public class NextAgent extends Agent {
             }
         }
     }
-    
+
+    /**
+     * Updates tasks in the taskPlanner and generate new plans if a new tasks was generated
+     */
+    private void updateTasks(){
+        taskPlanner.UpdateTasks(simStatus.GetTasksList());
+    }
+
     /*
      * ##################### endregion private methods
      */

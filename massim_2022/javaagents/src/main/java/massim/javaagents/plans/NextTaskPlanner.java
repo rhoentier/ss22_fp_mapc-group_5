@@ -1,16 +1,15 @@
 package massim.javaagents.plans;
 
 import massim.javaagents.agents.NextAgent;
-import massim.javaagents.general.NextConstants;
-import massim.javaagents.map.NextMapTile;
 import massim.javaagents.percept.NextTask;
-import massim.javaagents.plans.NextPlan;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class NextTaskPlanner {
 
-    private ArrayList<NextTask> currentTasks = new ArrayList<>();
+    private HashSet<NextTask> currentTasks = new HashSet<>();
     private NextPlanSolveTask currentPlan;
     private ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
     private NextAgent agent;
@@ -20,8 +19,27 @@ public class NextTaskPlanner {
         this.agent = agent;
     }
 
+    /**
+     * Erzeugt für eine neue Task einen Plan inklusive subplans
+     *
+     * @param newTask
+     */
     public void CreatePlanForGivenTask(NextTask newTask) {
         possiblePlans.add(new NextPlanSolveTask(newTask, agent));
+    }
+
+    /**
+     * Prüft, ob für eine Task noch ein Plan erzeugt werden muss und speichert die neue Task Liste
+     *
+     * @param newTasks
+     */
+    public void UpdateTasks(HashSet<NextTask> newTasks) {
+        for (NextTask newTask : newTasks) {
+            if (!currentTasks.contains(newTask)) {
+                CreatePlanForGivenTask(newTask);
+            }
+        }
+        currentTasks = newTasks;
     }
 
     /**
@@ -31,15 +49,17 @@ public class NextTaskPlanner {
      * @return
      */
     public NextPlan GetDeepestEAgentTask() {
+        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext(); ) {
+            NextPlanSolveTask plan = planIterator.next();
+            if (plan.IsDeadlineReached()) planIterator.remove();
+        }
         // find a fulfillable plan
-        // TODO Hier sollte der beste, erfüllbare Plan ausgesucht werden
-        currentPlan = currentPlan != null ? currentPlan : findFulfillablePlan();
+        currentPlan = findBestFulfillablePlan();
 
         // if no plan is fulfillable try to fulfill a plan
-        if(currentPlan == null) {
+        if (currentPlan == null) {
             if (possiblePlans.isEmpty()) return null;
-            // TODO Hier sollte der beste Plan ausgesucht werden
-            currentPlan = possiblePlans.get(0);
+            currentPlan = findBestPlan();
             currentPlan.FulfillPrecondition();
             return currentPlan;
         }
@@ -58,11 +78,33 @@ public class NextTaskPlanner {
         return null;
     }
 
-    private NextPlanSolveTask findBestFulfillablePlan(){
+    /**
+     * findet den besten (Nutzen/Kosten) Plan, der bereits ausgeführt werden kann oder null,
+     * wenn kein Plan erfüllbar ist
+     *
+     * @return NextPlanSolveTask, der alle Vorbedingungen erfüllt
+     */
+    private NextPlanSolveTask findBestFulfillablePlan() {
+        NextPlanSolveTask bestPlan = null;
+        for (NextPlanSolveTask possiblePlan : possiblePlans) {
+            if (possiblePlan.IsPreconditionFulfilled()) {
+                if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
+                    bestPlan = possiblePlan;
+            }
+        }
         return null;
     }
 
-    private NextPlanSolveTask findBestPlan(){
+    /**
+     * findet den besten (Nutzen/Kosten) Plan, egal, ob dieser erfüllbar ist oder null, falls es keine Task mehr gibt
+     *
+     * @return NextPlanSolveTask, der alle Vorbedingungen erfüllt
+     */
+    private NextPlanSolveTask findBestPlan() {
+        NextPlanSolveTask bestPlan = null;
+        for (NextPlanSolveTask possiblePlan : possiblePlans) {
+            if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
+        }
         return null;
     }
 }

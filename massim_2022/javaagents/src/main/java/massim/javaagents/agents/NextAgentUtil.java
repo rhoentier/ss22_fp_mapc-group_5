@@ -241,7 +241,7 @@ public final class NextAgentUtil {
 
     /**
      * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
-     * @param goalzones
+     * @param roleZone
      * @return
      */
     @Deprecated
