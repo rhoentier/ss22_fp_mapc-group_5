@@ -17,7 +17,7 @@ public class NextPlanWrapper {
         {
         	if(map.IsGoalZoneAvailable()) // knowing endzone
         	{
-        		return EAgentTask.goToEndzone;
+        		return EAgentTask.goToGoalzone;
         	} 
         	else // unknown endzone
         	{
