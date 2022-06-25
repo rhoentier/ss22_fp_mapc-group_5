@@ -13,7 +13,6 @@ public final class NextConstants {
     public final static Vector2D SouthPoint = new Vector2D(0, 1);
     public final static Vector2D NorthPoint = new Vector2D(0, -1);
 
-
     /**
      * Enum for Priority Map
      *
@@ -35,8 +34,7 @@ public final class NextConstants {
         CLEAR,
         SKIPT,
     }
-*/
-
+     */
     /**
      * selection Priotiy to be used by Agents
      */
@@ -51,7 +49,7 @@ public final class NextConstants {
             put("rotate", 60);
             put("connect", 70);
             put("survey", 80);
-            put("adopt", 90);   
+            put("adopt", 90);
             put("disconnect", 100);
             put("clear", 110);
             put("skip", 1000);
@@ -142,5 +140,13 @@ public final class NextConstants {
         goToDispenser,
         goToEndzone,
         goToRolezone,
+    }
+
+    public static enum EVisibleThings {
+        entity, 
+        block, 
+        dispenser, 
+        marker,
+        obstacle
     }
 }

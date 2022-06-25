@@ -8,6 +8,7 @@ import eis.iilang.*;
 import java.awt.Point;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextActionWrapper;
@@ -28,7 +29,6 @@ import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
 
-
 /**
  * First iteration of an experimental agent.
  * <p>
@@ -40,6 +40,9 @@ import massim.javaagents.percept.NextRole;
  */
 public class NextAgent extends Agent {
 
+    public static HashMap<Integer, NextGroup> globalGroupMap = new HashMap<>();
+    public static HashMap<String, HashSet<Vector2D>> GroupBuildingSkipMemory = new HashMap<>();
+
     /*
      * ########## region fields
      */
@@ -49,6 +52,9 @@ public class NextAgent extends Agent {
 
     //Agent related attributes
     private NextAgentStatus agentStatus;
+    private NextGroup agentGroup;
+    private HashSet<String> messageStore = new HashSet<>(); // message collector for group finding process
+
     //Simulation related attributes
     private NextSimulationStatus simStatus;
 
@@ -76,7 +82,7 @@ public class NextAgent extends Agent {
     // Tasks
     private NextTask activeTask = null;
     private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
-    
+
     /*
      * ##################### endregion fields
      */
@@ -101,13 +107,15 @@ public class NextAgent extends Agent {
         this.position = new Vector2D(0, 0);
         this.map = new NextMap(this);
 
+        createGroup();
+
     }
 
     /*
      * ##################### endregion constructor
      */
 
-    /*
+ /*
      * ########## region public methods
      */
     // Original Method
@@ -118,62 +126,106 @@ public class NextAgent extends Agent {
     // Original Method extended
     @Override
     public void handleMessage(Percept message, String sender) {
-        this.say(sender + message.toProlog());
+        //this.say("Message: " + message.toProlog() + " from Sender: " + sender);
+
+        String[] messageContainer = message.toString().split(",");
+
+        // Message Type: AgentObserved,Step,6,X,0,Y,3
+        if (messageContainer[0].contains("AgentObserved")) {
+            if (!(this.simStatus.GetCurrentStep() == null) && (Integer.parseInt(messageContainer[2]) > 2)) {
+                //System.out.println("step1");
+
+                if (this.simStatus.GetCurrentStep() == Integer.parseInt(messageContainer[2])) {
+                    int xToTest = -1 * Integer.parseInt(messageContainer[4]);
+                    int yToTest = -1 * Integer.parseInt(messageContainer[6]);
+                    for (NextMapTile feld : this.agentStatus.GetVisibleThings()) {
+                        //      System.out.println("searching1 " + xToTest + " - " + yToTest);
+                        //      System.out.println("X" + feld.getPositionX() + "Y" + feld.getPositionY());
+                        if (feld.getPositionX() == xToTest && feld.getPositionY() == yToTest) {
+                            //System.out.println("searching2");
+                            //this.sendMessage(new Percept("AO-ResponseMessage,"+agentGroup.getGroupID()), sender, this.getName());
+                            if (feld.getThingType().contains(this.agentStatus.GetTeamName())
+                                    && feld.getThingType().contains(NextConstants.EVisibleThings.entity.toString())) {
+                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.getGroupID() + "," + xToTest + "," + yToTest), sender, this.getName());
+                                //this.say("AO-ResponseMessage" +sender );
+                                //            System.out.println("FOUND");
+
+                            }
+                        }
+                    }
+                }
+            }
+            //int id = Integer.parseInt(message.toProlog().substring(12));
+            //joinGroups(globalGroupMap.get(id));
+        }
+
+        // Message Type: AO-ResponseMessage,GroupID,x,y
+        if (messageContainer[0].contains("GroupFinding-ResponseMessage")) {
+            //System.out.println("GroupFinding-Response");
+            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3]);
+            messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName());
+            //this.sendMessage(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName());
+            //this.sendMessage(new Percept("JoinGroup-Execution," + messageContainer[1]), this.getName(), this.getName());
+        }
+
+        // Message Type: JoinGroup-Execution,GroupID
+        if (messageContainer[0].contains("JoinGroup-Execution")) {
+            this.say("JoinGroup-EXECUTION " + messageContainer[1]);
+            NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
+            if (!(target == null)) {
+                joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])));
+            } else {
+                this.say("\n\n\n\n\n\n\n\n error in group join execution \n\n\n\n\n\n\n\n");
+            }
+        }
+
     }
 
     /**
      * Main agent logic
+     *
      * @return Action - Next action for Massim simulation for this agent.
      */
     @Override
     public Action step() {
         long startTime = Instant.now().toEpochMilli();
+
+        if (lastID > 2) {
+            // Check if friendly Agents are visible and join them to groups
+            processFriendlyAgents();
+            System.out.println(messageStore);
+            processGroupJoinMessages();
+        }
+
         processServerData();
 
-        //this.broadcast(new Percept(" Message"), this.getName());
-        //this.sendMessage(new Percept(" Message"), "B2", this.getName());
-        
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
             // ----- Experimental part for Pathfinder implementation - For testing only
-            
             //System.out.println(NextMap.MapToStringBuilder(this.agentStatus.GetMapArray()));
-            
 //            if (pathMemory.isEmpty()) {
 //                Vector2D target = GetPosition().getAdded(NextAgentUtil.GenerateRandomNumber(11) - 5, NextAgentUtil.GenerateRandomNumber(11) - 5);
 //                pathMemory = CalculatePath(target);
 //            }
-
             updateInternalBeliefs();
+            //printBeliefReport(); // live String output to console
 
+            // -----------------------------------
             clearPossibleActions();
-            
-            
-            /*
-            if(pathMemory.isEmpty()) {
-            System.out.println("Goalzones: " + map.GetGoalZones());
-            //System.out.println("RoleZones: " + map.GetRoleZones());
-            System.out.println("Dispensers: " + map.GetDispensers());
-            }
-            //*/
-            
+
             // new path
             generatePathMemory();
-            
+
             generatePossibleActions();
-                        
-            if(this.agentActivity != null){
-                System.out.println("AgentActivity: \n" + agentActivity.toString());
-            }
-            if(this.activeTask != null){
-                System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
-            }
-                        
-            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms" );
-            return selectNextAction(); 
-            
+
+            //printActionsReport(); // live String output to console
+            this.say("Agents Group:" + agentGroup + "GroupCoount " + globalGroupMap.size());
+            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+
+            return selectNextAction();
+
         }
 
         return null;
@@ -181,6 +233,7 @@ public class NextAgent extends Agent {
 
     /**
      * Getter for local NextAgentStatus
+     *
      * @return NextAgentStatus
      */
     public NextAgentStatus getAgentStatus() {
@@ -189,6 +242,7 @@ public class NextAgent extends Agent {
 
     /**
      * Getter for local NextSimulationStatus
+     *
      * @return NextSimulationStatus
      */
     public NextSimulationStatus getSimulationStatus() {
@@ -196,94 +250,85 @@ public class NextAgent extends Agent {
     }
 
     /**
-     *  Set flag to disable agent
-     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *  Check if needed or ok to remove.
-    */
+     * Set flag to disable agent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check if
+     * needed or ok to remove.
+     */
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
     }
 
     /**
-     *  Set flag - action request active
-     *  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     *  Check if needed or ok to remove.
-    */
+     * Set flag - action request active !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * Check if needed or ok to remove.
+     */
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
     }
-    
-    public NextTask GetActiveTask()
-    {
-    	return this.activeTask;
+
+    public NextTask GetActiveTask() {
+        return this.activeTask;
     }
-    
-    public void SetActiveTask(NextTask activeTask)
-    {
-    	this.activeTask = activeTask;
+
+    public void SetActiveTask(NextTask activeTask) {
+        this.activeTask = activeTask;
     }
-    
+
     public EAgentTask GetAgentTask() {
-    	return this.agentActivity;
+        return this.agentActivity;
     }
-    
-    public void SetAgentTask(EAgentTask agentTask)
-    {
-    	this.agentActivity = agentTask;
+
+    public void SetAgentTask(EAgentTask agentTask) {
+        this.agentActivity = agentTask;
     }
-    
-    public List<Action> GetPathMemory()
-    {
-    	return this.pathMemory;
+
+    public List<Action> GetPathMemory() {
+        return this.pathMemory;
     }
-    
-    public void SetPathMemory(List<Action> pathMemory)
-    {
-    	this.pathMemory = pathMemory;
+
+    public void SetPathMemory(List<Action> pathMemory) {
+        this.pathMemory = pathMemory;
     }
-    
-    public void ClearPathMemory()
-    {
-    	this.pathMemory = new ArrayList<Action>();
+
+    public void ClearPathMemory() {
+        this.pathMemory = new ArrayList<Action>();
     }
-    
+
     public Vector2D GetPosition() {
         return position.clone();
     }
-    
+
     public NextMap GetMap() {
-    	return this.map;
+        return this.map;
     }
 
     public void MovePosition(Vector2D vector) {
         this.position.add(vector);
     }
+
     /*
      * ##################### endregion public methods
      */
 
-    /*
+ /*
      * ########## region private methods
      */
-
     private void resetAfterInactiveTask() {
-    	this.SetActiveTask(null);
-    	this.clearPossibleActions();
-    	this.ClearPathMemory();
-    	this.SetAgentTask(EAgentTask.exploreMap);
-    	
-    	// TODO miri: Mehrere Blöcke fallen lassen
-    	// Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
+        this.SetActiveTask(null);
+        this.clearPossibleActions();
+        this.ClearPathMemory();
+        this.SetAgentTask(EAgentTask.exploreMap);
+
+        // TODO miri: Mehrere Blöcke fallen lassen
+        // Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
 //    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
 //    	{
 //    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
 //    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
 //    	}
-	}
+    }
 
     /**
-     * Stops the Agent. 
-     * Closes the agent window 
+     * Stops the Agent. Closes the agent window
      */
     private void disableAgent() {
         this.say("All games finished!");
@@ -291,7 +336,7 @@ public class NextAgent extends Agent {
     }
 
     /**
-     *  Agent behavior after finishing of the current simulation
+     * Agent behavior after finishing of the current simulation
      */
     private void finishTheSimulation() {
         this.say("Finishing this Simulation!");
@@ -307,86 +352,69 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        if(!pathMemory.isEmpty())
-        {
-        	Action currentAction = pathMemory.get(0);
-        	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
-                
-        	NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
-        	if(obstacle != null) // obstacle vor mir
-        	{        
-                        //Option - Clear action wird deaktiviert, damit die karte nicht zu groß wird 
-        		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()),new Identifier("" + obstacle.getPositionY()));
-                        //pathMemory.clear();
-        	} 
-        	else 
-        	{             	
-            	if(agentStatus.GetAttachedElementsAmount() == 0
-            			|| (agentStatus.GetAttachedElementsAmount() == 1  &&
-            					NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next()) )
-            			|| NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElements(), agentStatus.GetObstacles())
-            	) // no block or 1 element behind me or next Step is possible
-            	{
-            		nextAction = pathMemory.remove(0);
-            	}
-            	else
-            	{
-            		if(NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next()))
-            		{
-            			if(!agentStatus.GetLastAction().contains("rotate"))
-            			{
-            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-            			} 
-            			else
-            			{
-            				Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirection(ECardinals.valueOf(direction));
-                    		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x),new Identifier("" + oppositeDirection.y));  
-                    		pathMemory.remove(0);
-            			}
-            		} 
-            		else 
-            		{
-            			// Hier müssten noch geschaut werden, ob ich den Block rotieren kann                		
-            			if(!agentStatus.GetLastAction().contains("rotate"))
-            			{
-            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-            			} 
-            			else if(agentStatus.GetLastAction().contains("rotate") && agentStatus.GetLastActionResult().contains("cw")
-                				&& !agentStatus.GetLastActionResult().contains("success")) // rotate
-                		{
-                			// TODO miri check, ob ich rotieren kann (Methode gibts schon)
-            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                		}
-                		else if(agentStatus.GetLastAction().contains("rotate") && agentStatus.GetLastActionResult().contains("ccw")
-                				&& !agentStatus.GetLastActionResult().contains("success")) // rotate
-                		{
-                			// TODO miri check, ob ich rotieren kann (Methode gibts schon)
-            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-                		}
-                		else // Was dann?
-                		{
-                			// Randomstep
-                			nextAction = new NextRandomPath().GenerateNextMove();
-                		}
-            		}
-            	}
-        	}
+        if (!pathMemory.isEmpty()) {
+            Action currentAction = pathMemory.get(0);
+            String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
+
+            NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
+            if (obstacle != null) // obstacle vor mir
+            {
+                //Option - Clear action wird deaktiviert, damit die karte nicht zu groß wird 
+                nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()), new Identifier("" + obstacle.getPositionY()));
+                //pathMemory.clear();
+            } else {
+                if (agentStatus.GetAttachedElementsAmount() == 0
+                        || (agentStatus.GetAttachedElementsAmount() == 1
+                        && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next()))
+                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElements(), agentStatus.GetObstacles())) // no block or 1 element behind me or next Step is possible
+                {
+                    nextAction = pathMemory.remove(0);
+                } else {
+                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next())) {
+                        if (!agentStatus.GetLastAction().contains("rotate")) {
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                        } else {
+                            Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirection(ECardinals.valueOf(direction));
+                            nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x), new Identifier("" + oppositeDirection.y));
+                            pathMemory.remove(0);
+                        }
+                    } else {
+                        // Hier müssten noch geschaut werden, ob ich den Block rotieren kann                		
+                        if (!agentStatus.GetLastAction().contains("rotate")) {
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                        } else if (agentStatus.GetLastAction().contains("rotate") && agentStatus.GetLastActionResult().contains("cw")
+                                && !agentStatus.GetLastActionResult().contains("success")) // rotate
+                        {
+                            // TODO miri check, ob ich rotieren kann (Methode gibts schon)
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                        } else if (agentStatus.GetLastAction().contains("rotate") && agentStatus.GetLastActionResult().contains("ccw")
+                                && !agentStatus.GetLastActionResult().contains("success")) // rotate
+                        {
+                            // TODO miri check, ob ich rotieren kann (Methode gibts schon)
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+                        } else // Was dann?
+                        {
+                            // Randomstep
+                            nextAction = new NextRandomPath().GenerateNextMove();
+                        }
+                    }
+                }
+            }
         }
         say(nextAction.toProlog());
         return nextAction;
     }
-    
+
     private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
-    
+
     private void generatePathMemory() {
-    	intention.GeneratePathMemory();
+        intention.GeneratePathMemory();
     }
-    
-    private void clearPossibleActions()
-    {
-    	intention.ClearPossibleActions();
+
+    private void clearPossibleActions() {
+        intention.ClearPossibleActions();
     }
 
     /**
@@ -441,32 +469,32 @@ public class NextAgent extends Agent {
 
     /**
      * Calculate Path to the Target, ending on a free Tile next to it
+     *
      * @param target
-     * @return 
+     * @return
      */
-    public List<Action> CalculatePathNextToTarget(Vector2D target){
-        
+    public List<Action> CalculatePathNextToTarget(Vector2D target) {
+
         //ToDo - Optimale Position je nach Ausgangslage auswählen 
-        
-        try{
-        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
-            return CalculatePath(new Vector2D(target.x+1,target.y));
-        }
-        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
-            return CalculatePath(new Vector2D(target.x+1,target.y));
-        }
-        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
-            return CalculatePath(new Vector2D(target.x+1,target.y));
-        }
-        if (map.GetMapArray()[target.x+1][target.y].IsWalkable()){
-            return CalculatePath(new Vector2D(target.x+1,target.y));
-        }
-        } catch(Exception e){
+        try {
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+        } catch (Exception e) {
             this.say("CalculatePathNextToTarget:" + e);
         }
-        return CalculatePath(new Vector2D(target.x,target.y));
+        return CalculatePath(new Vector2D(target.x, target.y));
     }
-            
+
     /**
      * Transfer the recieved percept data to the general map
      */
@@ -500,20 +528,20 @@ public class NextAgent extends Agent {
             for (int i = -1 * vision; i <= vision; i++) {
                 for (int j = -1 * vision; j <= vision; j++) {
                     if (Math.abs(i) + Math.abs(j) <= vision) {
-                    	Iterator<NextMapTile> goalZoneIt = agentStatus.GetGoalZones().iterator();
-                    	while(goalZoneIt.hasNext()) {
-                    		NextMapTile next = goalZoneIt.next();
-                    		if(i == next.getPositionX() && j == next.getPositionY()) {
+                        Iterator<NextMapTile> goalZoneIt = agentStatus.GetGoalZones().iterator();
+                        while (goalZoneIt.hasNext()) {
+                            NextMapTile next = goalZoneIt.next();
+                            if (i == next.getPositionX() && j == next.getPositionY()) {
                                 view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "goalZone"));
-                    		}
-                    	}
-                    	Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
-                    	while(roleZoneIt.hasNext()) {
-                    		NextMapTile next = roleZoneIt.next();
-                    		if(i == next.getPositionX() && j == next.getPositionY()) {
+                            }
+                        }
+                        Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
+                        while (roleZoneIt.hasNext()) {
+                            NextMapTile next = roleZoneIt.next();
+                            if (i == next.getPositionX() && j == next.getPositionY()) {
                                 view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "roleZone"));
-                    		}
-                    	}
+                            }
+                        }
                         view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "free"));
                     }
                 }
@@ -542,10 +570,9 @@ public class NextAgent extends Agent {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            */
+             */
         }
     }
-
 
     private void updateInternalBeliefs() {
 
@@ -598,9 +625,190 @@ public class NextAgent extends Agent {
             }
         }
     }
-    
+
+    /**
+     * Creation of a new group while agent initialisation
+     */
+    private void createGroup() {
+        int groupId = globalGroupMap.size();
+        this.agentGroup = new NextGroup(this, groupId);
+
+        globalGroupMap.put(this.agentGroup.getGroupID(), this.agentGroup);
+
+    }
+
+    /**
+     * Removes the provided group from memory
+     *
+     * @param groupToRemove - group to remove
+     */
+    private void removeEmptyGroup(NextGroup groupToRemove) {
+        if (groupToRemove.countAgents() == 0) {
+            globalGroupMap.remove(groupToRemove.getGroupID());
+        }
+
+    }
+
+    /**
+     * Joins the provided group and the group of the agent, if provided group
+     * has a lower id. Has to be executed on both agents
+     *
+     * @param newGroup - new group to combine
+     */
+    private void joinGroup(NextGroup newGroup) {
+        if (newGroup.getGroupID() < this.agentGroup.getGroupID()) {
+            newGroup.addAgent(this);
+            this.agentGroup.removeAgent(this);
+            removeEmptyGroup(this.agentGroup);
+            this.agentGroup = newGroup;
+        }
+    }
+
+    /**
+     * Debugging helper - current task and selected activities
+     */
+    private void printActionsReport() {
+        if (this.agentActivity != null) {
+            System.out.println("AgentActivity: \n" + agentActivity.toString());
+        }
+        if (this.activeTask != null) {
+            System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
+        }
+    }
+
+    /**
+     * Debugging helper - current beliefs
+     */
+    private void printBeliefReport() {
+        if (pathMemory.isEmpty()) {
+            System.out.println("-------------------------------------------------------------");
+
+            this.say("Local ------------------------- ");
+            this.say("Goalzones: \n" + agentStatus.GetGoalZones());
+            //this.say("RoleZones \n: " + agentStatus.GetRoleZones());
+            this.say("Things: \n" + agentStatus.GetVisibleThings());
+
+            this.say("Global ------------------------- ");
+            this.say("Goalzones: \n" + map.GetGoalZones());
+            //this.say("RoleZones: \n" + map.GetRoleZones());
+            this.say("Dispensers: \n" + map.GetDispensers());
+            System.out.println("-------------------------------------------------------------");
+
+        }
+    }
+
+    private HashSet<NextMapTile> findFriendlyAgentsInLocalView() {
+
+        Iterator<NextMapTile> visibleElements = this.agentStatus.GetVisibleThings().iterator();
+        HashSet<NextMapTile> visibleEntities = new HashSet<>();
+        while (visibleElements.hasNext()) {
+            NextMapTile next = visibleElements.next();
+            if (next.getThingType().contains(NextConstants.EVisibleThings.entity.toString())) {
+                // agent is friendly and not "this" agent.    
+                if (next.getThingType().substring(7).contains(agentStatus.GetTeamName())
+                        && !next.GetPosition().equals(new Vector2D(0, 0))) {
+                    visibleEntities.add(next);
+                }
+            }
+        }
+        return visibleEntities;
+    }
+
+    private void processFriendlyAgents() {
+
+        HashSet<NextMapTile> visibleEntities = findFriendlyAgentsInLocalView();
+
+        System.out.println(" GROUPPMEMORYYYYYYYYYYYYYYYYYYYYYY  " + GroupBuildingSkipMemory);
+        if (!visibleEntities.isEmpty()) {
+
+            HashSet<NextMapTile> newFriendlyAgents = agentGroup.removePositionsOfKnownAgents(visibleEntities);
+            for (NextMapTile newAgent : newFriendlyAgents) {
+
+                String agentName = agentStatus.GetName().replace("agent", "");
+                Vector2D foundPosition = newAgent.GetPosition();
+                System.out.println("foundPosition" + foundPosition);
+
+                if (GroupBuildingSkipMemory.containsKey(agentName)) {
+                    HashSet<Vector2D> skipVectorSet = GroupBuildingSkipMemory.get(agentName);
+                    Iterator<Vector2D> skipVectorIt = skipVectorSet.iterator();
+                    Vector2D storedVector = null;
+
+                    while (skipVectorIt.hasNext()) {
+                        Vector2D next = skipVectorIt.next();
+
+                        if (next.x == foundPosition.x && next.y == foundPosition.y) {
+                            System.out.println("BOOL: " + "DONG");
+                            storedVector = next;
+                            break;
+                        }
+
+                    }
+
+                    skipVectorSet.remove(storedVector);
+
+                    GroupBuildingSkipMemory.put(agentName, skipVectorSet);
+
+                    System.out.println("storedVector: " + storedVector);
+
+                }
+                System.out.println(agentName);
+                System.out.println(GroupBuildingSkipMemory.get(agentName));
+                System.out.println("-----------");
+                System.out.println(newAgent.GetPosition());
+                if (GroupBuildingSkipMemory.containsKey(agentName) && GroupBuildingSkipMemory.get(agentName).equals(newAgent.GetPosition())) {
+                    System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Triggeredr");
+                    GroupBuildingSkipMemory.get(agentName).remove(newAgent.GetPosition());
+                } else {
+                    this.broadcast(new Percept("AgentObserved,Step," + simStatus.GetCurrentStep() + ",X," + newAgent.getPositionX() + ",Y," + newAgent.getPositionY()), this.getName());
+                }
+            }
+
+            // Schicke die relevanten Positionswerte raus.
+            // Rücklauf von mehreren Agenten ignore(-> Tanz), bei einem Agenten join maps
+            // surveyed agents werden zurückgegeben und lösen einen zweiten Pfad aus. 
+            //  int id = Integer.parseInt(message.toProlog().substring(12));
+            //joinGroups(globalGroupMap.get(id));
+            //bekannte Agenten ignorieren
+        }
+    }
+
+    private void processGroupJoinMessages() {
+        if (this.messageStore.size() == 1) {
+            System.out.println("\n\n\n\n\n\n\n\n Unexpected error GroupJoinMessages \n\n\n\n\n\n\n\n");
+        }
+
+        if (this.messageStore.size() == 2) {
+            for (String message : messageStore) {
+                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), x, y)
+                String[] messageContainer = message.split(",");
+                this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1]), messageContainer[2], messageContainer[3]);
+            }
+        } else {
+            for (String message : messageStore) {
+                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName())
+                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), x, y)
+                String[] messageContainer = message.split(",");
+                if (messageContainer.length > 4) {
+                    if (!GroupBuildingSkipMemory.containsKey(messageContainer[2])) {
+                        GroupBuildingSkipMemory.put(messageContainer[2], new HashSet());
+                    }
+                    GroupBuildingSkipMemory.get(messageContainer[2]).add(new Vector2D(Integer.parseInt(messageContainer[4]), Integer.parseInt(messageContainer[5])));
+                }
+            }
+        }
+        this.messageStore.clear();
+    }
+
     /*
      * ##################### endregion private methods
      */
-
 }
+
+/*
+    private void executeAgentCommunication() {
+
+        //Examples
+        //this.broadcast(new Percept(" Message"), this.getName());
+        //this.sendMessage(new Percept(" Message"), "B2", this.getName());
+    }
+ */
