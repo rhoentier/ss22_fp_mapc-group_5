@@ -441,9 +441,9 @@ public class NextPerceptReader {
             }
         }
 
-        /* Debug Helper - Place // before to activate 
+        ///* Debug Helper - Place // before to activate 
         if (!processedThingsSet.isEmpty()) {
-            agent.say("\n" + "Visible Things\n" + processedThingsSet.toString() + "\n");
+            agent.say("\n" + "Visible Things \n" + processedThingsSet.toString() + "\n");
         }
         //*/
         return processedThingsSet;
