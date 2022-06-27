@@ -101,33 +101,6 @@ public class NextMap {
      */
     public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
 
-    
-    /**
-     * Returns all GoalZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
-     * @return GoalZones
-     */
-    /*
-     public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
-
-        // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
-        updateXY(position);
-
-        HashSet<NextMapTile> maptileList = new HashSet<>();
-
-        for (int i = 0; i < this.map.length; i++) {
-            for (int j = 0; j < this.map[i].length; j++) {
-                if (map[i][j].getThingType().startsWith(thingType)) {
-                    map[i][j].setPositionX(i); // Temporal fix to update internal X,Y position
-                    map[i][j].setPositionY(j); // Temporal fix to update internal X,Y position
-                    maptileList.add(map[i][j]);
-                    
-                }
-            }
-        }
-        return maptileList;
-    }
-
-    */
     public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
 
     /**
