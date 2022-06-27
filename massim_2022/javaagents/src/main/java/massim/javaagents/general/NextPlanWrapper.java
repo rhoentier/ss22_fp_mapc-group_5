@@ -21,7 +21,7 @@ public class NextPlanWrapper {
         	} 
         	else // unknown endzone
         	{
-        		return EAgentTask.exploreMap;
+        		return EAgentTask.surveyGoalZone;
         	}
         } 
         else 
@@ -33,7 +33,7 @@ public class NextPlanWrapper {
         	} 
         	else 
         	{
-        		return EAgentTask.exploreMap;
+        		return EAgentTask.surveyDispenser;
         	}
         }
 	}

@@ -279,6 +279,13 @@ public class NextAgentStatus {
 
     }
     
+    public boolean IsLastSpecificActionSucess(String lastActionParams, String lastAction)
+    {
+    	return this.lastActionResult.contains("success") 
+    			&& this.lastActionParams.contains(lastActionParams)
+    			&& this.lastAction.contains(lastAction);
+    }
+    
     /*
      * ##################### endregion public methods
      */

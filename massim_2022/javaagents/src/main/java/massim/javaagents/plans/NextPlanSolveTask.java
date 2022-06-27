@@ -54,8 +54,10 @@ public class NextPlanSolveTask extends NextPlan {
             }
             sumOfShortestWays += shortestWayFromDispenserToGoalZone;
         }
-        setMaxPossibleProfit(sumOfShortestWays);
-        setUtilization(sumOfShortestWays);
+        if(sumOfShortestWays > 0) {
+        	setMaxPossibleProfit(sumOfShortestWays);
+        	setUtilization(sumOfShortestWays);
+        }
     }
 
     /**

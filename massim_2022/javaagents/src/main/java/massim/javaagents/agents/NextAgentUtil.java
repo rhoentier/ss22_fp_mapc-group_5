@@ -45,6 +45,10 @@ public final class NextAgentUtil {
     public static Action GenerateEastMove() {
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("e"));
     }
+    
+    public static Action GenerateMoveWithDirection(ECardinals direction) {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(direction.toString()));
+    }
 
     /**
      * Reports, if a Thing is next to the Agent
@@ -131,7 +135,7 @@ public final class NextAgentUtil {
             }
 
             for (NextMapTile visibleThing : visibleThings) {
-                if (visibleThing.getPosition().equals(rotateTo) && !visibleThing.IsWalkable()) {
+                if (visibleThing.GetPosition().equals(rotateTo) && !visibleThing.IsWalkable()) {
                     return false;
                 }
             }
@@ -190,7 +194,7 @@ public final class NextAgentUtil {
         }
         return result;
     }
-
+   
     /**
      * Creates an action for the server to change a role:
      *
@@ -228,6 +232,16 @@ public final class NextAgentUtil {
         }
         return result;
     }
+    
+    public static Boolean IsObstacleInPosition(HashSet<NextMapTile> list, Vector2D position)
+    {
+    	for (NextMapTile tile : list) {
+            if (tile.GetPosition() == position && tile.getThingType().contains("obstacle")) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static HashSet<String> getBlockTypes(HashSet<NextMapTile> list) {
         HashSet<String> blockTypes = new HashSet<String>();
@@ -260,7 +274,7 @@ public final class NextAgentUtil {
                 ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
                 if (calcList.size() < list.size()) {
                     list = calcList;
-                    result = next.getPosition();
+                    result = next.GetPosition();
                 }
 
             }
@@ -288,7 +302,7 @@ public final class NextAgentUtil {
             ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
             if (calcList.size() < list.size()) {
                 list = calcList;
-                result = next.getPosition();
+                result = next.GetPosition();
             }
 
         }
@@ -306,14 +320,15 @@ public final class NextAgentUtil {
         Vector2D result = new Vector2D();
 
         NextMapTile next = it.next();
-        smallestDistance = ManhattanDistance(agentPosition, next.getPosition());
+        smallestDistance = ManhattanDistance(agentPosition, next.GetPosition());
+        result = next.GetPosition();
 
         while (it.hasNext()) {
             next = it.next();
-            int calcDistance = ManhattanDistance(agentPosition, next.getPosition());
+            int calcDistance = ManhattanDistance(agentPosition, next.GetPosition());
             if (calcDistance < smallestDistance) {
             	smallestDistance = calcDistance;
-                result = next.getPosition();
+                result = next.GetPosition();
             }
         }
         return result;
@@ -380,7 +395,7 @@ public final class NextAgentUtil {
         while (it.hasNext()) {
             NextMapTile next = it.next();
             // Agent at (0,0)
-            if (new Vector2D().equals(next.getPosition())) {
+            if (new Vector2D().equals(next.GetPosition())) {
                 return true;
             }
         }
@@ -399,7 +414,7 @@ public final class NextAgentUtil {
             Iterator<NextMapTile> activeTaskIterator = activeTask.iterator();
             NextMapTile nextActiveTask = activeTaskIterator.next();
 
-            if (next.equals(nextActiveTask.getPosition())) {
+            if (next.equals(nextActiveTask.GetPosition())) {
                 return true;
             }
         }
@@ -453,14 +468,14 @@ public final class NextAgentUtil {
 
         while (it.hasNext()) {
             NextMapTile next = it.next();
-            Vector2D nextPosition = next.getPosition();
+            Vector2D nextPosition = next.GetPosition();
             if (newAgentPosition.equals(nextPosition)) {
                 return next;
             }
         }
         return null;
     }
-
+    
     public Vector2D NextDirection(ECardinals direction) {
         Vector2D newPosition = new Vector2D();
         switch (direction) {
@@ -592,7 +607,7 @@ public final class NextAgentUtil {
         Iterator<NextMapTile> it = obstacles.iterator();
         while (it.hasNext()) {
             NextMapTile next = it.next();
-            Vector2D nextPosition = next.getPosition();
+            Vector2D nextPosition = next.GetPosition();
 
             for (Iterator<Vector2D> iterator = newAgentPositionLst.iterator(); iterator.hasNext();) {
                 Vector2D point = iterator.next();
@@ -608,7 +623,7 @@ public final class NextAgentUtil {
         //return result;
     }
 
-    public static Vector2D GetOppositeDirection(ECardinals direction) {
+    public static Vector2D GetOppositeDirectionInVector2D(ECardinals direction) {
         switch (direction) {
             case n:
                 return new Vector2D(0, 1);
@@ -618,6 +633,50 @@ public final class NextAgentUtil {
                 return new Vector2D(0, -1);
             case w:
                 return new Vector2D(1, 0);
+        }
+        return null;
+    }
+    
+    public static ECardinals GetOppositeDirection(ECardinals direction) {
+        switch (direction) {
+            case n:
+                return ECardinals.s;
+            case e:
+                return ECardinals.w;
+            case s:
+                return ECardinals.n;
+            case w:
+                return ECardinals.e;
+        }
+        return null;
+    }
+    
+    public static ECardinals GetOtherAxis(ECardinals direction) {
+        switch (direction) {
+            case n:
+                return ECardinals.e;
+            case e:
+                return ECardinals.s;
+            case s:
+                return ECardinals.w;
+            case w:
+                return ECardinals.n;
+        }
+        return null;
+    }
+    
+    public static Vector2D RandomPointInDirection(String direction, Vector2D agentPosition, int distance) {
+    	int x = agentPosition.x + GenerateRandomNumber(distance/2);
+    	int y = agentPosition.y + GenerateRandomNumber(distance/2);
+        switch (direction) {
+            case "ne":
+                return new Vector2D(x , y *-1);
+            case "nw":
+                return new Vector2D(x* -1, y*-1);
+            case "se":
+                return new Vector2D(x, y);
+            case "sw":
+                return new Vector2D(x * -1, y);
         }
         return null;
     }

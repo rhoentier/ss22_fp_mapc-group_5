@@ -24,7 +24,7 @@ public class NextTaskPlanner {
      *
      * @param newTask
      */
-    public void CreatePlanForGivenTask(NextTask newTask) {
+    private void createPlanForGivenTask(NextTask newTask) {
         possiblePlans.add(new NextPlanSolveTask(newTask, agent));
     }
 
@@ -36,7 +36,7 @@ public class NextTaskPlanner {
     public void UpdateTasks(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
             if (!currentTasks.contains(newTask)) {
-                CreatePlanForGivenTask(newTask);
+                createPlanForGivenTask(newTask);
             }
         }
         currentTasks = newTasks;
@@ -60,6 +60,7 @@ public class NextTaskPlanner {
         if (currentPlan == null) {
             if (possiblePlans.isEmpty()) return null;
             currentPlan = findBestPlan();
+            if(currentPlan == null) return null;
             currentPlan.FulfillPrecondition();
             return currentPlan;
         }
@@ -92,7 +93,7 @@ public class NextTaskPlanner {
                     bestPlan = possiblePlan;
             }
         }
-        return null;
+        return bestPlan;
     }
 
     /**
@@ -105,6 +106,6 @@ public class NextTaskPlanner {
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
             if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
         }
-        return null;
+        return bestPlan;
     }
 }

@@ -144,5 +144,8 @@ public final class NextConstants {
 		goToGoalzone,
     	goToRolezone,
 		solveTask,
+		surveyDispenser,
+		surveyGoalZone,
+		surveyRoleZone
     }
 }

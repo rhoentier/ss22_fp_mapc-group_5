@@ -97,10 +97,6 @@ public class NextMapTile {
                 + "Last Step: " + this.lastVisionStep;
     }
     
-    public Vector2D getPosition(){
-        return new Vector2D(positionX, positionY);
-    }
-
     /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
      * entity, block, obstacle
