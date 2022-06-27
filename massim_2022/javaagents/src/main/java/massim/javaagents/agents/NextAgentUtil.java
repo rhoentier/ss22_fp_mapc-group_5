@@ -112,6 +112,35 @@ public final class NextAgentUtil {
         return null;
     }
 
+    public static boolean IsRotationPossible(NextAgent agent, String direction) {
+        NextAgentStatus status = agent.getAgentStatus();
+        HashSet<NextMapTile> visibleThings = status.GetVisibleThings();
+
+        HashSet<Vector2D> attachedElements = status.GetAttachedElements();
+
+        Vector2D rotateTo;
+        //System.out.println("Number of attached elements: " + attachedElements.size());
+
+        for (Vector2D attachedElement : attachedElements) {
+
+            rotateTo = attachedElement.clone();
+            if (direction == "cw") {
+                rotateTo.rotateCW();
+            } else if (direction == "ccw") {
+                rotateTo.rotateCCW();
+            }
+
+            for (NextMapTile visibleThing : visibleThings) {
+                if (visibleThing.getPosition().equals(rotateTo) && !visibleThing.IsWalkable()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+
+    }
+
     static boolean hasFreeSlots(NextAgentStatus agentStatus) {
         return agentStatus.GetAttachedElementsAmount() <= 2;
     }
