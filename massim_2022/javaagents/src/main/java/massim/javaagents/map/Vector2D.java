@@ -132,13 +132,13 @@ public class Vector2D {
         return new Vector2D(this.x - v.x, this.y - v.y);
     }
 
-    public void multiply(int scalar) {
-        x *= scalar;
-        y *= scalar;
+    public void multiply(Vector2D v) {
+        x *= v.x;
+        y *= v.y;
     }
 
-    public Vector2D getMultiplied(int scalar) {
-        return new Vector2D(x * scalar, y * scalar);
+    public Vector2D getMultiplied(Vector2D v) {
+        return new Vector2D(x * v.x, y * v.y);
     }
 
     public void divide(int scalar) {
@@ -193,29 +193,32 @@ public class Vector2D {
     // Methoden bzgl. Rotate auskommentiert, da mit int nicht unterstützt
     // Methoden könnten umgeschrieben werden auf cw / ccw in 90 Grad Schritten
 
-    /*
-    public void rotateBy(double angle) {
-        double cos = Math.cos(angle);
-        double sin = Math.sin(angle);
-        double rx = x * cos - y * sin;
-        y = x * sin + y * cos;
-        x = rx;
+    public void swap() {
+        int tmp = x;
+        x = y;
+        y = tmp;
     }
 
-    public Vector2D getRotatedBy(double angle) {
-        double cos = Math.cos(angle);
-        double sin = Math.sin(angle);
-        return new Vector2D(x * cos - y * sin, x * sin + y * cos);
+    public Vector2D getSwapped() {
+        return new Vector2D(y, x);
+    }
+    public void rotateCW() {
+        swap();
+        multiply(new Vector2D(-1, 1));
     }
 
-    public void rotateTo(double angle) {
-        set(toCartesian(getLength(), angle));
+    public void rotateCCW() {
+        swap();
+        multiply(new Vector2D(1, -1));
     }
 
-    public Vector2D getRotatedTo(double angle) {
-        return toCartesian(getLength(), angle);
+    public Vector2D getRotatedCW() {
+        return new Vector2D(this.getSwapped().getMultiplied(new Vector2D(-1, 1)));
     }
-    */
+
+    public Vector2D getRotatedCCW() {
+        return new Vector2D(this.getSwapped().getMultiplied(new Vector2D(1, -1)));
+    }
 
     public void reverse() {
         x = -x;

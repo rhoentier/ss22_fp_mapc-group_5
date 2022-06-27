@@ -44,10 +44,11 @@ public class NextMap {
      * @param percept Array of things as NextMapTiles. Position within NextMapTile is local (rel. to the agents position)
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
-        Vector2D maptilePosition;
+        NextMapTile clonedMaptile;
         for (NextMapTile maptile : percept) {
-            maptile.SetPosition(agent.GetPosition().getAdded(maptile.GetPosition()));
-            setMapTile(maptile);
+            clonedMaptile = maptile.clone();
+            clonedMaptile.SetPosition(agent.GetPosition().getAdded(clonedMaptile.GetPosition()));
+            setMapTile(clonedMaptile);
         }
     }
 
@@ -100,33 +101,6 @@ public class NextMap {
      */
     public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
 
-    
-    /**
-     * Returns all GoalZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
-     * @return GoalZones
-     */
-    /*
-     public HashSet<NextMapTile> GetMapTiles(String thingType, Vector2D position) {
-
-        // ToDo: Store things directly in list as entity of map. Way more efficient and easier to handle than below.
-        updateXY(position);
-
-        HashSet<NextMapTile> maptileList = new HashSet<>();
-
-        for (int i = 0; i < this.map.length; i++) {
-            for (int j = 0; j < this.map[i].length; j++) {
-                if (map[i][j].getThingType().startsWith(thingType)) {
-                    map[i][j].setPositionX(i); // Temporal fix to update internal X,Y position
-                    map[i][j].setPositionY(j); // Temporal fix to update internal X,Y position
-                    maptileList.add(map[i][j]);
-                    
-                }
-            }
-        }
-        return maptileList;
-    }
-
-    */
     public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
 
     /**
@@ -264,70 +238,6 @@ public class NextMap {
         }
         return offset;
     }
-
-    /**
-     * Check if the rotation cw or ccw is possible. Note: North/South is swapped
-     * in massim. For example if the North tile (bottom) is rotated in
-     * cw-direction, it leads to West tile (left). For further explanation, see
-     * also:
-     * <a href="https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495">https://github.com/rhoentier/ss22_fp_mapc-group_5/pull/43#discussion_r878838495</a>
-     *
-     * @param direction
-     * @param attachedElements
-     * @return true if the rotation is possible else otherwise
-     */
-
-    /*
-    public boolean IsRotationPossible(Identifier direction, Vector2D position, HashSet<Point> attachedElements) {
-        //
-        ToDo: General rework of rotation (maybe outside map)
-        ToDo: For the future, extend functionality if multiple blocks are attached in one direction
-        if (direction.getValue().equals("cw")) {
-            if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
-                      return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
-                    return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
-                    return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
-                    return false;
-                }
-            }
-        } else {
-            if (attachedElements.contains(NextConstants.NorthPoint)) {
-                if (!getMapTileRel(position.getAdded(-1, 0)).IsWalkable()) {
-                    return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.EastPoint)) {
-                if (!getMapTileRel(position.getAdded(0, -1)).IsWalkable()) {
-                    return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.SouthPoint)) {
-                if (!getMapTileRel(position.getAdded(1, 0)).IsWalkable()) {
-                    return false;
-                }
-            }
-            if (attachedElements.contains(NextConstants.WestPoint)) {
-                if (!getMapTileRel(position.getAdded(0, 1)).IsWalkable()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    */
 
     /**
      * Prüft, ob alle benötigten Blöcke für eine Aufgabe und eine goalZone

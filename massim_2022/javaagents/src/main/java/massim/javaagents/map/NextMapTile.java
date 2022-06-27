@@ -155,4 +155,8 @@ public class NextMapTile {
         this.lastVisionStep = lastVisionStep;
     }
 
+    @Override
+    public NextMapTile clone() {
+        return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
+    }
 }
