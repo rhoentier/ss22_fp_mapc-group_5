@@ -44,10 +44,11 @@ public class NextMap {
      * @param percept Array of things as NextMapTiles. Position within NextMapTile is local (rel. to the agents position)
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
-        Vector2D maptilePosition;
+        NextMapTile clonedMaptile;
         for (NextMapTile maptile : percept) {
-            maptile.SetPosition(agent.GetPosition().getAdded(maptile.GetPosition()));
-            setMapTile(maptile);
+            clonedMaptile = maptile.clone();
+            clonedMaptile.SetPosition(agent.GetPosition().getAdded(clonedMaptile.GetPosition()));
+            setMapTile(clonedMaptile);
         }
     }
 
