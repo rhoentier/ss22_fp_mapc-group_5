@@ -21,6 +21,7 @@ import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 import massim.javaagents.plans.NextPlan;
+import massim.javaagents.plans.NextPlanDispenser;
 import massim.javaagents.plans.NextTaskPlanner;
 import massim.javaagents.percept.NextRole;
 
@@ -215,6 +216,75 @@ public class NextIntention {
                     Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
                             map.GetDispensers(),
                             requiredBlockIterator.next().getThingType()
+                    );
+                    this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
+                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                        possibleActions.add(generateDefaultAction()); //fallback
+                    }
+                }
+                break;
+            case goToGoalzone:
+                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+                    this.nextAgent.SetPathMemory(
+                            this.nextAgent.CalculatePath(
+                                    NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())
+                            )
+                    );
+                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                        possibleActions.add(generateDefaultAction()); //fallback
+                    }
+                }
+                break;
+            case goToRolezone:
+                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+                    this.nextAgent.SetPathMemory(
+                            this.nextAgent.CalculatePath(
+                                    NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())
+                            )
+                    );
+                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                        possibleActions.add(generateDefaultAction()); //fallback
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void GeneratePathMemoryNew() {
+        NextPlan plan = nextAgent.GetAgentPlan();
+        NextMap map = this.nextAgent.GetMap();
+        EAgentTask oldTask = nextAgent.GetAgentTask();
+
+
+        // Status changed - Clear pathMemory
+        if (plan.GetAgentTask() != oldTask) {
+            this.nextAgent.ClearPathMemory();
+            lastSurveyedDistance = 0;
+        }
+
+        nextAgent.SetAgentTask(plan.GetAgentTask());
+
+        System.out.println("-------------------------Aktueller Weg: " + plan.GetAgentTask());
+        // Move to..
+        switch (plan.GetAgentTask()) {
+            case surveyDispenser:
+                survey("dispenser");
+                break;
+            case surveyGoalZone:
+                survey("goal");
+                break;
+            case surveyRoleZone:
+                survey("role"); // nicht getestet 27.07
+                break;
+            case goToDispenser:
+                // Only new pathMemory, if the current Path is empty
+                if (this.nextAgent.GetPathMemory().isEmpty()) {
+
+                    Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
+                            map.GetDispensers(),
+                            ((NextPlanDispenser) plan).GetDispenser().getThingType()
                     );
                     this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
                     if (this.nextAgent.GetPathMemory().size() == 0) {

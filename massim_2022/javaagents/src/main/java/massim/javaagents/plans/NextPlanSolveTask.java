@@ -148,16 +148,6 @@ public class NextPlanSolveTask extends NextPlan {
     public void SetPlanIsFulfilled() {
         for (Iterator<NextPlan> planIterator = subPlans.iterator(); planIterator.hasNext(); ) {
             NextPlan plan = planIterator.next();
-            // entfernt aus den subPlans den Plan die Map zu erkunden, wenn die Map komplett erkundet wurde
-            if (plan instanceof NextPlanExploreMap) {
-                plan.SetPlanIsFulfilled();
-                if (plan.IsPlanFulfilled()) {
-                    planIterator.remove();
-                    CheckIfPreConditionIsFulfilled();
-                    calculateProfit();
-                }
-                return;
-            }
             if (plan.IsPlanFulfilled()) continue;
             plan.SetPlanIsFulfilled();
             if (!planIterator.hasNext()) ResetAllPlans();
@@ -174,5 +164,16 @@ public class NextPlanSolveTask extends NextPlan {
     public boolean IsDeadlineReached() {
         if (agent.getSimulationStatus().GetCurrentStep() >= (int) task.GetDeadline()) return true;
         return false;
+    }
+
+    public void UpdateInternalBelief(){
+        CheckIfPreConditionIsFulfilled();
+        if (isPreconditionFulfilled){
+            if (subPlans.get(0) instanceof NextPlanExploreMap) {
+                subPlans.remove(0);
+            }
+        }
+        if (subPlans.get(0) instanceof NextPlanExploreMap)
+            ((NextPlanExploreMap) subPlans.get(0)).CheckPreconditionStatus();
     }
 }

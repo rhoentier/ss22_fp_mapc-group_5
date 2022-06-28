@@ -71,6 +71,4 @@ public abstract class NextPlan {
     public NextConstants.EAgentTask GetAgentTask() {
         return agentTask;
     }
-
-
 }

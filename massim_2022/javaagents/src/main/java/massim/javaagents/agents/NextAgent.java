@@ -78,7 +78,8 @@ public class NextAgent extends Agent {
     // Tasks
     private NextTask activeTask = null;
     private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
-    
+    private NextPlan agentPlan;
+
     /*
      * ##################### endregion fields
      */
@@ -152,12 +153,11 @@ public class NextAgent extends Agent {
             }
             //*/
 
-            // TODO Taskentwicklung
-//            NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
-//            if(nextPlan != null)
-//            {
-//            	SetAgentTask(nextPlan.GetAgentTask());
-//            }
+            NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
+            if(nextPlan != null)
+            {
+            	SetAgentPlan(nextPlan);
+            }
             
             generatePathMemory();
             
@@ -171,7 +171,8 @@ public class NextAgent extends Agent {
             }
 
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms" );
-            return selectNextAction(); 
+            Action nextAction = selectNextAction();
+            return nextAction;
         }
 
         return null;
@@ -229,6 +230,11 @@ public class NextAgent extends Agent {
     {
     	this.agentActivity = agentTask;
     }
+
+    public void SetAgentPlan(NextPlan agentPlan)
+    {
+        this.agentPlan = agentPlan;
+    }
     
     public List<Action> GetPathMemory()
     {
@@ -264,6 +270,10 @@ public class NextAgent extends Agent {
     public NextTaskPlanner GetTaskPlanner()
     {
     	return this.taskPlanner;
+    }
+
+    public NextPlan GetAgentPlan(){
+        return agentPlan;
     }
 
     /*
@@ -378,7 +388,8 @@ public class NextAgent extends Agent {
     }
     
     private void generatePathMemory() {
-    	intention.GeneratePathMemory();
+//    	intention.GeneratePathMemory();
+        intention.GeneratePathMemoryNew();
     }
     
     private void clearPossibleActions()
@@ -615,6 +626,11 @@ public class NextAgent extends Agent {
      */
     private void updateTasks(){
         taskPlanner.UpdateTasks(simStatus.GetTasksList());
+
+        if (agentActivity == EAgentTask.goToDispenser && agentStatus.GetLastAction() == "attach" && agentStatus.GetLastActionResult().equals("success"))
+            taskPlanner.SetPlanIsFulfilled();
+        if (agentActivity == EAgentTask.goToGoalzone && agentStatus.GetLastAction() == "submit" && agentStatus.GetLastActionResult().equals("success"))
+            taskPlanner.SetPlanIsFulfilled();
     }
 
     /*

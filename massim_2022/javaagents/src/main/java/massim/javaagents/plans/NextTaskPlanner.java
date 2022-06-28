@@ -6,12 +6,10 @@ import massim.javaagents.percept.NextTask;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class NextTaskPlanner {
 
-    private HashSet<NextTask> currentTasks = new HashSet<>();
     private NextPlanSolveTask currentPlan;
     private ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
     private NextAgent agent;
@@ -42,6 +40,7 @@ public class NextTaskPlanner {
                 createPlanForGivenTask(newTask);
             }
         }
+        possiblePlans.stream().forEach(possiblePlan -> possiblePlan.UpdateInternalBelief());
     }
 
     /**
@@ -109,5 +108,9 @@ public class NextTaskPlanner {
             if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
         }
         return bestPlan;
+    }
+
+    public void SetPlanIsFulfilled(){
+        if (currentPlan != null) currentPlan.SetPlanIsFulfilled();
     }
 }
