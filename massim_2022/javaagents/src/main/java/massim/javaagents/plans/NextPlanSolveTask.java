@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
+
 public class NextPlanSolveTask extends NextPlan {
 
     private NextTask task;
@@ -22,6 +23,7 @@ public class NextPlanSolveTask extends NextPlan {
     private int carryableBlocks = 0;
     private boolean isPreconditionFulfilled = false;
     private boolean isDeadlineFulfillable = true;
+    private String taskName;
 
 
     public NextPlanSolveTask(NextTask task, NextAgent agent) {
@@ -29,6 +31,7 @@ public class NextPlanSolveTask extends NextPlan {
         this.task = task;
         this.carryableBlocks = agent.GetCarryableBlocks();
         this.agentTask = NextConstants.EAgentTask.solveTask;
+        this.taskName = task.GetName();
         CheckIfPreConditionIsFulfilled();
         CreateSubPlans();
         calculateProfit();
@@ -54,9 +57,9 @@ public class NextPlanSolveTask extends NextPlan {
             }
             sumOfShortestWays += shortestWayFromDispenserToGoalZone;
         }
-        if(sumOfShortestWays > 0) {
-        	setMaxPossibleProfit(sumOfShortestWays);
-        	setUtilization(sumOfShortestWays);
+        if (sumOfShortestWays > 0) {
+            setMaxPossibleProfit(sumOfShortestWays);
+            setUtilization(sumOfShortestWays);
         }
     }
 
@@ -83,7 +86,7 @@ public class NextPlanSolveTask extends NextPlan {
      * Versucht die Karte zu durchsuchen um eine Aufgabe zu lösen
      */
     public void FulfillPrecondition() {
-        subPlans.add(0, new NextPlanExploreMap(task.GetRequiredBlocks()));
+        subPlans.add(0, new NextPlanExploreMap(task.GetRequiredBlocks(), agent));
     }
 
     /**
@@ -131,6 +134,10 @@ public class NextPlanSolveTask extends NextPlan {
         return utilization;
     }
 
+    public String GetTaskName() {
+        return taskName;
+    }
+
     /**
      * @return Maximaler Profit, der durch diese Aufgabe gelöst werden kann
      */
@@ -142,13 +149,18 @@ public class NextPlanSolveTask extends NextPlan {
         for (Iterator<NextPlan> planIterator = subPlans.iterator(); planIterator.hasNext(); ) {
             NextPlan plan = planIterator.next();
             // entfernt aus den subPlans den Plan die Map zu erkunden, wenn die Map komplett erkundet wurde
-            // hat momentan die Annahme, dass ExploreMap keine SubPlans erzeugt
             if (plan instanceof NextPlanExploreMap) {
-                planIterator.remove();
+                plan.SetPlanIsFulfilled();
+                if (plan.IsPlanFulfilled()) {
+                    planIterator.remove();
+                    CheckIfPreConditionIsFulfilled();
+                    calculateProfit();
+                }
                 return;
             }
             if (plan.IsPlanFulfilled()) continue;
             plan.SetPlanIsFulfilled();
+            if (!planIterator.hasNext()) ResetAllPlans();
             return;
         }
         ResetAllPlans();

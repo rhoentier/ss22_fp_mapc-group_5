@@ -6,6 +6,8 @@ import massim.javaagents.percept.NextTask;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NextTaskPlanner {
 
@@ -35,11 +37,11 @@ public class NextTaskPlanner {
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
-            if (!currentTasks.contains(newTask)) {
+            HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
+            if (!actualTasks.contains(newTask.GetName())) {
                 createPlanForGivenTask(newTask);
             }
         }
-        currentTasks = newTasks;
     }
 
     /**
@@ -62,7 +64,7 @@ public class NextTaskPlanner {
             currentPlan = findBestPlan();
             if(currentPlan == null) return null;
             currentPlan.FulfillPrecondition();
-            return currentPlan;
+            return currentPlan.GetDeepestPlan();
         }
         return currentPlan.GetDeepestPlan();
     }
