@@ -88,7 +88,8 @@ public class NextIntention {
             // Wenn Dispenser sichtbar && Agent ist neben irgendwas && Agent hat aktiven Task && Block-Typ stimmt
             if (visibleThing.getThingType().contains("dispenser")
                     && NextAgentUtil.NextToUsingLocalView(position, nextAgent) && nextAgent.GetActiveTask() != null
-                    && NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())) {
+                    && NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())
+                    && nextAgent.GetAgentTask() == EAgentTask.goToDispenser) {
                 // Block für den aktiven Task überhaupt tragbar?
                 if (visibleThing.getThingType().contains("dispenser")) {
 
@@ -101,7 +102,10 @@ public class NextIntention {
             }
 
             // Wenn Block sichtbar && Agent hat noch keinen Block: aufnehmen, lösche PathMemory
-            if (visibleThing.getThingType().contains("block") && this.nextAgent.GetActiveTask() != null && nextAgentStatus.GetAttachedElementsAmount() < 1) {
+            if (visibleThing.getThingType().contains("block")
+                    && this.nextAgent.GetActiveTask() != null
+                    && nextAgentStatus.GetAttachedElementsAmount() < 1
+                    && nextAgent.GetAgentTask() == EAgentTask.goToDispenser) {
                 System.out.println("Action - Attach");
                 possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.GetDirection(position)));
                 this.nextAgent.ClearPathMemory();
@@ -110,7 +114,8 @@ public class NextIntention {
             // submit block, if its in the right direction
             // Wenn Agent einen Block trägt && Agent in Goal Zone
             if (nextAgentStatus.GetAttachedElementsAmount() > 0
-                   && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) 
+                   && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())
+                    && nextAgent.GetAgentTask() == EAgentTask.goToGoalzone)
             {
                 if (NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) {
                     possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
@@ -376,7 +381,6 @@ public class NextIntention {
         if(this.nextAgent.GetAgentTask() != EAgentTask.surveyDispenser && this.nextAgent.GetAgentTask() != EAgentTask.surveyGoalZone)
         {        	
         	possibleActions.clear();
-        	this.nextAgent.SetAgentTask(EAgentTask.surveyDispenser);
         }
 
         // TODO miri: Mehrere Blöcke fallen lassen

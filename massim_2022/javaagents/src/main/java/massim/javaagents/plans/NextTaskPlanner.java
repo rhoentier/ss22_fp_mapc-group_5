@@ -34,6 +34,11 @@ public class NextTaskPlanner {
      * @param newTasks
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
+        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext();){
+            NextPlanSolveTask plan = planIterator.next();
+            if (plan.IsDeadlineReached() == true)
+                planIterator.remove();
+        }
         for (NextTask newTask : newTasks) {
             HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
             if (!actualTasks.contains(newTask.GetName())) {
@@ -50,10 +55,6 @@ public class NextTaskPlanner {
      * @return
      */
     public NextPlan GetDeepestEAgentTask() {
-        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext(); ) {
-            NextPlanSolveTask plan = planIterator.next();
-            if (plan.IsDeadlineReached()) planIterator.remove();
-        }
         // find a fulfillable plan
         currentPlan = findBestFulfillablePlan();
 
@@ -112,5 +113,10 @@ public class NextTaskPlanner {
 
     public void SetPlanIsFulfilled(){
         if (currentPlan != null) currentPlan.SetPlanIsFulfilled();
+    }
+
+    public NextTask GetCurrentTask() {
+        if (currentPlan != null) return currentPlan.GetTask();
+        return null;
     }
 }

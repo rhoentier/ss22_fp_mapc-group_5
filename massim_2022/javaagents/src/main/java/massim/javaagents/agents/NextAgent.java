@@ -156,6 +156,8 @@ public class NextAgent extends Agent {
             NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
             if(nextPlan != null)
             {
+                NextTask nextTask = taskPlanner.GetCurrentTask();
+                if(nextTask != null) SetActiveTask(nextTask);
             	SetAgentPlan(nextPlan);
             }
             
@@ -288,8 +290,7 @@ public class NextAgent extends Agent {
     	this.SetActiveTask(null);
     	this.clearPossibleActions();
     	this.ClearPathMemory();
-    	this.SetAgentTask(EAgentTask.surveyDispenser);
-    	
+
     	// TODO miri: Mehrere Blöcke fallen lassen
     	// Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
 //    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
@@ -626,8 +627,12 @@ public class NextAgent extends Agent {
      */
     private void updateTasks(){
         taskPlanner.UpdateTasks(simStatus.GetTasksList());
+        String lastAction = agentStatus.GetLastAction();
 
-        if (agentActivity == EAgentTask.goToDispenser && agentStatus.GetLastAction() == "attach" && agentStatus.GetLastActionResult().equals("success"))
+        // TODO Rausfinden, warum das hier nicht geht
+        if (agentActivity == EAgentTask.goToDispenser
+                && lastAction.equals("request")
+                && agentStatus.GetLastActionResult().equals("success"))
             taskPlanner.SetPlanIsFulfilled();
         if (agentActivity == EAgentTask.goToGoalzone && agentStatus.GetLastAction() == "submit" && agentStatus.GetLastActionResult().equals("success"))
             taskPlanner.SetPlanIsFulfilled();

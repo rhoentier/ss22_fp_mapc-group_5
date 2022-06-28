@@ -137,6 +137,9 @@ public class NextPlanSolveTask extends NextPlan {
     public String GetTaskName() {
         return taskName;
     }
+    public NextTask GetTask(){
+        return task;
+    }
 
     /**
      * @return Maximaler Profit, der durch diese Aufgabe gelöst werden kann
