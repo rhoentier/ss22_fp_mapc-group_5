@@ -81,10 +81,17 @@ public class NextIntention {
         //Example for an Rolechange action
         // ->  exampleRoleChangeAction();
         //Special case: Interaction with an adjacent element.
+
+        //Wenn Agent in einer RoleZone und noch nicht worker ist
+        if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetRoleZones())
+                && !nextAgent.getAgentStatus().GetRole().equals("worker")){
+            possibleActions.add(NextActionWrapper.CreateAction(EActions.adopt,  new Identifier("worker")));
+            nextAgent.ClearPathMemory();
+        }
+
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
             Vector2D position = visibleThing.GetPosition();
-
             // Wenn Dispenser sichtbar && Agent ist neben irgendwas && Agent hat aktiven Task && Block-Typ stimmt
             if (visibleThing.getThingType().contains("dispenser")
                     && NextAgentUtil.NextToUsingLocalView(position, nextAgent) && nextAgent.GetActiveTask() != null
@@ -213,7 +220,6 @@ public class NextIntention {
                 }
                 break;
             case goToDispenser:
-            	// TODO Zu welchem Dispenser will ich denn? (Warten auf Path)
                 // Only new pathMemory, if the current Path is empty
                 if (this.nextAgent.GetPathMemory().isEmpty()) {
                     Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();

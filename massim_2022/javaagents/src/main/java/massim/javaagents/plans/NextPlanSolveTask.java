@@ -8,6 +8,7 @@ import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.percept.NextTask;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.stream.Collectors;
@@ -103,12 +104,22 @@ public class NextPlanSolveTask extends NextPlan {
      */
     public void CheckIfPreConditionIsFulfilled() {
         HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
-        if (!agent.GetMap().IsGoalZoneAvailable()) {
-            isPreconditionFulfilled = false;
-            return;
-        }
-        isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks) ? true : false;
+        isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
     }
+
+    /**
+     * prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
+     */
+    public boolean CheckIfTaskIsFulfilled() {
+        if (agent.getAgentStatus().GetLastAction().equals("submit") && agent.getAgentStatus().GetLastActionResult().equals("success")) {
+            for (NextPlan subplan : subPlans) {
+                subplan.SetPlanIsFulfilled(false);
+            }
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Erzeugt je nach Anzahl der zu tragenden Blöcke eine List mit subplans
@@ -137,7 +148,8 @@ public class NextPlanSolveTask extends NextPlan {
     public String GetTaskName() {
         return taskName;
     }
-    public NextTask GetTask(){
+
+    public NextTask GetTask() {
         return task;
     }
 
@@ -146,17 +158,6 @@ public class NextPlanSolveTask extends NextPlan {
      */
     public int GetMaxPossibleProfit() {
         return maxPossibleProfit;
-    }
-
-    public void SetPlanIsFulfilled() {
-        for (Iterator<NextPlan> planIterator = subPlans.iterator(); planIterator.hasNext(); ) {
-            NextPlan plan = planIterator.next();
-            if (plan.IsPlanFulfilled()) continue;
-            plan.SetPlanIsFulfilled();
-            if (!planIterator.hasNext()) ResetAllPlans();
-            return;
-        }
-        ResetAllPlans();
     }
 
     /**
@@ -169,14 +170,34 @@ public class NextPlanSolveTask extends NextPlan {
         return false;
     }
 
-    public void UpdateInternalBelief(){
+    public void UpdateInternalBelief() {
         CheckIfPreConditionIsFulfilled();
-        if (isPreconditionFulfilled){
-            if (subPlans.get(0) instanceof NextPlanExploreMap) {
-                subPlans.remove(0);
+        if (CheckIfTaskIsFulfilled()) return;
+        for (Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext(); ) {
+            NextPlan subPlan = subPlanIterator.next();
+            if (subPlan instanceof NextPlanExploreMap) {
+                if (isPreconditionFulfilled) subPlanIterator.remove();
+                else ((NextPlanExploreMap) subPlan).CheckPreconditionStatus();
+            }
+            if (subPlan instanceof NextPlanDispenser) {
+                // prüft, welche Blöcke momentan attached sind
+                HashSet<NextMapTile> visibleThings = agent.getAgentStatus().GetVisibleThings();
+                HashSet<Vector2D> attachedElements = agent.getAgentStatus().GetAttachedElements();
+                ArrayList<String> attachedBlockTypes = new ArrayList<>();
+                for (Vector2D attachedElement : attachedElements) {
+                    for (NextMapTile visibleThing : visibleThings) {
+                        if (attachedElement.equals(visibleThing.GetPosition())) {
+                            if (visibleThing.getThingType().contains("block")) {
+                                attachedBlockTypes.add(visibleThing.getThingType().substring(visibleThing.getThingType().length() - 2));
+                            }
+                        }
+                    }
+                }
+                //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
+                if (attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()))
+                    subPlan.SetPlanIsFulfilled(true);
+                else subPlan.SetPlanIsFulfilled(false);
             }
         }
-        if (subPlans.get(0) instanceof NextPlanExploreMap)
-            ((NextPlanExploreMap) subPlans.get(0)).CheckPreconditionStatus();
     }
 }

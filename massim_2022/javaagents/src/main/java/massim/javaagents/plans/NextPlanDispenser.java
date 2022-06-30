@@ -1,5 +1,6 @@
 package massim.javaagents.plans;
 
+import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMapTile;
 

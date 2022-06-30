@@ -13,10 +13,12 @@ public class NextTaskPlanner {
     private NextPlanSolveTask currentPlan;
     private ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
     private NextAgent agent;
+    private NextPlanRoleZone firstRoleChange;
 
 
     public NextTaskPlanner(NextAgent agent) {
         this.agent = agent;
+        firstRoleChange = new NextPlanRoleZone(agent);
     }
 
     /**
@@ -34,10 +36,9 @@ public class NextTaskPlanner {
      * @param newTasks
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
-        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext();){
+        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext(); ) {
             NextPlanSolveTask plan = planIterator.next();
-            if (plan.IsDeadlineReached() == true)
-                planIterator.remove();
+            if (plan.IsDeadlineReached() == true) planIterator.remove();
         }
         for (NextTask newTask : newTasks) {
             HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
@@ -55,6 +56,9 @@ public class NextTaskPlanner {
      * @return
      */
     public NextPlan GetDeepestEAgentTask() {
+        // gibt den Rollenwechsel zurück, falls dieser noch notwendig ist
+        if (!agent.getAgentStatus().GetRole().equals("worker")) return firstRoleChange.GetDeepestPlan();
+
         // find a fulfillable plan
         currentPlan = findBestFulfillablePlan();
 
@@ -62,7 +66,7 @@ public class NextTaskPlanner {
         if (currentPlan == null) {
             if (possiblePlans.isEmpty()) return null;
             currentPlan = findBestPlan();
-            if(currentPlan == null) return null;
+            if (currentPlan == null) return null;
             currentPlan.FulfillPrecondition();
             return currentPlan.GetDeepestPlan();
         }
@@ -109,10 +113,6 @@ public class NextTaskPlanner {
             if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
         }
         return bestPlan;
-    }
-
-    public void SetPlanIsFulfilled(){
-        if (currentPlan != null) currentPlan.SetPlanIsFulfilled();
     }
 
     public NextTask GetCurrentTask() {

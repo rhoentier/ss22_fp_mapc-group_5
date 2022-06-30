@@ -22,17 +22,10 @@ public abstract class NextPlan {
     }
 
     /**
-     * DeepFirstSearch to set the current executed plan to fulfilled
+     * set if a plan is fulfilled
      */
-    public void SetPlanIsFulfilled() {
-        for (Iterator<NextPlan> planIterator = subPlans.iterator(); planIterator.hasNext(); ) {
-            NextPlan plan = planIterator.next();
-            if (plan.IsPlanFulfilled()) continue;
-            plan.SetPlanIsFulfilled();
-            if (!planIterator.hasNext()) isPlanFulfilled = true;
-            return;
-        }
-        isPlanFulfilled = true;
+    public void SetPlanIsFulfilled(boolean status) {
+        this.isPlanFulfilled = status;
     }
 
     /**

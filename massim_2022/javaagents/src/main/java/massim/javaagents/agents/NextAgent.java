@@ -627,15 +627,6 @@ public class NextAgent extends Agent {
      */
     private void updateTasks(){
         taskPlanner.UpdateTasks(simStatus.GetTasksList());
-        String lastAction = agentStatus.GetLastAction();
-
-        // TODO Rausfinden, warum das hier nicht geht
-        if (agentActivity == EAgentTask.goToDispenser
-                && lastAction.equals("request")
-                && agentStatus.GetLastActionResult().equals("success"))
-            taskPlanner.SetPlanIsFulfilled();
-        if (agentActivity == EAgentTask.goToGoalzone && agentStatus.GetLastAction() == "submit" && agentStatus.GetLastActionResult().equals("success"))
-            taskPlanner.SetPlanIsFulfilled();
     }
 
     /*
