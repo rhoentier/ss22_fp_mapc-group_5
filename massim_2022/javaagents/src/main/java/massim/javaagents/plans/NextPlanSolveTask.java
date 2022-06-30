@@ -96,6 +96,8 @@ public class NextPlanSolveTask extends NextPlan {
      * @return true if the precondition is fulfilled
      */
     public boolean IsPreconditionFulfilled() {
+        // Fix for Task with two or more blocks
+        if(task.GetRequiredBlocks().size() > 1) return false;
         return isPreconditionFulfilled;
     }
 
