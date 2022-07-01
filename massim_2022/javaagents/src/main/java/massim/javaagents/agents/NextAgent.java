@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants.EActions;
-import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.general.NextConstants.EAgentActivity;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextTaskPlanner;
@@ -61,7 +61,6 @@ public class NextAgent extends Agent {
     private NextIntention intention;
     private NextTaskPlanner taskPlanner;
 
-
     // --- Algorithms ---
     NextPerceptReader processor; // Eismassim interpreter
 
@@ -77,7 +76,7 @@ public class NextAgent extends Agent {
 
     // Tasks
     private NextTask activeTask = null;
-    private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
+    private EAgentActivity agentActivity; 
     private NextPlan agentPlan;
 
     /*
@@ -94,9 +93,9 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();
-        PathfindingConfig.ParseConfig("conf/NextAgents");
+        //PathfindingConfig.ParseConfig("conf/NextAgents");
 
-        this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
+        //this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
@@ -157,7 +156,15 @@ public class NextAgent extends Agent {
             if(nextPlan != null)
             {
                 NextTask nextTask = taskPlanner.GetCurrentTask();
-                if(nextTask != null) SetActiveTask(nextTask);
+                // Neuen Task nur setzen, wenn sich der Task verändert hat.
+                if(nextTask != null) 
+            	{
+                	if(this.GetActiveTask() != null && !this.GetActiveTask().GetName().contains(nextTask.GetName()))
+                	{
+                		intention.ResetAfterTaskChange(nextTask);
+                	}
+                    SetActiveTask(nextTask);
+            	}
             	SetAgentPlan(nextPlan);
             }
             
@@ -224,11 +231,11 @@ public class NextAgent extends Agent {
     	this.activeTask = activeTask;
     }
     
-    public EAgentTask GetAgentTask() {
+    public EAgentActivity GetAgentTask() {
     	return this.agentActivity;
     }
     
-    public void SetAgentTask(EAgentTask agentTask)
+    public void SetAgentTask(EAgentActivity agentTask)
     {
     	this.agentActivity = agentTask;
     }
@@ -363,11 +370,11 @@ public class NextAgent extends Agent {
             		} 
             		else 
             		{
-            			if(NextAgentUtil.IsRotationPossible(this, "cw"))
+            			if(NextAgentUtil.IsRotationPossible(agentStatus, "cw"))
             			{
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
             			}
-            			else if(NextAgentUtil.IsRotationPossible(this, "ccw"))
+            			else if(NextAgentUtil.IsRotationPossible(agentStatus, "ccw"))
             			{
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
             			}
@@ -389,8 +396,7 @@ public class NextAgent extends Agent {
     }
     
     private void generatePathMemory() {
-//    	intention.GeneratePathMemory();
-        intention.GeneratePathMemoryNew();
+        intention.GeneratePathMemory();
     }
     
     private void clearPossibleActions()

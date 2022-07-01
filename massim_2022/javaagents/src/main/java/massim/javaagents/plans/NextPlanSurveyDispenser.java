@@ -8,7 +8,7 @@ public class NextPlanSurveyDispenser extends NextPlan {
     private NextMapTile wantedMapTile;
 
     public NextPlanSurveyDispenser(NextMapTile wantedMapTile) {
-        this.agentTask = NextConstants.EAgentTask.surveyDispenser;
+        this.agentTask = NextConstants.EAgentActivity.surveyDispenser;
         this.wantedMapTile = wantedMapTile;
     }
 

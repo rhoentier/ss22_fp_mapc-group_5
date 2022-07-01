@@ -31,7 +31,7 @@ public class NextPlanSolveTask extends NextPlan {
         this.agent = agent;
         this.task = task;
         this.carryableBlocks = agent.GetCarryableBlocks();
-        this.agentTask = NextConstants.EAgentTask.solveTask;
+        this.agentTask = NextConstants.EAgentActivity.solveTask;
         this.taskName = task.GetName();
         CheckIfPreConditionIsFulfilled();
         CreateSubPlans();

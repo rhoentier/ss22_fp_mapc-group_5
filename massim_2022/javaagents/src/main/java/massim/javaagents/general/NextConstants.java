@@ -137,7 +137,7 @@ public final class NextConstants {
         aStar
     }
 
-    public static enum EAgentTask {
+    public static enum EAgentActivity {
     	exploreMap,
 		carryBlog,
     	goToDispenser,

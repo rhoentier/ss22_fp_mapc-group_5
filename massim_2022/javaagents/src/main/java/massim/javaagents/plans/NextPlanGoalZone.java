@@ -8,7 +8,7 @@ public class NextPlanGoalZone extends NextPlan {
     private Vector2D targetPosition;
 
     public NextPlanGoalZone(Vector2D targetPosition) {
-        this.agentTask = NextConstants.EAgentTask.goToGoalzone;
+        this.agentTask = NextConstants.EAgentActivity.goToGoalzone;
         this.targetPosition = targetPosition;
     }
 

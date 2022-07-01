@@ -6,7 +6,7 @@ import massim.javaagents.general.NextConstants;
 public class NextPlanRoleZone extends NextPlan {
     public NextPlanRoleZone(NextAgent agent) {
         this.agent = agent;
-        this.agentTask = NextConstants.EAgentTask.goToRolezone;
+        this.agentTask = NextConstants.EAgentActivity.goToRolezone;
         CreateSubPlans();
     }
 

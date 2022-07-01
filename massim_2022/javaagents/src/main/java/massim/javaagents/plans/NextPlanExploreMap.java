@@ -14,7 +14,7 @@ public class NextPlanExploreMap extends NextPlan {
 
     public NextPlanExploreMap(HashSet<NextMapTile> wantedMapTiles, NextAgent agent) {
         this.agent = agent;
-        this.agentTask = NextConstants.EAgentTask.exploreMap;
+        this.agentTask = NextConstants.EAgentActivity.exploreMap;
         this.wantedMapTiles = wantedMapTiles;
         CreateSubPlans();
     }

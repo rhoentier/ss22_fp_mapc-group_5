@@ -9,7 +9,7 @@ import java.util.Iterator;
 public abstract class NextPlan {
     ArrayList<NextPlan> subPlans = new ArrayList<>();
     boolean isPlanFulfilled = false;
-    NextConstants.EAgentTask agentTask;
+    NextConstants.EAgentActivity agentTask;
     NextAgent agent;
 
     /**
@@ -61,7 +61,7 @@ public abstract class NextPlan {
      *
      * @return EAgentTask
      */
-    public NextConstants.EAgentTask GetAgentTask() {
+    public NextConstants.EAgentActivity GetAgentTask() {
         return agentTask;
     }
 }

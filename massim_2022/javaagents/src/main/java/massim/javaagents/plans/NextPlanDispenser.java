@@ -8,7 +8,7 @@ public class NextPlanDispenser extends NextPlan {
     private NextMapTile dispenser;
 
     public NextPlanDispenser(NextMapTile dispenser) {
-        this.agentTask = NextConstants.EAgentTask.goToDispenser;
+        this.agentTask = NextConstants.EAgentActivity.goToDispenser;
         this.dispenser = dispenser;
     }
 
