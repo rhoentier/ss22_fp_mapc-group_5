@@ -268,7 +268,7 @@ public class NextAgentStatus {
         this.dispenser = dispenser;
     }
 
-    public HashSet<NextMapTile> getFullLocalView() {
+    public HashSet<NextMapTile> GetFullLocalView() {
         return fullLocalView;
     }
 

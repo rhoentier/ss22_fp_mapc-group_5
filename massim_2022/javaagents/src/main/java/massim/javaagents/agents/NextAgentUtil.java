@@ -116,11 +116,10 @@ public final class NextAgentUtil {
         return null;
     }
 
-    public static boolean IsRotationPossible(NextAgent agent, String direction) {
-        NextAgentStatus status = agent.getAgentStatus();
-        HashSet<NextMapTile> visibleThings = status.GetVisibleThings();
+    public static boolean IsRotationPossible(NextAgentStatus agentStatus, String direction) {
 
-        HashSet<Vector2D> attachedElements = status.GetAttachedElements();
+        HashSet<NextMapTile> visibleThings = agentStatus.GetFullLocalView();
+        HashSet<Vector2D> attachedElements = agentStatus.GetAttachedElements();
 
         Vector2D rotateTo;
         //System.out.println("Number of attached elements: " + attachedElements.size());

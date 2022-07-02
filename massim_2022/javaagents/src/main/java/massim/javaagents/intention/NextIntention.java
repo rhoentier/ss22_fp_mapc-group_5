@@ -116,11 +116,11 @@ public class NextIntention {
                 } 
                 else 
                 {
-                	if(NextAgentUtil.IsRotationPossible(nextAgent, "cw"))
+                	if(NextAgentUtil.IsRotationPossible(nextAgent.getAgentStatus(), "cw"))
                 	{
                         possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw")));
                 	} 
-                	else if(NextAgentUtil.IsRotationPossible(nextAgent, "ccw"))
+                	else if(NextAgentUtil.IsRotationPossible(nextAgent.getAgentStatus(), "ccw"))
                 	{
                 		possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw")));
                 	}

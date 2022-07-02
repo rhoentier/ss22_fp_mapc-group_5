@@ -352,11 +352,11 @@ public class NextAgent extends Agent {
             		} 
             		else 
             		{
-            			if(NextAgentUtil.IsRotationPossible(this, "cw"))
+            			if(NextAgentUtil.IsRotationPossible(this.agentStatus, "cw"))
             			{
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
             			}
-            			else if(NextAgentUtil.IsRotationPossible(this, "ccw"))
+            			else if(NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw"))
             			{
             				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
             			}
