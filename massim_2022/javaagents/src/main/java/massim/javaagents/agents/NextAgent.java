@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import massim.javaagents.MailService;
 import massim.javaagents.general.NextActionWrapper;
+import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentTask;
 import massim.javaagents.general.NextConstants.ECardinals;
@@ -196,7 +197,6 @@ public class NextAgent extends Agent {
         if (lastID > 2) {
             // Check if friendly Agents are visible and join them to groups
             processFriendlyAgents();
-            System.out.println(messageStore);
             processGroupJoinMessages();
         }
 
@@ -656,6 +656,7 @@ public class NextAgent extends Agent {
      */
     private void updateTasks(){
         taskPlanner.UpdateTasks(simStatus.GetTasksList());
+    }
 
     /**
      * Creation of a new group while agent initialisation
@@ -749,7 +750,6 @@ public class NextAgent extends Agent {
 
         HashSet<NextMapTile> visibleEntities = findFriendlyAgentsInLocalView();
 
-        System.out.println(" GROUPPMEMORYYYYYYYYYYYYYYYYYYYYYY  " + GroupBuildingSkipMemory);
         if (!visibleEntities.isEmpty()) {
 
             HashSet<NextMapTile> newFriendlyAgents = agentGroup.removePositionsOfKnownAgents(visibleEntities);
@@ -757,8 +757,7 @@ public class NextAgent extends Agent {
 
                 String agentName = agentStatus.GetName().replace("agent", "");
                 Vector2D foundPosition = newAgent.GetPosition();
-                System.out.println("foundPosition" + foundPosition);
-
+                
                 if (GroupBuildingSkipMemory.containsKey(agentName)) {
                     HashSet<Vector2D> skipVectorSet = GroupBuildingSkipMemory.get(agentName);
                     Iterator<Vector2D> skipVectorIt = skipVectorSet.iterator();
@@ -768,7 +767,6 @@ public class NextAgent extends Agent {
                         Vector2D next = skipVectorIt.next();
 
                         if (next.x == foundPosition.x && next.y == foundPosition.y) {
-                            System.out.println("BOOL: " + "DONG");
                             storedVector = next;
                             break;
                         }
@@ -779,15 +777,8 @@ public class NextAgent extends Agent {
 
                     GroupBuildingSkipMemory.put(agentName, skipVectorSet);
 
-                    System.out.println("storedVector: " + storedVector);
-
                 }
-                System.out.println(agentName);
-                System.out.println(GroupBuildingSkipMemory.get(agentName));
-                System.out.println("-----------");
-                System.out.println(newAgent.GetPosition());
                 if (GroupBuildingSkipMemory.containsKey(agentName) && GroupBuildingSkipMemory.get(agentName).equals(newAgent.GetPosition())) {
-                    System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Triggeredr");
                     GroupBuildingSkipMemory.get(agentName).remove(newAgent.GetPosition());
                 } else {
                     this.broadcast(new Percept("AgentObserved,Step," + simStatus.GetCurrentStep() + ",X," + newAgent.getPositionX() + ",Y," + newAgent.getPositionY()), this.getName());
@@ -800,7 +791,7 @@ public class NextAgent extends Agent {
 
     private void processGroupJoinMessages() {
         if (this.messageStore.size() == 1) {
-            System.out.println("\n\n\n\n\n\n\n\n Unexpected error GroupJoinMessages \n\n\n\n\n\n\n\n");
+            System.out.println("\n\n\n\n\n\n\n\n Unexpected error GroupJoinMessages - single object in message store \n\n\n\n\n\n\n\n");
         }
 
         if (this.messageStore.size() == 2) {

@@ -68,7 +68,7 @@ public class NextGroup {
         HashSet<NextMapTile> returnSet = new HashSet<>();
         for(NextMapTile agentPosition : positions ) {
             for(NextAgent agent : agentSet) {
-                if(!agentPosition.getPosition().equals(agent.GetPosition())) {
+                if(!agentPosition.GetPosition().equals(agent.GetPosition())) {
                     returnSet.add(agentPosition);
                 }
             }
