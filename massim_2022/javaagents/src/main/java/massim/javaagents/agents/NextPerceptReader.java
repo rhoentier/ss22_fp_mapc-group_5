@@ -44,7 +44,7 @@ public class NextPerceptReader {
     private HashSet<String> overhangNames = new HashSet<>();
     private HashSet<List<Parameter>> goalZones;
     private HashSet<List<Parameter>> roleZones;
-    
+
     private HashSet<Parameter> dispenser;
 
     public NextPerceptReader(NextAgent agent) {
@@ -57,6 +57,7 @@ public class NextPerceptReader {
 
     /**
      * evaluate the percepts
+     *
      * @param percepts
      * @param agent
      */
@@ -129,8 +130,8 @@ public class NextPerceptReader {
                             break;
                         case lastAction:
                             agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
-                            if(agentStatus.GetLastAction() != "") {
-                            	agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+                            if (agentStatus.GetLastAction() != "") {
+                                agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
                             }
                             break;
                         case lastActionResult:
@@ -210,7 +211,7 @@ public class NextPerceptReader {
         }
     }
 
-	private void clearSets() {
+    private void clearSets() {
         //clearing of the containers before processing of percepts
         attached = new HashSet<>();
         tasks = new HashSet<>();
@@ -227,44 +228,56 @@ public class NextPerceptReader {
         surveyedThings = new HashSet<>();
         dispenser = new HashSet<>();
     }
-
+    /**
+     *  Process all Datasets and transfer to Storage - NextAgentStatus
+     */
     private void convertGeneratedSets() {
-        //Process all Datasets and transfer to Storage - NextAgentStatus
+
+        //Process Things and Obstales and combine to fullLocalView
+        HashSet<NextMapTile> fullLocalView = new HashSet<>();
+        HashSet<NextMapTile> processedObstacles = new HashSet<>();
+        HashSet<NextMapTile> processedThings = new HashSet<>();
+
+        processedThings = processThingsSet();
+        processedObstacles = processObstaclesSet();
+        fullLocalView.addAll(processedThings);
+        fullLocalView.addAll(processedObstacles);
+        agentStatus.SetVision(processedThings); //
+        agentStatus.SetObstacles(processedObstacles);
+        agentStatus.setFullLocalView(fullLocalView);
+
+        //Process remaining Datasets
+        
         simStatus.SetTasksList(processTasksSet());
         simStatus.SetNormsList(processNormsSet());
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
 
         agentStatus.SetVisibleAttachedElements(processAttachedSet());
-
-        agentStatus.SetVision(processThingsSet()); //
-        agentStatus.SetObstacles(processObstaclesSet()); 
         agentStatus.SetGoalZones(processGoalZonesSet());
         agentStatus.SetRoleZones(processRoleZonesSet());
-        
+
         agentStatus.SetHits(processHitsSet());
 
         agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
         agentStatus.SetSurveyedThings(processSurveyedThingSet());
-        
+
         agentStatus.SetDispenser(convertDispenserFromVision());
     }
-    
+
     private HashSet<NextMapTile> convertDispenserFromVision() {
-		HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
-		for(NextMapTile mapTile : agentStatus.GetVisibleThings())
-		{
-			try {
-				if(mapTile.getThingType().contains("dispenser"))
-				{
-					collectionOfDispenser.add(mapTile);
-				}
-			} catch (Exception e) {
+        HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
+        for (NextMapTile mapTile : agentStatus.GetVisibleThings()) {
+            try {
+                if (mapTile.getThingType().contains("dispenser")) {
+                    collectionOfDispenser.add(mapTile);
+                }
+            } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
-			}
-		}
-		return collectionOfDispenser;
-	}
+            }
+        }
+        return collectionOfDispenser;
+    }
 
     private HashSet<NextTask> processTasksSet() {
         // task(name, deadline, reward, [req(x,y,type),...])
@@ -574,9 +587,9 @@ public class NextPerceptReader {
             try {
                 processedSurveyedAgents.add(
                         new NextSurveyedAgent(
-                            SurveyedAgent.get(0).toProlog(),
-                            SurveyedAgent.get(1).toProlog(),
-                            Integer.parseInt(SurveyedAgent.get(1).toProlog())
+                                SurveyedAgent.get(0).toProlog(),
+                                SurveyedAgent.get(1).toProlog(),
+                                Integer.parseInt(SurveyedAgent.get(1).toProlog())
                         ));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
@@ -645,8 +658,8 @@ public class NextPerceptReader {
                 details : possibly additional details
         fine : Numeral - the energy cost of violating the norm (per step)
 
-        */
-        
+         */
+
         HashSet<NextNormRequirement> processedNormRequirements = new HashSet<>();
         for (List<Parameter> element : collectionOfRequirementElements) {
             processedNormRequirements.add(

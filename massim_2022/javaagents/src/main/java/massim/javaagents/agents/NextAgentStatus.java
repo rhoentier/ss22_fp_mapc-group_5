@@ -42,6 +42,7 @@ public class NextAgentStatus {
     private HashSet<Vector2D> attachedElements;            // Unsorted unfiltered list of elements, attached to the agent
     private HashSet<Vector2D> visibleAttachedElements;     // Unsorted unfiltered list of all visible attached elements
 
+    private HashSet<NextMapTile> fullLocalView;         // Unsorted list containing visible elements and obstacles as NextMapTile: contains - entity, block, dispenser, marker,...
     private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
     private HashSet<NextMapTile> obstacles;             // Unsorted list of visible obstacles as NextMapTile
     private HashSet<NextMapTile> roleZones;             // Unsorted list of visible zones for rolechange
@@ -267,6 +268,15 @@ public class NextAgentStatus {
         this.dispenser = dispenser;
     }
 
+    public HashSet<NextMapTile> getFullLocalView() {
+        return fullLocalView;
+    }
+
+    public void setFullLocalView(HashSet<NextMapTile> fullLocalView) {
+        this.fullLocalView = fullLocalView;
+    }
+    
+    
     @Override
     public String toString() {
 
