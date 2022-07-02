@@ -251,10 +251,18 @@ public class Vector2D {
         }
         return false;
     }
-
+    
     @Override
     public String toString() {
         return "Vector2d[" + x + ", " + y + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + this.x;
+        hash = 37 * hash + this.y;
+        return hash;
     }
 }
 

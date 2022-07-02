@@ -29,6 +29,12 @@ public class NextMap {
 
     private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
+    public NextMap() {
+        map = new NextMapTile[1][1];
+        map[0][0] = new NextMapTile(0, 0, 0, "unknown");
+        excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
+    }
+
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
