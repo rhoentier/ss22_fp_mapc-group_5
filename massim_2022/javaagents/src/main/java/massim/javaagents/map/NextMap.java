@@ -21,6 +21,8 @@ public class NextMap {
     private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
+    private NextGroup group;
+
     private HashSet<NextMapTile> dispensers = new HashSet<>();
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
@@ -31,10 +33,11 @@ public class NextMap {
 
     private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
-    public NextMap() {
+    public NextMap(NextGroup group) {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
+        this.group = group;
     }
 
     public NextMap(NextAgent agent) {
@@ -131,7 +134,7 @@ public class NextMap {
 
         Vector2D moveArray = new Vector2D(extendArray(maptile.GetPosition()));
 
-        agent.MovePosition(moveArray);
+        group.MoveAllAgents(moveArray);
         maptile.MovePosition(moveArray);
 
         existingMapTile = GetMapTile(maptile.GetPosition());
@@ -381,11 +384,10 @@ public class NextMap {
     
     //------------- TEST
     
-    public static void UpdateMap(NextGroup group, NextAgent agent) {
-        
-        
-        Vector2D position = group.GetPosition(agent);
-        NextMap map = group.GetGroupMap();
+    public static void UpdateMap(NextAgent agent) {
+
+        Vector2D position = agent.GetGroup().GetAgentPosition(agent);
+        NextMap map = agent.GetGroup().GetGroupMap();
         
         if (agent.GetAgentStatus().GetLastAction().equals("move") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
 
@@ -406,7 +408,7 @@ public class NextMap {
                     break;
             }
 
-            position.add(lastStep);
+            agent.MovePosition(lastStep); // actually moves the position within the group
 
             // 1. Add all maptiles of view as "free"
             HashSet<NextMapTile> view = new HashSet<>();
@@ -452,7 +454,7 @@ public class NextMap {
 
             // Only for debugging
             /*
-            map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
+            map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
 
             try {
                 Thread.sleep(0); // Wait for 2 seconds
@@ -463,7 +465,9 @@ public class NextMap {
         }
     }
     
-    public static NextMap JoinMap ( NextMap mapToKeep, NextMap newMap, Vector2D offset) {
-        return null;
+    public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
+
+        // Not yet implemented
+        return mapToKeep;
     }
 }

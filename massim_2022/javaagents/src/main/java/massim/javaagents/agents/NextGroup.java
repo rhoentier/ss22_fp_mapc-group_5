@@ -26,7 +26,7 @@ public class NextGroup {
     private HashSet<NextAgent> agentSet = new HashSet<>();
     private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
     
-    private NextMap groupMap = new NextMap();
+    private NextMap groupMap = new NextMap(this);
     
     /*
      * ##################### endregion fields
@@ -80,8 +80,12 @@ public class NextGroup {
         return returnSet;
     }
     
-    public Vector2D GetPosition (NextAgent agent){
+    public Vector2D GetAgentPosition (NextAgent agent){
         return agentPositionMap.get(agent);
+    }
+
+    public void SetAgentPosition (NextAgent agent, Vector2D position) {
+        agentPositionMap.put(agent, position);
     }
     
     public NextMap GetGroupMap() {
@@ -101,6 +105,25 @@ public class NextGroup {
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
         
+    }
+
+    /**
+     * Move the position of a single agent of this group
+     * @param agent Agent to be moved
+     * @param offset move by offset
+     */
+    public void MoveSingleAgent(NextAgent agent, Vector2D offset) {
+        agentPositionMap.get(agent).add(offset);
+    }
+
+    /**
+     * Move the position of all agents of this group
+     * @param offset move by offset
+     */
+    public void MoveAllAgents(Vector2D offset) {
+        for (Vector2D position : agentPositionMap.values()) {
+            position.add(offset);
+        }
     }
 
     /*
