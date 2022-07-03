@@ -75,7 +75,7 @@ public class NextPlanSolveTask extends NextPlan {
      * @param sumOfShortestWays Summe der Wege von Dispensern zu den GoalZones
      */
     private void setMaxPossibleProfit(int sumOfShortestWays) {
-        int remainingSteps = (int) task.GetDeadline() - agent.getSimulationStatus().GetCurrentStep();
+        int remainingSteps = (int) task.GetDeadline() - agent.GetSimulationStatus().GetCurrentStep();
         maxPossibleProfit = (int) task.GetReward() * (remainingSteps / sumOfShortestWays);
     }
 
@@ -160,7 +160,7 @@ public class NextPlanSolveTask extends NextPlan {
      * @return true, falls die Deadline erreicht wurde
      */
     public boolean IsDeadlineReached() {
-        if (agent.getSimulationStatus().GetCurrentStep() >= (int) task.GetDeadline()) return true;
+        if (agent.GetSimulationStatus().GetCurrentStep() >= (int) task.GetDeadline()) return true;
         return false;
     }
 }

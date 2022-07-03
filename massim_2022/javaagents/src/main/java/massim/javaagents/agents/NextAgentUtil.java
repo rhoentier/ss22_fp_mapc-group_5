@@ -58,7 +58,7 @@ public final class NextAgentUtil {
      * @return boolean
      */
     public static boolean NextToUsingLocalView(Vector2D position, NextAgent agent) {
-        NextAgentStatus status = agent.getAgentStatus();
+        NextAgentStatus status = agent.GetAgentStatus();
         if (position.equals(NextConstants.WestPoint) && !status.GetAttachedElements().contains(NextConstants.WestPoint)) {
             return true;
         }
@@ -117,7 +117,7 @@ public final class NextAgentUtil {
     }
 
     public static boolean IsRotationPossible(NextAgent agent, String direction) {
-        NextAgentStatus status = agent.getAgentStatus();
+        NextAgentStatus status = agent.GetAgentStatus();
         HashSet<NextMapTile> visibleThings = status.GetVisibleThings();
 
         HashSet<Vector2D> attachedElements = status.GetAttachedElements();
@@ -405,7 +405,7 @@ public final class NextAgentUtil {
     public static Boolean IsBlockInCorrectPosition(NextAgent nextAgent) {
         // TODO miri Vergleich aller Blöcke - derzeit nur mit 1
         if (nextAgent.GetActiveTask() != null) {
-            HashSet<Vector2D> attachedElements = nextAgent.getAgentStatus().GetAttachedElements();
+            HashSet<Vector2D> attachedElements = nextAgent.GetAgentStatus().GetAttachedElements();
             HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
 
             Iterator<Vector2D> attachElementIterator = attachedElements.iterator();
@@ -424,7 +424,7 @@ public final class NextAgentUtil {
 
     public static Boolean IsTaskActive(NextAgent nextAgent, int actualSteps) {
         NextTask activeTask = nextAgent.GetActiveTask();
-        Iterator<NextTask> taskListIt = nextAgent.getSimulationStatus().GetTasksList().iterator();
+        Iterator<NextTask> taskListIt = nextAgent.GetSimulationStatus().GetTasksList().iterator();
         Boolean isInTakslist = false;
         while (taskListIt.hasNext()) {
             NextTask next = taskListIt.next();

@@ -1,8 +1,10 @@
 package massim.javaagents.agents;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
+import massim.javaagents.map.Vector2D;
 
 /**
  * Funkctions: Grouping of Agents, handling of common map and higher level reasoning.
@@ -21,7 +23,8 @@ public class NextGroup {
     
     private int groupID;
     
-    private HashSet<NextAgent> agentSet = new HashSet<>();   
+    private HashSet<NextAgent> agentSet = new HashSet<>();
+    private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
     
     private NextMap groupMap = new NextMap();
     
@@ -37,7 +40,8 @@ public class NextGroup {
     
     public NextGroup(NextAgent agent, int id){
         this.groupID = id;
-        this.agentSet.add(agent);        
+        this.agentSet.add(agent);
+        this.agentPositionMap.put(agent, new Vector2D (0,0));
     }
 
     /*
@@ -64,6 +68,8 @@ public class NextGroup {
         return groupID;
     }
     
+    // TODO - MAcht es noch sinn ?
+    
     public HashSet<NextMapTile> removePositionsOfKnownAgents(HashSet<NextMapTile> positions) {
         HashSet<NextMapTile> returnSet = new HashSet<>();
         for(NextMapTile agentPosition : positions ) {
@@ -76,7 +82,23 @@ public class NextGroup {
         return returnSet;
     }
     
+    public Vector2D GetPosition (NextAgent agent){
+        return agentPositionMap.get(agent);
+    }
     
+    public NextMap GetGroupMap() {
+        return groupMap;
+    }
+    
+    public void AddGroup(NextGroup newGroup){
+        /*for(NextAgent agentToAdd: newGroup.agentSet){
+         //   this.addAgent(agentToAdd, newGroup.agentPositionMap.get(agentToAdd));
+           TODO 
+                   Offset Berechnen
+                           
+        }
+        */
+    }
 
     /*
      * ##################### endregion public methods
@@ -87,6 +109,10 @@ public class NextGroup {
      */
 
 
+    private void joinGroupMap ( NextMap newMap, Vector2D offset) {
+        this.groupMap = NextMap.JoinMap ( NextMap mapToKeep, NextMap newMap, Vector2D offset);
+    }
+    
     @Override
     public String toString() {
         return "NextGroup{" + "groupID=" + groupID + ", agentCount=" + agentSet.size() + '}';
@@ -95,4 +121,6 @@ public class NextGroup {
     /*
      * ##################### endregion private methods
      */
+
+   
 }
