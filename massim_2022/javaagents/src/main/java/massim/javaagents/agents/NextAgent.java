@@ -78,8 +78,6 @@ public class NextAgent extends Agent {
     private NextAStarPath aStar = new NextAStarPath();  // A*Star based path gemeration
     private List<Action> pathMemory = new ArrayList<>();    // storing 
 
-    // Map
-    private Vector2D position; // Absolute Position on the map. 0/0 is always in top left corner
     private NextMap map;
 
     // Tasks
@@ -107,7 +105,6 @@ public class NextAgent extends Agent {
 
         this.processor = new NextPerceptReader(this);
 
-        this.position = new Vector2D(0, 0);
         this.map = new NextMap(this);
         taskPlanner = new NextTaskPlanner(this);
 
@@ -291,7 +288,7 @@ public class NextAgent extends Agent {
     }
 
     public Vector2D GetPosition() {
-        return position.clone();
+        return agentGroup.GetPosition(this).clone();
     }
 
     public NextMap GetMap() {
@@ -299,7 +296,7 @@ public class NextAgent extends Agent {
     }
 
     public void MovePosition(Vector2D vector) {
-        this.position.add(vector);
+        this.agentGroup.MoveSingleAgent(this, vector);
     }
 
     public int GetCarryableBlocks(){
@@ -539,7 +536,7 @@ public class NextAgent extends Agent {
                     break;
             }
 
-            position.add(lastStep);
+            MovePosition(lastStep);
 
             // 1. Add all maptiles of view as "free"
             HashSet<NextMapTile> view = new HashSet<>();
@@ -568,7 +565,7 @@ public class NextAgent extends Agent {
                     }
                 }
             }
-            map.AddPercept(position, view);
+            map.AddPercept(GetPosition(), view);
 
             // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
@@ -578,10 +575,10 @@ public class NextAgent extends Agent {
                     visibleNotAttachedThings.add(thing);
                 }
             }
-            map.AddPercept(position, visibleNotAttachedThings);
+            map.AddPercept(GetPosition(), visibleNotAttachedThings);
 
             // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
-            map.AddPercept(position, agentStatus.GetObstacles());
+            map.AddPercept(GetPosition(), agentStatus.GetObstacles());
 
             // Only for debugging
             /*

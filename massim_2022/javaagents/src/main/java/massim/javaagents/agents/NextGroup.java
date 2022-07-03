@@ -100,6 +100,25 @@ public class NextGroup {
         */
     }
 
+    /**
+     * Move the position of a single agent of this group
+     * @param agent Agent to be moved
+     * @param offset move by offset
+     */
+    public void MoveSingleAgent(NextAgent agent, Vector2D offset) {
+        agentPositionMap.get(agent).add(offset);
+    }
+
+    /**
+     * Move the position of all agents of this group
+     * @param offset move by offset
+     */
+    public void MoveAllAgents(Vector2D offset) {
+        for (Vector2D position : agentPositionMap.values()) {
+            position.add(offset);
+        }
+    }
+
     /*
      * ##################### endregion public methods
      */
