@@ -1,5 +1,6 @@
 package massim.javaagents.map;
 
+import java.util.Objects;
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
@@ -104,12 +105,12 @@ public class NextMapTile {
      * @return
      */
     public Boolean IsWalkable() {
-        return !thingType.equals("obstacle") && !thingType.equals("entity") && !thingType.equals("unknown") && !thingType.startsWith("block");
+        return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
     }
     
     public Boolean IsObstacle()
     {
-    	return thingType.equals("obstacle");
+    	return thingType.contains("obstacle");
     }
     public boolean isOpen() {
         return open;
@@ -154,5 +155,15 @@ public class NextMapTile {
     @Override
     public NextMapTile clone() {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.positionX);
+        hash = 61 * hash + Objects.hashCode(this.positionY);
+        hash = 61 * hash + Objects.hashCode(this.isAThing);
+        hash = 61 * hash + Objects.hashCode(this.thingType);
+        return hash;
     }
 }

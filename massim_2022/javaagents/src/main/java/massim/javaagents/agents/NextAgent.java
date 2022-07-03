@@ -164,7 +164,7 @@ public class NextAgent extends Agent {
             //this.sendMessage(new Percept("JoinGroup-Execution," + messageContainer[1]), this.getName(), this.getName());
         }
 
-        // Message Type: JoinGroup-Execution,GroupID,x,y
+        // Message Type: JoinGroup-Execution,GroupID,x,y,MapOffsetX,MapOffsetY
         if (messageContainer[0].contains("JoinGroup-Execution")) {
             this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3] + " mapOffsetX: " + messageContainer[4] + " mapOffsetY: " + messageContainer[5]);
             NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
@@ -193,7 +193,7 @@ public class NextAgent extends Agent {
             }
         }
         
-        if (lastID > 2) {
+        if (lastID > 3) {
             // Check if friendly Agents are visible and join them to groups
             processFriendlyAgents();
             processGroupJoinMessages();
@@ -217,10 +217,11 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            this.say("Agents Group:" + agentGroup + "GroupCoount " + globalGroupMap.size());
+            this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
             
             System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(agentGroup.GetGroupMap().GetMapArray()));    
+            this.say(this.GetGroup().GetAgentPosition(this).toString());
 
             return selectNextAction();
 
@@ -522,7 +523,6 @@ public class NextAgent extends Agent {
         updateCurrentRole();
 
         // Update the GroupMap
-        
         NextMap.UpdateMap(this);
         
         // Update Tasks at taskPlanner
@@ -611,12 +611,13 @@ public class NextAgent extends Agent {
      * @param mapOffset - Vector2D manhattan distance between maps zero points
      */
     private void joinGroup(NextGroup newGroup, Vector2D offset,Vector2D mapOffset) {
-        offset.getAdded(mapOffset);
-        //offset.getSubtracted(mapOffset);
+        offset.add(mapOffset); // Position Agent A minus Position Agent B
+        //offset.subtract(mapOffset);
         //offset.reverse();
         
         if (newGroup.getGroupID() < this.agentGroup.getGroupID()) {
             newGroup.AddGroup(this.agentGroup, offset);
+            
             /*
             newGroup.addAgent(this);
             // ToDo: Hier muss noch die Position des Agents auf der neuen Karte aktualisiert werden.
@@ -684,7 +685,7 @@ public class NextAgent extends Agent {
 
         if (!visibleEntities.isEmpty()) {
 
-            HashSet<NextMapTile> newFriendlyAgents = agentGroup.removePositionsOfKnownAgents(visibleEntities);
+            HashSet<NextMapTile> newFriendlyAgents = agentGroup.removePositionsOfKnownAgents(this.GetPosition(),visibleEntities);
             for (NextMapTile newAgent : newFriendlyAgents) {
 
                 String agentName = agentStatus.GetName().replace("agent", "");

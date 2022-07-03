@@ -386,8 +386,8 @@ public class NextMap {
     
     public static void UpdateMap(NextAgent agent) {
 
-        Vector2D position = agent.GetGroup().GetAgentPosition(agent);
-        NextMap map = agent.GetGroup().GetGroupMap();
+        Vector2D position = agent.GetPosition();
+        NextMap map = agent.GetMap();
         
         if (agent.GetAgentStatus().GetLastAction().equals("move") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
 
