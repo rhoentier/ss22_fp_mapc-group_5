@@ -179,7 +179,7 @@ public class NextAgent extends Agent {
             if (!(target == null)) {
                 joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])));
             } else {
-                this.say("\n\n\n\n\n\n\n\n error in group join execution \n\n\n\n\n\n\n\n");
+                this.say("Error in group join execution");
             }
         }
 
@@ -233,7 +233,7 @@ public class NextAgent extends Agent {
      *
      * @return NextAgentStatus
      */
-    public NextAgentStatus getAgentStatus() {
+    public NextAgentStatus GetAgentStatus() {
         return this.agentStatus;
     }
 
@@ -242,7 +242,7 @@ public class NextAgent extends Agent {
      *
      * @return NextSimulationStatus
      */
-    public NextSimulationStatus getSimulationStatus() {
+    public NextSimulationStatus GetSimulationStatus() {
         return simStatus;
     }
 
@@ -554,17 +554,17 @@ public class NextAgent extends Agent {
                     	while(goalZoneIt.hasNext()) {
                     		NextMapTile next = goalZoneIt.next();
                     		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "goalZone"));
+                                view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "goalZone"));
                             }
                         }
                         Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
                         while (roleZoneIt.hasNext()) {
                             NextMapTile next = roleZoneIt.next();
                             if (i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "roleZone"));
+                                view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "roleZone"));
                             }
                         }
-                        view.add(new NextMapTile(i, j, getSimulationStatus().GetCurrentStep(), "free"));
+                        view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "free"));
                     }
                 }
             }

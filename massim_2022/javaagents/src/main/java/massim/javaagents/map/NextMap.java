@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 import massim.javaagents.agents.NextAgent;
+import massim.javaagents.agents.NextGroup;
 
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.ECardinals;
@@ -53,7 +55,7 @@ public class NextMap {
         NextMapTile clonedMaptile;
         for (NextMapTile maptile : percept) {
             clonedMaptile = maptile.clone();
-            clonedMaptile.SetPosition(agent.GetPosition().getAdded(clonedMaptile.GetPosition()));
+            clonedMaptile.SetPosition(agentPosition.getAdded(clonedMaptile.GetPosition()));
             setMapTile(clonedMaptile);
         }
     }
@@ -375,5 +377,89 @@ public class NextMap {
         return !dispensers.isEmpty();
         //System.out.println("IsDispenserAvailable: \n" + foundDispenser);
     	//return foundDispenser;
+    }
+    
+    //------------- TEST
+    
+    public static void UpdateMap(NextGroup group, NextAgent agent) {
+        
+        
+        Vector2D position = group.GetPosition(agent);
+        NextMap map = group.GetGroupMap();
+        
+        if (agent.GetAgentStatus().GetLastAction().equals("move") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
+
+            Vector2D lastStep = new Vector2D(0, 0);
+
+            switch (agent.GetAgentStatus().GetLastActionParams()) {
+                case "[n]":
+                    lastStep = new Vector2D(0, -1);
+                    break;
+                case "[e]":
+                    lastStep = new Vector2D(1, 0);
+                    break;
+                case "[s]":
+                    lastStep = new Vector2D(0, 1);
+                    break;
+                case "[w]":
+                    lastStep = new Vector2D(-1, 0);
+                    break;
+            }
+
+            position.add(lastStep);
+
+            // 1. Add all maptiles of view as "free"
+            HashSet<NextMapTile> view = new HashSet<>();
+
+            int vision = agent.GetAgentStatus().GetCurrentRole().GetVision();
+
+            for (int i = -1 * vision; i <= vision; i++) {
+                for (int j = -1 * vision; j <= vision; j++) {
+                    if (Math.abs(i) + Math.abs(j) <= vision) {
+                    	// TODO Der Teil muss kluger ersetzt werden
+                    	Iterator<NextMapTile> goalZoneIt = agent.GetAgentStatus().GetGoalZones().iterator();
+                    	while(goalZoneIt.hasNext()) {
+                    		NextMapTile next = goalZoneIt.next();
+                    		if(i == next.getPositionX() && j == next.getPositionY()) {
+                                view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "goalZone"));
+                            }
+                        }
+                        Iterator<NextMapTile> roleZoneIt = agent.GetAgentStatus().GetRoleZones().iterator();
+                        while (roleZoneIt.hasNext()) {
+                            NextMapTile next = roleZoneIt.next();
+                            if (i == next.getPositionX() && j == next.getPositionY()) {
+                                view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "roleZone"));
+                            }
+                        }
+                        view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "free"));
+                    }
+                }
+            }
+            map.AddPercept(position, view);
+
+            // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
+            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
+            for (NextMapTile thing : agent.GetAgentStatus().GetVisibleThings()) {
+                if (!agent.GetAgentStatus().GetAttachedElements().contains(thing.GetPosition())) {
+                    visibleNotAttachedThings.add(thing);
+                }
+            }
+            map.AddPercept(position, visibleNotAttachedThings);
+
+            // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
+            map.AddPercept(position, agent.GetAgentStatus().GetObstacles());
+
+            // Only for debugging
+            /*
+            map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
+
+            try {
+                Thread.sleep(0); // Wait for 2 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+             */
+        }
     }
 }

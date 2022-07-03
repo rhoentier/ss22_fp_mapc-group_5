@@ -43,7 +43,7 @@ public class NextIntention {
     public NextIntention(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
         possibleActions = new ArrayList<Action>();
-        nextAgentStatus = nextAgent.getAgentStatus();
+        nextAgentStatus = nextAgent.GetAgentStatus();
     }
 
     /**
@@ -158,7 +158,7 @@ public class NextIntention {
     }
 
     public void GeneratePathMemory() {
-        NextSimulationStatus nextSimulationStatus = nextAgent.getSimulationStatus();
+        NextSimulationStatus nextSimulationStatus = nextAgent.GetSimulationStatus();
         EAgentTask oldTask = nextAgent.GetAgentTask();
 
         /// >> Hier das auskommentieren, dass die Taskverarbeitung getestet werden kann
@@ -334,7 +334,7 @@ public class NextIntention {
             desiredActions.add(NextConstants.EActions.request);
             desiredActions.add(NextConstants.EActions.submit);
             try {
-                roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions, nextAgent.getSimulationStatus().GetRolesList());
+                roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions, nextAgent.GetSimulationStatus().GetRolesList());
             } catch (Exception e) {
                 System.out.println(e.toString());
             }

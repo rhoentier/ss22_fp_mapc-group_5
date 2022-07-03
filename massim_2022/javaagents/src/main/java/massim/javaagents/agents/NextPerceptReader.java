@@ -49,8 +49,8 @@ public class NextPerceptReader {
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
-        this.simStatus = agent.getSimulationStatus();
-        this.agentStatus = agent.getAgentStatus();
+        this.simStatus = agent.GetSimulationStatus();
+        this.agentStatus = agent.GetAgentStatus();
 
         clearSets();
     }
@@ -471,7 +471,7 @@ public class NextPerceptReader {
                 processedObstacles.add(new NextMapTile(
                         Integer.parseInt(object.get(0).toProlog()),
                         Integer.parseInt(object.get(1).toProlog()),
-                        agent.getSimulationStatus().GetCurrentStep(),
+                        agent.GetSimulationStatus().GetCurrentStep(),
                         "obstacle"));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processObstaclesSet: \n" + e.toString());
@@ -510,7 +510,7 @@ public class NextPerceptReader {
                 processedGoalZones.add(new NextMapTile(
                         Integer.parseInt(zone.get(0).toProlog()),
                         Integer.parseInt(zone.get(1).toProlog()),
-                        agent.getSimulationStatus().GetCurrentStep(),
+                        agent.GetSimulationStatus().GetCurrentStep(),
                         "goalZone"));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processGoalZonesSet: \n" + e.toString());
@@ -535,7 +535,7 @@ public class NextPerceptReader {
                 processedRoleZones.add(new NextMapTile(
                         Integer.parseInt(zone.get(0).toProlog()),
                         Integer.parseInt(zone.get(1).toProlog()),
-                        agent.getSimulationStatus().GetCurrentStep(),
+                        agent.GetSimulationStatus().GetCurrentStep(),
                         "roleZone"));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processRoleZonesSet: \n" + e.toString());
@@ -559,7 +559,7 @@ public class NextPerceptReader {
                 processedHits.add(new NextMapTile(
                         Integer.parseInt(hit.get(0).toProlog()),
                         Integer.parseInt(hit.get(1).toProlog()),
-                        agent.getSimulationStatus().GetCurrentStep(),
+                        agent.GetSimulationStatus().GetCurrentStep(),
                         "Hit"));
             } catch (Exception e) {
                 agent.say("Error in NextPerceptReader - processHitsSet: \n" + e.toString());
