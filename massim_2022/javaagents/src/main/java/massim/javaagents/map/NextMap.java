@@ -18,7 +18,7 @@ import massim.javaagents.general.NextConstants.ECardinals;
 public class NextMap {
 
     private NextMapTile[][] map;
-    //private NextAgent agent;
+    private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
     private HashSet<NextMapTile> dispensers = new HashSet<>();
@@ -41,7 +41,7 @@ public class NextMap {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
 
-    //    this.agent = agent;
+        this.agent = agent;
 
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
     }

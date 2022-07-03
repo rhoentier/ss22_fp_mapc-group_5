@@ -68,8 +68,6 @@ public class NextGroup {
         return groupID;
     }
     
-    // TODO - MAcht es noch sinn ?
-    
     public HashSet<NextMapTile> removePositionsOfKnownAgents(HashSet<NextMapTile> positions) {
         HashSet<NextMapTile> returnSet = new HashSet<>();
         for(NextMapTile agentPosition : positions ) {
@@ -90,14 +88,19 @@ public class NextGroup {
         return groupMap;
     }
     
-    public void AddGroup(NextGroup newGroup){
-        /*for(NextAgent agentToAdd: newGroup.agentSet){
-         //   this.addAgent(agentToAdd, newGroup.agentPositionMap.get(agentToAdd));
-           TODO 
-                   Offset Berechnen
-                           
+    public void AddGroup(NextGroup newGroup, Vector2D offset){
+        
+        joinGroupMap ( newGroup.groupMap, offset);
+        
+        for(NextAgent agentToAdd: newGroup.agentSet){
+            this.addAgent(agentToAdd);
+            this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getAdded(offset));
+            newGroup.removeAgent(agentToAdd);
+            NextAgent.RemoveEmptyGroup(newGroup);
+            agentToAdd.SetAgentGroup(this);
+            agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
-        */
+        
     }
 
     /*
@@ -110,9 +113,9 @@ public class NextGroup {
 
 
     private void joinGroupMap ( NextMap newMap, Vector2D offset) {
-        this.groupMap = NextMap.JoinMap ( NextMap mapToKeep, NextMap newMap, Vector2D offset);
+        this.groupMap = NextMap.JoinMap ( this.groupMap, newMap, offset);
     }
-    
+       
     @Override
     public String toString() {
         return "NextGroup{" + "groupID=" + groupID + ", agentCount=" + agentSet.size() + '}';
