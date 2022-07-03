@@ -78,8 +78,6 @@ public class NextAgent extends Agent {
     private NextAStarPath aStar = new NextAStarPath();  // A*Star based path gemeration
     private List<Action> pathMemory = new ArrayList<>();    // storing 
 
-    private NextMap map;
-
     // Tasks
     private NextTask activeTask = null;
     private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
@@ -105,7 +103,6 @@ public class NextAgent extends Agent {
 
         this.processor = new NextPerceptReader(this);
 
-        this.map = new NextMap(this);
         taskPlanner = new NextTaskPlanner(this);
 
         createGroup();
@@ -288,12 +285,14 @@ public class NextAgent extends Agent {
     }
 
     public Vector2D GetPosition() {
-        return agentGroup.GetPosition(this).clone();
+        return agentGroup.GetAgentPosition(this).clone();
     }
 
     public NextMap GetMap() {
-        return this.map;
+        return this.agentGroup.GetGroupMap();
     }
+
+    public NextGroup GetGroup() {return this.agentGroup;}
 
     public void MovePosition(Vector2D vector) {
         this.agentGroup.MoveSingleAgent(this, vector);
@@ -438,7 +437,6 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         this.pathMemory = new ArrayList<>();
-        this.map = new NextMap(this);
         //this.roleToChangeTo=null;
     }
 
@@ -452,6 +450,7 @@ public class NextAgent extends Agent {
     public List<Action> CalculatePath(Vector2D target) {
         // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
 
+        NextMap map = GetMap();
         Boolean targetIsOnMap = map.ContainsPoint(target);
         try {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
@@ -482,6 +481,7 @@ public class NextAgent extends Agent {
      */
     public List<Action> CalculatePathNextToTarget(Vector2D target) {
 
+        NextMap map = GetMap();
         //ToDo - Optimale Position je nach Ausgangslage auswählen 
         try {
             if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
@@ -512,97 +512,14 @@ public class NextAgent extends Agent {
          this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
          return pathMemoryB;
     }
-            
-    /**
-     * Transfer the recieved percept data to the general map
-     */
-    private void updateMap() {
-        if (agentStatus.GetLastAction().equals("move") && agentStatus.GetLastActionResult().equals("success")) {
-
-            Vector2D lastStep = new Vector2D(0, 0);
-
-            switch (agentStatus.GetLastActionParams()) {
-                case "[n]":
-                    lastStep = new Vector2D(0, -1);
-                    break;
-                case "[e]":
-                    lastStep = new Vector2D(1, 0);
-                    break;
-                case "[s]":
-                    lastStep = new Vector2D(0, 1);
-                    break;
-                case "[w]":
-                    lastStep = new Vector2D(-1, 0);
-                    break;
-            }
-
-            MovePosition(lastStep);
-
-            // 1. Add all maptiles of view as "free"
-            HashSet<NextMapTile> view = new HashSet<>();
-
-            int vision = agentStatus.GetCurrentRole().GetVision();
-
-            for (int i = -1 * vision; i <= vision; i++) {
-                for (int j = -1 * vision; j <= vision; j++) {
-                    if (Math.abs(i) + Math.abs(j) <= vision) {
-                    	// TODO Der Teil muss kluger ersetzt werden
-                    	Iterator<NextMapTile> goalZoneIt = agentStatus.GetGoalZones().iterator();
-                    	while(goalZoneIt.hasNext()) {
-                    		NextMapTile next = goalZoneIt.next();
-                    		if(i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "goalZone"));
-                            }
-                        }
-                        Iterator<NextMapTile> roleZoneIt = agentStatus.GetRoleZones().iterator();
-                        while (roleZoneIt.hasNext()) {
-                            NextMapTile next = roleZoneIt.next();
-                            if (i == next.getPositionX() && j == next.getPositionY()) {
-                                view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "roleZone"));
-                            }
-                        }
-                        view.add(new NextMapTile(i, j, GetSimulationStatus().GetCurrentStep(), "free"));
-                    }
-                }
-            }
-            map.AddPercept(GetPosition(), view);
-
-            // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
-            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
-
-            for (NextMapTile thing : agentStatus.GetVisibleThings()) {
-                if (!agentStatus.GetAttachedElements().contains(thing.GetPosition())) {
-                    visibleNotAttachedThings.add(thing);
-                }
-            }
-            map.AddPercept(GetPosition(), visibleNotAttachedThings);
-
-            // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
-            map.AddPercept(GetPosition(), agentStatus.GetObstacles());
-
-            // Only for debugging
-            /*
-            map.WriteToFile("map_" + agentStatus.GetName() + ".txt");
-
-            try {
-                Thread.sleep(0); // Wait for 2 seconds
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-             */
-        }
-    }
 
     private void updateInternalBeliefs() {
 
         // update the selected Role
         updateCurrentRole();
 
-        // Update internal map with new percept
-        updateMap();
-
         // Update the GroupMap
-        NextMap.UpdateMap(agentGroup, this);
+        NextMap.UpdateMap(this);
         
         // Update Tasks at taskPlanner
         updateTasks();
@@ -691,6 +608,8 @@ public class NextAgent extends Agent {
         if (newGroup.getGroupID() < this.agentGroup.getGroupID()) {
             //newGroup.addGroup(this.agentGroup);
             newGroup.addAgent(this);
+            // ToDo: Hier muss noch die Position des Agents auf der neuen Karte aktualisiert werden.
+            // newGroup.SetAgentPosition(this, new Vector2D(0, 0)); // Nur zum Testen ob es dann ohne Exception läuft
             this.agentGroup.removeAgent(this);
             removeEmptyGroup(this.agentGroup);
             this.agentGroup = newGroup;
@@ -722,9 +641,9 @@ public class NextAgent extends Agent {
             this.say("Things: \n" + agentStatus.GetVisibleThings());
 
             this.say("Global ------------------------- ");
-            this.say("Goalzones: \n" + map.GetGoalZones());
+            this.say("Goalzones: \n" + GetMap().GetGoalZones());
             //this.say("RoleZones: \n" + map.GetRoleZones());
-            this.say("Dispensers: \n" + map.GetDispensers());
+            this.say("Dispensers: \n" + GetMap().GetDispensers());
             System.out.println("-------------------------------------------------------------");
 
         }
