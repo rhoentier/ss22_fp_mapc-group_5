@@ -158,12 +158,12 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("GroupFinding-ResponseMessage")) {
             //System.out.println("GroupFinding-Response");
             messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3]);
-            messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[2])));
+            messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[3])));
             //this.sendMessage(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName());
             //this.sendMessage(new Percept("JoinGroup-Execution," + messageContainer[1]), this.getName(), this.getName());
         }
 
-        // Message Type: JoinGroup-Execution,GroupID
+        // Message Type: JoinGroup-Execution,GroupID,x,y
         if (messageContainer[0].contains("JoinGroup-Execution")) {
             this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3]);
             NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
@@ -218,6 +218,8 @@ public class NextAgent extends Agent {
             //printActionsReport(); // live String output to console
             this.say("Agents Group:" + agentGroup + "GroupCoount " + globalGroupMap.size());
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+            
+            System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(agentGroup.GetGroupMap().GetMapArray()));    
 
             return selectNextAction();
 
@@ -297,6 +299,9 @@ public class NextAgent extends Agent {
     }
 
     public Vector2D GetPosition() {
+        if (agentGroup == null) {
+            return new Vector2D(0,0);
+        }
         return agentGroup.GetAgentPosition(this).clone();
     }
 
@@ -365,7 +370,7 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        if (!pathMemory.isEmpty()) {
+        if (pathMemory !=null && !pathMemory.isEmpty()) {
             Action currentAction = pathMemory.get(0);
             String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
 
@@ -431,7 +436,9 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         this.pathMemory = new ArrayList<>();
-        this.map = new NextMap(this);
+        //this.map = new NextMap(this);
+        activeTask = null;
+        agentActivity= null; 
         
         agentGroup = null;
         globalGroupMap = new HashMap<>();
@@ -514,9 +521,8 @@ public class NextAgent extends Agent {
         updateCurrentRole();
 
         // Update the GroupMap
-        NextMap.UpdateMap(agentGroup, this);
-
-        //NextMap.UpdateMap(this);
+        
+        NextMap.UpdateMap(this);
         
         // Update Tasks at taskPlanner
         updateTasks();
@@ -716,7 +722,7 @@ public class NextAgent extends Agent {
             for (String message : messageStore) {
                 // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), x, y)
                 String[] messageContainer = message.split(",");
-                this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1]), messageContainer[2], messageContainer[3]);
+                this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1] + "," + messageContainer[4] +"," +messageContainer[5] ), messageContainer[2], messageContainer[3]);
             }
         } else {
             for (String message : messageStore) {

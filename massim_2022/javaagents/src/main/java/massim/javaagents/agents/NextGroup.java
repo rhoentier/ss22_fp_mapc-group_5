@@ -94,16 +94,23 @@ public class NextGroup {
     
     public void AddGroup(NextGroup newGroup, Vector2D offset){
         
+        //offset.reverse();
         joinGroupMap ( newGroup.groupMap, offset);
         
         for(NextAgent agentToAdd: newGroup.agentSet){
             this.addAgent(agentToAdd);
+            agentToAdd.say("OldPosition: " + agentToAdd.GetPosition());
+            agentToAdd.say("Offet: " + offset);
             this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getAdded(offset));
-            newGroup.removeAgent(agentToAdd);
-            NextAgent.RemoveEmptyGroup(newGroup);
             agentToAdd.SetAgentGroup(this);
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
+        
+        for(NextAgent agentToAdd: this.agentSet){
+            newGroup.removeAgent(agentToAdd);
+        }
+        
+        NextAgent.RemoveEmptyGroup(newGroup);
         
     }
 
