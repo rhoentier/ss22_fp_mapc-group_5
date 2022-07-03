@@ -209,7 +209,7 @@ public class NextIntention {
             case goToDispenser:
             	// TODO Zu welchem Dispenser will ich denn? (Warten auf Path)
                 // Only new pathMemory, if the current Path is empty
-                if (this.nextAgent.GetPathMemory().isEmpty()) {
+                if (this.nextAgent.GetPathMemory() !=null && this.nextAgent.GetPathMemory().isEmpty()) {
                     Iterator<NextMapTile> requiredBlockIterator = this.nextAgent.GetActiveTask().GetRequiredBlocks().iterator();
 
                     Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
@@ -217,31 +217,31 @@ public class NextIntention {
                             requiredBlockIterator.next().getThingType()
                     );
                     this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                    if (this.nextAgent.GetPathMemory() != null && this.nextAgent.GetPathMemory().size() == 0) {
                         possibleActions.add(generateDefaultAction()); //fallback
                     }
                 }
                 break;
             case goToGoalzone:
-                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+                if (this.nextAgent.GetPathMemory() !=null && this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
                     this.nextAgent.SetPathMemory(
                             this.nextAgent.CalculatePath(
                                     NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())
                             )
                     );
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                    if (this.nextAgent.GetPathMemory() !=null && this.nextAgent.GetPathMemory().size() == 0) {
                         possibleActions.add(generateDefaultAction()); //fallback
                     }
                 }
                 break;
             case goToRolezone:
-                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+                if (this.nextAgent.GetPathMemory() !=null && this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
                     this.nextAgent.SetPathMemory(
                             this.nextAgent.CalculatePath(
                                     NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())
                             )
                     );
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
+                    if (this.nextAgent.GetPathMemory() !=null && this.nextAgent.GetPathMemory().size() == 0) {
                         possibleActions.add(generateDefaultAction()); //fallback
                     }
                 }

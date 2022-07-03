@@ -141,10 +141,9 @@ public class NextAgent extends Agent {
                             //this.sendMessage(new Percept("AO-ResponseMessage,"+agentGroup.getGroupID()), sender, this.getName());
                             if (feld.getThingType().contains(this.agentStatus.GetTeamName())
                                     && feld.getThingType().contains(NextConstants.EVisibleThings.entity.toString())) {
-                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.getGroupID() + "," + xToTest + "," + yToTest), sender, this.getName());
+                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.getGroupID() + "," + xToTest + "," + yToTest + ", MapPosition," + this.GetPosition().x + ","+ this.GetPosition().y), sender, this.getName());
                                 //this.say("AO-ResponseMessage" +sender );
                                 //            System.out.println("FOUND");
-
                             }
                         }
                     }
@@ -154,21 +153,23 @@ public class NextAgent extends Agent {
             //joinGroups(globalGroupMap.get(id));
         }
 
-        // Message Type: AO-ResponseMessage,GroupID,x,y
+        // Message Type: AO-ResponseMessage,GroupID,x,y,MapPosition,x,y
         if (messageContainer[0].contains("GroupFinding-ResponseMessage")) {
+            int mapOffsetX = Integer.parseInt(messageContainer[5]) - this.GetPosition().x;
+            int mapOffsetY = Integer.parseInt(messageContainer[6]) - this.GetPosition().y;
             //System.out.println("GroupFinding-Response");
-            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3]);
-            messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[2])));
+            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3] + "," + mapOffsetX + "," + mapOffsetY);
+            messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[3])+ "," + (-1*mapOffsetX) + "," + (-1*mapOffsetY)));
             //this.sendMessage(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName());
             //this.sendMessage(new Percept("JoinGroup-Execution," + messageContainer[1]), this.getName(), this.getName());
         }
 
-        // Message Type: JoinGroup-Execution,GroupID
+        // Message Type: JoinGroup-Execution,GroupID,x,y
         if (messageContainer[0].contains("JoinGroup-Execution")) {
-            this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3]);
+            this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3] + " mapOffsetX: " + messageContainer[4] + " mapOffsetY: " + messageContainer[5]);
             NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
             if (!(target == null)) {
-                joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])), new Vector2D(Integer.parseInt(messageContainer[2]), Integer.parseInt(messageContainer[3])));
+                joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])), new Vector2D(Integer.parseInt(messageContainer[2]), Integer.parseInt(messageContainer[3])),new Vector2D(Integer.parseInt(messageContainer[4]), Integer.parseInt(messageContainer[5])));
             } else {
                 this.say("Error in group join execution");
             }
@@ -218,6 +219,8 @@ public class NextAgent extends Agent {
             //printActionsReport(); // live String output to console
             this.say("Agents Group:" + agentGroup + "GroupCoount " + globalGroupMap.size());
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+            
+            System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(agentGroup.GetGroupMap().GetMapArray()));    
 
             return selectNextAction();
 
@@ -297,6 +300,9 @@ public class NextAgent extends Agent {
     }
 
     public Vector2D GetPosition() {
+        if (agentGroup == null) {
+            return new Vector2D(0,0);
+        }
         return agentGroup.GetAgentPosition(this).clone();
     }
 
@@ -365,7 +371,7 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        if (!pathMemory.isEmpty()) {
+        if (pathMemory !=null && !pathMemory.isEmpty()) {
             Action currentAction = pathMemory.get(0);
             String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
 
@@ -431,7 +437,9 @@ public class NextAgent extends Agent {
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         this.pathMemory = new ArrayList<>();
-        this.map = new NextMap(this);
+        //this.map = new NextMap(this);
+        activeTask = null;
+        agentActivity= null; 
         
         agentGroup = null;
         globalGroupMap = new HashMap<>();
@@ -514,9 +522,8 @@ public class NextAgent extends Agent {
         updateCurrentRole();
 
         // Update the GroupMap
-        NextMap.UpdateMap(agentGroup, this);
-
-        //NextMap.UpdateMap(this);
+        
+        NextMap.UpdateMap(this);
         
         // Update Tasks at taskPlanner
         updateTasks();
@@ -600,8 +607,14 @@ public class NextAgent extends Agent {
      * has a lower id. Has to be executed on both agents
      *
      * @param newGroup - new group to combine
+     * @param offset - Vector2D manhattan distance between agents
+     * @param mapOffset - Vector2D manhattan distance between maps zero points
      */
-    private void joinGroup(NextGroup newGroup, Vector2D offset) {
+    private void joinGroup(NextGroup newGroup, Vector2D offset,Vector2D mapOffset) {
+        offset.getAdded(mapOffset);
+        //offset.getSubtracted(mapOffset);
+        //offset.reverse();
+        
         if (newGroup.getGroupID() < this.agentGroup.getGroupID()) {
             newGroup.AddGroup(this.agentGroup, offset);
             /*
@@ -714,14 +727,13 @@ public class NextAgent extends Agent {
 
         if (this.messageStore.size() == 2) {
             for (String message : messageStore) {
-                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), x, y)
+                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), deltaX, deltaY, mapOffsetX, mapOffsetY,)
                 String[] messageContainer = message.split(",");
-                this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1]), messageContainer[2], messageContainer[3]);
+                this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1] + "," + messageContainer[4] +"," +messageContainer[5] +"," + messageContainer[6] +"," +messageContainer[7]), messageContainer[2], messageContainer[3]);
             }
         } else {
             for (String message : messageStore) {
-                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName())
-                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), x, y)
+                // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), sender, this.getName(), deltaX, deltaY, mapOffsetX, mapOffsetY,)
                 String[] messageContainer = message.split(",");
                 if (!messageContainer[2].equals(messageContainer[3])) {
                     if (!GroupBuildingSkipMemory.containsKey(messageContainer[2])) {
