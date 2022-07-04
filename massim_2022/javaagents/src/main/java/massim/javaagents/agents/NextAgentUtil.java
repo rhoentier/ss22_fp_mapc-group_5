@@ -524,24 +524,19 @@ public final class NextAgentUtil {
         return null;
     }
     
-    public Vector2D NextDirection(ECardinals direction) {
-        Vector2D newPosition = new Vector2D();
+    public static ECardinals NextDirection(ECardinals direction) {
         switch (direction) {
             case n:
-                newPosition = new Vector2D(0, -1);
-                break;
+                return ECardinals.e;
             case e:
-                newPosition = new Vector2D(1, 0);
-                break;
+                return ECardinals.s;
             case s:
-                newPosition = new Vector2D(0, 1);
-                break;
+                return ECardinals.w;
             case w:
-                newPosition = new Vector2D(-1, 0);
-                break;
+                return ECardinals.n;
+            default:
+            	return direction;
         }
-
-        return newPosition;
     }
 
     public static Boolean IsBlockBehindMe(ECardinals direction, Vector2D block) {

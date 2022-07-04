@@ -65,7 +65,7 @@ public class NextAgentStatus {
      */
     
     public NextAgentStatus(NextAgent nextAgent) {
-        this.nextAgent = nextAgent; 
+    	this.nextAgent = nextAgent; 
         name = null;
         teamName = null;
         lastAction = null;

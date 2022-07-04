@@ -347,9 +347,7 @@ public class NextAgent extends Agent {
         		} 
         		else if(thing.getThingType().contains("entity"))
         		{
-        			nextAction = new NextRandomPath().GenerateNextMove();
-        			//nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.GetOppositeDirection(ECardinals.valueOf(direction)).toString()));
-        		}
+        			nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString())); }
         		else {
             		nextAction = pathMemory.remove(0);
         		}
@@ -426,12 +424,13 @@ public class NextAgent extends Agent {
         this.simStatus.SetActionID(lastID);
         this.agentStatus = new NextAgentStatus(this);
         this.processor = new NextPerceptReader(this);
+        this.intention = new NextIntention(this);
 
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         this.pathMemory = new ArrayList<>();
         this.map = new NextMap(this);
         this.activeTask = null;
-        //this.agentActivity = EAgentActivity.exploreMap;
+        this.agentActivity = EAgentActivity.exploreMap;
         this.agentPlan = null;
         this.taskPlanner = new NextTaskPlanner(this);
         //this.roleToChangeTo=null;

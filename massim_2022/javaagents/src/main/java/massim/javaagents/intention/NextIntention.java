@@ -24,6 +24,7 @@ import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextPlanDispenser;
 import massim.javaagents.plans.NextTaskPlanner;
 import massim.javaagents.percept.NextRole;
+import massim.javaagents.percept.NextSurveyedThing;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -232,7 +233,6 @@ public class NextIntention {
 		case goToDispenser:
 			// Only new pathMemory, if the current Path is empty
 			if (this.nextAgent.GetPathMemory().isEmpty()) {
-
 				Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
 						((NextPlanDispenser) plan).GetDispenser().getThingType());
 				this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
@@ -267,8 +267,9 @@ public class NextIntention {
 	private void survey(String type) {
 		if (this.nextAgent.GetPathMemory().isEmpty()) {
 			if (this.nextAgentStatus.IsLastSpecificActionSuccess(type, "survey")) {
-				if (this.nextAgentStatus.GetSurveyedThings().iterator().hasNext()) {
-					int distance = this.nextAgentStatus.GetSurveyedThings().iterator().next().GetDistance();
+				for(NextSurveyedThing nextSurveyedThings: this.nextAgentStatus.GetSurveyedThings())
+				{
+					int distance = nextSurveyedThings.GetDistance();
 					if (surveySteps == 0) {
 						// erstes Abtasten
 						possibleActions.add(NextAgentUtil.GenerateNorthMove());
