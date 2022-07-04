@@ -38,12 +38,12 @@ public class NextPlanExploreMap extends NextPlan {
         for(Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext();){
             NextPlan subPlan = subPlanIterator.next();
             if (subPlan instanceof NextPlanSurveyGoalZone){
-                if (!agent.GetMap().GetDispensers().isEmpty()) subPlans.remove(subPlan);
+                if (!agent.GetMap().GetDispensers().isEmpty()) subPlanIterator.remove();
                 continue;
             }
             String blockType = ((NextPlanSurveyDispenser) subPlan).GetWantedMapTile().getThingType();
             HashSet<String> foundDispenser = agent.GetMap().GetDispensers().stream().map(mapTile -> mapTile.getThingType()).collect(Collectors.toCollection(HashSet::new));
-            if (foundDispenser.contains(blockType)) subPlans.remove(subPlan);
+            if (foundDispenser.contains(blockType)) subPlanIterator.remove();
         }
     }
 }
