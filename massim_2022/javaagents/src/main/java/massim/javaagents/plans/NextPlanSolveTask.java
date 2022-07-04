@@ -25,6 +25,9 @@ public class NextPlanSolveTask extends NextPlan {
     private boolean isDeadlineFulfillable = true;
     private String taskName;
 
+    private int failOffest = 2;
+    private int failStatus = 0;
+
 
     public NextPlanSolveTask(NextTask task, NextAgent agent) {
         this.agent = agent;
@@ -113,6 +116,12 @@ public class NextPlanSolveTask extends NextPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void CheckIfDeadlineIsReached() {
+        if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(taskName))
+            failStatus += 1;
+        else if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(taskName))
+            failStatus = 0;
+
+        if (failStatus == failOffest) isDeadlineFulfillable = false;
         int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
         if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
     }

@@ -63,7 +63,7 @@ public class NextPerceptReader {
      */
     public void evaluate(List<Percept> percepts, NextAgent agent) {
 
-        clearSets(); //clearing of the containers before processing of perceipts
+        clearSets(); //clearing of the containers before processing of percepts
 
         //WARNING: ConcurrentModificationException workaround! based on FitBUT
         synchronized (percepts) {
