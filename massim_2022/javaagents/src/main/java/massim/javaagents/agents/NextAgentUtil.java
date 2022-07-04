@@ -122,16 +122,9 @@ public final class NextAgentUtil {
         return null;
     }
 
-    /**
-     * Check, if Rotation from Block is possible
-     * @param agent for agentstatus
-     * @param direction
-     * @return
-     */
     public static boolean IsRotationPossible(NextAgentStatus agentStatus, String direction) {
-        //HashSet<NextMapTile> visibleThings = agentStatus.GetVisibleThings();
-        HashSet<NextMapTile> visibleThings = agentStatus.GetFullLocalView();
 
+        HashSet<NextMapTile> visibleThings = agentStatus.GetFullLocalView();
         HashSet<Vector2D> attachedElements = agentStatus.GetAttachedElements();
 
         Vector2D rotateTo;
