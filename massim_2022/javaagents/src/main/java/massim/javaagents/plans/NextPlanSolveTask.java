@@ -110,6 +110,14 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     /**
+     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
+     */
+    public void CheckIfDeadlineIsReached() {
+        int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
+        if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
+    }
+
+    /**
      * prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
     public boolean CheckIfTaskIsFulfilled() {
@@ -159,17 +167,14 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     /**
-     * Prüft, ob die Deadline für die Aufgabe bereits erreicht oder überschritten wurde
-     *
-     * @return true, falls die Deadline erreicht wurde
+     * @return Kann Task noch in der zur Verfügung stehenden Zeit gelöst werden
      */
-    public boolean IsDeadlineReached() {
-        int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
-        if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) return true;
-        return false;
+    public boolean IsDeadlineFulfillable() {
+        return isDeadlineFulfillable;
     }
 
     public void UpdateInternalBelief() {
+        CheckIfDeadlineIsReached();
         CheckIfPreConditionIsFulfilled();
         if (CheckIfTaskIsFulfilled()) return;
         for (Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext(); ) {

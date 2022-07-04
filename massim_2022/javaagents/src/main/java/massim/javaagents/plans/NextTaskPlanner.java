@@ -36,10 +36,6 @@ public class NextTaskPlanner {
      * @param newTasks
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
-        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext(); ) {
-            NextPlanSolveTask plan = planIterator.next();
-            if (plan.IsDeadlineReached() == true) planIterator.remove();
-        }
         for (NextTask newTask : newTasks) {
             HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
             if (!actualTasks.contains(newTask.GetName())) {
@@ -68,7 +64,6 @@ public class NextTaskPlanner {
             currentPlan = findBestPlan();
             if (currentPlan == null) return null;
             currentPlan.FulfillPrecondition();
-            return currentPlan.GetDeepestPlan();
         }
         return currentPlan.GetDeepestPlan();
     }
@@ -80,7 +75,7 @@ public class NextTaskPlanner {
      */
     private NextPlanSolveTask findFulfillablePlan() {
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (possiblePlan.IsPreconditionFulfilled()) return possiblePlan;
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable()) return possiblePlan;
         }
         return null;
     }
@@ -94,7 +89,7 @@ public class NextTaskPlanner {
     private NextPlanSolveTask findBestFulfillablePlan() {
         NextPlanSolveTask bestPlan = null;
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (possiblePlan.IsPreconditionFulfilled()) {
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable()) {
                 if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
                     bestPlan = possiblePlan;
             }
@@ -110,7 +105,9 @@ public class NextTaskPlanner {
     private NextPlanSolveTask findBestPlan() {
         NextPlanSolveTask bestPlan = null;
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
+            if (possiblePlan.IsDeadlineFulfillable())
+                if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
+                    bestPlan = possiblePlan;
         }
         return bestPlan;
     }
