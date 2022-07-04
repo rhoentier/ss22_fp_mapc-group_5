@@ -4,6 +4,7 @@ import eis.iilang.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.map.NextMapTile;
@@ -253,6 +254,7 @@ public class NextPerceptReader {
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
 
+        agentStatus.SetAttachedElementsNextMapTile(updateAttachedSetMapTile());
         agentStatus.SetVisibleAttachedElements(processAttachedSet());
         agentStatus.SetGoalZones(processGoalZonesSet());
         agentStatus.SetRoleZones(processRoleZonesSet());
@@ -419,6 +421,16 @@ public class NextPerceptReader {
             agent.say("\n" + "Attached Elements\n" + processedAttachedSet.toString() + "\n");
         }
         //*/
+        return processedAttachedSet;
+    }
+    
+    private HashSet<NextMapTile> updateAttachedSetMapTile() {
+        HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
+        Iterator<NextMapTile> thingsIt = processThingsSet().iterator();
+        while(thingsIt.hasNext()) {
+        	NextMapTile nextThing = thingsIt.next();
+        	if(nextThing.getThingType().contains("block")) processedAttachedSet.add(nextThing);
+        }
         return processedAttachedSet;
     }
 

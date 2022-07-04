@@ -184,7 +184,7 @@ public class NextPlanSolveTask extends NextPlan {
             if (subPlan instanceof NextPlanDispenser) {
                 // prüft, welche Blöcke momentan attached sind
                 HashSet<NextMapTile> visibleThings = agent.getAgentStatus().GetVisibleThings();
-                HashSet<Vector2D> attachedElements = agent.getAgentStatus().GetAttachedElements();
+                HashSet<Vector2D> attachedElements = agent.getAgentStatus().GetAttachedElementsVector2D();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
                 for (Vector2D attachedElement : attachedElements) {
                     for (NextMapTile visibleThing : visibleThings) {

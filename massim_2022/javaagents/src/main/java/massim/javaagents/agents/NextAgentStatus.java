@@ -41,6 +41,7 @@ public class NextAgentStatus {
     
     private HashSet<Vector2D> attachedElements;            // Unsorted unfiltered list of elements, attached to the agent
     private HashSet<Vector2D> visibleAttachedElements;     // Unsorted unfiltered list of all visible attached elements
+    private HashSet<NextMapTile> attachedElementsNextMapTile;
 
     private HashSet<NextMapTile> fullLocalView;         // Unsorted list containing visible elements and obstacles as NextMapTile: contains - entity, block, dispenser, marker,...
     private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
@@ -74,6 +75,7 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
+        attachedElementsNextMapTile = new HashSet<NextMapTile>();
         dispenser = new HashSet<NextMapTile>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
@@ -196,12 +198,21 @@ public class NextAgentStatus {
         SetAttachedElements(visibleAttachedElements);
     }
 
-    public HashSet<Vector2D> GetAttachedElements() {
+    public HashSet<Vector2D> GetAttachedElementsVector2D() {
         return this.attachedElements;
     }
 
     public Integer GetAttachedElementsAmount() {
         return this.attachedElements.size();
+    }
+    
+    public void SetAttachedElementsNextMapTile(HashSet<NextMapTile> attachedElementsNextMapTile)
+    {
+    	this.attachedElementsNextMapTile = attachedElementsNextMapTile;
+    }
+    
+    public HashSet<NextMapTile> GetAttachedElementsNextMapTiles(){
+    	return this.attachedElementsNextMapTile;
     }
 
     public void SetVision(HashSet<NextMapTile> visionElements) {

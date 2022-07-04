@@ -32,126 +32,160 @@ import java.util.Iterator;
 
 public class NextIntention {
 
-    private NextAgent nextAgent;
-    ArrayList<Action> possibleActions;
-    private NextAgentStatus nextAgentStatus;
-    
-    // TODO Properties
-    private int lastSurveyedDistance = 0;
-    private String lastDirection = "n";
-    private int surveySteps = 0;
+	private NextAgent nextAgent;
+	ArrayList<Action> possibleActions;
+	private NextAgentStatus nextAgentStatus;
 
-    public NextIntention(NextAgent nextAgent) {
-        this.nextAgent = nextAgent;
-        possibleActions = new ArrayList<Action>();
-        nextAgentStatus = nextAgent.getAgentStatus();
-    }
+	// TODO Properties
+	private int lastSurveyedDistance = 0;
+	private String lastDirection = "n";
+	private int surveySteps = 0;
 
-    /**
-     * Selects the next Action based on the priorityMap
-     *
-     * @return Action
-     */
-    public Action SelectNextAction() {
+	public NextIntention(NextAgent nextAgent) {
+		this.nextAgent = nextAgent;
+		possibleActions = new ArrayList<Action>();
+		nextAgentStatus = nextAgent.getAgentStatus();
+	}
 
-        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+	/**
+	 * Selects the next Action based on the priorityMap
+	 *
+	 * @return Action
+	 */
+	public Action SelectNextAction() {
 
-        //System.out.println("Actions : ------" + possibleActions.toString());
+		Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
-        //Compares each action based on the value
-        if (possibleActions != null) {
-            for (Action action : possibleActions) {
-                if (action != null) {
-                    if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap.get(nextAction.getName())) {
-                        nextAction = action;
-                    }
-                }
-            }
-        }
-        return nextAction;
-    }
+		// System.out.println("Actions : ------" + possibleActions.toString());
 
-    public void GeneratePossibleActions() {
-    	
-        //Special case: Interaction with an adjacent element.
-    	
-    	// TODO Rollenwechsel implementieren
-        //Wenn Agent in einer RoleZone und noch nicht worker ist
-        if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetRoleZones())
-                && !nextAgent.getAgentStatus().GetRole().equals("worker")){
-            possibleActions.add(NextAgentUtil.GenerateRoleChangeAction("worker"));
-            nextAgent.ClearPathMemory();
-        }
+		// Compares each action based on the value
+		if (possibleActions != null) {
+			for (Action action : possibleActions) {
+				if (action != null) {
+					if (NextConstants.PriorityMap.get(action.getName()) < NextConstants.PriorityMap
+							.get(nextAction.getName())) {
+						nextAction = action;
+					}
+				}
+			}
+		}
+		return nextAction;
+	}
 
-        // Aktuelle Sicht des Agenten
-        for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
+	public void GeneratePossibleActions() {
 
-            Vector2D position = visibleThing.GetPosition();
-            // Dispenser && Agent steht neben einem Ding && Agent hat aktiven Task && Block-Typ stimmt
-            if (visibleThing.getThingType().contains("dispenser")
-                && NextAgentUtil.NextToUsingLocalView(position, nextAgent) 
-                && nextAgent.GetActiveTask() != null
-                && NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask(), visibleThing.getThingType())
-                && nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
+		// Special case: Interaction with an adjacent element.
 
-                // Wenn Agent noch keinen Block trägt: nehme Block, lösche PathMemory
-                if (nextAgentStatus.GetAttachedElementsAmount() < 1) {
-                    possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request, NextAgentUtil.ChangeVector2DToIdentifier(position)));
-                    this.nextAgent.ClearPathMemory();
-                }
-            }
+		// TODO Rollenwechsel implementieren
+		// Wenn Agent in einer RoleZone und noch nicht worker ist
+		if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetRoleZones())
+				&& !nextAgent.getAgentStatus().GetRole().equals("worker")) {
+			possibleActions.add(NextAgentUtil.GenerateRoleChangeAction("worker"));
+			nextAgent.ClearPathMemory();
+		}
+		
+		detachUnusedBlocks();
+		
+		// Aktuelle Sicht des Agenten
+		for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
-            // Block && Aktiver Task && Agent hat freie Slots
-            if (visibleThing.getThingType().contains("block")
-                    && this.nextAgent.GetActiveTask() != null
-                    && NextAgentUtil.HasFreeSlots(nextAgentStatus)
-                    && nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
+			Vector2D position = visibleThing.GetPosition();
+			// Dispenser && Agent steht neben einem Ding && Agent hat aktiven Task &&
+			// Block-Typ stimmt
+			if (visibleThing.getThingType().contains("dispenser") 
+					&& this.nextAgent.GetActiveTask() != null
+					&& NextAgentUtil.NextToUsingLocalView(position, nextAgent)
+					&& NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask().GetRequiredBlocks(), visibleThing.getThingType())
+					&& this.nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
+
+				// Wenn Agent noch keinen Block trägt: nehme Block, lösche PathMemory
+				if (nextAgentStatus.GetAttachedElementsAmount() < 1) {
+					possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.request,
+							NextAgentUtil.ChangeVector2DToIdentifier(position)));
+					this.nextAgent.ClearPathMemory();
+				}
+			}
+
+			// Block && Aktiver Task && Agent hat freie Slots
+			if (visibleThing.getThingType().contains("block") 
+					&& this.nextAgent.GetActiveTask() != null
+					&& NextAgentUtil.NextToUsingLocalView(position, this.nextAgent)
+					&& NextAgentUtil.HasFreeSlots(nextAgentStatus)
+					&& NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask().GetRequiredBlocks(), visibleThing.getThingType())
+					&& nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
 //                System.out.println("Action - Attach");
-                possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach, NextAgentUtil.ChangeVector2DToIdentifier(position)));
-                this.nextAgent.ClearPathMemory();
-            }
+				possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.attach,
+						NextAgentUtil.ChangeVector2DToIdentifier(position)));
+				this.nextAgent.ClearPathMemory();
+			}
 
-            // Agent hat Block && ist in GoalZone
-            if (nextAgentStatus.GetAttachedElementsAmount() > 0
-            		&& NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones()) 
-            		&& nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone)
-            {
-            	// Block korrekt gedreht
-                if (NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) {
-                    possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
-                } 
-                else
-                {
-                	String direction =  NextAgentUtil.RotateInWhichDirection(nextAgentStatus.GetAttachedElements(), nextAgent.GetActiveTask().GetRequiredBlocks());
-                	// Block nicht korrekt gedreht Prüfen zu rotieren
-                	if(NextAgentUtil.IsRotationPossible(nextAgentStatus, direction))
+			// Agent hat Block && ist in GoalZone
+			if (nextAgentStatus.GetAttachedElementsAmount() > 0
+					&& NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())
+					&& nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone) {
+				// Block korrekt gedreht
+				if (NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) {
+					possibleActions.add(NextActionWrapper.CreateAction(EActions.submit,
+							new Identifier(nextAgent.GetActiveTask().GetName())));
+				} else {
+					// Block position besetzt? -> Schritt in die Entgegengesetzte Richtung machen
+                	if(nextAgentStatus.GetAttachedElementsAmount() == 1)
                 	{
-                        possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier(direction)));
-                	} 
-                	else if(NextAgentUtil.IsRotationPossible(nextAgentStatus, NextAgentUtil.GetOtherRotation(direction)))
-                	{
-                		possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier(NextAgentUtil.GetOtherRotation(direction))));
+                		Vector2D requiredBlockPosition = nextAgent.GetActiveTask().GetRequiredBlocks().iterator().next().GetPosition();
+                		Vector2D blockPosition = nextAgentStatus.GetAttachedElementsVector2D().iterator().next();
+                		Vector2D oppositeBlockPosition = NextAgentUtil.GetOppositeVector(blockPosition);
+                		if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetFullLocalView(), requiredBlockPosition))
+                		{
+                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, 
+                					new Identifier("" + oppositeBlockPosition.x),
+                					new Identifier("" + oppositeBlockPosition.y))
+                					);                  			
+                		}
+                		
+                		
+                		
+//                		ECardinals getOppositeDirection = NextAgentUtil.ConvertVector2DToECardinals(NextAgentUtil.GetOppositeVector(blockPosition));
+//                		if(visibleThing.GetPosition().equals(blockPosition) 
+//                				&& NextAgentUtil.IsNextStepPossible(getOppositeDirection, nextAgentStatus.GetAttachedElementsVector2D(), nextAgentStatus.GetObstacles()))
+//                		{
+//                            possibleActions.add(NextActionWrapper.CreateAction(EActions.move, new Identifier(getOppositeDirection.toString())));                			
+//                		}
                 	}
-                	else
-                	{
-                		// TODO Methode, um zu prüfen wo meine Blöcke sind und wo ich clearen muss
-                		Vector2D blockPosition = this.nextAgentStatus.GetAttachedElements().iterator().next(); // erster
-                		Vector2D nextRotateDirection = NextAgentUtil.GetNextToRotateDirection(blockPosition, direction);
-            			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + nextRotateDirection.x),new Identifier("" + nextRotateDirection.y)));             			
+                	else {
+                		// mehrere Blöcke
+                	}
+					
 
-            			// Clear nicht erfolgreich, randomstep
-            			
-            			if (this.nextAgentStatus.GetLastAction().contains("clear") && this.nextAgentStatus.GetLastActionResult().contains("fail"))
-            			{
-            				Iterator<Action> posIt = possibleActions.iterator();
-            				if(posIt.hasNext()) {
-            					possibleActions.add(NextAgentUtil.GenerateMoveWithDirection(posIt.next().toString()));            					
-            				} else {
-            					possibleActions.add(generateDefaultAction());
-            				}
-            			}           			
-            			
-            			
+					String direction = NextAgentUtil.RotateInWhichDirection(nextAgentStatus.GetAttachedElementsVector2D(),
+							nextAgent.GetActiveTask().GetRequiredBlocks());
+					// Block nicht korrekt gedreht Prüfen zu rotieren
+					if (NextAgentUtil.IsRotationPossible(nextAgentStatus, direction)) {
+						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier(direction)));
+					} else if (NextAgentUtil.IsRotationPossible(nextAgentStatus,
+							NextAgentUtil.GetOtherRotation(direction))) {
+						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate,
+								new Identifier(NextAgentUtil.GetOtherRotation(direction))));
+					} else {
+						
+						// TODO Methode, um zu prüfen wo meine Blöcke sind und wo ich clearen muss
+						Vector2D blockPosition = this.nextAgentStatus.GetAttachedElementsVector2D().iterator().next(); // erster
+						Vector2D nextRotateDirection = NextAgentUtil.GetNextToRotateDirection(blockPosition, direction);
+						possibleActions.add(NextActionWrapper.CreateAction(EActions.clear,
+								new Identifier("" + nextRotateDirection.x),
+								new Identifier("" + nextRotateDirection.y)));
+
+						// Clear nicht erfolgreich, randomstep
+
+						if (this.nextAgentStatus.GetLastAction().contains("clear")
+								&& this.nextAgentStatus.GetLastActionResult().contains("fail")) {
+							Iterator<Action> posIt = possibleActions.iterator();
+							if (posIt.hasNext()) {
+								possibleActions.add(NextAgentUtil.GenerateMoveWithDirection(posIt.next().toString()));
+							} else {
+								possibleActions.add(generateDefaultAction());
+							}
+						}
+
 //                		if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetVisibleThings(), new Vector2D(1,0))) // e
 //                		{
 //                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + 1),new Identifier("" + 0)));             			
@@ -168,171 +202,167 @@ public class NextIntention {
 //                		{
 //                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + 0),new Identifier("" + -1)));             			
 //                		}
-                	}
-                }
-                this.nextAgent.ClearPathMemory();
-            }
-        }
-    }
+					}
+				}
+				this.nextAgent.ClearPathMemory();
+			}
+		}
+	}
 
-    private Action generateDefaultAction() {
-        Action nextMove = NextAgentUtil.GenerateRandomMove();
-        return nextMove;
-    }
+	private void detachUnusedBlocks() {
+		NextTask nextTask = nextAgent.GetActiveTask();
+		// Blöcke loswerden, die nicht zu meinem aktuellen Task passen
+		if(nextTask != null && nextAgentStatus.GetAttachedElementsAmount() > 0)
+    	{
+    		Iterator<NextMapTile> attachedElementsIt = nextAgentStatus.GetAttachedElementsNextMapTiles().iterator();
+    		while(attachedElementsIt.hasNext()) {
+    			NextMapTile nextAttachElement = attachedElementsIt.next();
+    			Iterator<NextMapTile> nextBlocksIt = nextTask.GetRequiredBlocks().iterator();
+    			while(nextBlocksIt.hasNext())
+    			{
+    				NextMapTile nextBlockTile = nextBlocksIt.next();
+    				if(!nextAttachElement.getThingType().contains(nextBlockTile.getThingType()))
+    				{
+    					possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(NextAgentUtil.ConvertVector2DToECardinals(nextAttachElement.GetPosition()).toString())));
+    					this.nextAgent.ClearPathMemory();
+    					break;
+    				}    				
+    			}
+    		}
+    	}
+	}
 
-    public void GeneratePathMemory() {
-        NextPlan plan = nextAgent.GetAgentPlan();
-        NextMap map = this.nextAgent.GetMap();
+	private Action generateDefaultAction() {
+		Action nextMove = NextAgentUtil.GenerateRandomMove();
+		return nextMove;
+	}
 
-        nextAgent.SetAgentTask(plan.GetAgentTask());
+	public void GeneratePathMemory() {
+		NextPlan plan = nextAgent.GetAgentPlan();
+		NextMap map = this.nextAgent.GetMap();
 
-        System.out.println("-------------------------Aktueller Weg: " + plan.GetAgentTask());
-        // Move to..
-        switch (plan.GetAgentTask()) {
-            case surveyDispenser:
-                survey("dispenser");
-                break;
-            case surveyGoalZone:
-                survey("goal");
-                break;
-            case surveyRoleZone:
-                survey("role");
-                break;
-            case goToDispenser:
-                // Only new pathMemory, if the current Path is empty
-                if (this.nextAgent.GetPathMemory().isEmpty()) {
+		nextAgent.SetAgentTask(plan.GetAgentTask());
 
-                    Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(
-                            map.GetDispensers(),
-                            ((NextPlanDispenser) plan).GetDispenser().getThingType()
-                    );
-                    this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
-                        possibleActions.add(generateDefaultAction()); //fallback
-                    }
-                }
-                break;
-            case goToGoalzone:
-                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
-                    this.nextAgent.SetPathMemory(
-                            this.nextAgent.CalculatePath(
-                                    NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())
-                            )
-                    );
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
-                        possibleActions.add(generateDefaultAction()); //fallback
-                    }
-                }
-                break;
-            case goToRolezone:
-                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
-                    this.nextAgent.SetPathMemory(
-                            this.nextAgent.CalculatePath(
-                                    NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())
-                            )
-                    );
-                    if (this.nextAgent.GetPathMemory().size() == 0) {
-                        possibleActions.add(generateDefaultAction()); //fallback
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    
-    private void survey(String type)
-    {
-    	if (this.nextAgent.GetPathMemory().isEmpty()) {
-        	if(this.nextAgentStatus.IsLastSpecificActionSuccess(type, "survey"))
-        	{
-        		if(this.nextAgentStatus.GetSurveyedThings().iterator().hasNext())
-        		{
-        			int distance = this.nextAgentStatus.GetSurveyedThings().iterator().next().GetDistance();
-        			if(surveySteps == 0)
-        			{
-        				//erstes Abtasten
-        				possibleActions.add(NextAgentUtil.GenerateNorthMove());
-        				lastDirection = "n";	
-	        			surveySteps++;
-        			}
-        			else if(surveySteps == 1)
-        			{
-        				// north or south
-        				if(distance > lastSurveyedDistance)
-	        			{
-	        				lastDirection = "s";
-	        			}
-        				possibleActions.add(NextAgentUtil.GenerateEastMove());	
-	        			surveySteps++;	        				
-        			} else if(surveySteps == 2)
-        			{
-        				// north or south
-        				if(distance < lastSurveyedDistance)
-	        			{
-	        				lastDirection += "e";
-	        			}
-        				else {
-        					lastDirection += "w";
-        				}
-        				// Weg in Richtung des Dispensers
-    	                this.nextAgent.SetPathMemory(
-    	                		this.nextAgent.CalculatePath(NextAgentUtil.RandomPointInDirection(lastDirection, this.nextAgent.GetPosition(), distance))
-    	                );
-	        			surveySteps = 0;
-        			}
-        			lastSurveyedDistance = distance;
-        		}
-        	}
-        	else 
-        	{            		
-        		possibleActions.add(NextAgentUtil.GenerateSurveyThingAction(type));
-        	}
-        }
-    }
+//        System.out.println("-------------------------Aktueller Weg: " + plan.GetAgentTask());
+		// Move to..
+		switch (plan.GetAgentTask()) {
+		case surveyDispenser:
+			survey("dispenser");
+			break;
+		case surveyGoalZone:
+			survey("goal");
+			break;
+		case surveyRoleZone:
+			survey("role");
+			break;
+		case goToDispenser:
+			// Only new pathMemory, if the current Path is empty
+			if (this.nextAgent.GetPathMemory().isEmpty()) {
 
-    public void ResetAfterTaskChange(NextTask newTask) {
-    	possibleActions.clear();
-    	lastSurveyedDistance = 0;
+				Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
+						((NextPlanDispenser) plan).GetDispenser().getThingType());
+				this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
+				}
+			}
+			break;
+		case goToGoalzone:
+			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+				this.nextAgent.SetPathMemory(this.nextAgent
+						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
+				}
+			}
+			break;
+		case goToRolezone:
+			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+				this.nextAgent.SetPathMemory(this.nextAgent
+						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
 
-    	// TODO Kann ich meine Blöcke wiederverwenden?
-//    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
-//    	{
-//    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
-//    				NextAgentUtil.GetDirection(new Vector2D(nextAgentStatus.GetAttachedElements().iterator().next().x, nextAgentStatus.GetAttachedElements().iterator().next().y)
-//    		)));
-//    	}
-    }
+	private void survey(String type) {
+		if (this.nextAgent.GetPathMemory().isEmpty()) {
+			if (this.nextAgentStatus.IsLastSpecificActionSuccess(type, "survey")) {
+				if (this.nextAgentStatus.GetSurveyedThings().iterator().hasNext()) {
+					int distance = this.nextAgentStatus.GetSurveyedThings().iterator().next().GetDistance();
+					if (surveySteps == 0) {
+						// erstes Abtasten
+						possibleActions.add(NextAgentUtil.GenerateNorthMove());
+						lastDirection = "n";
+						surveySteps++;
+					} else if (surveySteps == 1) {
+						// north or south
+						if (distance > lastSurveyedDistance) {
+							lastDirection = "s";
+						}
+						possibleActions.add(NextAgentUtil.GenerateEastMove());
+						surveySteps++;
+					} else if (surveySteps == 2) {
+						// north or south
+						if (distance < lastSurveyedDistance) {
+							lastDirection += "e";
+						} else {
+							lastDirection += "w";
+						}
+						// Weg in Richtung des Dispensers
+						this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(NextAgentUtil
+								.RandomPointInDirection(lastDirection, this.nextAgent.GetPosition(), distance)));
+						surveySteps = 0;
+					}
+					lastSurveyedDistance = distance;
+				}
+			} else {
+				possibleActions.add(NextAgentUtil.GenerateSurveyThingAction(type));
+			}
+		}
+	}
 
-    /**
-     * Beispiel für Rollenwechsel
-     */
-    private void exampleRoleChangeAction() {
-        NextRole roleToChangeTo = null;
+	public void ResetAfterTaskChange(NextTask newTask) {
+		possibleActions.clear();
+		lastSurveyedDistance = 0;
+		nextAgent.ClearPathMemory();
+	}
 
-        // Initialise a RoleChange if in RoleZone
-        if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(this.nextAgentStatus.GetRoleZones())) {
-            // desiredActions - have to be filled in Desires processing
-            // roleToChangeTo - should be selected in Desires processing
-            HashSet<NextConstants.EActions> desiredActions = new HashSet<>();
-            desiredActions.add(NextConstants.EActions.attach);
-            desiredActions.add(NextConstants.EActions.request);
-            desiredActions.add(NextConstants.EActions.submit);
-            try {
-                roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions, nextAgent.getSimulationStatus().GetRolesList());
-            } catch (Exception e) {
-                System.out.println(e.toString());
-            }
+	/**
+	 * Beispiel für Rollenwechsel
+	 */
+	private void exampleRoleChangeAction() {
+		NextRole roleToChangeTo = null;
 
-            if (roleToChangeTo != null) {
-                if (!roleToChangeTo.GetName().equals(nextAgentStatus.GetRole())) {
-                    possibleActions.add(NextAgentUtil.GenerateRoleChangeAction(roleToChangeTo.GetName()));
-                }
-            }
-        }
-    }
+		// Initialise a RoleChange if in RoleZone
+		if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(this.nextAgentStatus.GetRoleZones())) {
+			// desiredActions - have to be filled in Desires processing
+			// roleToChangeTo - should be selected in Desires processing
+			HashSet<NextConstants.EActions> desiredActions = new HashSet<>();
+			desiredActions.add(NextConstants.EActions.attach);
+			desiredActions.add(NextConstants.EActions.request);
+			desiredActions.add(NextConstants.EActions.submit);
+			try {
+				roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions,
+						nextAgent.getSimulationStatus().GetRolesList());
+			} catch (Exception e) {
+				System.out.println(e.toString());
+			}
 
-    public void ClearPossibleActions() {
-        possibleActions.clear();
-    }
+			if (roleToChangeTo != null) {
+				if (!roleToChangeTo.GetName().equals(nextAgentStatus.GetRole())) {
+					possibleActions.add(NextAgentUtil.GenerateRoleChangeAction(roleToChangeTo.GetName()));
+				}
+			}
+		}
+	}
+
+	public void ClearPossibleActions() {
+		possibleActions.clear();
+	}
 }

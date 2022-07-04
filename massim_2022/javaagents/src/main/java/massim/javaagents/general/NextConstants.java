@@ -45,6 +45,7 @@ public final class NextConstants {
             put("submit", 10);
             put("attach", 20);
             put("request", 30);
+            put("clear", 36);
             put("adopt", 37);
             put("rotate", 38);
             put("dodge", 39);
@@ -53,7 +54,6 @@ public final class NextConstants {
             put("connect", 70);
             put("survey", 80);
             put("disconnect", 100);
-            put("clear", 110);
             put("skip", 1000);
         }
     };
