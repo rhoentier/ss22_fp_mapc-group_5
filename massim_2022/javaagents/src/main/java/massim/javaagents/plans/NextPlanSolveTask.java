@@ -17,14 +17,16 @@ import java.util.stream.Collectors;
 public class NextPlanSolveTask extends NextPlan {
 
     private NextTask task;
-    // TODO Hier sollte noch berechnet werden, wie viele Punkte geholt werden könne
+    private int estimatedStepsToSolveTask = 0;
     private int maxPossibleProfit = 0;
-    // TODO Hier sollte noch berechnet werden, wie viele Punkte pro Schritt erreicht werden können
     private float utilization = 0;
     private int carryableBlocks = 0;
     private boolean isPreconditionFulfilled = false;
     private boolean isDeadlineFulfillable = true;
     private String taskName;
+
+    private int failOffest = 2;
+    private int failStatus = 0;
 
 
     public NextPlanSolveTask(NextTask task, NextAgent agent) {
@@ -59,6 +61,7 @@ public class NextPlanSolveTask extends NextPlan {
             sumOfShortestWays += shortestWayFromDispenserToGoalZone;
         }
         if (sumOfShortestWays > 0) {
+            estimatedStepsToSolveTask = sumOfShortestWays;
             setMaxPossibleProfit(sumOfShortestWays);
             setUtilization(sumOfShortestWays);
         }
@@ -97,7 +100,7 @@ public class NextPlanSolveTask extends NextPlan {
      */
     public boolean IsPreconditionFulfilled() {
         // Fix for Task with two or more blocks
-        if(task.GetRequiredBlocks().size() > 1) return false;
+        if (task.GetRequiredBlocks().size() > 1) return false;
         return isPreconditionFulfilled;
     }
 
@@ -107,6 +110,20 @@ public class NextPlanSolveTask extends NextPlan {
     public void CheckIfPreConditionIsFulfilled() {
         HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
+    }
+
+    /**
+     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
+     */
+    public void CheckIfDeadlineIsReached() {
+        if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(taskName))
+            failStatus += 1;
+        else if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(taskName))
+            failStatus = 0;
+
+        if (failStatus == failOffest) isDeadlineFulfillable = false;
+        int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
+        if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
     }
 
     /**
@@ -124,20 +141,16 @@ public class NextPlanSolveTask extends NextPlan {
 
 
     /**
-     * Erzeugt je nach Anzahl der zu tragenden Blöcke eine List mit subplans
+     * Erzeugt eine Liste mit subPlans - Hier werden zuerst alle Dispenser abgegangen und dann zur Zielzone
      */
     @Override
     public void CreateSubPlans() {
-        // TODO: Hier später noch implementieren, wenn mehrere Blöcke getragen werden können
-        switch (carryableBlocks) {
-            default -> {
-                HashSet<NextMapTile> requiredBlocks = task.GetRequiredBlocks();
-                for (NextMapTile block : requiredBlocks) {
-                    subPlans.add(new NextPlanDispenser(block));
-                    subPlans.add(new NextPlanGoalZone(block.GetPosition()));
-                }
-            }
+        // TODO: Einbauen, dass der Agent evtl. die Rolle wechseln muss
+        HashSet<NextMapTile> requiredBlocks = task.GetRequiredBlocks();
+        for (NextMapTile block : requiredBlocks) {
+            subPlans.add(new NextPlanDispenser(block));
         }
+        subPlans.add(new NextPlanGoalZone());
     }
 
     /**
@@ -163,16 +176,14 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     /**
-     * Prüft, ob die Deadline für die Aufgabe bereits erreicht oder überschritten wurde
-     *
-     * @return true, falls die Deadline erreicht wurde
+     * @return Kann Task noch in der zur Verfügung stehenden Zeit gelöst werden
      */
-    public boolean IsDeadlineReached() {
-        if (agent.getSimulationStatus().GetCurrentStep() >= (int) task.GetDeadline()) return true;
-        return false;
+    public boolean IsDeadlineFulfillable() {
+        return isDeadlineFulfillable;
     }
 
     public void UpdateInternalBelief() {
+        CheckIfDeadlineIsReached();
         CheckIfPreConditionIsFulfilled();
         if (CheckIfTaskIsFulfilled()) return;
         for (Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext(); ) {
