@@ -244,7 +244,7 @@ public class NextPerceptReader {
         fullLocalView.addAll(processedObstacles);
         agentStatus.SetVision(processedThings); //
         agentStatus.SetObstacles(processedObstacles);
-        agentStatus.setFullLocalView(fullLocalView);
+        agentStatus.SetFullLocalView(fullLocalView);
 
         //Process remaining Datasets
         

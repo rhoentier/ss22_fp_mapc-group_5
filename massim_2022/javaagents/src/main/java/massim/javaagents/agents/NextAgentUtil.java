@@ -51,6 +51,10 @@ public final class NextAgentUtil {
     public static Action GenerateMoveWithDirection(ECardinals direction) {
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(direction.toString()));
     }
+    
+    public static Action GenerateMoveWithDirection(String direction) {
+        return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(direction));
+    }
 
     /**
      * Reports, if a Thing is next to the Agent
@@ -125,7 +129,8 @@ public final class NextAgentUtil {
      * @return
      */
     public static boolean IsRotationPossible(NextAgentStatus agentStatus, String direction) {
-        HashSet<NextMapTile> visibleThings = agentStatus.GetVisibleThings();
+        //HashSet<NextMapTile> visibleThings = agentStatus.GetVisibleThings();
+        HashSet<NextMapTile> visibleThings = agentStatus.GetFullLocalView();
 
         HashSet<Vector2D> attachedElements = agentStatus.GetAttachedElements();
 
@@ -153,7 +158,7 @@ public final class NextAgentUtil {
     }
 
     public static boolean HasFreeSlots(NextAgentStatus agentStatus) {
-        return agentStatus.GetAttachedElementsAmount() <= ATTACHED_ELEMENTS;
+        return agentStatus.GetAttachedElementsAmount() < ATTACHED_ELEMENTS;
     }
 
     /**
@@ -764,7 +769,7 @@ public final class NextAgentUtil {
 			if(requiredBlocks.size() == 1)
 			{
 				Vector2D requiredBlock = requiredBlocks.iterator().next().GetPosition();
-				if(requiredBlock.getRotatedCCW().equals(blockPosition)) result = "ccw";
+				if(blockPosition.getRotatedCCW().equals(requiredBlock)) result = "ccw";
 				else result = "cw";
 			}
 			else 

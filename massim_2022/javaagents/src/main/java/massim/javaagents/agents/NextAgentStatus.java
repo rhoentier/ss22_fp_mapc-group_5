@@ -268,11 +268,11 @@ public class NextAgentStatus {
         this.dispenser = dispenser;
     }
 
-    public HashSet<NextMapTile> getFullLocalView() {
+    public HashSet<NextMapTile> GetFullLocalView() {
         return fullLocalView;
     }
 
-    public void setFullLocalView(HashSet<NextMapTile> fullLocalView) {
+    public void SetFullLocalView(HashSet<NextMapTile> fullLocalView) {
         this.fullLocalView = fullLocalView;
     }
     
@@ -289,7 +289,13 @@ public class NextAgentStatus {
 
     }
     
-    public boolean IsLastSpecificActionSucess(String lastActionParams, String lastAction)
+    /**
+     * 
+     * @param lastActionParams e.g. dispenser, goal, role
+     * @param lastAction e.g. survey, clear, move
+     * @return
+     */
+    public boolean IsLastSpecificActionSuccess(String lastActionParams, String lastAction)
     {
     	return this.lastActionResult.contains("success") 
     			&& this.lastActionParams.contains(lastActionParams)
