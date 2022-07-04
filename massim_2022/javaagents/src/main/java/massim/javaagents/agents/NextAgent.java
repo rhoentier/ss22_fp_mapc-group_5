@@ -347,7 +347,11 @@ public class NextAgent extends Agent {
         		} 
         		else if(thing.getThingType().contains("entity"))
         		{
-        			nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.GetOppositeDirection(ECardinals.valueOf(direction)).toString()));
+        			nextAction = new NextRandomPath().GenerateNextMove();
+        			//nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.GetOppositeDirection(ECardinals.valueOf(direction)).toString()));
+        		}
+        		else {
+            		nextAction = pathMemory.remove(0);
         		}
         	} 
         	else 
@@ -394,6 +398,7 @@ public class NextAgent extends Agent {
             	}
         	}
         }
+        //if(nextAction.getName().contains("skip")) nextAction = new NextRandomPath().GenerateNextMove();
         say(nextAction.toProlog());
         return nextAction;
     }
@@ -425,6 +430,10 @@ public class NextAgent extends Agent {
         this.setPercepts(new ArrayList<>(), this.getPercepts());
         this.pathMemory = new ArrayList<>();
         this.map = new NextMap(this);
+        this.activeTask = null;
+        //this.agentActivity = EAgentActivity.exploreMap;
+        this.agentPlan = null;
+        this.taskPlanner = new NextTaskPlanner(this);
         //this.roleToChangeTo=null;
     }
 

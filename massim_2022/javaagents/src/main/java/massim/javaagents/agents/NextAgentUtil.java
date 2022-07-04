@@ -28,6 +28,7 @@ public final class NextAgentUtil {
     }
 
     public static int GenerateRandomNumber(int range) {
+    	if(range <= 0) range = 1;
         Random rn = new Random();
         return rn.nextInt(range);
     }
@@ -326,7 +327,7 @@ public final class NextAgentUtil {
      * @return Vector2D Position of nearest Zone
      */
     public static Vector2D GetNearestZone(Vector2D agentPosition, HashSet<NextMapTile> zone) {
-        int smallestDistance = 0;
+        int smallestDistance = 1000;
         Iterator<NextMapTile> it = zone.iterator();
         Vector2D result = new Vector2D();
 
@@ -814,5 +815,47 @@ public final class NextAgentUtil {
 		if(direction.equals("cw")) rotateTo.rotateCW(); 
 		else rotateTo.rotateCCW();
 		return rotateTo;
+	}
+	
+	public static Boolean IsAnotherAgentInFrontOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView, Vector2D nextAgentPosition)
+	{
+		for(NextMapTile tile : localView)
+		{	
+			if(tile.getThingType().contains("entity")) {
+				Vector2D newBlockPosition = new Vector2D(blockPosition);
+				newBlockPosition.add(new Vector2D(0, -1)); //n
+				if(!tile.GetPosition().equals(new Vector2D(0,0))
+						&& tile.GetPosition().equals(newBlockPosition) 
+						&& tile.getThingType().contains("entity"))
+				{
+					return true;
+				}
+				newBlockPosition = new Vector2D(blockPosition);
+				newBlockPosition.add(new Vector2D(1, 0)); //e
+				if(!tile.GetPosition().equals(new Vector2D(0,0))
+						&& tile.GetPosition().equals(newBlockPosition) 
+						&& tile.getThingType().contains("entity"))
+				{
+					return true;
+				}
+				newBlockPosition = new Vector2D(blockPosition);
+				newBlockPosition.add(new Vector2D(0, 1)); //s
+				if(!tile.GetPosition().equals(new Vector2D(0,0))
+						&& tile.GetPosition().equals(newBlockPosition) 
+						&& tile.getThingType().contains("entity"))
+				{
+					return true;
+				} 
+				newBlockPosition = new Vector2D(blockPosition);
+				newBlockPosition.add(new Vector2D(-1, 0)); //w
+				if(!tile.GetPosition().equals(new Vector2D(0,0))
+						&& tile.GetPosition().equals(newBlockPosition) 
+						&& tile.getThingType().contains("entity"))
+				{
+					return true;
+				}
+			}
+		}		
+		return false;
 	}
 }

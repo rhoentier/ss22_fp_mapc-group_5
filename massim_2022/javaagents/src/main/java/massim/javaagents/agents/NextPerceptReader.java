@@ -426,10 +426,15 @@ public class NextPerceptReader {
     
     private HashSet<NextMapTile> updateAttachedSetMapTile() {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
-        Iterator<NextMapTile> thingsIt = processThingsSet().iterator();
-        while(thingsIt.hasNext()) {
-        	NextMapTile nextThing = thingsIt.next();
-        	if(nextThing.getThingType().contains("block")) processedAttachedSet.add(nextThing);
+        for(NextMapTile tile : processThingsSet())
+        {
+        	if(tile.getThingType().contains("block")) 
+    		{
+        		for(Vector2D attachedSet : processAttachedSet())
+        		{
+        			if(attachedSet.equals(tile.GetPosition())) processedAttachedSet.add(tile);
+        		}        		
+    		}
         }
         return processedAttachedSet;
     }

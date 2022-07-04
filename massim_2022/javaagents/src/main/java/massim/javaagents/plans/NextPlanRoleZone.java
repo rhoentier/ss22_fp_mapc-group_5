@@ -15,7 +15,7 @@ public class NextPlanRoleZone extends NextPlan {
      */
     @Override
     public void CreateSubPlans() {
-        if (agent.GetMap().GetRoleZones().isEmpty())
+        if (agent != null && agent.GetMap().GetRoleZones().isEmpty())
             subPlans.add(new NextPlanSurveyRoleZone());
     }
 

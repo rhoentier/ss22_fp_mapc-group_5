@@ -1,5 +1,7 @@
 package massim.javaagents.map;
 
+import java.util.Objects;
+
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
@@ -154,5 +156,15 @@ public class NextMapTile {
     @Override
     public NextMapTile clone() {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.positionX);
+        hash = 61 * hash + Objects.hashCode(this.positionY);
+        hash = 61 * hash + Objects.hashCode(this.isAThing);
+        hash = 61 * hash + Objects.hashCode(this.thingType);
+        return hash;
     }
 }

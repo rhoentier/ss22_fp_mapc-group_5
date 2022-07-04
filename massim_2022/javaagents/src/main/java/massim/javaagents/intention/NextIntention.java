@@ -95,6 +95,7 @@ public class NextIntention {
 			if (visibleThing.getThingType().contains("dispenser") 
 					&& this.nextAgent.GetActiveTask() != null
 					&& NextAgentUtil.NextToUsingLocalView(position, nextAgent)
+					&& !NextAgentUtil.IsAnotherAgentInFrontOfBlock(position, this.nextAgentStatus.GetFullLocalView(), this.nextAgent.GetPosition())
 					&& NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask().GetRequiredBlocks(), visibleThing.getThingType())
 					&& this.nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
 
@@ -111,6 +112,7 @@ public class NextIntention {
 					&& this.nextAgent.GetActiveTask() != null
 					&& NextAgentUtil.NextToUsingLocalView(position, this.nextAgent)
 					&& NextAgentUtil.HasFreeSlots(nextAgentStatus)
+					&& !NextAgentUtil.IsAnotherAgentInFrontOfBlock(position, this.nextAgentStatus.GetFullLocalView(), this.nextAgent.GetPosition())
 					&& NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask().GetRequiredBlocks(), visibleThing.getThingType())
 					&& nextAgent.GetAgentTask() == EAgentActivity.goToDispenser) {
 //                System.out.println("Action - Attach");
@@ -137,72 +139,47 @@ public class NextIntention {
                 		if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetFullLocalView(), requiredBlockPosition))
                 		{
                 			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, 
-                					new Identifier("" + oppositeBlockPosition.x),
-                					new Identifier("" + oppositeBlockPosition.y))
-                					);                  			
+        					new Identifier("" + oppositeBlockPosition.x),
+        					new Identifier("" + oppositeBlockPosition.y))
+        					);                  			
                 		}
-                		
-                		
-                		
-//                		ECardinals getOppositeDirection = NextAgentUtil.ConvertVector2DToECardinals(NextAgentUtil.GetOppositeVector(blockPosition));
-//                		if(visibleThing.GetPosition().equals(blockPosition) 
-//                				&& NextAgentUtil.IsNextStepPossible(getOppositeDirection, nextAgentStatus.GetAttachedElementsVector2D(), nextAgentStatus.GetObstacles()))
-//                		{
-//                            possibleActions.add(NextActionWrapper.CreateAction(EActions.move, new Identifier(getOppositeDirection.toString())));                			
-//                		}
+                		else 
+                		{
+        					String direction = NextAgentUtil.RotateInWhichDirection(nextAgentStatus.GetAttachedElementsVector2D(),
+        							nextAgent.GetActiveTask().GetRequiredBlocks());
+        					// Block nicht korrekt gedreht Prüfen zu rotieren
+        					if (NextAgentUtil.IsRotationPossible(nextAgentStatus, direction)) {
+        						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier(direction)));
+        					} else if (NextAgentUtil.IsRotationPossible(nextAgentStatus,
+        							NextAgentUtil.GetOtherRotation(direction))) {
+        						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate,
+        								new Identifier(NextAgentUtil.GetOtherRotation(direction))));
+        					} else {
+        						
+        						// TODO Methode, um zu prüfen wo meine Blöcke sind und wo ich clearen muss
+        						Vector2D nextRotateDirection = NextAgentUtil.GetNextToRotateDirection(blockPosition, direction);
+        						possibleActions.add(NextActionWrapper.CreateAction(EActions.clear,
+        								new Identifier("" + nextRotateDirection.x),
+        								new Identifier("" + nextRotateDirection.y)));
+
+        						// Clear nicht erfolgreich, randomstep
+
+        						if (this.nextAgentStatus.GetLastAction().contains("clear")
+        								&& this.nextAgentStatus.GetLastActionResult().contains("fail")) {
+        							Iterator<Action> posIt = possibleActions.iterator();
+        							if (posIt.hasNext()) {
+        								possibleActions.add(NextAgentUtil.GenerateMoveWithDirection(posIt.next().toString()));
+        							} else {
+        								possibleActions.add(generateDefaultAction());
+        							}
+        						}
+        					}
+                		}
                 	}
                 	else {
                 		// mehrere Blöcke
-                	}
-					
+                	}					
 
-					String direction = NextAgentUtil.RotateInWhichDirection(nextAgentStatus.GetAttachedElementsVector2D(),
-							nextAgent.GetActiveTask().GetRequiredBlocks());
-					// Block nicht korrekt gedreht Prüfen zu rotieren
-					if (NextAgentUtil.IsRotationPossible(nextAgentStatus, direction)) {
-						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate, new Identifier(direction)));
-					} else if (NextAgentUtil.IsRotationPossible(nextAgentStatus,
-							NextAgentUtil.GetOtherRotation(direction))) {
-						possibleActions.add(NextActionWrapper.CreateAction(EActions.rotate,
-								new Identifier(NextAgentUtil.GetOtherRotation(direction))));
-					} else {
-						
-						// TODO Methode, um zu prüfen wo meine Blöcke sind und wo ich clearen muss
-						Vector2D blockPosition = this.nextAgentStatus.GetAttachedElementsVector2D().iterator().next(); // erster
-						Vector2D nextRotateDirection = NextAgentUtil.GetNextToRotateDirection(blockPosition, direction);
-						possibleActions.add(NextActionWrapper.CreateAction(EActions.clear,
-								new Identifier("" + nextRotateDirection.x),
-								new Identifier("" + nextRotateDirection.y)));
-
-						// Clear nicht erfolgreich, randomstep
-
-						if (this.nextAgentStatus.GetLastAction().contains("clear")
-								&& this.nextAgentStatus.GetLastActionResult().contains("fail")) {
-							Iterator<Action> posIt = possibleActions.iterator();
-							if (posIt.hasNext()) {
-								possibleActions.add(NextAgentUtil.GenerateMoveWithDirection(posIt.next().toString()));
-							} else {
-								possibleActions.add(generateDefaultAction());
-							}
-						}
-
-//                		if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetVisibleThings(), new Vector2D(1,0))) // e
-//                		{
-//                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + 1),new Identifier("" + 0)));             			
-//                		}
-//                		else if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetVisibleThings(), new Vector2D(0,1))) // s
-//                		{
-//                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + 0),new Identifier("" + 1)));             			
-//                		}
-//                		else if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetVisibleThings(), new Vector2D(-1,0))) // w
-//                		{
-//                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + -1),new Identifier("" + 0)));             			
-//                		}
-//                		else if(NextAgentUtil.IsObstacleInPosition(this.nextAgentStatus.GetVisibleThings(), new Vector2D(0,-1))) // n
-//                		{
-//                			possibleActions.add(NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + 0),new Identifier("" + -1)));             			
-//                		}
-					}
 				}
 				this.nextAgent.ClearPathMemory();
 			}
@@ -214,21 +191,18 @@ public class NextIntention {
 		// Blöcke loswerden, die nicht zu meinem aktuellen Task passen
 		if(nextTask != null && nextAgentStatus.GetAttachedElementsAmount() > 0)
     	{
-    		Iterator<NextMapTile> attachedElementsIt = nextAgentStatus.GetAttachedElementsNextMapTiles().iterator();
-    		while(attachedElementsIt.hasNext()) {
-    			NextMapTile nextAttachElement = attachedElementsIt.next();
-    			Iterator<NextMapTile> nextBlocksIt = nextTask.GetRequiredBlocks().iterator();
-    			while(nextBlocksIt.hasNext())
-    			{
-    				NextMapTile nextBlockTile = nextBlocksIt.next();
-    				if(!nextAttachElement.getThingType().contains(nextBlockTile.getThingType()))
+			for(NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles())
+			{
+				for(NextMapTile block : nextTask.GetRequiredBlocks())
+				{
+					if(!attachedElement.getThingType().contains(block.getThingType()))
     				{
-    					possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(NextAgentUtil.ConvertVector2DToECardinals(nextAttachElement.GetPosition()).toString())));
+    					possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(NextAgentUtil.ConvertVector2DToECardinals(attachedElement.GetPosition()).toString())));
     					this.nextAgent.ClearPathMemory();
     					break;
-    				}    				
-    			}
-    		}
+    				} 
+				}
+			}
     	}
 	}
 
