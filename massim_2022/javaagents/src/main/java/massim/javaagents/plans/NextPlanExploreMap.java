@@ -38,7 +38,7 @@ public class NextPlanExploreMap extends NextPlan {
         for(Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext();){
             NextPlan subPlan = subPlanIterator.next();
             if (subPlan instanceof NextPlanSurveyGoalZone){
-                if (!agent.GetMap().GetDispensers().isEmpty()) subPlanIterator.remove();
+                if (!agent.GetMap().GetGoalZones().isEmpty()) subPlanIterator.remove();
                 continue;
             }
             String blockType = ((NextPlanSurveyDispenser) subPlan).GetWantedMapTile().getThingType();
