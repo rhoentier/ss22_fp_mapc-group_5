@@ -617,12 +617,12 @@ public class NextAgent extends Agent {
                 }
             }
             // Reset of Data Storage after the current simulation is finished
-            if (percept.getName().equals("simEnd")) {
+            if (percept.getName().contains("simEnd")) {
                 processor.evaluate(getPercepts(), this);
                 finishTheSimulation();
             }
             //Stop processing after last Simulation
-            if (percept.getName().equals("bye")) {
+            if (percept.getName().contains("bye")) {
                 //disableAgent(); //---- closing the window is disabled to keep the logdata visible.
             }
         }
