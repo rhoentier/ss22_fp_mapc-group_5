@@ -107,8 +107,8 @@ public class NextGroup {
             this.addAgent(agentToAdd);
             agentToAdd.say("OldPosition: " + agentToAdd.GetPosition());
             agentToAdd.say("Offset: " + offset);
-            //this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getSubtracted(offset));
-            this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getAdded(offset));
+            this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getSubtracted(offset));
+            //this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getAdded(offset));
             agentToAdd.SetAgentGroup(this);
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
