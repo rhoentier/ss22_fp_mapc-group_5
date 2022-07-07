@@ -163,7 +163,8 @@ public class NextGroup {
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
-        this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
+        return;
+        //this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
     }
 
     @Override

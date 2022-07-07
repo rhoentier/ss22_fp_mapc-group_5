@@ -467,7 +467,14 @@ public class NextMap {
     
     public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
 
-        // Not yet implemented
+        NextMapTile newMapTile;
+        for (int i = 0; i < mapToAdd.map.length; i++) {
+            for (int j = 0; j < mapToAdd.map[i].length; j++) {
+                newMapTile = mapToAdd.map[i][j].Clone();
+                newMapTile.MovePosition(offset);
+                mapToKeep.setMapTile(newMapTile);
+            }
+        }
         return mapToKeep;
     }
 }
