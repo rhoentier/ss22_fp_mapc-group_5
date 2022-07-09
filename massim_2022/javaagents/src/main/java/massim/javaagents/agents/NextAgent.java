@@ -194,6 +194,7 @@ public class NextAgent extends Agent {
         }
         
         if (lastID > 3) {
+        if (lastID > 3) {   // ToDo: >= ?
             // Check if friendly Agents are visible and join them to groups
             processFriendlyAgents();
             processGroupJoinMessages();

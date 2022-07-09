@@ -49,6 +49,14 @@ public class NextMapTile {
         this.thingType = "";
     }
 
+    public NextMapTile(Vector2D position, Integer lastStepObserved, String thingType) {
+        this.positionX = position.x;
+        this.positionY = position.y;
+        this.lastVisionStep = lastStepObserved;
+        this.isAThing = true;
+        this.thingType = thingType;
+
+    }
     public Boolean getIsAThing() {
         return isAThing;
     }
