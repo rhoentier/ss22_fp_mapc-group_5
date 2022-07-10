@@ -13,7 +13,7 @@ import massim.javaagents.MailService;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EActions;
-import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.general.NextConstants.EAgentActivity;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextTaskPlanner;
@@ -79,7 +79,8 @@ public class NextAgent extends Agent {
 
     // Tasks
     private NextTask activeTask = null;
-    private EAgentTask agentActivity;       //agentTask zu agentActivity gewandelt, da Verwechslungsgefahr
+    private EAgentActivity agentActivity; 
+    private NextPlan agentPlan;
 
     /*
      * ##################### endregion fields
@@ -95,9 +96,9 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();
-        PathfindingConfig.ParseConfig("conf/NextAgents");
+        //PathfindingConfig.ParseConfig("conf/NextAgents");
 
-        this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
+        //this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
 
         this.processor = new NextPerceptReader(this);
@@ -214,16 +215,40 @@ public class NextAgent extends Agent {
             clearPossibleActions();
 
             // new path
+            
+            NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
+            if(nextPlan != null)
+            {
+                NextTask nextTask = taskPlanner.GetCurrentTask();
+                // Neuen Task nur setzen, wenn sich der Task verändert hat.
+                if(nextTask != null) 
+            	{
+                	if(this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName()))
+                	{
+                		intention.ResetAfterTaskChange(nextTask);
+                		SetActiveTask(nextTask);
+                	}
+            	}
+            	SetAgentPlan(nextPlan);
+            }
+            
             generatePathMemory();
 
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
             this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
-            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+            
+            if(this.agentActivity != null){
+                System.out.println("Agent " + this.getName() + " AgentActivity:" + agentActivity.toString());
+            }
+            if(this.activeTask != null){
+                System.out.println("ActiveTask :" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
+            }
 
-            return selectNextAction();
-
+            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms" );
+            Action nextAction = selectNextAction();
+            return nextAction;
         }
         return null;
     }
@@ -285,9 +310,24 @@ public class NextAgent extends Agent {
     public void SetAgentTask(EAgentTask agentTask) {
         this.agentActivity = agentTask;
     }
+    
+    public EAgentActivity GetAgentTask() {
+    	return this.agentActivity;
+    }
+    
+    public void SetAgentTask(EAgentActivity agentTask)
+    {
+    	this.agentActivity = agentTask;
+    }
 
-    public List<Action> GetPathMemory() {
-        return this.pathMemory;
+    public void SetAgentPlan(NextPlan agentPlan)
+    {
+        this.agentPlan = agentPlan;
+    }
+    
+    public List<Action> GetPathMemory()
+    {
+    	return this.pathMemory;
     }
 
     public void SetPathMemory(List<Action> pathMemory) {
@@ -325,6 +365,10 @@ public class NextAgent extends Agent {
         return this.taskPlanner;
     }
 
+    public NextPlan GetAgentPlan(){
+        return agentPlan;
+    }
+
     /*
      * ##################### endregion public methods
      */
@@ -333,13 +377,12 @@ public class NextAgent extends Agent {
      * ########## region private methods
      */
     private void resetAfterInactiveTask() {
-        this.SetActiveTask(null);
-        this.clearPossibleActions();
-        this.ClearPathMemory();
-        this.SetAgentTask(EAgentTask.surveyDispenser);
+    	this.SetActiveTask(null);
+    	this.clearPossibleActions();
+    	this.ClearPathMemory();
 
-        // TODO miri: Mehrere Blöcke fallen lassen
-        // Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
+    	// TODO miri: Mehrere Blöcke fallen lassen
+    	// Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
 //    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
 //    	{
 //    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
@@ -372,43 +415,70 @@ public class NextAgent extends Agent {
     private Action selectNextAction() {
         Action nextAction = intention.SelectNextAction();
 
-        if (pathMemory != null && !pathMemory.isEmpty()) {
-            Action currentAction = pathMemory.get(0);
-            String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
-
-            NextMapTile obstacle = NextAgentUtil.IsObstacleInNextStep(ECardinals.valueOf(direction), agentStatus.GetObstacles());
-            if (obstacle != null) // obstacle vor mir
-            {
-                nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + obstacle.getPositionX()), new Identifier("" + obstacle.getPositionY()));
-            } else {
-                if (agentStatus.GetAttachedElementsAmount() == 0
-                        || (agentStatus.GetAttachedElementsAmount() == 1
-                        && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next()))
-                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElements(), agentStatus.GetObstacles())) // no block or 1 element behind me or next Step is possible
-                {
-                    nextAction = pathMemory.remove(0);
-                } else {
-                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElements().iterator().next())) {
-                        if (!agentStatus.GetLastAction().contains("rotate")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else {
-                            Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirectionInVector2D(ECardinals.valueOf(direction));
-                            nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x), new Identifier("" + oppositeDirection.y));
-                            pathMemory.remove(0);
-                        }
-                    } else {
-                        if (NextAgentUtil.IsRotationPossible(this, "cw")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else if (NextAgentUtil.IsRotationPossible(this, "ccw")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-                        } else {
-                            // Randomstep
-                            nextAction = new NextRandomPath().GenerateNextMove();
-                        }
-                    }
-                }
-            }
+        if(!pathMemory.isEmpty())
+        {
+        	Action currentAction = pathMemory.get(0);
+        	String direction = currentAction.getParameters().toString().replace("[","").replace("]", "");
+                
+        	NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
+        	if(thing != null && !thing.getThingType().contains("block")) // thing vor mir
+        	{   
+        		if(thing.IsObstacle())
+        		{
+        			nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()),new Identifier("" + thing.getPositionY()));
+        		} 
+        		else if(thing.getThingType().contains("entity"))
+        		{
+        			nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString())); }
+        		else {
+            		nextAction = pathMemory.remove(0);
+        		}
+        	} 
+        	else 
+        	{             	
+            	if(agentStatus.GetAttachedElementsAmount() == 0
+            			|| (agentStatus.GetAttachedElementsAmount() == 1  &&
+            					NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()) )
+            			|| NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetObstacles())
+            	) // no block or 1 element behind me or next Step is possible
+            	{
+            		nextAction = pathMemory.remove(0);
+            	}
+            	else
+            	{
+            		if(NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
+            		{
+            			if(!agentStatus.GetLastAction().contains("rotate"))
+            			{
+            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+            			} 
+            			else
+            			{
+            				Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirectionInVector2D(ECardinals.valueOf(direction));
+                    		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x),new Identifier("" + oppositeDirection.y));  
+                    		pathMemory.remove(0);
+            			}
+            		} 
+            		else 
+            		{
+            			if(NextAgentUtil.IsRotationPossible(this.agentStatus, "cw"))
+            			{
+            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+            			}
+            			else if(NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw"))
+            			{
+            				nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+            			}
+            			else 
+            			{
+                			// Randomstep
+                			nextAction = new NextRandomPath().GenerateNextMove();
+            			}
+            		}
+            	}
+        	}
         }
+        //if(nextAction.getName().contains("skip")) nextAction = new NextRandomPath().GenerateNextMove();
         say(nextAction.toProlog());
         return nextAction;
     }
@@ -441,7 +511,8 @@ public class NextAgent extends Agent {
         this.pathMemory = new ArrayList<>();
         //this.map = new NextMap(this);
         this.activeTask = null;
-        this.agentActivity = null;
+        this.agentActivity = EAgentActivity.exploreMap;
+        this.agentPlan = null;
         this.taskPlanner = new NextTaskPlanner(this);
         //this.roleToChangeTo=null;
         
@@ -509,19 +580,20 @@ public class NextAgent extends Agent {
         } catch (Exception e) {
             this.say("CalculatePathNextToTarget:" + e);
         }
-        return CalculatePath(new Vector2D(target.x, target.y));
+        return CalculatePath(new Vector2D(target.x,target.y));
     }
-
-    private List<Action> calculateManhattanPath(Vector2D target) {
-        List<Action> pathMemoryB;
-        int targetX = target.x - GetPosition().x;
-        int targetY = target.y - GetPosition().y;
-        // this.say("Values path: " + targetX +" "+ targetY);
-        pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
-        this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
-        return pathMemoryB;
+    
+    private List<Action> calculateManhattanPath(Vector2D target)
+    {
+    	 List<Action> pathMemoryB;
+         int targetX = target.x - GetPosition().x;
+         int targetY = target.y - GetPosition().y;
+         // this.say("Values path: " + targetX +" "+ targetY);
+         pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
+         this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
+         return pathMemoryB;
     }
-
+    
     private void updateInternalBeliefs() {
 
         // update the selected Role
@@ -551,12 +623,12 @@ public class NextAgent extends Agent {
                 }
             }
             // Reset of Data Storage after the current simulation is finished
-            if (percept.getName().equals("simEnd")) {
+            if (percept.getName().contains("simEnd")) {
                 processor.evaluate(getPercepts(), this);
                 finishTheSimulation();
             }
             //Stop processing after last Simulation
-            if (percept.getName().equals("bye")) {
+            if (percept.getName().contains("bye")) {
                 //disableAgent(); //---- closing the window is disabled to keep the logdata visible.
             }
         }

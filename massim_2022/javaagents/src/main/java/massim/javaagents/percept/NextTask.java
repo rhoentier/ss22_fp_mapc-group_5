@@ -10,13 +10,10 @@ import java.util.Iterator;
 import massim.javaagents.map.NextMapTile;
 
 /**
- *
+ * Task(name, deadline, reward, [req(x,y,type),...])
  * @author AVL
  */
 public class NextTask {
-    
-    // task(name, deadline, reward, [req(x,y,type),...])
-    
     private String name;
     private long deadline;
 

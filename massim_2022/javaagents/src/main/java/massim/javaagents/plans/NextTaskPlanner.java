@@ -6,17 +6,19 @@ import massim.javaagents.percept.NextTask;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public class NextTaskPlanner {
 
-    private HashSet<NextTask> currentTasks = new HashSet<>();
     private NextPlanSolveTask currentPlan;
     private ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
     private NextAgent agent;
+    private NextPlanRoleZone firstRoleChange;
 
 
     public NextTaskPlanner(NextAgent agent) {
         this.agent = agent;
+        firstRoleChange = new NextPlanRoleZone(agent);
     }
 
     /**
@@ -35,11 +37,12 @@ public class NextTaskPlanner {
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
-            if (!currentTasks.contains(newTask)) {
+            HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
+            if (!actualTasks.contains(newTask.GetName())) {
                 createPlanForGivenTask(newTask);
             }
         }
-        currentTasks = newTasks;
+        possiblePlans.stream().forEach(possiblePlan -> possiblePlan.UpdateInternalBelief());
     }
 
     /**
@@ -49,10 +52,9 @@ public class NextTaskPlanner {
      * @return
      */
     public NextPlan GetDeepestEAgentTask() {
-        for (Iterator<NextPlanSolveTask> planIterator = possiblePlans.iterator(); planIterator.hasNext(); ) {
-            NextPlanSolveTask plan = planIterator.next();
-            if (plan.IsDeadlineReached()) planIterator.remove();
-        }
+        // gibt den Rollenwechsel zurück, falls dieser noch notwendig ist
+        if (!agent.getAgentStatus().GetRole().equals("worker")) return firstRoleChange.GetDeepestPlan();
+
         // find a fulfillable plan
         currentPlan = findBestFulfillablePlan();
 
@@ -60,9 +62,8 @@ public class NextTaskPlanner {
         if (currentPlan == null) {
             if (possiblePlans.isEmpty()) return null;
             currentPlan = findBestPlan();
-            if(currentPlan == null) return null;
+            if (currentPlan == null) return null;
             currentPlan.FulfillPrecondition();
-            return currentPlan;
         }
         return currentPlan.GetDeepestPlan();
     }
@@ -74,7 +75,7 @@ public class NextTaskPlanner {
      */
     private NextPlanSolveTask findFulfillablePlan() {
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (possiblePlan.IsPreconditionFulfilled()) return possiblePlan;
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable()) return possiblePlan;
         }
         return null;
     }
@@ -88,7 +89,7 @@ public class NextTaskPlanner {
     private NextPlanSolveTask findBestFulfillablePlan() {
         NextPlanSolveTask bestPlan = null;
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (possiblePlan.IsPreconditionFulfilled()) {
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable()) {
                 if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
                     bestPlan = possiblePlan;
             }
@@ -104,8 +105,15 @@ public class NextTaskPlanner {
     private NextPlanSolveTask findBestPlan() {
         NextPlanSolveTask bestPlan = null;
         for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) bestPlan = possiblePlan;
+            if (possiblePlan.IsDeadlineFulfillable())
+                if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
+                    bestPlan = possiblePlan;
         }
         return bestPlan;
+    }
+
+    public NextTask GetCurrentTask() {
+        if (currentPlan != null) return currentPlan.GetTask();
+        return null;
     }
 }

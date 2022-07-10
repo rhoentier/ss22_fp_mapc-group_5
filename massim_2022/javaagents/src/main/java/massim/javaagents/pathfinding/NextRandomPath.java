@@ -29,5 +29,4 @@ public class NextRandomPath implements INextPath {
 	    };
 	    return new Action("move", new Identifier(directions[rn.nextInt(4)]));
 	}
-
 }

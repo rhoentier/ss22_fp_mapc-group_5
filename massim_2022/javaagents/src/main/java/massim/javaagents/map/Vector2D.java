@@ -256,7 +256,7 @@ public class Vector2D {
     public String toString() {
         return "Vector2d[" + x + ", " + y + "]";
     }
-
+    
     @Override
     public int hashCode() {
         int hash = 5;

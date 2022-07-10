@@ -43,15 +43,15 @@ public final class NextConstants {
             put("submit", 10);
             put("attach", 20);
             put("request", 30);
+            put("adopt", 37);
+            put("rotate", 38);
             put("dodge", 39);
             put("move", 40);
             put("detach", 50);
-            put("rotate", 60);
             put("connect", 70);
             put("survey", 80);
-            put("adopt", 90);
             put("disconnect", 100);
-            put("clear", 110);
+            put("clear", 101);
             put("skip", 1000);
         }
     };
@@ -135,7 +135,7 @@ public final class NextConstants {
         aStar
     }
 
-    public static enum EAgentTask {
+    public static enum EAgentActivity {
     	exploreMap,
 		carryBlog,
     	goToDispenser,
