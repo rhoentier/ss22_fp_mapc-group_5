@@ -58,7 +58,7 @@ public class NextMap {
         NextMapTile clonedMaptile;
         for (NextMapTile maptile : percept) {
             clonedMaptile = maptile.clone();
-            clonedMaptile.SetPosition(agent.GetPosition().getAdded(clonedMaptile.GetPosition()));
+            clonedMaptile.SetPosition(clonedMaptile.GetPosition().getAdded(agent.GetPosition())); 
             setMapTile(clonedMaptile);
         }
     }
@@ -174,11 +174,14 @@ public class NextMap {
      * @param maptile maptile to be added
      */
     private void addTo(HashSet<NextMapTile> hashSet, NextMapTile maptile) {
+        /*
         for (NextMapTile mt : hashSet) {
             if (maptile.GetPosition().equals(mt.GetPosition())) {
                 return;
             }
         }
+        hashSet.add(maptile.Clone()); 
+        */
         hashSet.add(maptile.Clone());
     }
 
