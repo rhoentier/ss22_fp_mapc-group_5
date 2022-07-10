@@ -4,11 +4,12 @@ import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public abstract class NextPlan {
     ArrayList<NextPlan> subPlans = new ArrayList<>();
     boolean isPlanFulfilled = false;
-    NextConstants.EAgentTask agentTask;
+    NextConstants.EAgentActivity agentTask;
     NextAgent agent;
 
     /**
@@ -21,15 +22,10 @@ public abstract class NextPlan {
     }
 
     /**
-     * DeepFirstSearch to set the current executed plan to fulfilled
+     * set if a plan is fulfilled
      */
-    public void SetPlanIsFulfilled() {
-        for (NextPlan plan : subPlans) {
-            if (plan.IsPlanFulfilled()) continue;
-            plan.SetPlanIsFulfilled();
-            return;
-        }
-        isPlanFulfilled = true;
+    public void SetPlanIsFulfilled(boolean status) {
+        this.isPlanFulfilled = status;
     }
 
     /**
@@ -65,9 +61,7 @@ public abstract class NextPlan {
      *
      * @return EAgentTask
      */
-    public NextConstants.EAgentTask GetAgentTask() {
+    public NextConstants.EAgentActivity GetAgentTask() {
         return agentTask;
     }
-
-
 }

@@ -116,7 +116,6 @@ public class NextActionWrapper {
             default:
                 return null;
         }
-
     }
 }
 

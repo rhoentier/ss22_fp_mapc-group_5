@@ -447,7 +447,7 @@ public class NextMap {
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
 
             for (NextMapTile thing : agent.GetAgentStatus().GetVisibleThings()) {
-                if (!agent.GetAgentStatus().GetAttachedElements().contains(thing.GetPosition())) {
+                if (!agent.GetAgentStatus().GetAttachedElementsVector2D().contains(thing.GetPosition())) {
                     visibleNotAttachedThings.add(thing);
                 }
             }

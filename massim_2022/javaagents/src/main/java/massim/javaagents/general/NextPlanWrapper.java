@@ -2,13 +2,13 @@ package massim.javaagents.general;
 
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextAgentStatus;
-import massim.javaagents.general.NextConstants.EAgentTask;
+import massim.javaagents.general.NextConstants.EAgentActivity;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.Vector2D;
 
 public class NextPlanWrapper {
 
-	public static EAgentTask GenerateNewPlan(NextAgent nextAgent)
+	public static EAgentActivity GenerateNewPlan(NextAgent nextAgent)
 	{
 		NextAgentStatus nextAgentStatus = nextAgent.GetAgentStatus();
 		NextMap map = nextAgent.GetMap();
@@ -17,11 +17,11 @@ public class NextPlanWrapper {
         {
         	if(map.IsGoalZoneAvailable()) // knowing endzone
         	{
-        		return EAgentTask.goToGoalzone;
+        		return EAgentActivity.goToGoalzone;
         	} 
         	else // unknown endzone
         	{
-        		return EAgentTask.surveyGoalZone;
+        		return EAgentActivity.surveyGoalZone;
         	}
         } 
         else 
@@ -29,11 +29,11 @@ public class NextPlanWrapper {
         	// TODO: Hier fehlt noch die Verarbeitung, ob ich zu dem Dispenser muss oder ob ich ihn für meinen Task nicht brauche
         	if(map.IsDispenserAvailable())
         	{
-        		return EAgentTask.goToDispenser;
+        		return EAgentActivity.goToDispenser;
         	} 
         	else 
         	{
-        		return EAgentTask.surveyDispenser;
+        		return EAgentActivity.surveyDispenser;
         	}
         }
 	}
