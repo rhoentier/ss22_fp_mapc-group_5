@@ -166,6 +166,31 @@ public class NextMapTile {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NextMapTile other = (NextMapTile) obj;
+        if (!Objects.equals(this.thingType, other.thingType)) {
+            return false;
+        }
+        if (!Objects.equals(this.positionX, other.positionX)) {
+            return false;
+        }
+        if (!Objects.equals(this.positionY, other.positionY)) {
+            return false;
+        }
+        return Objects.equals(this.isAThing, other.isAThing);
+    }
+
+    
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 61 * hash + Objects.hashCode(this.positionX);
