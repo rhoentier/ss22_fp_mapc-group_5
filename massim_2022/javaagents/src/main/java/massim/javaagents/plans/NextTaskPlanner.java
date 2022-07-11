@@ -5,7 +5,6 @@ import massim.javaagents.percept.NextTask;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 public class NextTaskPlanner {

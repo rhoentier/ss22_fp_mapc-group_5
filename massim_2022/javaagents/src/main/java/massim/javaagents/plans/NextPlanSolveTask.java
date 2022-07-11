@@ -54,6 +54,7 @@ public class NextPlanSolveTask extends NextPlan {
             for (NextMapTile dispenser : dispensers) {
                 if (dispenser.getThingType() != block.getThingType()) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
+                // TODO: Hier muss der Pfad verbessert werden
                 int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(), nearestGoalZone).size();
                 if (shortestWayFromDispenserToGoalZone == 0 || wayFromDispenserToGoalZone < shortestWayFromDispenserToGoalZone)
                     shortestWayFromDispenserToGoalZone = wayFromDispenserToGoalZone;
