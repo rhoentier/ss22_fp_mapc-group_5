@@ -96,14 +96,14 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();
-        this.processor = new NextPerceptReader(this);
         
         //PathfindingConfig.ParseConfig("conf/NextAgents");
         //this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
         
+        this.processor = new NextPerceptReader(this);
+        
         taskPlanner = new NextTaskPlanner(this);
-
     }
 
     /*
@@ -226,7 +226,6 @@ public class NextAgent extends Agent {
                 }
                 SetAgentPlan(nextPlan);
             }
-
             generatePathMemory();
 
             generatePossibleActions();
