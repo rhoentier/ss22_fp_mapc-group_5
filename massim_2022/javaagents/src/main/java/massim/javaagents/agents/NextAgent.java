@@ -226,7 +226,6 @@ public class NextAgent extends Agent {
                 }
                 SetAgentPlan(nextPlan);
             }
-
             generatePathMemory();
 
             generatePossibleActions();
