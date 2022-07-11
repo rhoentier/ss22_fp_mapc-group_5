@@ -41,6 +41,7 @@ public class NextIntention {
 	private int lastSurveyedDistance = 0;
 	private String lastDirection = "n";
 	private int surveySteps = 0;
+	private int surveyOutOfSteps = 0;
 
 	public NextIntention(NextAgent nextAgent) {
 		this.nextAgent = nextAgent;
@@ -217,50 +218,55 @@ public class NextIntention {
 		NextMap map = this.nextAgent.GetMap();
 
 		nextAgent.SetAgentTask(plan.GetAgentTask());
-
-//        System.out.println("-------------------------Aktueller Weg: " + plan.GetAgentTask());
+		
+		if(surveyOutOfSteps == 2)
+		{
+			possibleActions.add(generateDefaultAction()); // fallback
+			surveyOutOfSteps = 0;
+		}
+		
 		// Move to..
 		switch (plan.GetAgentTask()) {
-		case surveyDispenser:
-			survey("dispenser");
-			break;
-		case surveyGoalZone:
-			survey("goal");
-			break;
-		case surveyRoleZone:
-			survey("role");
-			break;
-		case goToDispenser:
-			// Only new pathMemory, if the current Path is empty
-			if (this.nextAgent.GetPathMemory().isEmpty()) {
-				Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
-						((NextPlanDispenser) plan).GetDispenser().getThingType());
-				this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
-				if (this.nextAgent.GetPathMemory().size() == 0) {
-					possibleActions.add(generateDefaultAction()); // fallback
+			case surveyDispenser:
+				survey("dispenser");
+				break;
+			case surveyGoalZone:
+				survey("goal");
+				break;
+			case surveyRoleZone:
+				survey("role");
+				break;
+			case goToDispenser:
+				// Only new pathMemory, if the current Path is empty
+				if (this.nextAgent.GetPathMemory().isEmpty()) {
+					Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
+							((NextPlanDispenser) plan).GetDispenser().getThingType());
+					this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
+					if (this.nextAgent.GetPathMemory().size() == 0) {
+						possibleActions.add(generateDefaultAction()); // fallback
+					}
 				}
-			}
-			break;
-		case goToGoalzone:
-			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
-				this.nextAgent.SetPathMemory(this.nextAgent
-						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
-				if (this.nextAgent.GetPathMemory().size() == 0) {
-					possibleActions.add(generateDefaultAction()); // fallback
+				break;
+			case goToGoalzone:
+				if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+					this.nextAgent.SetPathMemory(this.nextAgent
+							.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
+					if (this.nextAgent.GetPathMemory().size() == 0) {
+						possibleActions.add(generateDefaultAction()); // fallback
+					}
 				}
-			}
-			break;
-		case goToRolezone:
-			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
-				this.nextAgent.SetPathMemory(this.nextAgent
-						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())));
-				if (this.nextAgent.GetPathMemory().size() == 0) {
-					possibleActions.add(generateDefaultAction()); // fallback
+				break;
+			case goToRolezone:
+				if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+					this.nextAgent.SetPathMemory(this.nextAgent
+							.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())));
+					if (this.nextAgent.GetPathMemory().size() == 0) {
+						possibleActions.add(generateDefaultAction()); // fallback
+					}
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -297,6 +303,7 @@ public class NextIntention {
 					lastSurveyedDistance = distance;
 				}
 			} else {
+				surveyOutOfSteps++;
 				possibleActions.add(NextAgentUtil.GenerateSurveyThingAction(type));
 			}
 		}
