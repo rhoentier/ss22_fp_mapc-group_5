@@ -239,6 +239,9 @@ public class NextMap {
             nextMap.map = tmp;
 
             // Move existing dispensers, goalZones and roleZones
+            
+            
+            /* --- Old Code to remove
             for (NextMapTile disp : nextMap.dispensers) {
                 disp.MovePosition(offset);
             }
@@ -247,7 +250,39 @@ public class NextMap {
             }
             for (NextMapTile role : nextMap.roleZones) {
                 role.MovePosition(offset);
-            }
+            }*/
+            //------------- move dispensers
+        
+        HashSet<NextMapTile> newDispensers = new HashSet<>();
+        for ( NextMapTile tile : nextMap.dispensers ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newDispensers.add(newTile);
+        }
+        
+        nextMap.dispensers = newDispensers;
+
+        //------------- move GoalZones
+        
+        HashSet<NextMapTile> newGoalZones = new HashSet<>();
+        for ( NextMapTile tile : nextMap.goalZones ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newGoalZones.add(newTile);
+        }
+        
+        nextMap.goalZones = newGoalZones;
+
+        //------------- move dispensers
+        
+        HashSet<NextMapTile> newRoleZones = new HashSet<>();
+        for ( NextMapTile tile : nextMap.roleZones ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newRoleZones.add(newTile);
+        }
+        
+        nextMap.roleZones = newRoleZones;
         }
         return offset;
     }
@@ -426,7 +461,20 @@ public class NextMap {
             map.AddPercept(agent, view);
 
             // TODO Der Teil muss kluger ersetzt werden
-            /*
+            
+            for (NextMapTile tile : agent.GetAgentStatus().GetGoalZones()){
+                NextMapTile tileToAdd = tile.clone();
+                tileToAdd.MovePosition(agent.GetPosition());
+                agent.GetMap().goalZones.add(tileToAdd);
+            }
+            
+            for (NextMapTile tile : agent.GetAgentStatus().GetRoleZones()){
+                NextMapTile tileToAdd = tile.clone();
+                tileToAdd.MovePosition(agent.GetPosition());
+                agent.GetMap().roleZones.add(tileToAdd);
+            }
+            
+            /* old code to remoce
             Iterator<NextMapTile> goalZoneIt = agent.GetAgentStatus().GetGoalZones().iterator();
             while(goalZoneIt.hasNext()) {
                 NextMapTile next = goalZoneIt.next();

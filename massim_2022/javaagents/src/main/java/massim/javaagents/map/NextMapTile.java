@@ -195,7 +195,7 @@ public class NextMapTile {
         int hash = 7;
         hash = 61 * hash + Objects.hashCode(this.positionX);
         hash = 61 * hash + Objects.hashCode(this.positionY);
-        hash = 61 * hash + Objects.hashCode(this.isAThing);
+        //hash = 61 * hash + Objects.hashCode(this.isAThing);
         hash = 61 * hash + Objects.hashCode(this.thingType);
         return hash;
     }

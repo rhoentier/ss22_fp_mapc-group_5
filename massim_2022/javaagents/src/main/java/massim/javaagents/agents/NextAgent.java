@@ -96,13 +96,13 @@ public class NextAgent extends Agent {
 
         this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();
-        
+
         //PathfindingConfig.ParseConfig("conf/NextAgents");
         //this.say("Algorithmus: " + PathfindingConfig.GetAlgorithm().toString());
         this.intention = new NextIntention(this);
-        
+
         this.processor = new NextPerceptReader(this);
-        
+
         taskPlanner = new NextTaskPlanner(this);
     }
 
@@ -194,7 +194,7 @@ public class NextAgent extends Agent {
         }
 
         if (lastID > 3) {
-            if (lastID > 3) {   // ToDo: >= ?
+            if (lastID > 3) {   // ToDo:
                 // Check if friendly Agents are visible and join them to groups
                 processFriendlyAgents();
                 processGroupJoinMessages();
@@ -214,6 +214,7 @@ public class NextAgent extends Agent {
             clearPossibleActions();
 
             // new path
+            
             NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
             if (nextPlan != null) {
                 NextTask nextTask = taskPlanner.GetCurrentTask();
@@ -226,8 +227,8 @@ public class NextAgent extends Agent {
                 }
                 SetAgentPlan(nextPlan);
             }
+            
             generatePathMemory();
-
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
@@ -330,7 +331,7 @@ public class NextAgent extends Agent {
 
     public NextMap GetMap() {
         if (this.agentGroup == null) {      // Workaround for deep linking
-            return new NextMap(this); 
+            return new NextMap(this);
         }
         return this.agentGroup.GetGroupMap();
     }
