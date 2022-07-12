@@ -37,10 +37,10 @@ public class NextIntention {
 	ArrayList<Action> possibleActions;
 	private NextAgentStatus nextAgentStatus;
 
-	// TODO Properties
 	private int lastSurveyedDistance = 0;
 	private String lastDirection = "n";
 	private int surveySteps = 0;
+	private int surveyOutOfSteps = 0;
 
 	public NextIntention(NextAgent nextAgent) {
 		this.nextAgent = nextAgent;
@@ -91,7 +91,7 @@ public class NextIntention {
 		for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
 			Vector2D position = visibleThing.GetPosition();
-			// Dispenser && Agent steht neben einem Ding && Agent hat aktiven Task &&
+			// Dispenser && Agent steht direkt neben ihm && Agent hat aktiven Task &&
 			// Block-Typ stimmt
 			if (visibleThing.getThingType().contains("dispenser") 
 					&& this.nextAgent.GetActiveTask() != null
@@ -108,7 +108,7 @@ public class NextIntention {
 				}
 			}
 
-			// Block && Aktiver Task && Agent hat freie Slots
+			// Block && Aktiver Task && Agent steht neben ihm && Agent hat freie Slots
 			if (visibleThing.getThingType().contains("block") 
 					&& this.nextAgent.GetActiveTask() != null
 					&& NextAgentUtil.NextToUsingLocalView(position, this.nextAgent)
@@ -218,7 +218,13 @@ public class NextIntention {
 
 		nextAgent.SetAgentTask(plan.GetAgentTask());
 
-//        System.out.println("-------------------------Aktueller Weg: " + plan.GetAgentTask());
+		// Survey failed 2 times -> Randomstep
+		if(surveyOutOfSteps == 2)
+		{
+			possibleActions.add(generateDefaultAction()); // fallback
+			surveyOutOfSteps = 0;
+		}
+		
 		// Move to..
 		switch (plan.GetAgentTask()) {
 		case surveyDispenser:
@@ -284,7 +290,7 @@ public class NextIntention {
 						surveySteps++;
 					} else if (surveySteps == 2) {
 						// north or south
-						if (distance < lastSurveyedDistance) {
+						if (distance > lastSurveyedDistance) {
 							lastDirection += "e";
 						} else {
 							lastDirection += "w";

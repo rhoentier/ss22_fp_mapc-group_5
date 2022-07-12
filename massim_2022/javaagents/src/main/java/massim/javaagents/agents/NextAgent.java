@@ -161,7 +161,9 @@ public class NextAgent extends Agent {
             	{
                 	if(this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName()))
                 	{
-                		intention.ResetAfterTaskChange(nextTask);
+                		if(!this.agentActivity.toString().contains("survey")) {
+                			intention.ResetAfterTaskChange(nextTask);
+                		}
                 		SetActiveTask(nextTask);
                 	}
             	}
