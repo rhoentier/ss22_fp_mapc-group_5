@@ -490,6 +490,8 @@ public class NextMap {
             // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
             map.AddPercept(agent, agent.GetAgentStatus().GetObstacles());
 
+            map.AddPercept(agent, agent.GetAgentStatus().GetGoalZones());
+            map.AddPercept(agent, agent.GetAgentStatus().GetRoleZones());
             // Only for debugging
             /*
             map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
