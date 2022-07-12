@@ -27,6 +27,7 @@ public class NextMap {
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
 
+    // ToDo: Mit Methoden umsetzen, sodass die flags nicht mitgepflegt werden müssen
     private boolean foundDispenser = false;
     private boolean foundRoleZone = false;
     private boolean foundGoalZone = false;
@@ -70,21 +71,57 @@ public class NextMap {
      * @param filename File for export
      */
     public void WriteToFile(String filename) {
-        StringBuilder strMap = new StringBuilder();
-        String pos;
+
+        Vector2D size = GetSizeOfMap();
+        System.out.println(size);
+        int x = size.x;
+        int y = size.y;
+        String[][] stringMap = new String[x][y];
+
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                //pos = map[i][j].getPositionX().toString();
-                //pos += "/" + map[i][j].getPositionY().toString() + " ";
-                strMap.append(map[i][j].getThingType().charAt(0)).append(" "); //.append(pos);
+                stringMap[i][j] = "";
             }
-            strMap.append("\n");
+        }
+
+        Vector2D pos;
+        for(NextMapTile maptile : roleZones) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for(NextMapTile maptile : goalZones) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for(NextMapTile maptile : dispensers) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for (int j = 0; j < map[0].length; j++) {
+            for (int i = 0; i < map.length; i++) {
+                stringMap[i][j] += map[i][j].getThingType().charAt(0);
+            }
+        }
+
+        StringBuilder outputString = new StringBuilder();
+        String tmpString;
+        for (int j = 0; j < map[0].length; j++) {
+            for (int i = 0; i < map.length; i++) {
+                tmpString = stringMap[i][j];
+                int rfill = 4 - tmpString.length();
+                for (int f = 0; f < rfill; f++) {tmpString += " ";}
+                outputString.append(tmpString);
+            }
+            outputString.append("\n");
         }
 
         FileWriter myWriter;
         try {
             myWriter = new FileWriter(filename);
-            myWriter.write(strMap.toString());
+            myWriter.write(outputString.toString());
             myWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -146,28 +183,28 @@ public class NextMap {
         }
 
         // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
-
-        if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
-            this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
-
-            switch (maptile.getThingType().substring(0,4)) {
+        if (addMaptile) {
+            switch (maptile.getThingType().substring(0, 4)) {
                 case "disp":
-                    addTo(dispensers, maptile);
+                    dispensers.add(maptile);
                     foundDispenser = true;
                     availableDispensers.add((maptile.getThingType().substring(10)));
                     break;
                 case "goal":
-                    addTo(goalZones, maptile);
+                    goalZones.add(maptile);
                     foundGoalZone = true;
                     break;
                 case "role":
-                    addTo(roleZones, maptile);
+                    roleZones.add(maptile);
                     foundRoleZone = true;
                     break;
+                default:
+                    this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
             }
         }
     }
 
+    // ToDo: Methode addTo() rausnehmen sobald Speichern von dispenser, goalZones und roalZones getestet
     /**
      * Helper Function to add dispensers, goalZones and role Zones to their list
      * @param hashSet HashSet to which the maptile should be added

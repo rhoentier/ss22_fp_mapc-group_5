@@ -174,4 +174,24 @@ public class NextMapTile {
         hash = 61 * hash + Objects.hashCode(this.thingType);
         return hash;
     }
+
+
+    @Override
+    public boolean equals (Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+
+        NextMapTile maptile = (NextMapTile) o;
+
+        return Objects.equals(positionX, maptile.positionX)
+                && Objects.equals(positionY, maptile.positionY)
+                && Objects.equals(isAThing, maptile.isAThing)
+                && Objects.equals(thingType, maptile.thingType);
+    }
+
+
 }
