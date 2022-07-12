@@ -1,180 +1,219 @@
 package massim.javaagents.agents;
 
 import eis.iilang.*;
-import java.awt.Point;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+
+import massim.javaagents.map.NextMapTile;
+import massim.javaagents.general.NextConstants;
+import massim.javaagents.map.Vector2D;
+import massim.javaagents.percept.NextNorm;
+import massim.javaagents.percept.NextNormRequirement;
+import massim.javaagents.percept.NextRole;
+import massim.javaagents.percept.NextSurveyedAgent;
+import massim.javaagents.percept.NextSurveyedThing;
+import massim.javaagents.percept.NextTask;
 
 /**
  * The basic Interpreter of Server Communication Protocoll
- *
- * Done: Handling of all documented Percepts is implemented ToDo: The conversion
- * of sets into the target format + external saving
+ * <p>
+ * Handling of all documented Percepts, The conversion of sets into the target
+ * format + saving in external Data Storage
  *
  * @author Alexander Lorenz
  */
 public class NextPerceptReader {
 
     private NextAgent agent;
-    private SimulationStatus simStatus;
-    private AgentStatus agentStatus;
+    private NextSimulationStatus simStatus;
+    private NextAgentStatus agentStatus;
 
     private HashSet<List<Parameter>> tasks;
     private HashSet<List<Parameter>> roles;
     private HashSet<List<Parameter>> norms;
-    private HashSet<List<Parameter>> attached;  // TODO: Convert to List<Point>
+    private HashSet<List<Parameter>> attached;
     private HashSet<List<Parameter>> things;
     private HashSet<List<Parameter>> obstacles;
     private HashSet<List<Parameter>> hits;
     private HashSet<String> violations;
-    private HashSet<List<Parameter>> surveyedAgent;
-    private HashSet<List<Parameter>> surveyedThing;
+    private HashSet<List<Parameter>> surveyedAgents;
+    private HashSet<List<Parameter>> surveyedThings;
 
-    private HashSet<String> overhangNames = new HashSet<>(); // Noch nicht bearbeitete Attribute
-    private HashSet<List<Parameter>> goalZones; // TODO: Convert to List<Position>    
-    private HashSet<List<Parameter>> roleZones; // TODO: Convert to List<Position>
+    private HashSet<String> overhangNames = new HashSet<>();
+    private HashSet<List<Parameter>> goalZones;
+    private HashSet<List<Parameter>> roleZones;
+
+    private HashSet<Parameter> dispenser;
 
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
-        simStatus = agent.getSimulationStatus();
-        agentStatus = agent.getStatus();
+        this.simStatus = agent.getSimulationStatus();
+        this.agentStatus = agent.getAgentStatus();
 
         clearSets();
     }
 
-    //Frage an das Team: Sollen mögliche Fehler innerhalb der Switch abfrage abgefangen werden.
-    // Nachteil: BoilerCode + Performance
-    void evaluate(List<Percept> percepts) {
+    /**
+     * evaluate the percepts
+     *
+     * @param percepts
+     * @param agent
+     */
+    public void evaluate(List<Percept> percepts, NextAgent agent) {
 
-        clearSets();
+        clearSets(); //clearing of the containers before processing of percepts
 
         //WARNING: ConcurrentModificationException workaround! based on FitBUT
         synchronized (percepts) {
-
             for (Percept percept : percepts) {
+                try {
 
-                switch (percept.getName()) {
-
-                    // - SimulationStart Message
-                    case "simStart" -> {
-                        simStatus.setFlagSimulationIsStarted();
-                    }
-
-                    case "name" ->
-                        agentStatus.setName(percept.getParameters().get(0).toProlog());
-                    case "team" ->
-                        agentStatus.setTeam(percept.getParameters().get(0).toProlog());
-                    case "teamSize" ->
-                        simStatus.setTeamSize(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "steps" ->
-                        simStatus.setTotalSteps(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "role" -> {
-                        // List of roles in simulation
-                        // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
-                        if (percept.getParameters().size() > 1) {
-                            roles.add(percept.getParameters());
-                        } else {
-                            // Actual role
-                            agentStatus.setRole(percept.getParameters().get(0).toProlog());
+                    switch (NextConstants.EPercepts.valueOf(percept.getName())) {
+                        // - SimulationStart Messages
+                        case simStart:
+                            simStatus.SetFlagSimulationIsStarted();
+                            break;
+                        case name:
+                            agentStatus.SetName(percept.getParameters().get(0).toProlog());
+                            break;
+                        case team:
+                            agentStatus.SetTeam(percept.getParameters().get(0).toProlog());
+                            break;
+                        case teamSize:
+                            simStatus.SetTeamSize(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case steps:
+                            simStatus.SetTotalSteps(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case role:
+                            // List of roles in simulation
+                            // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+                            if (percept.getParameters().size() > 1) {
+                                roles.add(percept.getParameters());
+                            } else {
+                                // Actual role
+                                agentStatus.SetRole(percept.getParameters().get(0).toProlog());
+                            }
+                            break;
+                        // - SimulationEnd Messages
+                        case simEnd:
+                            simStatus.SetFlagSimulationIsFinished();
+                            break;
+                        case ranking:
+                            simStatus.SetRanking(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case score:
+                            simStatus.SetScore(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        // - AllSimulationsAreFinished Message
+                        case bye:
+                            // is called, when last Simulation is finished.
+                            agent.setFlagDisableAgent();
+                            break;
+                        // - Request Action Messages
+                        case requestAction:
+                            agent.setFlagActionRequest();
+                            break;
+                        case actionID:
+                            simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case timestamp:
+                            simStatus.SetTimestamp(Long.parseLong(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case deadline:
+                            simStatus.SetDeadline(Long.parseLong(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case step:
+                            simStatus.SetCurrentStep(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case lastAction:
+                            agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
+                            if (agentStatus.GetLastAction() != "") {
+                                agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+                            }
+                            break;
+                        case lastActionResult:
+                            agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
+                            break;
+                        case lastActionParams:
+                            // has to be adjusted to a List if used/needed
+                            agentStatus.SetLastActionParams(percept.getParameters().get(0).toProlog());
+                            break;
+                        // The "Score" percept is handled together with @SimEnd messages above
+                        case thing:
+                            // Dividing in two sublists obstacles and things 
+                            if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
+                                obstacles.add(percept.getParameters());
+                                continue;
+                            }
+                            things.add(percept.getParameters());
+                            break;
+                        case task:
+                            tasks.add(percept.getParameters());
+                            break;
+                        case attached:
+                            attached.add(percept.getParameters());
+                            break;
+                        case energy:
+                            agentStatus.SetEnergy(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                            break;
+                        case deactivated:
+                            agentStatus.SetDeactivatedFlag(percept.getParameters().get(0).toProlog().equals("true"));
+                            break;
+                        case roleZone:
+                            roleZones.add(percept.getParameters());
+                            break;
+                        case goalZone:
+                            goalZones.add(percept.getParameters());
+                            break;
+                        case violation:
+                            violations.add(percept.getParameters().get(0).toProlog());
+                            break;
+                        case norm:
+                            norms.add(percept.getParameters());
+                            break;
+                        case hit:
+                            hits.add(percept.getParameters());
+                            break;
+                        case surveyed:
+                            // Dividing in two sublists handling Surveyed Agents and Surveyed Things 
+                            // Surveyed Agent
+                            if (percept.getParameters().size() == 4) {
+                                surveyedAgents.add(percept.getParameters());
+                            }
+                            // Surveyed Thing
+                            if (percept.getParameters().size() == 2) {
+                                surveyedThings.add(percept.getParameters());
+                            }
+                            break;
+                        default: //All not processed perceipts are moved to the Overhang List
+                        {
+                            overhangNames.add(percept.getName());
                         }
+                        break;
                     }
-
-                    // - SimulationEnd Message
-                    case "simEnd" -> {
-                        simStatus.setFlagSimulationIsFinished();
-                    }
-                    case "ranking" ->
-                        simStatus.setRanking(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "score" ->
-                        simStatus.setScore(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-
-                    // - SimulationIsFinished Message
-                    case "bye" ->
-                        // is called, when Simulation is finished.
-                        agent.setFlagDisableAgent();
-
-                    // - Request Action Perceipts
-                    case "requestAction" ->
-                        agent.setFlagActionRequest();
-
-                    case "actionID" ->
-                        simStatus.setActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "timestamp" ->
-                        simStatus.setTimestamp(Long.parseLong(percept.getParameters().get(0).toProlog()));
-                    case "deadline" ->
-                        simStatus.setDeadline(Long.parseLong(percept.getParameters().get(0).toProlog()));
-                    case "step" ->
-                        simStatus.setActualStep(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "lastAction" ->
-                        agentStatus.setlastAction(percept.getParameters().get(0).toProlog());
-                    case "lastActionResult" ->
-                        agentStatus.setLastActionResult(percept.getParameters().get(0).toProlog());
-                    case "lastActionParams" -> // has to be adjusted to a List if used/needed
-                        agentStatus.setLastActionParams(percept.getParameters().get(0).toProlog());
-
-                    // find Score @SimEnd messages  
-                    case "thing" -> {
-                        // Dividing in a sublists obstacles and things 
-                        if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
-                            obstacles.add(percept.getParameters());
-                            continue;
-                        }
-                        things.add(percept.getParameters());
-                    }
-                    case "task" ->
-                        tasks.add(percept.getParameters());
-                    case "attached" ->
-                        attached.add(percept.getParameters());
-                    case "energy" ->
-                        agentStatus.setEnergy(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                    case "deactivated" ->
-                        agentStatus.setDeactivatedFlag(percept.getParameters().get(0).toProlog().equals("true"));
-                    case "roleZone" ->
-                        roleZones.add(percept.getParameters());
-                    case "goalZone" ->
-                        goalZones.add(percept.getParameters());
-                    case "violation" ->
-                        violations.add(percept.getParameters().get(0).toProlog());
-                    case "norm" ->
-                        norms.add(percept.getParameters());
-                    case "hit" ->
-                        hits.add(percept.getParameters());
-                    case "surveyed" -> {
-                        // Surveyed Agent
-                        if (percept.getParameters().size() == 4) {
-                            surveyedAgent.add(percept.getParameters());
-                        }
-                        // Surveyed Thing
-                        if (percept.getParameters().size() == 2) {
-                            surveyedThing.add(percept.getParameters());
-                        }
-                        //agent.say("Surveyed reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
-                    }
-                    default -> //overhang.add(percept.getParameters());
-                    {
-                        overhangNames.add(percept.getName());
-                        agent.say("Reading: \n" + percept.getName().toString() + ": \n" + percept.getParameters());
-                    }
-
+                } catch (Exception e) {
+                    agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
                 }
             }
-            
+
             // handling of unusual perception entries
-            
             if (!overhangNames.isEmpty()) {
                 agent.say("------------------------------------------------");
-                agent.say("WARNING! overhang: \n" + overhangNames.toString());
+                agent.say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
                 agent.say("------------------------------------------------");
             }
 
+            //Second Step of Processing of Sets
             convertGeneratedSets();
-            
         }
     }
 
     private void clearSets() {
-
+        //clearing of the containers before processing of percepts
         attached = new HashSet<>();
         tasks = new HashSet<>();
         norms = new HashSet<>();
@@ -186,124 +225,469 @@ public class NextPerceptReader {
         roleZones = new HashSet<>();
         overhangNames = new HashSet<>();
         hits = new HashSet<>();
-        surveyedAgent = new HashSet<>();
-        surveyedThing = new HashSet<>();
-
+        surveyedAgents = new HashSet<>();
+        surveyedThings = new HashSet<>();
+        dispenser = new HashSet<>();
     }
-
+    /**
+     *  Process all Datasets and transfer to Storage - NextAgentStatus
+     */
     private void convertGeneratedSets() {
 
+        //Process Things and Obstales and combine to fullLocalView
+        HashSet<NextMapTile> fullLocalView = new HashSet<>();
+        HashSet<NextMapTile> processedObstacles = new HashSet<>();
+        HashSet<NextMapTile> processedThings = new HashSet<>();
+
+        processedThings = processThingsSet();
+        processedObstacles = processObstaclesSet();
+        fullLocalView.addAll(processedThings);
+        fullLocalView.addAll(processedObstacles);
+        agentStatus.SetVision(processedThings); //
+        agentStatus.SetObstacles(processedObstacles);
+        agentStatus.SetFullLocalView(fullLocalView);
+
+        //Process remaining Datasets
         
-        //if (!overhangNames.isEmpty()) {
+        simStatus.SetTasksList(processTasksSet());
+        simStatus.SetNormsList(processNormsSet());
+        simStatus.SetRolesList(processRolesSet());
+        simStatus.SetViolations(processViolationsSet());
 
-        //}
-        agent.getStatus().setAttachedElements(processAttachedSet()); // TODO: Buggy ?
-        // processTasksSet();
-        // processNormsSet();
-        // processRolesSet();
-        // processThingsSet();
-        // processObstaclesSet();
-        // processViolationsSet();
-        processGoalZonesSet();
-        processRoleZonesSet();
-        processHitsSet();
+        agentStatus.SetAttachedElementsNextMapTile(updateAttachedSetMapTile());
+        agentStatus.SetVisibleAttachedElements(processAttachedSet());
+        agentStatus.SetGoalZones(processGoalZonesSet());
+        agentStatus.SetRoleZones(processRoleZonesSet());
 
-        // processSurveyedAgentSet();
-        // processSurveyedThingSet();
+        agentStatus.SetHits(processHitsSet());
+
+        agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
+        agentStatus.SetSurveyedThings(processSurveyedThingSet());
+
+        agentStatus.SetDispenser(convertDispenserFromVision());
     }
 
-    private HashSet<Point> processAttachedSet() {
-        // implement the Definition of the entity, by aquiring Data from Things set.
-        if (!attached.isEmpty()) {
-            //    agent.say("\n" + "Attached input \n" + attached.toString() + "\n");
+    private HashSet<NextMapTile> convertDispenserFromVision() {
+        HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
+        for (NextMapTile mapTile : agentStatus.GetVisibleThings()) {
+            try {
+                if (mapTile.getThingType().contains("dispenser")) {
+                    collectionOfDispenser.add(mapTile);
+                }
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
+            }
         }
-        HashSet<Point> processedAttachedSet = new HashSet<>();
+        return collectionOfDispenser;
+    }
+
+    private HashSet<NextTask> processTasksSet() {
+        // task(name, deadline, reward, [req(x,y,type),...])
+        HashSet<NextTask> processedTasksSet = new HashSet<>();
+        // Converts Percept Data to Task Elements.
+        for (List<Parameter> task : tasks) {
+            try {
+
+                HashSet<List<Parameter>> collectionOfBlocks = new HashSet<>();
+                for (Parameter block : ((ParameterList) task.get(3))) {
+                    collectionOfBlocks.add(((Function) block).getParameters());
+                }
+                processedTasksSet.add(
+                        new NextTask(
+                                task.get(0).toProlog(),
+                                Integer.parseInt(task.get(1).toProlog()),
+                                Integer.parseInt(task.get(2).toProlog()),
+                                convertRequirements(collectionOfBlocks))
+                );
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processTasksSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate
+        if (!processedTasksSet.isEmpty()) {
+            agent.say("\n" + "Tasks \n" + processedTasksSet.toString() + "\n");
+        }
+        //*/
+        return processedTasksSet;
+
+    }
+
+    private HashSet<NextNorm> processNormsSet() {
+        /*  
+        
+        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+
+        id : Identifier - ID of the norm
+        start : Numeral - first step the norm holds
+        end : Numeral - last step the norm holds
+            requirement:
+                type : the subject of the norm
+                name : the precise name the subject refers to, e.g., the role constructor
+                quantity : the maximum quantity that can be carried/adopted
+                details : possibly additional details
+        fine : Numeral - the energy cost of violating the norm (per step)
+        
+         */
+
+        HashSet<NextNorm> processedNormsSet = new HashSet<>();
+        // Converts Percept Data to Norm Attributes and constructs Norms.
+        for (List<Parameter> norm : norms) {
+            try {
+
+                HashSet<NextNormRequirement> collectionOfRequirements = new HashSet<>();
+
+                HashSet<List<Parameter>> collectionOfRequirementElements = new HashSet<>();
+                for (Parameter requirement : ((ParameterList) norm.get(3))) {
+                    collectionOfRequirementElements.add(((Function) requirement).getParameters());
+                }
+
+                collectionOfRequirements.add(new NextNormRequirement("type", "name", 0, "details"));
+
+                processedNormsSet.add(new NextNorm(
+                        norm.get(0).toProlog(),
+                        Integer.parseInt(norm.get(1).toProlog()),
+                        Integer.parseInt(norm.get(2).toProlog()),
+                        convertNormRequirements(collectionOfRequirementElements),
+                        Integer.parseInt(norm.get(4).toProlog())
+                ));
+
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processNormsSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate
+        if (!processedNormsSet.isEmpty()) {
+            agent.say("\n" + "Norms \n" + processedNormsSet.toString() + "\n");
+        }
+        //*/
+        return processedNormsSet;
+    }
+
+    private HashSet<NextRole> processRolesSet() {
+        // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+
+        HashSet<NextRole> processedRolesSet = new HashSet<>();
+        // Converts Percept Data to Role Attributes and constructs Roles.
+        for (List<Parameter> role : roles) {
+            try {
+
+                HashSet<String> collectionOfActions = new HashSet<>();
+                for (Parameter action : ((ParameterList) role.get(2))) {
+                    collectionOfActions.add(action.toProlog());
+                }
+                ArrayList<Integer> collectionOfSpeeds = new ArrayList<>();
+                for (Parameter speed : ((ParameterList) role.get(3))) {
+                    collectionOfSpeeds.add(Integer.parseInt(speed.toProlog()));
+                }
+                processedRolesSet.add(
+                        new NextRole(
+                                role.get(0).toProlog(),
+                                Integer.parseInt(role.get(1).toProlog()),
+                                collectionOfActions,
+                                collectionOfSpeeds,
+                                Float.parseFloat(role.get(4).toProlog()),
+                                Integer.parseInt(role.get(5).toProlog())
+                        )
+                );
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processRolesSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate
+        if (!processedRolesSet.isEmpty()) {
+            agent.say("\n" + "Roles \n" + processedRolesSet.toString() + "\n");
+        }
+        //*/
+        return processedRolesSet;
+
+    }
+
+    private HashSet<Vector2D> processAttachedSet() {
+        // attached(x, y) - Percept Data Format
+        HashSet<Vector2D> processedAttachedSet = new HashSet<>();
+        // Converts percept data to attached points. All visible attached elements are processed.
         for (List<Parameter> zone : attached) {
-            processedAttachedSet.add(new Point(
-                    Integer.parseInt(zone.get(0).toProlog()),
-                    Integer.parseInt(zone.get(1).toProlog())
-            ));
+            try {
+                processedAttachedSet.add(new Vector2D(
+                        Integer.parseInt(zone.get(0).toProlog()),
+                        Integer.parseInt(zone.get(1).toProlog())
+                ));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processAttachedSet: \n" + e.toString());
+            }
         }
+        /* Debug Helper - Place // before to activate 
         if (!processedAttachedSet.isEmpty()) {
-            //    agent.say("\n" + "Attached output\n" + processedAttachedSet.toString() + "\n");
+            agent.say("\n" + "Attached Elements\n" + processedAttachedSet.toString() + "\n");
+        }
+        //*/
+        return processedAttachedSet;
+    }
+    
+    private HashSet<NextMapTile> updateAttachedSetMapTile() {
+        HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
+        for(NextMapTile tile : processThingsSet())
+        {
+        	if(tile.getThingType().contains("block")) 
+    		{
+        		for(Vector2D attachedSet : processAttachedSet())
+        		{
+        			if(attachedSet.equals(tile.GetPosition())) processedAttachedSet.add(tile);
+        		}        		
+    		}
         }
         return processedAttachedSet;
     }
 
-    private void processTasksSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<NextMapTile> processThingsSet() {
+        // thing(x, y, type, details) - Percept Data Format
+        HashSet<NextMapTile> processedThingsSet = new HashSet<>();
+        // Converts Percept Data to NextMapTile Elements
+        for (List<Parameter> object : things) {
+            try {
+                switch (object.size()) {
+                    case 3 -> {
+                        processedThingsSet.add(new NextMapTile(
+                                Integer.parseInt(object.get(0).toProlog()),
+                                Integer.parseInt(object.get(1).toProlog()),
+                                simStatus.GetCurrentStep(),
+                                object.get(2).toString()
+                        ));
+                    }
+                    case 4 -> {
+                        processedThingsSet.add(new NextMapTile(
+                                Integer.parseInt(object.get(0).toProlog()),
+                                Integer.parseInt(object.get(1).toProlog()),
+                                simStatus.GetCurrentStep(),
+                                (object.get(2).toString() + "-" + object.get(3).toString())
+                        ));
+                    }
+                    default ->
+                        agent.say("Error in NextPerceptReader - processThingsSet: Inadequate number of attributes");
+
+                }
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processThingsSet: \n" + e.toString());
+            }
+        }
+
+        /* Debug Helper - Place // before to activate 
+        if (!processedThingsSet.isEmpty()) {
+            agent.say("\n" + "Visible Things\n" + processedThingsSet.toString() + "\n");
+        }
+        //*/
+        return processedThingsSet;
     }
 
-    private void processNormsSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<NextMapTile> processObstaclesSet() {
+        // thing(x, y, type, details) - Percept Data Format
+        HashSet<NextMapTile> processedObstacles = new HashSet<>();
+        // Converts Percept Data to goalZone MapTiles
+        for (List<Parameter> object : obstacles) {
+            try {
+                processedObstacles.add(new NextMapTile(
+                        Integer.parseInt(object.get(0).toProlog()),
+                        Integer.parseInt(object.get(1).toProlog()),
+                        agent.getSimulationStatus().GetCurrentStep(),
+                        "obstacle"));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processObstaclesSet: \n" + e.toString());
+            }
+
+        }
+
+        /* Debug Helper - Place // before to activate 
+        if (!processedObstacles.isEmpty()) {
+            agent.say("\n" + "Obstacles\n" + processedObstacles.toString() + "\n");
+        }
+        //*/
+        return processedObstacles;
+
     }
 
-    private void processRolesSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<String> processViolationsSet() {
+        // violation(id) - Percept Data Format
+        // Forwards Percept Data as a String
+
+        /* Debug Helper - Place // before to activate 
+        if (!violations.isEmpty()) {
+            agent.say("\n" + "Violations \n" + violations.toString() + "\n");
+        }
+        //*/
+        return violations;
+
     }
 
-    private void processThingsSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void processObstaclesSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void processViolationsSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void processGoalZonesSet() {
-        // ToDo: Transfer into Main Data Warehouse
-        HashSet<MapTile> processedGoalZones = new HashSet<>();
+    private HashSet<NextMapTile> processGoalZonesSet() {
+        // goalZone(x, y) - Percept Data Format
+        HashSet<NextMapTile> processedGoalZones = new HashSet<>();
+        // Converts Percept Data to goalZone MapTiles
         for (List<Parameter> zone : goalZones) {
-            processedGoalZones.add(new MapTile(
-                    Integer.parseInt(zone.get(0).toProlog()),
-                    Integer.parseInt(zone.get(1).toProlog()),
-                    agent.getSimulationStatus().getActualStep(),
-                    "goalZone"));
+            try {
+                processedGoalZones.add(new NextMapTile(
+                        Integer.parseInt(zone.get(0).toProlog()),
+                        Integer.parseInt(zone.get(1).toProlog()),
+                        agent.getSimulationStatus().GetCurrentStep(),
+                        "goalZone"));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processGoalZonesSet: \n" + e.toString());
+            }
+
         }
+
+        /* Debug Helper - Place // before to activate 
         if (!processedGoalZones.isEmpty()) {
-            //  agent.say("\n"+"GoalZones \n" + processedGoalZones.toString() + "\n");
+            agent.say("\n" + "Goal Zones\n" + processedGoalZones.toString() + "\n");
         }
+        //*/
+        return processedGoalZones;
     }
 
-    private void processRoleZonesSet() {
-        // ToDo: Transfer into Main Data Warehouse
-        HashSet<MapTile> processedRoleZones = new HashSet<>();
+    private HashSet<NextMapTile> processRoleZonesSet() {
+        // roleZone(x, y) - Percept Data Format
+        HashSet<NextMapTile> processedRoleZones = new HashSet<>();
+        // Converts Percept Data to roleZone MapTiles
         for (List<Parameter> zone : roleZones) {
-            processedRoleZones.add(new MapTile(
-                    Integer.parseInt(zone.get(0).toProlog()),
-                    Integer.parseInt(zone.get(1).toProlog()),
-                    agent.getSimulationStatus().getActualStep(),
-                    "roleZone"));
+            try {
+                processedRoleZones.add(new NextMapTile(
+                        Integer.parseInt(zone.get(0).toProlog()),
+                        Integer.parseInt(zone.get(1).toProlog()),
+                        agent.getSimulationStatus().GetCurrentStep(),
+                        "roleZone"));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processRoleZonesSet: \n" + e.toString());
+            }
         }
+
+        /* Debug Helper - Place // before to activate 
         if (!processedRoleZones.isEmpty()) {
-            //  agent.say("\n"+"RoleZones \n" + processedRoleZones.toString() + "\n");
+            agent.say("\n" + "Role Zones \n" + processedRoleZones.toString() + "\n");
         }
+        //*/
+        return processedRoleZones;
     }
 
-    private void processHitsSet() {
-        // ToDo: Transfer into Main Data Warehouse
-        HashSet<MapTile> processedHits = new HashSet<>();
-        for (List<Parameter> zone : roleZones) {
-            processedHits.add(new MapTile(
-                    Integer.parseInt(zone.get(0).toProlog()),
-                    Integer.parseInt(zone.get(1).toProlog()),
-                    agent.getSimulationStatus().getActualStep(),
-                    "Hit"));
+    private HashSet<NextMapTile> processHitsSet() {
+        // hit(x, y) - Percept Data Format
+        HashSet<NextMapTile> processedHits = new HashSet<>();
+        // Converts Percept Data to goalZone MapTiles
+        for (List<Parameter> hit : hits) {
+            try {
+                processedHits.add(new NextMapTile(
+                        Integer.parseInt(hit.get(0).toProlog()),
+                        Integer.parseInt(hit.get(1).toProlog()),
+                        agent.getSimulationStatus().GetCurrentStep(),
+                        "Hit"));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processHitsSet: \n" + e.toString());
+            }
+
         }
+
+        /* Debug Helper - Place // before to activate 
         if (!processedHits.isEmpty()) {
-            // agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
+            agent.say("\n" + "Hits \n" + processedHits.toString() + "\n");
         }
+        //*/
+        return processedHits;
     }
 
-    private void processSurveyedAgentSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<NextSurveyedAgent> processSurveyedAgentSet() {
+        // surveyed("agent", name, role, energy)
+        // name : Identifier
+        // role : Identifier
+        // energy : Numeral
+
+        HashSet<NextSurveyedAgent> processedSurveyedAgents = new HashSet<>();
+        // Converts Percept Data to Target Data
+        for (List<Parameter> SurveyedAgent : surveyedAgents) {
+            try {
+                processedSurveyedAgents.add(
+                        new NextSurveyedAgent(
+                                SurveyedAgent.get(0).toProlog(),
+                                SurveyedAgent.get(1).toProlog(),
+                                Integer.parseInt(SurveyedAgent.get(1).toProlog())
+                        ));
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processSurveyedAgentSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate 
+        if (!processedSurveyedAgents.isEmpty()) {
+            agent.say("\n" + "Surveyed Agents \n" + processedSurveyedAgents.toString() + "\n");
+        }
+        //*/
+        return processedSurveyedAgents;
+
     }
 
-    private void processSurveyedThingSet() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private HashSet<NextSurveyedThing> processSurveyedThingSet() {
+
+        // surveyed("dispenser"/"goal"/"role", distance)
+        HashSet<NextSurveyedThing> processedSurveyedThings = new HashSet<>();
+        // Converts Percept Data to Target Data
+        for (List<Parameter> SurveyedAgent : surveyedThings) {
+            try {
+                processedSurveyedThings.add(
+                        new NextSurveyedThing(
+                                SurveyedAgent.get(0).toProlog(),
+                                Integer.parseInt(SurveyedAgent.get(1).toProlog())
+                        )
+                );
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - processSurveyedThingSet: \n" + e.toString());
+            }
+        }
+        /* Debug Helper - Place // before to activate 
+        if (!processedSurveyedThings.isEmpty()) {
+            agent.say("\n" + "Distance to Surveyed Things \n" + processedSurveyedThings.toString() + "\n");
+        }
+        //*/
+        return processedSurveyedThings;
+    }
+
+    private HashSet<NextMapTile> convertRequirements(HashSet<List<Parameter>> requirementsList) {
+        HashSet<NextMapTile> processedRequirements = new HashSet<>();
+        for (List<Parameter> element : requirementsList) {
+            processedRequirements.add(new NextMapTile(
+                    Integer.parseInt(element.get(0).toProlog()),
+                    Integer.parseInt(element.get(1).toProlog()),
+                    -1,
+                    element.get(2).toProlog())
+            );
+        }
+        //agent.say(requirementsList.toString());
+
+        return processedRequirements;
+    }
+
+    private HashSet<NextNormRequirement> convertNormRequirements(HashSet<List<Parameter>> collectionOfRequirementElements) {
+        /*
+        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+
+        id : Identifier - ID of the norm
+        start : Numeral - first step the norm holds
+        end : Numeral - last step the norm holds
+            requirement:
+                type : the subject of the norm
+                name : the precise name the subject refers to, e.g., the role constructor
+                quantity : the maximum quantity that can be carried/adopted
+                details : possibly additional details
+        fine : Numeral - the energy cost of violating the norm (per step)
+
+         */
+
+        HashSet<NextNormRequirement> processedNormRequirements = new HashSet<>();
+        for (List<Parameter> element : collectionOfRequirementElements) {
+            processedNormRequirements.add(
+                    new NextNormRequirement(
+                            element.get(0).toProlog(),
+                            element.get(1).toProlog(),
+                            Integer.parseInt(element.get(2).toProlog()),
+                            element.get(3).toProlog())
+            );
+        }
+
+        return processedNormRequirements;
     }
 }

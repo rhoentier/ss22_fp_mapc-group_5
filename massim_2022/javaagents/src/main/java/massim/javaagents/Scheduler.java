@@ -11,32 +11,32 @@ import eis.iilang.Percept;
 import massim.eismassim.EnvironmentInterface;
 import massim.javaagents.agents.Agent;
 import massim.javaagents.agents.BasicAgent;
-import massim.javaagents.agents.NextAgent;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import massim.javaagents.agents.NextAgent;
 
 /**
- * A scheduler for agent creation and execution. EISMASSim scheduling needs to
- * be enabled (via config), so that getAllPercepts() blocks until new percepts
- * are available! (Also, queued and notifications should be disabled)
+ * A scheduler for agent creation and execution.
+ * EISMASSim scheduling needs to be enabled (via config), so that getAllPercepts()
+ * blocks until new percepts are available!
+ * (Also, queued and notifications should be disabled)
  */
-public class Scheduler implements AgentListener, EnvironmentListener {
+public class Scheduler implements AgentListener, EnvironmentListener{
 
     /**
      * Holds configured agent data.
      */
     private class AgentConf {
-
         String name;
         String entity;
         String team;
         String className;
 
-        AgentConf(String name, String entity, String team, String className) {
+        AgentConf(String name, String entity, String team, String className){
             this.name = name;
             this.entity = entity;
             this.team = team;
@@ -50,7 +50,6 @@ public class Scheduler implements AgentListener, EnvironmentListener {
 
     /**
      * Create a new scheduler based on the given configuration file
-     *
      * @param path path to a java agents configuration file
      */
     Scheduler(String path) {
@@ -59,14 +58,13 @@ public class Scheduler implements AgentListener, EnvironmentListener {
 
     /**
      * Parses the java agents config.
-     *
      * @param path the path to the config
      */
     private void parseConfig(String path) {
         try {
             var config = new JSONObject(new String(Files.readAllBytes(Paths.get(path, "javaagentsconfig.json"))));
             var agents = config.optJSONArray("agents");
-            if (agents != null) {
+            if(agents != null){
                 for (int i = 0; i < agents.length(); i++) {
                     var agentBlock = agents.getJSONObject(i);
                     var count = agentBlock.getInt("count");
@@ -89,32 +87,26 @@ public class Scheduler implements AgentListener, EnvironmentListener {
 
     /**
      * Connects to an Environment Interface
-     *
      * @param ei the interface to connect to
      */
     void setEnvironment(EnvironmentInterface ei) {
         this.eis = ei;
         MailService mailService = new MailService();
-        for (AgentConf agentConf : agentConfigurations) {
+        for (AgentConf agentConf: agentConfigurations) {
 
             Agent agent = null;
-            switch (agentConf.className) {
+            switch(agentConf.className){
                 case "BasicAgent":
                     agent = new BasicAgent(agentConf.name, mailService);
                     break;
+                // [add further types here]
                 case "NextAgent":
                     agent = new NextAgent(agentConf.name, mailService);
                     break;
-                case "SebastianAgent":
-                    agent = new NextAgent(agentConf.name, mailService);
-                    break;
-                // [add further types here]
                 default:
                     System.out.println("Unknown agent type/class " + agentConf.className);
             }
-            if (agent == null) {
-                continue;
-            }
+            if(agent == null) continue;
 
             mailService.registerAgent(agent, agentConf.team);
 
@@ -151,12 +143,9 @@ public class Scheduler implements AgentListener, EnvironmentListener {
                     addList.addAll(pUpdate.getAddList());
                     delList.addAll(pUpdate.getDeleteList());
                 });
-                if (!addList.isEmpty() || !delList.isEmpty()) {
-                    newPerceptAgents.add(ag);
-                }
+                if (!addList.isEmpty() || !delList.isEmpty()) newPerceptAgents.add(ag);
                 ag.setPercepts(addList, delList);
-            } catch (PerceiveException ignored) {
-            }
+            } catch (PerceiveException ignored) { }
         });
 
         // step all agents which have new percepts
@@ -171,10 +160,9 @@ public class Scheduler implements AgentListener, EnvironmentListener {
             }
         });
 
-        if (newPerceptAgents.size() == 0) try {
+        if(newPerceptAgents.size() == 0) try {
             Thread.sleep(100); // wait a bit in case no agents have been executed
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) {}
     }
 
     @Override
@@ -183,18 +171,14 @@ public class Scheduler implements AgentListener, EnvironmentListener {
     }
 
     @Override
-    public void handleStateChange(EnvironmentState newState) {
-    }
+    public void handleStateChange(EnvironmentState newState) {}
 
     @Override
-    public void handleFreeEntity(String entity, Collection<String> agents) {
-    }
+    public void handleFreeEntity(String entity, Collection<String> agents) {}
 
     @Override
-    public void handleDeletedEntity(String entity, Collection<String> agents) {
-    }
+    public void handleDeletedEntity(String entity, Collection<String> agents) {}
 
     @Override
-    public void handleNewEntity(String entity) {
-    }
+    public void handleNewEntity(String entity) {}
 }

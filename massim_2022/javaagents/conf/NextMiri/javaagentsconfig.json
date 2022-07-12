@@ -1,0 +1,12 @@
+{
+  "agents" : [
+    {
+      "count":  10,
+      "start-index":  1,
+      "agent-prefix":  "5",
+      "entity-prefix":  "Connection5",
+      "team":  "5",
+      "class": "NextAgent"
+    }
+  ]
+}

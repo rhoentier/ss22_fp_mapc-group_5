@@ -65,6 +65,8 @@ public class GameState {
     private final int eventCreatePerimeter;
     private final int[] clearDamage;
 
+    private final boolean perceiveAbsolutePosition;
+
     private final Map<String, JSONArray> stepEvents = new HashMap<>();
 
     private final JSONArray logEvents = new JSONArray();
@@ -90,6 +92,8 @@ public class GameState {
         var dispenserBounds = ConfigUtil.getBounds(config, "dispensers");
 
         clearDamage = JSONUtil.getIntArray(config, "clearDamage");
+
+        this.perceiveAbsolutePosition = ConfigUtil.getBool(config, "absolutePosition", false);
 
         var taskConfig = config.getJSONObject("tasks");
         this.taskMaxDuration = ConfigUtil.getBounds(taskConfig, "maxDuration");
@@ -171,7 +175,7 @@ public class GameState {
         return defaultRole;
     }
 
-    Map<String, Team> getTeams() {
+    public Map<String, Team> getTeams() {
         return this.teams;
     }
 
@@ -254,6 +258,7 @@ public class GameState {
                 if (x == null || y == null || type.isEmpty()) break;
                 if (type.equalsIgnoreCase("obstacle")) grid.obstacles().create(Position.of(x, y));
                 else if (type.equalsIgnoreCase("goal")) grid.addZone(ZoneType.GOAL, Position.of(x, y), 1);
+                else if (type.equalsIgnoreCase("role")) grid.addZone(ZoneType.ROLE, Position.of(x, y), 1);
                 break;
 
             default:
@@ -395,7 +400,8 @@ public class GameState {
                     entity.isDeactivated(),
                     punishment,
                     goalZones,
-                    roleZones
+                    roleZones,
+                    this.perceiveAbsolutePosition? entity.getPosition() : null
             ));
         }
         return result;

@@ -1,0 +1,38 @@
+{
+  "scenario": "Tournier1",
+  "host": "localhost",
+  "port": 12300,
+  "scheduling": false,
+  "only-once": true,
+  "timeout": 3000,
+  "times": false,
+  "notifications": false,
+  "queued": false,
+
+  "entities" : {},
+  
+  "multi-entities": [
+    {
+      "name-prefix": "Connection5",
+      "username-prefix": "Team5",
+      "password": "Team5",
+      "print-iilang": false,
+      "print-json": false,
+      "start-index": 1,
+      "count": -1
+    },
+{
+      "name-prefix": "Connection1",
+      "username-prefix": "Team1",
+      "password": "Team1",
+      "print-iilang": false,
+      "print-json": false,
+      "start-index": 1,
+      "count": -1
+    }
+  ],
+
+  "status-entity": {
+    "name": "StatusEntity"
+  }
+}

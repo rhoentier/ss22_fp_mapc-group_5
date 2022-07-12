@@ -37,7 +37,7 @@ public class BasicAgent extends Agent {
                     int id = ((Numeral) param).getValue().intValue();
                     if (id > lastID) {
                         lastID = id;
-                        return new Action("move", new Identifier("e"));
+                        return new Action("move", new Identifier("n"));
                     }
                 }
             }

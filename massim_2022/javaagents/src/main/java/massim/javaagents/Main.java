@@ -32,10 +32,8 @@ public class Main {
                 for (int i = 0; i < confFiles.length; i++) {
                     System.out.println(i + " " + confFiles[i]);
                 }
-                
-                Integer confNum = null;
-                /*
                 Scanner in = new Scanner(System.in);
+                Integer confNum = null;
                 while (confNum == null) {
                     try {
                         confNum = Integer.parseInt(in.next());
@@ -47,14 +45,11 @@ public class Main {
                         System.out.println("Invalid number, try again:");
                     }
                 }
-                */
-                // Fixed Coded input
-                confNum = 1;
                 configDir = confFiles[confNum].getPath();
             }
         }
         Scheduler scheduler = new Scheduler(configDir);
-
+                
         System.out.println("PHASE 2: INSTANTIATING ENVIRONMENT");
         EnvironmentInterface ei = new EnvironmentInterface(configDir + File.separator + "eismassimconfig.json");
 
