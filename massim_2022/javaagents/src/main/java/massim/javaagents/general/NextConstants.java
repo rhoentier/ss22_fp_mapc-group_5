@@ -13,7 +13,6 @@ public final class NextConstants {
     public final static Vector2D SouthPoint = new Vector2D(0, 1);
     public final static Vector2D NorthPoint = new Vector2D(0, -1);
 
-
     /**
      * Enum for Priority Map
      *
@@ -35,8 +34,7 @@ public final class NextConstants {
         CLEAR,
         SKIPT,
     }
-*/
-
+     */
     /**
      * selection Priotiy to be used by Agents
      */
@@ -147,5 +145,13 @@ public final class NextConstants {
 		surveyDispenser,
 		surveyGoalZone,
 		surveyRoleZone
+    }
+
+    public static enum EVisibleThings {
+        entity, 
+        block, 
+        dispenser, 
+        marker,
+        obstacle
     }
 }

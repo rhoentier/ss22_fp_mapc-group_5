@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 import massim.javaagents.agents.NextAgent;
+import massim.javaagents.agents.NextGroup;
 
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.ECardinals;
@@ -19,6 +21,8 @@ public class NextMap {
     private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
+    private NextGroup group;
+
     private HashSet<NextMapTile> dispensers = new HashSet<>();
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
@@ -28,6 +32,13 @@ public class NextMap {
     private boolean foundGoalZone = false;
 
     private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
+
+    public NextMap(NextGroup group) {
+        map = new NextMapTile[1][1];
+        map[0][0] = new NextMapTile(0, 0, 0, "unknown");
+        excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
+        this.group = group;
+    }
 
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
@@ -40,14 +51,14 @@ public class NextMap {
 
     /**
      * Add an array of things to the map.
-     * @param agentPosition Current position of the agent (absolute)
+     * @param agent
      * @param percept Array of things as NextMapTiles. Position within NextMapTile is local (rel. to the agents position)
      */
-    public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
+    public void AddPercept(NextAgent agent, HashSet<NextMapTile> percept) {
         NextMapTile clonedMaptile;
         for (NextMapTile maptile : percept) {
             clonedMaptile = maptile.clone();
-            clonedMaptile.SetPosition(agent.GetPosition().getAdded(clonedMaptile.GetPosition()));
+            clonedMaptile.SetPosition(clonedMaptile.GetPosition().getAdded(agent.GetPosition())); 
             setMapTile(clonedMaptile);
         }
     }
@@ -121,9 +132,8 @@ public class NextMap {
 
         NextMapTile existingMapTile;
 
-        Vector2D moveArray = new Vector2D(extendArray(maptile.GetPosition()));
-
-        agent.MovePosition(moveArray);
+        Vector2D moveArray = new Vector2D(extendArray(this, maptile.GetPosition()));
+        group.MoveAllAgents(moveArray);
         maptile.MovePosition(moveArray);
 
         existingMapTile = GetMapTile(maptile.GetPosition());
@@ -164,11 +174,14 @@ public class NextMap {
      * @param maptile maptile to be added
      */
     private void addTo(HashSet<NextMapTile> hashSet, NextMapTile maptile) {
+        /*
         for (NextMapTile mt : hashSet) {
             if (maptile.GetPosition().equals(mt.GetPosition())) {
                 return;
             }
         }
+        hashSet.add(maptile.Clone()); 
+        */
         hashSet.add(maptile.Clone());
     }
 
@@ -177,24 +190,24 @@ public class NextMap {
      *
      * @param positionMapTile position of the map tile to be added relative to the upper left corner
      */
-    private Vector2D extendArray(Vector2D positionMapTile) {
+    private static Vector2D extendArray(NextMap nextMap, Vector2D positionMapTile) {
 
         int minExtend = 1; // ToDo: Should be extended in the future for higher efficiency. 1 is good for debugging.
         Vector2D numExtend = new Vector2D(0, 0);
         Vector2D offset = new Vector2D(0, 0);
-        Vector2D sizeOfMap = GetSizeOfMap();
+        Vector2D sizeOfMap = nextMap.GetSizeOfMap();
 
         // Find if extension is needed in x-direction
-        if (positionMapTile.x >= map.length) {
-            numExtend.x = Math.max(positionMapTile.x - map.length + 1, minExtend);
+        if (positionMapTile.x >= nextMap.map.length) {
+            numExtend.x = Math.max(positionMapTile.x - nextMap.map.length + 1, minExtend);
         } else if (positionMapTile.x < 0) {
             numExtend.x = Math.max(-1 * positionMapTile.x, minExtend);
             offset.x = numExtend.x;
         }
 
         // Find if extension is needed in y-direction
-        if (positionMapTile.y >= map[0].length) {
-            numExtend.y = Math.max(positionMapTile.y - map[0].length + 1, minExtend);
+        if (positionMapTile.y >= nextMap.map[0].length) {
+            numExtend.y = Math.max(positionMapTile.y - nextMap.map[0].length + 1, minExtend);
         } else if (positionMapTile.y < 0) {
             numExtend.y = Math.max(-1 * positionMapTile.y, minExtend);
             offset.y = numExtend.y;
@@ -214,27 +227,62 @@ public class NextMap {
 
             // Copy existing map to tmp map
             NextMapTile newMapTile;
-            for (int i = 0; i < this.map.length; i++) {
-                for (int j = 0; j < this.map[i].length; j++) {
-                    newMapTile = this.map[i][j].Clone();
+            for (int i = 0; i < nextMap.map.length; i++) {
+                for (int j = 0; j < nextMap.map[i].length; j++) {
+                    newMapTile = nextMap.map[i][j].Clone();
                     newMapTile.MovePosition(offset);
                     tmp[i + offset.x][j + offset.y] = newMapTile;
                 }
             }
 
             // Replace existing map
-            this.map = tmp;
+            nextMap.map = tmp;
 
             // Move existing dispensers, goalZones and roleZones
-            for (NextMapTile disp : dispensers) {
+            
+            
+            /* --- Old Code to remove
+            for (NextMapTile disp : nextMap.dispensers) {
                 disp.MovePosition(offset);
             }
-            for (NextMapTile goal : goalZones) {
+            for (NextMapTile goal : nextMap.goalZones) {
                 goal.MovePosition(offset);
             }
-            for (NextMapTile role : roleZones) {
+            for (NextMapTile role : nextMap.roleZones) {
                 role.MovePosition(offset);
-            }
+            }*/
+            //------------- move dispensers
+        
+        HashSet<NextMapTile> newDispensers = new HashSet<>();
+        for ( NextMapTile tile : nextMap.dispensers ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newDispensers.add(newTile);
+        }
+        
+        nextMap.dispensers = newDispensers;
+
+        //------------- move GoalZones
+        
+        HashSet<NextMapTile> newGoalZones = new HashSet<>();
+        for ( NextMapTile tile : nextMap.goalZones ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newGoalZones.add(newTile);
+        }
+        
+        nextMap.goalZones = newGoalZones;
+
+        //------------- move dispensers
+        
+        HashSet<NextMapTile> newRoleZones = new HashSet<>();
+        for ( NextMapTile tile : nextMap.roleZones ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newRoleZones.add(newTile);
+        }
+        
+        nextMap.roleZones = newRoleZones;
         }
         return offset;
     }
@@ -369,5 +417,135 @@ public class NextMap {
         return !dispensers.isEmpty();
         //System.out.println("IsDispenserAvailable: \n" + foundDispenser);
     	//return foundDispenser;
+    }
+    
+    //------------- TEST
+    
+    public static void UpdateMap(NextAgent agent) {
+
+        NextMap map = agent.GetMap();
+        Vector2D position = agent.GetPosition();
+
+        if (agent.GetAgentStatus().GetLastAction().equals("move") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
+
+            Vector2D lastStep = new Vector2D(0, 0);
+
+            switch (agent.GetAgentStatus().GetLastActionParams()) {
+                case "[n]":
+                    lastStep = new Vector2D(0, -1);
+                    break;
+                case "[e]":
+                    lastStep = new Vector2D(1, 0);
+                    break;
+                case "[s]":
+                    lastStep = new Vector2D(0, 1);
+                    break;
+                case "[w]":
+                    lastStep = new Vector2D(-1, 0);
+                    break;
+            }
+
+            map.setMapTile(new NextMapTile(position.getAdded(lastStep), agent.GetSimulationStatus().GetCurrentStep(), "Agent"));
+            agent.MovePosition(lastStep);
+
+
+            // 1. Add all maptiles of view as "free"
+            HashSet<NextMapTile> view = new HashSet<>();
+
+            int vision = agent.GetAgentStatus().GetCurrentRole().GetVision();
+
+            HashSet<Vector2D> vectorsInView = generateVectorsInView(vision, false);
+            for (Vector2D v : vectorsInView) {
+                view.add(new NextMapTile(v, agent.GetSimulationStatus().GetCurrentStep(), "free"));
+            }
+            map.AddPercept(agent, view);
+
+            // TODO Der Teil muss kluger ersetzt werden
+            
+            for (NextMapTile tile : agent.GetAgentStatus().GetGoalZones()){
+                NextMapTile tileToAdd = tile.clone();
+                tileToAdd.MovePosition(agent.GetPosition());
+                agent.GetMap().goalZones.add(tileToAdd);
+            }
+            
+            for (NextMapTile tile : agent.GetAgentStatus().GetRoleZones()){
+                NextMapTile tileToAdd = tile.clone();
+                tileToAdd.MovePosition(agent.GetPosition());
+                agent.GetMap().roleZones.add(tileToAdd);
+            }
+            
+            /* old code to remoce
+            Iterator<NextMapTile> goalZoneIt = agent.GetAgentStatus().GetGoalZones().iterator();
+            while(goalZoneIt.hasNext()) {
+                NextMapTile next = goalZoneIt.next();
+                if(i == next.getPositionX() && j == next.getPositionY()) {
+                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "goalZone"));
+                }
+            }
+            Iterator<NextMapTile> roleZoneIt = agent.GetAgentStatus().GetRoleZones().iterator();
+            while (roleZoneIt.hasNext()) {
+                NextMapTile next = roleZoneIt.next();
+                if (i == next.getPositionX() && j == next.getPositionY()) {
+                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "roleZone"));
+                }
+            }
+            */
+
+            // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
+            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+
+            for (NextMapTile thing : agent.GetAgentStatus().GetVisibleThings()) {
+                if (!agent.GetAgentStatus().GetAttachedElementsVector2D().contains(thing.GetPosition())) {
+                    visibleNotAttachedThings.add(thing);
+                }
+            }
+            map.AddPercept(agent, visibleNotAttachedThings);
+
+            // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
+            map.AddPercept(agent, agent.GetAgentStatus().GetObstacles());
+
+            // Only for debugging
+            /*
+            map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
+
+            try {
+                Thread.sleep(0); // Wait for 2 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // */
+        }
+    }
+
+    /**
+     *
+     * @param vision
+     * @param includeCenter
+     * @return
+     */
+    private static HashSet<Vector2D> generateVectorsInView (int vision, boolean includeCenter){
+        HashSet<Vector2D> view = new HashSet<>();
+        for (int i = -1 * vision; i <= vision; i++) {
+            for (int j = -1 * vision; j <= vision; j++) {
+                if (Math.abs(i) + Math.abs(j) <= vision) {
+                    if (i != 0 || j != 0 || includeCenter) {
+                        view.add(new Vector2D(i, j));
+                    }
+                }
+            }
+        }
+        return view;
+    }
+    public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
+
+        NextMapTile newMapTile;
+        for (int i = 0; i < mapToAdd.map.length; i++) {
+            for (int j = 0; j < mapToAdd.map[i].length; j++) {
+                newMapTile = mapToAdd.map[i][j].Clone();
+                newMapTile.MovePosition(offset);
+                mapToKeep.setMapTile(newMapTile);
+            }
+        }
+        return mapToKeep;
     }
 }

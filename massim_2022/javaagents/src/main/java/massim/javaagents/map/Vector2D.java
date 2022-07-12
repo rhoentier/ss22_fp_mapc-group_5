@@ -251,7 +251,7 @@ public class Vector2D {
         }
         return false;
     }
-
+    
     @Override
     public String toString() {
         return "Vector2d[" + x + ", " + y + "]";

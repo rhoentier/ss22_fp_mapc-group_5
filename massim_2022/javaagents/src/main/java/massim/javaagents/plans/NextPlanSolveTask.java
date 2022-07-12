@@ -54,6 +54,7 @@ public class NextPlanSolveTask extends NextPlan {
             for (NextMapTile dispenser : dispensers) {
                 if (dispenser.getThingType() != block.getThingType()) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
+                // TODO: Hier muss der Pfad verbessert werden
                 int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(), nearestGoalZone).size();
                 if (shortestWayFromDispenserToGoalZone == 0 || wayFromDispenserToGoalZone < shortestWayFromDispenserToGoalZone)
                     shortestWayFromDispenserToGoalZone = wayFromDispenserToGoalZone;
@@ -82,7 +83,7 @@ public class NextPlanSolveTask extends NextPlan {
      * @param sumOfShortestWays Summe der Wege von Dispensern zu den GoalZones
      */
     private void setMaxPossibleProfit(int sumOfShortestWays) {
-        int remainingSteps = (int) task.GetDeadline() - agent.getSimulationStatus().GetCurrentStep();
+        int remainingSteps = (int) task.GetDeadline() - agent.GetSimulationStatus().GetCurrentStep();
         maxPossibleProfit = (int) task.GetReward() * (remainingSteps / sumOfShortestWays);
     }
 
@@ -116,13 +117,13 @@ public class NextPlanSolveTask extends NextPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void CheckIfDeadlineIsReached() {
-        if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(taskName))
+        if (agent.GetAgentStatus().GetLastAction().contains("submit") && agent.GetAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(taskName))
             failStatus += 1;
-        else if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(taskName))
+        else if (agent.GetAgentStatus().GetLastAction().contains("submit") && agent.GetAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(taskName))
             failStatus = 0;
 
         if (failStatus == failOffest) isDeadlineFulfillable = false;
-        int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
+        int stepsUntilTaskIsFinished = agent.GetSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
         if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
     }
 
@@ -130,7 +131,7 @@ public class NextPlanSolveTask extends NextPlan {
      * prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
     public boolean CheckIfTaskIsFulfilled() {
-        if (agent.getAgentStatus().GetLastAction().equals("submit") && agent.getAgentStatus().GetLastActionResult().equals("success")) {
+        if (agent.GetAgentStatus().GetLastAction().equals("submit") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
             for (NextPlan subplan : subPlans) {
                 subplan.SetPlanIsFulfilled(false);
             }
@@ -194,8 +195,8 @@ public class NextPlanSolveTask extends NextPlan {
             }
             if (subPlan instanceof NextPlanDispenser) {
                 // prüft, welche Blöcke momentan attached sind
-                HashSet<NextMapTile> visibleThings = agent.getAgentStatus().GetVisibleThings();
-                HashSet<Vector2D> attachedElements = agent.getAgentStatus().GetAttachedElementsVector2D();
+                HashSet<NextMapTile> visibleThings = agent.GetAgentStatus().GetVisibleThings();
+                HashSet<Vector2D> attachedElements = agent.GetAgentStatus().GetAttachedElementsVector2D();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
                 for (Vector2D attachedElement : attachedElements) {
                     for (NextMapTile visibleThing : visibleThings) {

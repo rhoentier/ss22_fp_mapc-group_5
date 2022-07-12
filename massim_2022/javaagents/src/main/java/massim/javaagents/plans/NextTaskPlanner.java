@@ -5,7 +5,6 @@ import massim.javaagents.percept.NextTask;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 public class NextTaskPlanner {
@@ -53,7 +52,7 @@ public class NextTaskPlanner {
      */
     public NextPlan GetDeepestEAgentTask() {
         // gibt den Rollenwechsel zurück, falls dieser noch notwendig ist
-        if (!agent.getAgentStatus().GetRole().equals("worker")) return firstRoleChange.GetDeepestPlan();
+        if (!agent.GetAgentStatus().GetRole().equals("worker")) return firstRoleChange.GetDeepestPlan();
 
         // find a fulfillable plan
         currentPlan = findBestFulfillablePlan();

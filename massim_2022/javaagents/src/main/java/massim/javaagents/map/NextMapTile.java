@@ -1,7 +1,6 @@
 package massim.javaagents.map;
 
 import java.util.Objects;
-
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
@@ -50,6 +49,14 @@ public class NextMapTile {
         this.thingType = "";
     }
 
+    public NextMapTile(Vector2D position, Integer lastStepObserved, String thingType) {
+        this.positionX = position.x;
+        this.positionY = position.y;
+        this.lastVisionStep = lastStepObserved;
+        this.isAThing = true;
+        this.thingType = thingType;
+
+    }
     public Boolean getIsAThing() {
         return isAThing;
     }
@@ -106,12 +113,12 @@ public class NextMapTile {
      * @return
      */
     public Boolean IsWalkable() {
-        return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.startsWith("block");
+        return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
     }
     
     public Boolean IsObstacle()
     {
-    	return thingType.equals("obstacle");
+    	return thingType.contains("obstacle");
     }
     public boolean isOpen() {
         return open;
@@ -157,13 +164,38 @@ public class NextMapTile {
     public NextMapTile clone() {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NextMapTile other = (NextMapTile) obj;
+        if (!Objects.equals(this.thingType, other.thingType)) {
+            return false;
+        }
+        if (!Objects.equals(this.positionX, other.positionX)) {
+            return false;
+        }
+        if (!Objects.equals(this.positionY, other.positionY)) {
+            return false;
+        }
+        return Objects.equals(this.isAThing, other.isAThing);
+    }
+
     
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 61 * hash + Objects.hashCode(this.positionX);
         hash = 61 * hash + Objects.hashCode(this.positionY);
-        hash = 61 * hash + Objects.hashCode(this.isAThing);
+        //hash = 61 * hash + Objects.hashCode(this.isAThing);
         hash = 61 * hash + Objects.hashCode(this.thingType);
         return hash;
     }

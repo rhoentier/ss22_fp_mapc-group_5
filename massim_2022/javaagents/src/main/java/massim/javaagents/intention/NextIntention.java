@@ -45,7 +45,7 @@ public class NextIntention {
 	public NextIntention(NextAgent nextAgent) {
 		this.nextAgent = nextAgent;
 		possibleActions = new ArrayList<Action>();
-		nextAgentStatus = nextAgent.getAgentStatus();
+		nextAgentStatus = nextAgent.GetAgentStatus();
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class NextIntention {
 		// TODO Rollenwechsel implementieren
 		// Wenn Agent in einer RoleZone und noch nicht worker ist
 		if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetRoleZones())
-				&& !nextAgent.getAgentStatus().GetRole().equals("worker")) {
+				&& !nextAgent.GetAgentStatus().GetRole().equals("worker")) {
 			possibleActions.add(NextAgentUtil.GenerateRoleChangeAction("worker"));
 			nextAgent.ClearPathMemory();
 		}
@@ -330,7 +330,7 @@ public class NextIntention {
 			desiredActions.add(NextConstants.EActions.submit);
 			try {
 				roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions,
-						nextAgent.getSimulationStatus().GetRolesList());
+						nextAgent.GetSimulationStatus().GetRolesList());
 			} catch (Exception e) {
 				System.out.println(e.toString());
 			}
