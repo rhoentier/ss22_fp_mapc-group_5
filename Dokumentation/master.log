@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.6.20)  20 JUN 2022 20:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.11)  11 JUL 2022 15:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,27 +6,27 @@ entering extended mode
 (master.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-02-24>
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrbook.cls
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrbook.cls
 Document Class: scrbook 2022/05/01 v3.36 KOMA-Script document class (book)
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrkbase.sty
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrkbase.sty
 Package: scrkbase 2022/05/01 v3.36 KOMA-Script package (KOMA-Script-dependent b
 asics and keyval usage)
-
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrbase.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrbase.sty
 Package: scrbase 2022/05/01 v3.36 KOMA-Script package (KOMA-Script-independent 
 basics and keyval usage)
 
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrlfile.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrlfile.sty
 Package: scrlfile 2022/05/01 v3.36 KOMA-Script package (file load hooks)
 
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrlfile-hook.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrlfile-hoo
+k.sty
 Package: scrlfile-hook 2022/05/01 v3.36 KOMA-Script package (using LaTeX hooks)
 
 
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrlogo.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrlogo.sty
 Package: scrlogo 2022/05/01 v3.36 KOMA-Script package (logo)
-)))
-(D:\Programme\MiKTeX\tex/latex/graphics\keyval.sty
+))) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks16
 )
@@ -34,7 +34,7 @@ Applying: [2021/05/01] Usage of raw or classic option list on input line 252.
 Already applied: [0000/00/00] Usage of raw or classic option list on input line
  368.
 ))
-(D:\Programme\MiKTeX\tex/latex/koma-script\tocbasic.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\tocbasic.sty
 Package: tocbasic 2022/05/01 v3.36 KOMA-Script package (handling toc-files)
 \scr@dte@tocline@numberwidth=\skip47
 \scr@dte@tocline@numbox=\box50
@@ -50,11 +50,12 @@ Package scrbook Info: You've used standard option `12pt'.
 Class scrbook Info: File `scrsize12pt.clo' used to setup font sizes on input li
 ne 2505.
 
-(D:\Programme\MiKTeX\tex/latex/koma-script\scrsize12pt.clo
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\scrsize12pt.
+clo
 File: scrsize12pt.clo 2022/05/01 v3.36 KOMA-Script font size class option (12pt
 )
 )
-(D:\Programme\MiKTeX\tex/latex/koma-script\typearea.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/koma-script\typearea.sty
 Package: typearea 2022/05/01 v3.36 KOMA-Script package (type area)
 \ta@bcor=\skip48
 \ta@div=\count185
@@ -133,39 +134,40 @@ Package tocbasic Info: babel extension for `lot' omitted
 \c@table=\count194
 Class scrbook Info: Redefining `\numberline' on input line 7155.
 \bibindent=\dimen138
-)
-(D:\Programme\MiKTeX\tex/generic/babel\babel.sty
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
 Package: babel 2022/02/26 3.73 The Babel package
 \babel@savecnt=\count195
 \U@D=\dimen139
 \l@unhyphenated=\language79
 
-(D:\Programme\MiKTeX\tex/generic/babel\txtbabel.def)
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
 \bbl@readstream=\read2
 \bbl@dirlevel=\count196
 
 *************************************
 * Local config file bblopts.cfg used
 *
-(D:\Programme\MiKTeX\tex/latex/arabi\bblopts.cfg
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
 File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
  babel
 )
-(D:\Programme\MiKTeX\tex/latex/babel-german\ngerman.ldf
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngerman.ldf
 Language: ngerman 2021/02/27 v2.13 German support for babel (post-1996 orthogra
 phy)
 
-(D:\Programme\MiKTeX\tex/latex/babel-german\ngermanb.ldf
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngermanb.ld
+f
 Language: ngermanb 2021/02/27 v2.13 German support for babel (post-1996 orthogr
 aphy)
 Package babel Info: Making " an active character on input line 122.
 )))
-(D:\Programme\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
+ex.def
 File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count197
 \l__pdf_internal_box=\box52
-) (master.aux
-(introduction.aux) (method.aux) (conclusion.aux))
+) (master.aux (introduction.aux) (method.aux) (turnier.aux)
+(conclusion.aux) (FAQ.aux))
 \openout1 = `master.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
@@ -190,7 +192,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 
 
-{C:/Users/Miri/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (master.toc
+{C:/Users/miwo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (master.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 3.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -224,17 +226,42 @@ chapter 2.
 
  (turnier.tex
 chapter 3.
-) [5
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--10
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--23
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--27
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--33
+
+ []
+
+[5
 
 
 
 
 ]
+Underfull \hbox (badness 10000) in paragraph at lines 34--38
+
+ []
+
+) [6]
 \openout2 = `conclusion.aux'.
 
  (conclusion.tex
 chapter 4.
-) [6
+) [7
 
 
 
@@ -244,7 +271,7 @@ chapter 4.
 
  (FAQ.tex
 chapter 5.
-) [7
+) [8
 
 
 
@@ -252,19 +279,21 @@ chapter 5.
 ] (master.aux (introduction.aux) (method.aux) (turnier.aux) (conclusion.aux) (F
 AQ.aux)) ) 
 Here is how much of TeX's memory you used:
- 4655 strings out of 478582
- 104783 string characters out of 2856072
- 538309 words of memory out of 3000000
- 22832 multiletter control sequences out of 15000+600000
- 474392 words of font info for 45 fonts, out of 8000000 for 9000
+ 4667 strings out of 478582
+ 105002 string characters out of 2844816
+ 543811 words of memory out of 3000000
+ 22839 multiletter control sequences out of 15000+600000
+ 474744 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 108i,7n,106p,10630b,340s stack positions out of 10000i,1000n,20000p,200000b,80000s
-<D:/Programme/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/Pro
-gramme/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><D:/Programme/MiKTeX/fon
-ts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on master.pdf (7 pages, 50248 bytes).
+ 108i,8n,106p,10630b,340s stack positions out of 10000i,1000n,20000p,200000b,80000s
+<C:/Users/miwo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmr12.pfb><C:/Users/miwo/AppData/Local/Programs/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmr17.pfb><C:/Users/miwo/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/amsfonts/cm/cmsl12.pfb><C:/Users/miwo/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmssbx10.pfb>
+Output written on master.pdf (8 pages, 66302 bytes).
 PDF statistics:
- 41 PDF objects out of 1000 (max. 8388607)
+ 49 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

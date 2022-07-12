@@ -219,13 +219,17 @@ public class NextAgent extends Agent {
             if (nextPlan != null) {
                 NextTask nextTask = taskPlanner.GetCurrentTask();
                 // Neuen Task nur setzen, wenn sich der Task verändert hat.
-                if (nextTask != null) {
-                    if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
-                        intention.ResetAfterTaskChange(nextTask);
-                        SetActiveTask(nextTask);
-                    }
-                }
-                SetAgentPlan(nextPlan);
+                if(nextTask != null) 
+            	{
+                	if(this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName()))
+                	{
+                		if(!this.agentActivity.toString().contains("survey")) {
+                			intention.ResetAfterTaskChange(nextTask);
+                		}
+                		SetActiveTask(nextTask);
+                	}
+            	}
+            	SetAgentPlan(nextPlan);
             }
             
             generatePathMemory();
