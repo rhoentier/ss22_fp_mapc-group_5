@@ -800,11 +800,22 @@ public final class NextAgentUtil {
 		return result;
 	}
 
+	/**
+	 * get the other rotationdirection
+	 * @param current
+	 * @return
+	 */
     public static String GetOtherRotation(String current)
     {
     	return current.equals("cw") ? "ccw" : "cw";
     }
 
+    /**
+     * Check rotation direction
+     * @param blockPosition
+     * @param direction
+     * @return
+     */
 	public static Vector2D GetNextToRotateDirection(Vector2D blockPosition, String direction) {
 		Vector2D rotateTo = blockPosition.clone();
 		if(direction.equals("cw")) rotateTo.rotateCW(); 
@@ -812,6 +823,14 @@ public final class NextAgentUtil {
 		return rotateTo;
 	}
 	
+	/**
+	 * Check, if another Agent is in near from block
+	 * @param agentID
+	 * @param blockPosition
+	 * @param localView
+	 * @param nextAgentPosition
+	 * @return
+	 */
 	public static Boolean IsAnotherAgentInFrontOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView, Vector2D nextAgentPosition)
 	{
 		for(NextMapTile tile : localView)
@@ -819,38 +838,33 @@ public final class NextAgentUtil {
 			if(tile.getThingType().contains("entity")) {
 				Vector2D newBlockPosition = new Vector2D(blockPosition);
 				newBlockPosition.add(new Vector2D(0, -1)); //n
-				if(!tile.GetPosition().equals(new Vector2D(0,0))
-						&& tile.GetPosition().equals(newBlockPosition) 
-						&& tile.getThingType().contains("entity"))
-				{
-					return true;
-				}
+				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+				
 				newBlockPosition = new Vector2D(blockPosition);
 				newBlockPosition.add(new Vector2D(1, 0)); //e
-				if(!tile.GetPosition().equals(new Vector2D(0,0))
-						&& tile.GetPosition().equals(newBlockPosition) 
-						&& tile.getThingType().contains("entity"))
-				{
-					return true;
-				}
+				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+
 				newBlockPosition = new Vector2D(blockPosition);
 				newBlockPosition.add(new Vector2D(0, 1)); //s
-				if(!tile.GetPosition().equals(new Vector2D(0,0))
-						&& tile.GetPosition().equals(newBlockPosition) 
-						&& tile.getThingType().contains("entity"))
-				{
-					return true;
-				} 
+				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+
 				newBlockPosition = new Vector2D(blockPosition);
 				newBlockPosition.add(new Vector2D(-1, 0)); //w
-				if(!tile.GetPosition().equals(new Vector2D(0,0))
-						&& tile.GetPosition().equals(newBlockPosition) 
-						&& tile.getThingType().contains("entity"))
-				{
-					return true;
-				}
+				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+
 			}
-		}		
+		}	
+		return false;
+	}
+	
+	private static Boolean isAgentInNewBlockPosition(NextMapTile tile, Vector2D newBlockPosition)
+	{
+		if(!tile.GetPosition().equals(new Vector2D(0,0))
+				&& tile.GetPosition().equals(newBlockPosition) 
+				&& tile.getThingType().contains("entity"))
+		{
+			return true;
+		}
 		return false;
 	}
 }

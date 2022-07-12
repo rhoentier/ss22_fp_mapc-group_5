@@ -37,7 +37,6 @@ public class NextIntention {
 	ArrayList<Action> possibleActions;
 	private NextAgentStatus nextAgentStatus;
 
-	// TODO Properties
 	private int lastSurveyedDistance = 0;
 	private String lastDirection = "n";
 	private int surveySteps = 0;
@@ -46,7 +45,7 @@ public class NextIntention {
 	public NextIntention(NextAgent nextAgent) {
 		this.nextAgent = nextAgent;
 		possibleActions = new ArrayList<Action>();
-		nextAgentStatus = nextAgent.GetAgentStatus();
+		nextAgentStatus = nextAgent.getAgentStatus();
 	}
 
 	/**
@@ -81,7 +80,7 @@ public class NextIntention {
 		// TODO Rollenwechsel implementieren
 		// Wenn Agent in einer RoleZone und noch nicht worker ist
 		if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetRoleZones())
-				&& !nextAgent.GetAgentStatus().GetRole().equals("worker")) {
+				&& !nextAgent.getAgentStatus().GetRole().equals("worker")) {
 			possibleActions.add(NextAgentUtil.GenerateRoleChangeAction("worker"));
 			nextAgent.ClearPathMemory();
 		}
@@ -92,7 +91,7 @@ public class NextIntention {
 		for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
 			Vector2D position = visibleThing.GetPosition();
-			// Dispenser && Agent steht neben einem Ding && Agent hat aktiven Task &&
+			// Dispenser && Agent steht direkt neben ihm && Agent hat aktiven Task &&
 			// Block-Typ stimmt
 			if (visibleThing.getThingType().contains("dispenser") 
 					&& this.nextAgent.GetActiveTask() != null
@@ -109,7 +108,7 @@ public class NextIntention {
 				}
 			}
 
-			// Block && Aktiver Task && Agent hat freie Slots
+			// Block && Aktiver Task && Agent steht neben ihm && Agent hat freie Slots
 			if (visibleThing.getThingType().contains("block") 
 					&& this.nextAgent.GetActiveTask() != null
 					&& NextAgentUtil.NextToUsingLocalView(position, this.nextAgent)
@@ -218,7 +217,8 @@ public class NextIntention {
 		NextMap map = this.nextAgent.GetMap();
 
 		nextAgent.SetAgentTask(plan.GetAgentTask());
-		
+
+		// Survey failed 2 times -> Randomstep
 		if(surveyOutOfSteps == 2)
 		{
 			possibleActions.add(generateDefaultAction()); // fallback
@@ -227,46 +227,46 @@ public class NextIntention {
 		
 		// Move to..
 		switch (plan.GetAgentTask()) {
-			case surveyDispenser:
-				survey("dispenser");
-				break;
-			case surveyGoalZone:
-				survey("goal");
-				break;
-			case surveyRoleZone:
-				survey("role");
-				break;
-			case goToDispenser:
-				// Only new pathMemory, if the current Path is empty
-				if (this.nextAgent.GetPathMemory().isEmpty()) {
-					Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
-							((NextPlanDispenser) plan).GetDispenser().getThingType());
-					this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
-					if (this.nextAgent.GetPathMemory().size() == 0) {
-						possibleActions.add(generateDefaultAction()); // fallback
-					}
+		case surveyDispenser:
+			survey("dispenser");
+			break;
+		case surveyGoalZone:
+			survey("goal");
+			break;
+		case surveyRoleZone:
+			survey("role");
+			break;
+		case goToDispenser:
+			// Only new pathMemory, if the current Path is empty
+			if (this.nextAgent.GetPathMemory().isEmpty()) {
+				Vector2D foundDispenser = NextAgentUtil.GetDispenserFromType(map.GetDispensers(),
+						((NextPlanDispenser) plan).GetDispenser().getThingType());
+				this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(foundDispenser));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
 				}
-				break;
-			case goToGoalzone:
-				if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
-					this.nextAgent.SetPathMemory(this.nextAgent
-							.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
-					if (this.nextAgent.GetPathMemory().size() == 0) {
-						possibleActions.add(generateDefaultAction()); // fallback
-					}
+			}
+			break;
+		case goToGoalzone:
+			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+				this.nextAgent.SetPathMemory(this.nextAgent
+						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
 				}
-				break;
-			case goToRolezone:
-				if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
-					this.nextAgent.SetPathMemory(this.nextAgent
-							.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())));
-					if (this.nextAgent.GetPathMemory().size() == 0) {
-						possibleActions.add(generateDefaultAction()); // fallback
-					}
+			}
+			break;
+		case goToRolezone:
+			if (this.nextAgent.GetPathMemory().isEmpty() && map.IsRoleZoneAvailable()) {
+				this.nextAgent.SetPathMemory(this.nextAgent
+						.CalculatePath(NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetRoleZones())));
+				if (this.nextAgent.GetPathMemory().size() == 0) {
+					possibleActions.add(generateDefaultAction()); // fallback
 				}
-				break;
-			default:
-				break;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -290,7 +290,7 @@ public class NextIntention {
 						surveySteps++;
 					} else if (surveySteps == 2) {
 						// north or south
-						if (distance < lastSurveyedDistance) {
+						if (distance > lastSurveyedDistance) {
 							lastDirection += "e";
 						} else {
 							lastDirection += "w";
@@ -303,7 +303,6 @@ public class NextIntention {
 					lastSurveyedDistance = distance;
 				}
 			} else {
-				surveyOutOfSteps++;
 				possibleActions.add(NextAgentUtil.GenerateSurveyThingAction(type));
 			}
 		}
@@ -331,7 +330,7 @@ public class NextIntention {
 			desiredActions.add(NextConstants.EActions.submit);
 			try {
 				roleToChangeTo = NextAgentUtil.FindNextRoleToAdapt(desiredActions,
-						nextAgent.GetSimulationStatus().GetRolesList());
+						nextAgent.getSimulationStatus().GetRolesList());
 			} catch (Exception e) {
 				System.out.println(e.toString());
 			}
