@@ -5,13 +5,9 @@ import massim.javaagents.map.Vector2D;
 
 public class NextPlanGoalZone extends NextPlan {
 
-    private Vector2D targetPosition;
-
-    public NextPlanGoalZone(Vector2D targetPosition) {
-        this.agentTask = NextConstants.EAgentTask.goToGoalzone;
-        this.targetPosition = targetPosition;
+    public NextPlanGoalZone() {
+        this.agentTask = NextConstants.EAgentActivity.goToGoalzone;
     }
-
 
     /**
      * Ereugt keine weiteren Subplans
@@ -19,9 +15,5 @@ public class NextPlanGoalZone extends NextPlan {
     @Override
     public void CreateSubPlans() {
 
-    }
-
-    private Vector2D GetTargetPosition() {
-        return targetPosition;
     }
 }

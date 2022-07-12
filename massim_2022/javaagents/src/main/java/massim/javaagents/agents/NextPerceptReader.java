@@ -4,6 +4,7 @@ import eis.iilang.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.map.NextMapTile;
@@ -63,7 +64,7 @@ public class NextPerceptReader {
      */
     public void evaluate(List<Percept> percepts, NextAgent agent) {
 
-        clearSets(); //clearing of the containers before processing of perceipts
+        clearSets(); //clearing of the containers before processing of percepts
 
         //WARNING: ConcurrentModificationException workaround! based on FitBUT
         synchronized (percepts) {
@@ -244,7 +245,7 @@ public class NextPerceptReader {
         fullLocalView.addAll(processedObstacles);
         agentStatus.SetVision(processedThings); //
         agentStatus.SetObstacles(processedObstacles);
-        agentStatus.setFullLocalView(fullLocalView);
+        agentStatus.SetFullLocalView(fullLocalView);
 
         //Process remaining Datasets
         
@@ -253,6 +254,7 @@ public class NextPerceptReader {
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
 
+        agentStatus.SetAttachedElementsNextMapTile(updateAttachedSetMapTile());
         agentStatus.SetVisibleAttachedElements(processAttachedSet());
         agentStatus.SetGoalZones(processGoalZonesSet());
         agentStatus.SetRoleZones(processRoleZonesSet());
@@ -419,6 +421,21 @@ public class NextPerceptReader {
             agent.say("\n" + "Attached Elements\n" + processedAttachedSet.toString() + "\n");
         }
         //*/
+        return processedAttachedSet;
+    }
+    
+    private HashSet<NextMapTile> updateAttachedSetMapTile() {
+        HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
+        for(NextMapTile tile : processThingsSet())
+        {
+        	if(tile.getThingType().contains("block")) 
+    		{
+        		for(Vector2D attachedSet : processAttachedSet())
+        		{
+        			if(attachedSet.equals(tile.GetPosition())) processedAttachedSet.add(tile);
+        		}        		
+    		}
+        }
         return processedAttachedSet;
     }
 
