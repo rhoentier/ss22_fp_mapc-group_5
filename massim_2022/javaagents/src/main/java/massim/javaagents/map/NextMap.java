@@ -18,7 +18,6 @@ import massim.javaagents.general.NextConstants.ECardinals;
 public class NextMap {
 
     private NextMapTile[][] map;
-    private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
     private NextGroup group;
@@ -44,8 +43,6 @@ public class NextMap {
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
-
-        this.agent = agent;
 
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
     }
@@ -85,6 +82,13 @@ public class NextMap {
         }
 
         Vector2D pos;
+        for(NextAgent agent : group.GetAgents()) {
+            pos = agent.GetPosition();
+            if (onMap(pos)){
+                stringMap[pos.x][pos.y] += "A";
+            }
+        }
+
         for(NextMapTile maptile : roleZones) {
             pos = maptile.GetPosition();
             stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
@@ -106,6 +110,8 @@ public class NextMap {
             }
         }
 
+
+
         StringBuilder outputString = new StringBuilder();
         String tmpString;
         for (int j = 0; j < map[0].length; j++) {
@@ -126,6 +132,14 @@ public class NextMap {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean onMap(Vector2D pos) {
+        Vector2D size = GetSizeOfMap();
+        if(pos.x >= 0 && pos.y >= 0 && pos.x < size.x && pos.y < size.y){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -198,10 +212,22 @@ public class NextMap {
                     roleZones.add(maptile);
                     foundRoleZone = true;
                     break;
+                case "free":
+                    this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+                    removeRoleZone(maptile.GetPosition());
+                    removeGoalZone(maptile.GetPosition());
+                    break;
                 default:
                     this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
             }
         }
+    }
+
+    private void removeRoleZone(Vector2D pos) {
+        this.roleZones.remove(new NextMapTile(pos.x, pos.y, 0, "roleZone"));
+    }
+    private void removeGoalZone(Vector2D pos) {
+        this.goalZones.remove(new NextMapTile(pos.x, pos.y, 0, "goalZone"));
     }
 
     // ToDo: Methode addTo() rausnehmen sobald Speichern von dispenser, goalZones und roalZones getestet
@@ -482,9 +508,8 @@ public class NextMap {
                     break;
             }
 
-            map.setMapTile(new NextMapTile(position.getAdded(lastStep), agent.GetSimulationStatus().GetCurrentStep(), "Agent"));
-            agent.MovePosition(lastStep);
 
+            agent.MovePosition(lastStep);
 
             // 1. Add all maptiles of view as "free"
             HashSet<NextMapTile> view = new HashSet<>();
@@ -497,8 +522,6 @@ public class NextMap {
             }
             map.AddPercept(agent, view);
 
-            // TODO Der Teil muss kluger ersetzt werden
-            
             for (NextMapTile tile : agent.GetAgentStatus().GetGoalZones()){
                 NextMapTile tileToAdd = tile.clone();
                 tileToAdd.MovePosition(agent.GetPosition());
@@ -510,23 +533,6 @@ public class NextMap {
                 tileToAdd.MovePosition(agent.GetPosition());
                 agent.GetMap().roleZones.add(tileToAdd);
             }
-            
-            /* old code to remoce
-            Iterator<NextMapTile> goalZoneIt = agent.GetAgentStatus().GetGoalZones().iterator();
-            while(goalZoneIt.hasNext()) {
-                NextMapTile next = goalZoneIt.next();
-                if(i == next.getPositionX() && j == next.getPositionY()) {
-                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "goalZone"));
-                }
-            }
-            Iterator<NextMapTile> roleZoneIt = agent.GetAgentStatus().GetRoleZones().iterator();
-            while (roleZoneIt.hasNext()) {
-                NextMapTile next = roleZoneIt.next();
-                if (i == next.getPositionX() && j == next.getPositionY()) {
-                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "roleZone"));
-                }
-            }
-            */
 
             // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
@@ -541,10 +547,11 @@ public class NextMap {
             // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
             map.AddPercept(agent, agent.GetAgentStatus().GetObstacles());
 
+            // 4. Add goal and role zones
             map.AddPercept(agent, agent.GetAgentStatus().GetGoalZones());
             map.AddPercept(agent, agent.GetAgentStatus().GetRoleZones());
             // Only for debugging
-            /*
+/*
             map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
 
             try {

@@ -90,6 +90,11 @@ public class NextMapTile {
         return "Empty";
     }
 
+    public void SetThingType(String thing) {
+        this.thingType = thing;
+        this.isAThing = true;
+    }
+
     public Integer getLastVisionStep() {
         return lastVisionStep;
     }
@@ -165,6 +170,7 @@ public class NextMapTile {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
     }
 
+    /*
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -188,6 +194,7 @@ public class NextMapTile {
         }
         return Objects.equals(this.isAThing, other.isAThing);
     }
+    */
 
     
     @Override
