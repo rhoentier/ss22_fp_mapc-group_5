@@ -2,6 +2,8 @@ package massim.javaagents.agents;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
+import massim.javaagents.groupPlans.NextGroupTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
@@ -9,9 +11,9 @@ import massim.javaagents.map.Vector2D;
 /**
  * Funkctions: Grouping of Agents, handling of common map and higher level
  * reasoning.
- *
+ * <p>
  * Todo: register of agents, joining maps, ...
- *
+ * <p>
  * Done:
  *
  * @author Alexander Lorenz
@@ -28,9 +30,12 @@ public class NextGroup {
 
     private NextMap groupMap = new NextMap(this);
 
+    private NextGroupTaskPlanner taskPlanner;
+
     /*
      * ##################### endregion fields
      */
+
     /**
      * ########## region constructor.
      *
@@ -40,13 +45,15 @@ public class NextGroup {
         this.groupID = id;
         this.agentSet.add(agent);
         this.agentPositionMap.put(agent, new Vector2D(0, 0));
+
+        this.taskPlanner = new NextGroupTaskPlanner(this);
     }
 
     /*
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
     public void addAgent(NextAgent agent) {
@@ -107,7 +114,7 @@ public class NextGroup {
             this.addAgent(agentToAdd);
             agentToAdd.say("OldPosition: " + agentToAdd.GetPosition());
             agentToAdd.say("Offset: " + offset);
-            this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getSubtracted(offset));
+            this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getSubtracted(offset));
             //this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getAdded(offset));
             agentToAdd.SetAgentGroup(this);
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
@@ -133,7 +140,7 @@ public class NextGroup {
     /**
      * Move the position of a single agent of this group
      *
-     * @param agent Agent to be moved
+     * @param agent  Agent to be moved
      * @param offset move by offset
      */
     public void MoveSingleAgent(NextAgent agent, Vector2D offset) {
@@ -149,17 +156,26 @@ public class NextGroup {
     public void MoveAllAgents(Vector2D offset) {
 
         for (NextAgent agent : agentPositionMap.keySet()) {
-        //    agentPositionMap.get(agent).add(offset);
-        
+            //    agentPositionMap.get(agent).add(offset);
+
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
         }
+    }
+
+    public int GetLastSimulationStep(){
+        int latestSimulationStep = -1;
+        for (NextAgent agent : agentSet){
+            int simulationStep = agent.GetSimulationStatus().GetCurrentStep();
+            latestSimulationStep =  simulationStep > latestSimulationStep ? simulationStep: latestSimulationStep;
+        }
+        return latestSimulationStep;
     }
 
     /*
      * ##################### endregion public methods
      */
 
- /*
+    /*
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
