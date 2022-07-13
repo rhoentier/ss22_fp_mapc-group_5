@@ -181,6 +181,13 @@ public class NextAgentStatus {
         return this.name;
     }
 
+    /**
+     * Extracts the id from the name
+     */
+    public int GetId() {
+        return Integer.parseInt(name.substring(5, name.length()-1));
+    }
+
     public void SetLastActionParams(String lastActionParams) {
         this.lastActionParams = lastActionParams;
     }

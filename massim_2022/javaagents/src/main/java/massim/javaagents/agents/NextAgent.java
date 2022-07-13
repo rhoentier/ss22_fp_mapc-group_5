@@ -26,6 +26,7 @@ import massim.javaagents.percept.NextTask;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
@@ -37,7 +38,6 @@ import massim.javaagents.percept.NextRole;
  * based on random movement Processing of all percepts and storing in dataVaults
  * <p>
  * ToDo: Gruppenbildung
- *
  */
 public class NextAgent extends Agent {
 
@@ -85,10 +85,11 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion fields
      */
+
     /**
      * ########## region constructor.
      *
-     * @param name the agent's name
+     * @param name    the agent's name
      * @param mailbox the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
@@ -110,7 +111,7 @@ public class NextAgent extends Agent {
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
     // Original Method
@@ -193,12 +194,10 @@ public class NextAgent extends Agent {
             }
         }
 
-        if (lastID > 3) {
-            if (lastID > 3) {   // ToDo:
-                // Check if friendly Agents are visible and join them to groups
-                processFriendlyAgents();
-                processGroupJoinMessages();
-            }
+        if (lastID > 3) {// ToDo:
+            // Check if friendly Agents are visible and join them to groups
+            processFriendlyAgents();
+            processGroupJoinMessages();
         }
 
         processServerData();
@@ -214,24 +213,23 @@ public class NextAgent extends Agent {
             clearPossibleActions();
 
             // new path
-            
+
+
             NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
             if (nextPlan != null) {
                 NextTask nextTask = taskPlanner.GetCurrentTask();
                 // Neuen Task nur setzen, wenn sich der Task verändert hat.
-                if(nextTask != null) 
-            	{
-                	if(this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName()))
-                	{
-                		if(!this.agentActivity.toString().contains("survey")) {
-                			intention.ResetAfterTaskChange(nextTask);
-                		}
-                		SetActiveTask(nextTask);
-                	}
-            	}
-            	SetAgentPlan(nextPlan);
+                if (nextTask != null) {
+                    if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
+                        if (!this.agentActivity.toString().contains("survey")) {
+                            intention.ResetAfterTaskChange(nextTask);
+                        }
+                        SetActiveTask(nextTask);
+                    }
+                }
+                SetAgentPlan(nextPlan);
             }
-            
+
             generatePathMemory();
             generatePossibleActions();
 
@@ -364,7 +362,7 @@ public class NextAgent extends Agent {
      * ##################### endregion public methods
      */
 
- /*
+    /*
      * ########## region private methods
      */
     private void resetAfterInactiveTask() {
@@ -625,6 +623,9 @@ public class NextAgent extends Agent {
      */
     private void updateTasks() {
         taskPlanner.UpdateTasks(simStatus.GetTasksList());
+        if (agentGroup != null){
+            agentGroup.UpdateTasks(simStatus.GetTasksList(), this);
+        }
     }
 
     /**
@@ -653,8 +654,8 @@ public class NextAgent extends Agent {
      * Joins the provided group and the group of the agent, if provided group
      * has a lower id. Has to be executed on both agents
      *
-     * @param newGroup - new group to combine
-     * @param offset - Vector2D manhattan distance between agents
+     * @param newGroup  - new group to combine
+     * @param offset    - Vector2D manhattan distance between agents
      * @param mapOffset - Vector2D manhattan distance between maps zero points
      */
     private void joinGroup(NextGroup newGroup, Vector2D offset, Vector2D mapOffset) {

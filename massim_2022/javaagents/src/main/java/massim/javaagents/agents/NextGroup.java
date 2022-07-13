@@ -7,6 +7,7 @@ import massim.javaagents.groupPlans.NextGroupTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
+import massim.javaagents.percept.NextTask;
 
 /**
  * Funkctions: Grouping of Agents, handling of common map and higher level
@@ -162,11 +163,24 @@ public class NextGroup {
         }
     }
 
-    public int GetLastSimulationStep(){
+    /**
+     * updates all tasks and plans for the group
+     */
+    public void UpdateTasks(HashSet<NextTask> newTasks, NextAgent agent) {
+        int minimalId = 100;
+        for (NextAgent groupAgent : agentSet) {
+            int id = groupAgent.GetAgentStatus().GetId();
+            minimalId = id < minimalId ? id : minimalId;
+        }
+        if (agent.GetAgentStatus().GetName().contains("Team5" + minimalId))
+            taskPlanner.UpdateTasks(newTasks);
+    }
+
+    public int GetLastSimulationStep() {
         int latestSimulationStep = -1;
-        for (NextAgent agent : agentSet){
+        for (NextAgent agent : agentSet) {
             int simulationStep = agent.GetSimulationStatus().GetCurrentStep();
-            latestSimulationStep =  simulationStep > latestSimulationStep ? simulationStep: latestSimulationStep;
+            latestSimulationStep = simulationStep > latestSimulationStep ? simulationStep : latestSimulationStep;
         }
         return latestSimulationStep;
     }
