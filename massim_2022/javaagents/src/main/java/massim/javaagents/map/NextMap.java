@@ -21,6 +21,9 @@ public class NextMap {
     private HashSet<String> excludeThingTypes;
 
     private NextGroup group;
+    
+    private int simulationMapHeight;
+    private int simulationMapWidth;
 
     private HashSet<NextMapTile> dispensers = new HashSet<>();
     private HashSet<NextMapTile> goalZones = new HashSet<>();
@@ -38,6 +41,9 @@ public class NextMap {
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
         this.group = group;
+        
+        simulationMapHeight = -1;
+        simulationMapWidth = -1;
     }
 
     public NextMap(NextAgent agent) {
@@ -45,6 +51,9 @@ public class NextMap {
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
 
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
+        
+        simulationMapHeight = -1;
+        simulationMapWidth = -1;
     }
 
     /**
@@ -594,4 +603,33 @@ public class NextMap {
         }
         return mapToKeep;
     }
+    
+    public void SetSimulationMapHeight(int MapHeight) {
+        this.simulationMapHeight = MapHeight;
+        
+        if (simulationMapWidth > 0){
+            resizeMapTo( this.simulationMapWidth, this.simulationMapHeight);
+        }
+    }
+
+    public int GetSimulationMapHeight() {
+        return this.simulationMapHeight;
+    }
+
+    public void SetSimulationMapWidth(int MapWidth) {
+        this.simulationMapWidth = MapWidth;
+        
+        if (simulationMapHeight > 0){
+            resizeMapTo( this.simulationMapWidth, this.simulationMapHeight);
+        }
+    }
+
+    public int GetSimulationMapWidth() {
+        return this.simulationMapWidth;
+    }
+    
+    private void resizeMapTo( int simulationMapWidth, int simulationMapHeight ){
+        System.out.println("\n \n \n \n resizeMapTo trigered \n \n \n \n");
+    }
+    
 }

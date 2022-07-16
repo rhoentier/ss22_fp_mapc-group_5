@@ -125,6 +125,7 @@ public class NextAgent extends Agent {
 
         String[] messageContainer = message.toString().split(",");
 
+        //-- GroupBuilding start
         // Message Type: AgentObserved,Step,6,X,0,Y,3
         if (messageContainer[0].contains("AgentObserved")) {
             if (!(this.simStatus.GetCurrentStep() == null) && (Integer.parseInt(messageContainer[2]) > 2)) {
@@ -162,6 +163,24 @@ public class NextAgent extends Agent {
             }
         }
 
+        //-- GroupBuilding end
+        
+        //-- MapSizeDicovery start
+        
+        // "MapSizeDiscoveryHasStarted"
+        if (messageContainer[0].contains("MapSizeDiscoveryHasStarted")) {
+            this.simStatus.ActivateMapSizeDiscovery();
+        }
+        // "MapHeightFound"
+        if (messageContainer[0].contains("MapHeightFound")) {
+            this.SetSimulationMapHeight(Integer.parseInt(messageContainer[1]));
+        }
+        // "MapWidthFound"
+        if (messageContainer[0].contains("MapWidthFound")) {
+            this.SetSimulationMapWidth(Integer.parseInt(messageContainer[1]));
+        }
+
+        //-- MapSizeDicovery end
     }
 
     /**
@@ -187,12 +206,30 @@ public class NextAgent extends Agent {
 
         processServerData();
 
+        // Map Survey test
+        if (agentGroup != null) {
+            this.say("ThisAgentGroup" + this.agentGroup);
+            this.say("GroupMap:" + this.agentGroup.GetGroupMap().GetSizeOfMap());
+            this.say("LastID " + lastID);
+            this.say("HasMapSizeDiscoveryStarted:" + this.simStatus.HasMapSizeDiscoveryStarted());
+            this.say("SimulationMapHeight:" + this.agentGroup.GetGroupMap().GetSimulationMapHeight());
+            this.say("SimulationMapWidth:" + this.agentGroup.GetGroupMap().GetSimulationMapWidth());
+
+            if (lastID > 10) {
+                this.announceMapSizeDiscoveryStart();
+                this.say("1");
+                this.announceMapHeight(22);
+                this.say("2");
+                this.announceMapWidth(42);
+            }
+        }
+
         // ActionGeneration is started on a new ActionID only
         if (simStatus.GetActionID() > lastID) {
             lastID = simStatus.GetActionID();
 
             updateInternalBeliefs();
-            printBeliefReport(); // live String output to console
+            //printBeliefReport(); // live String output to console
 
             // -----------------------------------
             clearPossibleActions();
@@ -222,6 +259,7 @@ public class NextAgent extends Agent {
             Action nextAction = selectNextAction();
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
             return nextAction;
+
         }
         return null;
 
@@ -788,6 +826,35 @@ public class NextAgent extends Agent {
             }
         }
         this.messageStore.clear();
+    }
+
+    private void announceMapSizeDiscoveryStart() {
+        this.broadcast(new Percept("MapSizeDiscoveryHasStarted"), this.getName());
+        this.simStatus.ActivateMapSizeDiscovery();
+    }
+
+    private void announceMapHeight(int foundMapHeight) {
+        this.broadcast(new Percept("MapHeightFound," + foundMapHeight), this.getName());
+        SetSimulationMapHeight(foundMapHeight);
+    }
+
+    private void announceMapWidth(int foundMapWidth) {
+        this.broadcast(new Percept("MapWidthFound," + foundMapWidth), this.getName());
+        SetSimulationMapWidth(foundMapWidth);
+    }
+
+    private void SetSimulationMapWidth(int MapWidth) {
+        // Call the map size update only for agents playing the simulation 
+        if (this.agentGroup != null) {
+            this.agentGroup.GetGroupMap().SetSimulationMapWidth(MapWidth);
+        }
+    }
+
+    private void SetSimulationMapHeight(int MapHeight) {
+        // Call the map size update only for agents playing the simulation
+        if (this.agentGroup != null) {
+            this.agentGroup.GetGroupMap().SetSimulationMapHeight(MapHeight);
+        }
     }
 
     /*

@@ -156,6 +156,8 @@ public class NextGroup {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
         }
     }
+    
+    
 
     /*
      * ##################### endregion public methods
