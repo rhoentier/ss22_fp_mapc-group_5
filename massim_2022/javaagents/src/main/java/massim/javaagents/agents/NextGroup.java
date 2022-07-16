@@ -123,8 +123,8 @@ public class NextGroup {
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        System.out.println("----------------------------------------- joined ----------------------");
-        System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
+        //System.out.println("----------------------------------------- joined ----------------------");
+        //System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
@@ -167,8 +167,7 @@ public class NextGroup {
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
-        return;
-        //this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
+        this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
     }
 
     @Override

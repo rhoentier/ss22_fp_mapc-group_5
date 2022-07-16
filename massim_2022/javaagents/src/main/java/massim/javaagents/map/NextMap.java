@@ -187,13 +187,13 @@ public class NextMap {
      *
      * @param maptile: MapTile to add.
      */
-    public void setMapTile(NextMapTile maptile) {
+    public Vector2D setMapTile(NextMapTile maptile) {
 
         NextMapTile existingMapTile;
 
-        Vector2D moveArray = new Vector2D(extendArray(this, maptile.GetPosition()));
-        group.MoveAllAgents(moveArray);
-        maptile.MovePosition(moveArray);
+        Vector2D offset = new Vector2D(extendArray(this, maptile.GetPosition()));
+        group.MoveAllAgents(offset);
+        maptile.MovePosition(offset);
 
         // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
         boolean addMaptile = true;
@@ -224,6 +224,8 @@ public class NextMap {
                     this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
             }
         }
+
+        return offset;
     }
 
     /**
@@ -547,14 +549,25 @@ public class NextMap {
         }
         return view;
     }
+
+    /**
+     * Joins one Map into another map
+     * @param mapToKeep The map in which the other map is joined / merged
+     * @param mapToAdd The map to be joined/merged into the other map
+     * @param offset Offset of both maps according to their upper left corner
+     * @return
+     */
     public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
 
         NextMapTile newMapTile;
-        for (int i = 0; i < mapToAdd.map.length; i++) {
-            for (int j = 0; j < mapToAdd.map[i].length; j++) {
+        Vector2D sizeMapToAdd = mapToAdd.GetSizeOfMap();
+
+        for (int i = 0; i < sizeMapToAdd.x; i++) {
+            for (int j = 0; j < sizeMapToAdd.y; j++) {
                 newMapTile = mapToAdd.map[i][j].Clone();
                 newMapTile.MovePosition(offset);
-                mapToKeep.setMapTile(newMapTile);
+                Vector2D mapMoved = mapToKeep.setMapTile(newMapTile);
+                offset.add(mapMoved);
             }
         }
         return mapToKeep;
