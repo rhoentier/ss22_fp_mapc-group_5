@@ -136,21 +136,22 @@ public final class NextConstants {
     }
 
     public static enum EAgentActivity {
-    	exploreMap,
-		carryBlog,
-    	goToDispenser,
-		goToGoalzone,
-    	goToRolezone,
-		solveTask,
-		surveyDispenser,
-		surveyGoalZone,
-		surveyRoleZone
+        exploreMap,
+        carryBlog,
+        goToDispenser,
+        goToGoalzone,
+        goToRolezone,
+        solveTask,
+        surveyDispenser,
+        surveyGoalZone,
+        surveyRoleZone,
+        discoverMapSize
     }
 
     public static enum EVisibleThings {
-        entity, 
-        block, 
-        dispenser, 
+        entity,
+        block,
+        dispenser,
         marker,
         obstacle
     }
