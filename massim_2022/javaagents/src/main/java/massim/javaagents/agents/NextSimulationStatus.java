@@ -10,30 +10,31 @@ import massim.javaagents.percept.NextTask;
  * Part of Agent Belief System
  * <p>
  * Simulation related status values
- * 
+ *
  * @author Alexander Lorenz
  */
-
 public class NextSimulationStatus {
 
     private Boolean simulationIsFinished;
     private Boolean simulationIsStarted;
 
-    private Integer actionID = -1;
-    private Integer teamSize;
-    private Integer totalSteps;
-    private Integer currentStep;
-    private Integer ranking;
+    private int actionID = -1;
+    private int teamSize;
+    private int totalSteps;
+    private int currentStep;
+    private int ranking;
     private long score;
     private long timestamp;
     private long deadline;
+
+    private boolean mapDiscoveryStarted = false;
 
     private HashSet<String> violations;
 
     private HashSet<NextTask> tasksList = new HashSet<>();
     private HashSet<NextRole> rolesList = new HashSet<>();
     private HashSet<NextNorm> normsList = new HashSet<>();
-    
+
     //---------------- Getter and Setter
     public NextSimulationStatus() {
         simulationIsFinished = false;
@@ -151,5 +152,18 @@ public class NextSimulationStatus {
 
     public void SetNormsList(HashSet<NextNorm> normsList) {
         this.normsList = normsList;
-    }    
+    }
+
+    public boolean HasMapSizeDiscoveryStarted() {
+        return mapDiscoveryStarted;
+    }
+
+    public void ActivateMapSizeDiscovery() {
+        this.mapDiscoveryStarted = true;
+    }
+    
+    public void RestartMapSizeDiscovery()  {
+        this.mapDiscoveryStarted = false;
+    }
+
 }
