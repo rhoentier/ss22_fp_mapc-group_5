@@ -192,7 +192,7 @@ public class NextAgent extends Agent {
             lastID = simStatus.GetActionID();
 
             updateInternalBeliefs();
-            printBeliefReport(); // live String output to console
+            //printBeliefReport(); // live String output to console
 
             // -----------------------------------
             clearPossibleActions();
@@ -217,10 +217,11 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
-
+            //this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
+            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+            
             Action nextAction = selectNextAction();
-            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+            //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
             return nextAction;
         }
         return null;
