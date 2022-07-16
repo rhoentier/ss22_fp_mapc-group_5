@@ -70,7 +70,7 @@ public class NextMap {
      *
      * @param filename File for export
      */
-    public void WriteToFile(String filename) {
+    public void WriteToFile(String filename, int step) {
 
         Vector2D size = GetSizeOfMap();
         System.out.println(size);
@@ -116,6 +116,9 @@ public class NextMap {
 
 
         StringBuilder outputString = new StringBuilder();
+
+        outputString.append("Step: " + step + "\n");
+
         String tmpString;
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
@@ -255,6 +258,7 @@ public class NextMap {
         HashSet<NextMapTile> newHashSet = new HashSet<>();
         for ( NextMapTile tile : hashSet ) {
             NextMapTile newTile = tile;
+            NextMapTile newTile = tile.Clone();
             newTile.MovePosition(offset);
             newHashSet.add(newTile);
         }
@@ -519,8 +523,8 @@ public class NextMap {
             map.AddPercept(agent, agent.GetAgentStatus().GetRoleZones());
             // Only for debugging
 /*
-            map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
 
+            map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
             try {
                 Thread.sleep(0); // Wait for 2 seconds
             } catch (InterruptedException e) {
@@ -565,9 +569,9 @@ public class NextMap {
         for (int i = 0; i < sizeMapToAdd.x; i++) {
             for (int j = 0; j < sizeMapToAdd.y; j++) {
                 newMapTile = mapToAdd.map[i][j].Clone();
-                newMapTile.MovePosition(offset);
+                newMapTile.Subtract(offset);
                 Vector2D mapMoved = mapToKeep.setMapTile(newMapTile);
-                offset.add(mapMoved);
+                offset.subtract(mapMoved);
             }
         }
         return mapToKeep;
