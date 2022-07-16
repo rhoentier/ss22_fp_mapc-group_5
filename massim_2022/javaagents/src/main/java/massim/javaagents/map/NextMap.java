@@ -25,12 +25,6 @@ public class NextMap {
     private HashSet<NextMapTile> dispensers = new HashSet<>();
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
-
-    // ToDo: Mit Methoden umsetzen, sodass die flags nicht mitgepflegt werden müssen
-    private boolean foundDispenser = false;
-    private boolean foundRoleZone = false;
-    private boolean foundGoalZone = false;
-
     private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextGroup group) {
@@ -84,7 +78,7 @@ public class NextMap {
         Vector2D pos;
         for(NextAgent agent : group.GetAgents()) {
             pos = agent.GetPosition();
-            if (onMap(pos)){
+            if (isOnMap(pos)){
                 stringMap[pos.x][pos.y] += "A";
             }
         }
@@ -134,7 +128,12 @@ public class NextMap {
         }
     }
 
-    private boolean onMap(Vector2D pos) {
+    /**
+     * Checks if a given position is on the map (x/y not negative and not greater than current size)
+     * @param pos Position to check
+     * @return true/false
+     */
+    private boolean isOnMap(Vector2D pos) {
         Vector2D size = GetSizeOfMap();
         if(pos.x >= 0 && pos.y >= 0 && pos.x < size.x && pos.y < size.y){
             return true;
@@ -187,8 +186,6 @@ public class NextMap {
         group.MoveAllAgents(moveArray);
         maptile.MovePosition(moveArray);
 
-        existingMapTile = GetMapTile(maptile.GetPosition());
-
         // Check if type of maptile is part of the exlude list. If yes, set flag addMaptile to false
         boolean addMaptile = true;
         for (String e : excludeThingTypes) {
@@ -201,16 +198,13 @@ public class NextMap {
             switch (maptile.getThingType().substring(0, 4)) {
                 case "disp":
                     dispensers.add(maptile);
-                    foundDispenser = true;
                     availableDispensers.add((maptile.getThingType().substring(10)));
                     break;
                 case "goal":
                     goalZones.add(maptile);
-                    foundGoalZone = true;
                     break;
                 case "role":
                     roleZones.add(maptile);
-                    foundRoleZone = true;
                     break;
                 case "free":
                     this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
@@ -223,29 +217,38 @@ public class NextMap {
         }
     }
 
+    /**
+     * Removes a roleZone at a specific position from the list of roleZones
+     * @param pos Position
+     */
     private void removeRoleZone(Vector2D pos) {
         this.roleZones.remove(new NextMapTile(pos.x, pos.y, 0, "roleZone"));
     }
+
+    /**
+     * Removes a goalZone at a specific position from the list of goalZones
+     * @param pos Position
+     */
     private void removeGoalZone(Vector2D pos) {
         this.goalZones.remove(new NextMapTile(pos.x, pos.y, 0, "goalZone"));
     }
 
-    // ToDo: Methode addTo() rausnehmen sobald Speichern von dispenser, goalZones und roalZones getestet
     /**
-     * Helper Function to add dispensers, goalZones and role Zones to their list
-     * @param hashSet HashSet to which the maptile should be added
-     * @param maptile maptile to be added
+     * Moves all Maptiles within a HashSet by an offset. With HashSets it is necessary to copy/paste all elements
+     * instead of just executing a function for each element.
+     * @param hashSet HashSet to be shifted
+     * @param offset Offset by which the data is to be moved
+     * @return The new Hashset with the moved Maptiles
      */
-    private void addTo(HashSet<NextMapTile> hashSet, NextMapTile maptile) {
-        /*
-        for (NextMapTile mt : hashSet) {
-            if (maptile.GetPosition().equals(mt.GetPosition())) {
-                return;
-            }
+    private static HashSet<NextMapTile> moveMaptilesInHashset(HashSet<NextMapTile> hashSet, Vector2D offset) {
+        HashSet<NextMapTile> newHashSet = new HashSet<>();
+        for ( NextMapTile tile : hashSet ) {
+            NextMapTile newTile = tile;
+            newTile.MovePosition(offset);
+            newHashSet.add(newTile);
         }
-        hashSet.add(maptile.Clone()); 
-        */
-        hashSet.add(maptile.Clone());
+
+        return newHashSet;
     }
 
     /**
@@ -279,16 +282,15 @@ public class NextMap {
         if (!numExtend.equals(new Vector2D(0, 0))) {
             sizeOfMap.add(numExtend);
 
-            // Create extended array + fill with "unknown" maptiles
+            // Create extended map + fill with "unknown" maptiles
             NextMapTile[][] tmp = new NextMapTile[sizeOfMap.x][sizeOfMap.y];
             for (int i = 0; i < tmp.length; i++) {
                 for (int j = 0; j < tmp[i].length; j++) {
-                    // Note: X/Y are normally relative to the agents position. Here, they are set to 0.
                     tmp[i][j] = new NextMapTile(i, j, 0, "unknown");
                 }
             }
 
-            // Copy existing map to tmp map
+            // Copy existing map to extended map and replace existing map
             NextMapTile newMapTile;
             for (int i = 0; i < nextMap.map.length; i++) {
                 for (int j = 0; j < nextMap.map[i].length; j++) {
@@ -297,55 +299,13 @@ public class NextMap {
                     tmp[i + offset.x][j + offset.y] = newMapTile;
                 }
             }
-
-            // Replace existing map
             nextMap.map = tmp;
 
-            // Move existing dispensers, goalZones and roleZones
-            
-            
-            /* --- Old Code to remove
-            for (NextMapTile disp : nextMap.dispensers) {
-                disp.MovePosition(offset);
-            }
-            for (NextMapTile goal : nextMap.goalZones) {
-                goal.MovePosition(offset);
-            }
-            for (NextMapTile role : nextMap.roleZones) {
-                role.MovePosition(offset);
-            }*/
-            //------------- move dispensers
-        
-        HashSet<NextMapTile> newDispensers = new HashSet<>();
-        for ( NextMapTile tile : nextMap.dispensers ) {
-            NextMapTile newTile = tile;
-            newTile.MovePosition(offset);
-            newDispensers.add(newTile);
-        }
-        
-        nextMap.dispensers = newDispensers;
+            // Move dispensers, goalZones and roleZones
+            nextMap.dispensers = moveMaptilesInHashset(nextMap.dispensers, offset);
+            nextMap.roleZones = moveMaptilesInHashset(nextMap.roleZones, offset);
+            nextMap.goalZones = moveMaptilesInHashset(nextMap.goalZones, offset);
 
-        //------------- move GoalZones
-        
-        HashSet<NextMapTile> newGoalZones = new HashSet<>();
-        for ( NextMapTile tile : nextMap.goalZones ) {
-            NextMapTile newTile = tile;
-            newTile.MovePosition(offset);
-            newGoalZones.add(newTile);
-        }
-        
-        nextMap.goalZones = newGoalZones;
-
-        //------------- move dispensers
-        
-        HashSet<NextMapTile> newRoleZones = new HashSet<>();
-        for ( NextMapTile tile : nextMap.roleZones ) {
-            NextMapTile newTile = tile;
-            newTile.MovePosition(offset);
-            newRoleZones.add(newTile);
-        }
-        
-        nextMap.roleZones = newRoleZones;
         }
         return offset;
     }
@@ -358,7 +318,7 @@ public class NextMap {
      * @return
      */
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (foundGoalZone && availableDispensers.containsAll(requiredBlocks)) {
+        if (IsGoalZoneAvailable() && availableDispensers.containsAll(requiredBlocks)) {
             return true;
         }
         return false;
@@ -468,18 +428,14 @@ public class NextMap {
     
     public Boolean IsGoalZoneAvailable() {
     	return !goalZones.isEmpty();
-        //return foundGoalZone;
     }
     
     public Boolean IsRoleZoneAvailable() {
         return !roleZones.isEmpty();
-    	//return foundRoleZone;
     }
     
     public Boolean IsDispenserAvailable() {
         return !dispensers.isEmpty();
-        //System.out.println("IsDispenserAvailable: \n" + foundDispenser);
-    	//return foundDispenser;
     }
     
     //------------- TEST
