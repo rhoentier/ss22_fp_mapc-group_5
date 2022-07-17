@@ -215,7 +215,7 @@ public class NextAgent extends Agent {
 
             generatePathMemory();
             generatePossibleActions();
-
+            
             //printActionsReport(); // live String output to console
             //this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
             this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
@@ -336,11 +336,108 @@ public class NextAgent extends Agent {
         return agentPlan;
     }
 
+
+    /**
+     * CalculatePath to the target cell. The function decides which algorithm to
+     * select based on target attributes.
+     *
+     * @param target Vector2D - cell on the general map
+     * @return List of actions to reach the target.
+     */
+    public List<Action> CalculatePath(Vector2D target) {
+        // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
+
+        //NextMap map = GetMap();
+        NextMap map = this.agentGroup.GetGroupMap();
+        Boolean targetIsOnMap = map.ContainsPoint(target);
+        try {
+            if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
+                List<Action> pathMemoryA;
+                pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target);
+                this.say("A* path:" + pathMemoryA);
+                if (pathMemoryA.size() == 0) {
+                    // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
+                    return calculateManhattanPath(target);
+                }
+                return pathMemoryA;
+
+            } else {
+                return calculateManhattanPath(target);
+            }
+        } catch (Exception e) {
+            this.say("Path generation failed: " + e);
+        }
+        return null;
+    }
+
+    /**
+     * Calculate Path to the Target, ending on a free Tile next to it
+     *
+     * @param target
+     * @return
+     */
+    public List<Action> CalculatePathNextToTarget(Vector2D target) {
+
+        //NextMap map = GetMap();
+        NextMap map = this.agentGroup.GetGroupMap();
+        //ToDo - Optimale Position je nach Ausgangslage auswählen 
+        try {
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
+                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            }
+        } catch (Exception e) {
+            this.say("CalculatePathNextToTarget:" + e);
+        }
+        return CalculatePath(new Vector2D(target.x, target.y));
+    }
+    
+    
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * @param Message - String based message
+     */
+    public void TellGroup (String message) {
+        this.agentGroup.TellGroup(message, this);
+    }
+    
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * @param Message - String based message
+     */
+    public void TellGroupAgent (String message, String agentName) {
+        this.agentGroup.TellGroupAgent(message, agentName, this);
+    }
+    
+    /** Handling of custom groupmessages
+     * 
+     * @param Message - String based message
+     */
+    public void HandleGroupMessage (String message, String agent) {
+        this.say("Message (" + message + ") from " + agent);
+        
+        // definitive implementation needed
+        
+    }  
+    
+    
     /*
      * ##################### endregion public methods
      */
 
- /*
+    //--------------------------------------------------------------------------
+    
+    /*
      * ########## region private methods
      */
     private void resetAfterInactiveTask() {
@@ -475,69 +572,6 @@ public class NextAgent extends Agent {
         agentGroup = null;
         globalGroupMap = new HashMap<>();
 
-    }
-
-    /**
-     * CalculatePath to the target cell. The function decides which algorithm to
-     * select based on target attributes.
-     *
-     * @param target Vector2D - cell on the general map
-     * @return List of actions to reach the target.
-     */
-    public List<Action> CalculatePath(Vector2D target) {
-        // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
-
-        //NextMap map = GetMap();
-        NextMap map = this.agentGroup.GetGroupMap();
-        Boolean targetIsOnMap = map.ContainsPoint(target);
-        try {
-            if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
-                List<Action> pathMemoryA;
-                pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target);
-                this.say("A* path:" + pathMemoryA);
-                if (pathMemoryA.size() == 0) {
-                    // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
-                    return calculateManhattanPath(target);
-                }
-                return pathMemoryA;
-
-            } else {
-                return calculateManhattanPath(target);
-            }
-        } catch (Exception e) {
-            this.say("Path generation failed: " + e);
-        }
-        return null;
-    }
-
-    /**
-     * Calculate Path to the Target, ending on a free Tile next to it
-     *
-     * @param target
-     * @return
-     */
-    public List<Action> CalculatePathNextToTarget(Vector2D target) {
-
-        //NextMap map = GetMap();
-        NextMap map = this.agentGroup.GetGroupMap();
-        //ToDo - Optimale Position je nach Ausgangslage auswählen 
-        try {
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
-            }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
-            }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
-            }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkable()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
-            }
-        } catch (Exception e) {
-            this.say("CalculatePathNextToTarget:" + e);
-        }
-        return CalculatePath(new Vector2D(target.x, target.y));
     }
 
     private List<Action> calculateManhattanPath(Vector2D target) {
@@ -723,6 +757,11 @@ public class NextAgent extends Agent {
         return visibleEntities;
     }
 
+    /**
+     * Selects the friendly agents in the local view. 
+     * Drops the agents known in the group.
+     * Broadcasts 1st message for groupbuilding 
+     */
     private void processFriendlyAgents() {
 
         HashSet<NextMapTile> visibleEntities = findFriendlyAgentsInLocalView();
@@ -765,6 +804,10 @@ public class NextAgent extends Agent {
         }
     }
 
+    /**
+     * Processing of Messages in the Mailstore, used for Groupbuilding
+     * initialises groupjoining process
+     */
     private void processGroupJoinMessages() {
         if (this.messageStore.size() == 1) {
             System.out.println("Unexpected error in GroupJoinMessages - single object in message store");
@@ -790,6 +833,7 @@ public class NextAgent extends Agent {
         }
         this.messageStore.clear();
     }
+    
 
     /*
      * ##################### endregion private methods
