@@ -83,6 +83,18 @@ public class NextMapTile {
         this.positionY += moveBy.y;
     }
 
+    public void Subtract(Vector2D v) {
+        this.positionX -= v.x;
+        this.positionY -= v.y;
+    }
+
+    public void ModPosition(Vector2D mod) {
+        Vector2D pos = new Vector2D(this.positionX, this.positionY);
+        pos.mod(mod);
+        this.positionX = pos.x;
+        this.positionY = pos.y;
+    }
+
     public String getThingType() {
         if (isAThing) {
             return thingType;
