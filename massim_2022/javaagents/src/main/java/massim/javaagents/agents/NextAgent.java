@@ -154,7 +154,7 @@ public class NextAgent extends Agent {
 
         // Message Type: JoinGroup-Execution,GroupID,x,y,MapOffsetX,MapOffsetY
         if (messageContainer[0].contains("JoinGroup-Execution")) {
-            this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3] + " mapOffsetX: " + messageContainer[4] + " mapOffsetY: " + messageContainer[5]);
+            // this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3] + " mapOffsetX: " + messageContainer[4] + " mapOffsetY: " + messageContainer[5]);
             NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
             if (!(target == null)) {
                 joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])), new Vector2D(Integer.parseInt(messageContainer[2]), Integer.parseInt(messageContainer[3])), new Vector2D(Integer.parseInt(messageContainer[4]), Integer.parseInt(messageContainer[5])));
@@ -190,6 +190,7 @@ public class NextAgent extends Agent {
      */
     @Override
     public Action step() {
+
         long startTime = Instant.now().toEpochMilli();
 
         // Initialise a group if empty
@@ -341,6 +342,10 @@ public class NextAgent extends Agent {
 
     public void MovePosition(Vector2D vector) {
         this.agentGroup.MoveSingleAgent(this, vector);
+    }
+
+    public void ModPosition() {
+        this.agentGroup.ModSingleAgent(this);
     }
 
     public int GetCarryableBlocks() {
@@ -513,7 +518,7 @@ public class NextAgent extends Agent {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target);
-                this.say("A* path:" + pathMemoryA);
+                // this.say("A* path:" + pathMemoryA);
                 if (pathMemoryA.size() == 0) {
                     // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
                     return calculateManhattanPath(target);
