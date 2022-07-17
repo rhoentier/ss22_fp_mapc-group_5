@@ -69,6 +69,8 @@ public class NextGroup {
         return this.agentSet.size();
     }
 
+    public HashSet<NextAgent> GetAgents() {return this.agentSet;}
+
     public int getGroupID() {
         return groupID;
     }

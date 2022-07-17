@@ -18,7 +18,6 @@ import massim.javaagents.general.NextConstants.ECardinals;
 public class NextMap {
 
     private NextMapTile[][] map;
-    private NextAgent agent;
     private HashSet<String> excludeThingTypes;
 
     private NextGroup group;
@@ -27,6 +26,7 @@ public class NextMap {
     private HashSet<NextMapTile> goalZones = new HashSet<>();
     private HashSet<NextMapTile> roleZones = new HashSet<>();
 
+    // ToDo: Mit Methoden umsetzen, sodass die flags nicht mitgepflegt werden müssen
     private boolean foundDispenser = false;
     private boolean foundRoleZone = false;
     private boolean foundGoalZone = false;
@@ -43,8 +43,6 @@ public class NextMap {
     public NextMap(NextAgent agent) {
         map = new NextMapTile[1][1];
         map[0][0] = new NextMapTile(0, 0, 0, "unknown");
-
-        this.agent = agent;
 
         excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block"));
     }
@@ -70,25 +68,78 @@ public class NextMap {
      * @param filename File for export
      */
     public void WriteToFile(String filename) {
-        StringBuilder strMap = new StringBuilder();
-        String pos;
+
+        Vector2D size = GetSizeOfMap();
+        System.out.println(size);
+        int x = size.x;
+        int y = size.y;
+        String[][] stringMap = new String[x][y];
+
         for (int j = 0; j < map[0].length; j++) {
             for (int i = 0; i < map.length; i++) {
-                //pos = map[i][j].getPositionX().toString();
-                //pos += "/" + map[i][j].getPositionY().toString() + " ";
-                strMap.append(map[i][j].getThingType().charAt(0)).append(" "); //.append(pos);
+                stringMap[i][j] = "";
             }
-            strMap.append("\n");
+        }
+
+        Vector2D pos;
+        for(NextAgent agent : group.GetAgents()) {
+            pos = agent.GetPosition();
+            if (onMap(pos)){
+                stringMap[pos.x][pos.y] += "A";
+            }
+        }
+
+        for(NextMapTile maptile : roleZones) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for(NextMapTile maptile : goalZones) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for(NextMapTile maptile : dispensers) {
+            pos = maptile.GetPosition();
+            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
+        }
+
+        for (int j = 0; j < map[0].length; j++) {
+            for (int i = 0; i < map.length; i++) {
+                stringMap[i][j] += map[i][j].getThingType().charAt(0);
+            }
+        }
+
+
+
+        StringBuilder outputString = new StringBuilder();
+        String tmpString;
+        for (int j = 0; j < map[0].length; j++) {
+            for (int i = 0; i < map.length; i++) {
+                tmpString = stringMap[i][j];
+                int rfill = 4 - tmpString.length();
+                for (int f = 0; f < rfill; f++) {tmpString += " ";}
+                outputString.append(tmpString);
+            }
+            outputString.append("\n");
         }
 
         FileWriter myWriter;
         try {
             myWriter = new FileWriter(filename);
-            myWriter.write(strMap.toString());
+            myWriter.write(outputString.toString());
             myWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean onMap(Vector2D pos) {
+        Vector2D size = GetSizeOfMap();
+        if(pos.x >= 0 && pos.y >= 0 && pos.x < size.x && pos.y < size.y){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -146,28 +197,40 @@ public class NextMap {
         }
 
         // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
-
-        if (addMaptile && (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep())) {
-            this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
-
-            switch (maptile.getThingType().substring(0,4)) {
+        if (addMaptile) {
+            switch (maptile.getThingType().substring(0, 4)) {
                 case "disp":
-                    addTo(dispensers, maptile);
+                    dispensers.add(maptile);
                     foundDispenser = true;
                     availableDispensers.add((maptile.getThingType().substring(10)));
                     break;
                 case "goal":
-                    addTo(goalZones, maptile);
+                    goalZones.add(maptile);
                     foundGoalZone = true;
                     break;
                 case "role":
-                    addTo(roleZones, maptile);
+                    roleZones.add(maptile);
                     foundRoleZone = true;
                     break;
+                case "free":
+                    this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+                    removeRoleZone(maptile.GetPosition());
+                    removeGoalZone(maptile.GetPosition());
+                    break;
+                default:
+                    this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
             }
         }
     }
 
+    private void removeRoleZone(Vector2D pos) {
+        this.roleZones.remove(new NextMapTile(pos.x, pos.y, 0, "roleZone"));
+    }
+    private void removeGoalZone(Vector2D pos) {
+        this.goalZones.remove(new NextMapTile(pos.x, pos.y, 0, "goalZone"));
+    }
+
+    // ToDo: Methode addTo() rausnehmen sobald Speichern von dispenser, goalZones und roalZones getestet
     /**
      * Helper Function to add dispensers, goalZones and role Zones to their list
      * @param hashSet HashSet to which the maptile should be added
@@ -445,9 +508,8 @@ public class NextMap {
                     break;
             }
 
-            map.setMapTile(new NextMapTile(position.getAdded(lastStep), agent.GetSimulationStatus().GetCurrentStep(), "Agent"));
-            agent.MovePosition(lastStep);
 
+            agent.MovePosition(lastStep);
 
             // 1. Add all maptiles of view as "free"
             HashSet<NextMapTile> view = new HashSet<>();
@@ -460,8 +522,6 @@ public class NextMap {
             }
             map.AddPercept(agent, view);
 
-            // TODO Der Teil muss kluger ersetzt werden
-            
             for (NextMapTile tile : agent.GetAgentStatus().GetGoalZones()){
                 NextMapTile tileToAdd = tile.clone();
                 tileToAdd.MovePosition(agent.GetPosition());
@@ -473,23 +533,6 @@ public class NextMap {
                 tileToAdd.MovePosition(agent.GetPosition());
                 agent.GetMap().roleZones.add(tileToAdd);
             }
-            
-            /* old code to remoce
-            Iterator<NextMapTile> goalZoneIt = agent.GetAgentStatus().GetGoalZones().iterator();
-            while(goalZoneIt.hasNext()) {
-                NextMapTile next = goalZoneIt.next();
-                if(i == next.getPositionX() && j == next.getPositionY()) {
-                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "goalZone"));
-                }
-            }
-            Iterator<NextMapTile> roleZoneIt = agent.GetAgentStatus().GetRoleZones().iterator();
-            while (roleZoneIt.hasNext()) {
-                NextMapTile next = roleZoneIt.next();
-                if (i == next.getPositionX() && j == next.getPositionY()) {
-                    view.add(new NextMapTile(i, j, agent.GetSimulationStatus().GetCurrentStep(), "roleZone"));
-                }
-            }
-            */
 
             // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
             HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
@@ -504,8 +547,11 @@ public class NextMap {
             // 3. Add obstacles within view (overwrites maptiles from steps 1 and 2)
             map.AddPercept(agent, agent.GetAgentStatus().GetObstacles());
 
+            // 4. Add goal and role zones
+            map.AddPercept(agent, agent.GetAgentStatus().GetGoalZones());
+            map.AddPercept(agent, agent.GetAgentStatus().GetRoleZones());
             // Only for debugging
-            /*
+/*
             map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt");
 
             try {

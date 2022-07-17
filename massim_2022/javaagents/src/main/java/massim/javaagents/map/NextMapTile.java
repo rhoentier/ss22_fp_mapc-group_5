@@ -90,6 +90,11 @@ public class NextMapTile {
         return "Empty";
     }
 
+    public void SetThingType(String thing) {
+        this.thingType = thing;
+        this.isAThing = true;
+    }
+
     public Integer getLastVisionStep() {
         return lastVisionStep;
     }
@@ -165,6 +170,7 @@ public class NextMapTile {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
     }
 
+    /*
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -188,6 +194,7 @@ public class NextMapTile {
         }
         return Objects.equals(this.isAThing, other.isAThing);
     }
+    */
 
     
     @Override
@@ -199,4 +206,24 @@ public class NextMapTile {
         hash = 61 * hash + Objects.hashCode(this.thingType);
         return hash;
     }
+
+
+    @Override
+    public boolean equals (Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+
+        NextMapTile maptile = (NextMapTile) o;
+
+        return Objects.equals(positionX, maptile.positionX)
+                && Objects.equals(positionY, maptile.positionY)
+                && Objects.equals(isAThing, maptile.isAThing)
+                && Objects.equals(thingType, maptile.thingType);
+    }
+
+
 }

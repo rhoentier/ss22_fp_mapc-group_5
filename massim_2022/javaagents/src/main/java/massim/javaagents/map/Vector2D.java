@@ -1,6 +1,8 @@
 package massim.javaagents.map;
 
 
+import java.util.Objects;
+
 public class Vector2D {
 
     public int x;
@@ -242,17 +244,6 @@ public class Vector2D {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof Vector2D v) {
-            return (x == v.x) && (y == v.y);
-        }
-        return false;
-    }
-    
-    @Override
     public String toString() {
         return "Vector2d[" + x + ", " + y + "]";
     }
@@ -263,6 +254,20 @@ public class Vector2D {
         hash = 37 * hash + this.x;
         hash = 37 * hash + this.y;
         return hash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+
+        Vector2D v2 = (Vector2D) o;
+
+        return Objects.equals(x, v2.x) && Objects.equals(y, v2.y);
     }
 }
 

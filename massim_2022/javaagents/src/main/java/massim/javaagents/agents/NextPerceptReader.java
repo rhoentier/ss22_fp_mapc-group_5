@@ -131,9 +131,10 @@ public class NextPerceptReader {
                             break;
                         case lastAction:
                             agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
+                            /*
                             if (agentStatus.GetLastAction() != "") {
                                 agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
-                            }
+                            }*/
                             break;
                         case lastActionResult:
                             agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
