@@ -3,6 +3,7 @@ package massim.javaagents.agents;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
 import massim.javaagents.groupPlans.NextGroupTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
@@ -25,6 +26,7 @@ public class NextGroup {
      * ########## region fields
      */
     private int groupID;
+    private int lastActionId;
 
     private HashSet<NextAgent> agentSet = new HashSet<>();
     private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
@@ -168,23 +170,23 @@ public class NextGroup {
     /**
      * updates all tasks and plans for the group
      */
-    public void UpdateTasks(HashSet<NextTask> newTasks, NextAgent agent) {
-        int minimalId = 100;
-        for (NextAgent groupAgent : agentSet) {
-            int id = groupAgent.GetAgentStatus().GetId();
-            minimalId = id < minimalId ? id : minimalId;
-        }
-        if (agent.GetAgentStatus().GetName().contains("Team5" + minimalId))
+    public void UpdateTasks(HashSet<NextTask> newTasks, int actionId) {
+        if(actionId > lastActionId){
+            this.lastActionId = actionId;
             taskPlanner.UpdateTasks(newTasks);
+        }
     }
 
-    public int GetLastSimulationStep() {
-        int latestSimulationStep = -1;
-        for (NextAgent agent : agentSet) {
-            int simulationStep = agent.GetSimulationStatus().GetCurrentStep();
-            latestSimulationStep = simulationStep > latestSimulationStep ? simulationStep : latestSimulationStep;
-        }
-        return latestSimulationStep;
+    public NextGroupPlanSolveTask GetPlan(NextAgent agent){
+        return taskPlanner.GetPlan(agent);
+    }
+
+    public int GetLastActionId() {
+        return lastActionId;
+    }
+
+    public void SetMaxAttemptsAreReached(NextTask task){
+        taskPlanner.SetMaxAttemptsAreReached(task);
     }
 
     /*

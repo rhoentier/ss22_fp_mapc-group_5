@@ -2,7 +2,11 @@ package massim.javaagents.groupPlans;
 
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextGroup;
+import massim.javaagents.map.NextMapTile;
 import massim.javaagents.percept.NextTask;
+import massim.javaagents.plans.NextPlan;
+import massim.javaagents.plans.NextPlanDispenser;
+import massim.javaagents.plans.NextPlanGoalZone;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,9 +15,9 @@ import java.util.stream.Collectors;
 
 public class NextGroupTaskPlanner {
 
-    private HashMap<NextAgent, NextGroupPlanSolveTask> currentPlans = new HashMap<>();
-    private NextGroup group;
-    private ArrayList<NextGroupPlanTask> activePlans = new ArrayList<>();
+    private final HashMap<NextAgent, NextGroupPlanSolveTask> currentPlans = new HashMap<>();
+    private final NextGroup group;
+    private final HashSet<NextGroupPlanTask> activePlans = new HashSet<>();
 
     public NextGroupTaskPlanner(NextGroup group) {
         this.group = group;
@@ -23,12 +27,39 @@ public class NextGroupTaskPlanner {
      * Erzeugt für alle Agents der Gruppe den passenden Task
      */
     private void planAgentTasks() {
+        HashSet<NextAgent> agents = group.GetAgents();
+        if (agents.size() == 1) {
+            for (NextAgent agent : agents) {
+                currentPlans.put(agent, getBestTaskForOneAgent());
+            }
+        }
+    }
+
+    private NextGroupPlanSolveTask getBestTaskForOneAgent() {
+        NextGroupPlanTask bestPlan = null;
+        for (NextGroupPlanTask possiblePlan : activePlans) {
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable() && possiblePlan.GetTask().GetRequiredBlocks().size() == 1) {
+                if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization())
+                    bestPlan = possiblePlan;
+            }
+            if (bestPlan == null && possiblePlan.GetTask().GetRequiredBlocks().size() == 1)
+                bestPlan = possiblePlan;
+        }
+        return createPlanForSingleAgent(bestPlan);
+    }
+
+    private NextGroupPlanSolveTask createPlanForSingleAgent(NextGroupPlanTask plan) {
+        ArrayList<NextPlan> subPlans = new ArrayList<>();
+        HashSet<NextMapTile> requiredBlocks = plan.GetTask().GetRequiredBlocks();
+        for (NextMapTile block : requiredBlocks) {
+            subPlans.add(new NextPlanDispenser(block));
+        }
+        subPlans.add(new NextPlanGoalZone());
+        return new NextGroupPlanSolveTask(plan.GetTask(), subPlans);
     }
 
     /**
      * Prüft, ob für eine Task noch ein Plan erzeugt werden muss und speichert die neue Task Liste
-     *
-     * @param newTasks
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
@@ -37,16 +68,22 @@ public class NextGroupTaskPlanner {
                 activePlans.add(new NextGroupPlanTask(group, newTask));
             }
         }
-        activePlans.stream().forEach(activePlan -> activePlan.UpdateInternalBelief());
+        activePlans.forEach(NextGroupPlanTask::UpdateInternalBelief);
+        planAgentTasks();
     }
 
     /**
-     * Check if a Task is fulfillable and returns the deepest desire of the task with the max benefit
-     * if no task is fulfillable returns the desire to explore the map
-     *
-     * @return
+     * Get the plan for one specific agent
      */
-    public HashMap<NextGroupPlan, NextTask> GetDeepestPlan(NextAgent agent) {
-        return null;
+    public NextGroupPlanSolveTask GetPlan(NextAgent agent) {
+        return currentPlans.get(agent);
     }
+
+    public void SetMaxAttemptsAreReached(NextTask task) {
+        for (NextGroupPlanTask plan : activePlans) {
+            if (plan.GetTask().GetName().equals(task.GetName()))
+                plan.SetMaxAttemptsAreReached();
+        }
+    }
+
 }

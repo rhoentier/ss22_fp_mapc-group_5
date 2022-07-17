@@ -3,13 +3,14 @@ package massim.javaagents.groupPlans;
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextGroup;
 import massim.javaagents.general.NextConstants;
+import massim.javaagents.plans.NextPlan;
 
 import java.util.ArrayList;
 
 public abstract class NextGroupPlan {
 
     NextGroup group;
-    ArrayList<NextGroupPlan> subPlans = new ArrayList<>();
+    ArrayList<NextPlan> subPlans = new ArrayList<>();
     boolean isPlanFulfilled = false;
     NextConstants.EAgentActivity agentTask;
 
@@ -29,29 +30,24 @@ public abstract class NextGroupPlan {
         this.isPlanFulfilled = status;
     }
 
-    /**
-     * Create a list of subPlans
-     */
-    public abstract void CreateSubPlans();
-
-    /**
+     /**
      * DeepFirstSearch to get the current plan to execute
      *
      * @return plan to execute
      */
-    public NextGroupPlan GetDeepestPlan() {
-        for (NextGroupPlan plan : subPlans) {
+    public NextPlan GetDeepestPlan() {
+        for (NextPlan plan : subPlans) {
             if (plan.IsPlanFulfilled()) continue;
             return plan.GetDeepestPlan();
         }
-        return this;
+        return null;
     }
 
     /**
      * Set plan and sub plans to not fulfilled
      */
     public void ResetAllPlans() {
-        for (NextGroupPlan plan : subPlans) {
+        for (NextPlan plan : subPlans) {
             plan.ResetAllPlans();
         }
         isPlanFulfilled = false;

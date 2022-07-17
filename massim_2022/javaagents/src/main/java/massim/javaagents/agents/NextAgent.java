@@ -1,5 +1,6 @@
 package massim.javaagents.agents;
 
+import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
 import massim.javaagents.intention.NextIntention;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
@@ -20,12 +21,12 @@ import massim.javaagents.plans.NextTaskPlanner;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
-import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
@@ -80,6 +81,9 @@ public class NextAgent extends Agent {
     private NextTask activeTask = null;
     private EAgentActivity agentActivity;
     private NextPlan agentPlan;
+
+    private int failOffest = 2;
+    private int failStatus = 0;
 
     /*
      * ##################### endregion fields
@@ -198,19 +202,25 @@ public class NextAgent extends Agent {
             clearPossibleActions();
 
             // new path
-            NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
-            if (nextPlan != null) {
-                NextTask nextTask = taskPlanner.GetCurrentTask();
-                // Neuen Task nur setzen, wenn sich der Task verändert hat.
-                if (nextTask != null) {
-                    if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
-                        if (!this.agentActivity.toString().contains("survey")) {
-                            intention.ResetAfterTaskChange(nextTask);
+            if (agentGroup != null) {
+                NextGroupPlanSolveTask groupPlan = agentGroup.GetPlan(this);
+                if (groupPlan != null) {
+                    taskPlanner.SetGroupPlan(groupPlan);
+                    NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
+                    if (nextPlan != null) {
+                        NextTask nextTask = taskPlanner.GetCurrentTask();
+                        // Neuen Task nur setzen, wenn sich der Task verändert hat.
+                        if (nextTask != null) {
+                            if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
+                                if (!this.agentActivity.toString().contains("survey")) {
+                                    intention.ResetAfterTaskChange(nextTask);
+                                }
+                                SetActiveTask(nextTask);
+                            }
                         }
-                        SetActiveTask(nextTask);
+                        SetAgentPlan(nextPlan);
                     }
                 }
-                SetAgentPlan(nextPlan);
             }
 
             generatePathMemory();
@@ -624,10 +634,24 @@ public class NextAgent extends Agent {
      * was generated
      */
     private void updateTasks() {
-        taskPlanner.UpdateTasks(simStatus.GetTasksList());
-        if (agentGroup != null){
-            agentGroup.UpdateTasks(simStatus.GetTasksList(), this);
+        CheckIfMaxAttemptsAreReached();
+        taskPlanner.UpdateTasks();
+        if (agentGroup != null) {
+            agentGroup.UpdateTasks(simStatus.GetTasksList(), simStatus.GetActionID());
         }
+    }
+
+    /**
+     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
+     */
+    private void CheckIfMaxAttemptsAreReached() {
+        if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target") && agentStatus.GetName().equals(activeTask.GetName()))
+            failStatus += 1;
+        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success") && agentStatus.GetName().equals(activeTask.GetName()))
+            failStatus = 0;
+
+        if (failStatus == failOffest) agentGroup.SetMaxAttemptsAreReached(activeTask);
+
     }
 
     /**

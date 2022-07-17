@@ -2,35 +2,35 @@ package massim.javaagents.groupPlans;
 
 import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.agents.NextGroup;
-import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.percept.NextTask;
+import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextPlanDispenser;
 import massim.javaagents.plans.NextPlanGoalZone;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
 
-public class NextGroupPlanTask extends NextGroupPlan {
+public class NextGroupPlanTask {
 
-    private NextGroup group;
-    private NextTask task;
+    private final NextGroup group;
+    private final NextTask task;
     private int estimatedStepsToSolveTask = 0;
+    private float utilization = 0;
+
+    ArrayList<NextPlan> subPlans = new ArrayList<>();
 
     private boolean isDeadlineFulfillable = true;
     private boolean isPreconditionFulfilled = false;
 
-    private int failOffest = 2;
-    private int failStatus = 0;
-
-
     public NextGroupPlanTask(NextGroup group, NextTask task) {
         this.group = group;
         this.task = task;
-        this.agentTask = NextConstants.EAgentActivity.solveTask;
+        createSubPlans();
     }
 
     /**
@@ -49,15 +49,32 @@ public class NextGroupPlanTask extends NextGroupPlan {
         for (NextMapTile block : task.GetRequiredBlocks()) {
             for (NextMapTile dispenser : dispensers) {
                 // TODO: Vielleicht liegt hier noch ein Fehler
-                if (dispenser.getThingType() != block.getThingType()) continue;
+                if (!dispenser.getThingType().equals(block.getThingType())) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
                 // TODO: Hier muss der Pfad verbessert werden
                 int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(), nearestGoalZone).size();
-                shortestWayFromDispenserToGoalZone = wayFromDispenserToGoalZone < shortestWayFromDispenserToGoalZone ? wayFromDispenserToGoalZone : shortestWayFromDispenserToGoalZone;
+                shortestWayFromDispenserToGoalZone = Math.min(wayFromDispenserToGoalZone, shortestWayFromDispenserToGoalZone);
             }
-            longestWay = shortestWayFromDispenserToGoalZone > longestWay ? shortestWayFromDispenserToGoalZone : longestWay;
+            longestWay = Math.max(shortestWayFromDispenserToGoalZone, longestWay);
         }
         estimatedStepsToSolveTask = longestWay;
+        setUtilization(estimatedStepsToSolveTask);
+    }
+
+    /**
+     * Berechnet den Nutzen/Kosten-Quotienten, der durch diese Aufgabe erreicht wird
+     *
+     * @param estimatedStepsToSolveTask Summe der Wege von Dispensern zu den GoalZones
+     */
+    private void setUtilization(int estimatedStepsToSolveTask) {
+        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask;
+    }
+
+    /**
+     * @return Nutzen/Kosten-Quotient
+     */
+    public float GetUtilization() {
+        return utilization;
     }
 
     /**
@@ -88,7 +105,7 @@ public class NextGroupPlanTask extends NextGroupPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void checkIfDeadlineIsReached() {
-        int stepsUntilTaskIsFinished = group.GetLastSimulationStep() + estimatedStepsToSolveTask;
+        int stepsUntilTaskIsFinished = group.GetLastActionId() + estimatedStepsToSolveTask;
         if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
     }
 
@@ -99,17 +116,21 @@ public class NextGroupPlanTask extends NextGroupPlan {
     /**
      * Erzeugt eine Liste mit subPlans - Hier werden zuerst alle Dispenser abgegangen und dann zur Zielzone
      */
-    @Override
-    public void CreateSubPlans() {
+    private void createSubPlans() {
         HashSet<NextMapTile> requiredBlocks = task.GetRequiredBlocks();
         for (NextMapTile block : requiredBlocks) {
-            subPlans.add(new NextGroupPlanDispenser(block));
+            subPlans.add(new NextPlanDispenser(block));
         }
-        subPlans.add(new NextGroupPlanGoalZone());
+        subPlans.add(new NextPlanGoalZone());
     }
 
     public void UpdateInternalBelief() {
         checkIfPreConditionIsFulfilled();
         checkIfDeadlineIsReached();
+        estimateStepsToSolveTask();
+    }
+
+    public void SetMaxAttemptsAreReached() {
+        isDeadlineFulfillable = false;
     }
 }
