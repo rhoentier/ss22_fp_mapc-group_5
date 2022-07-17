@@ -231,13 +231,25 @@ public class Vector2D {
         return new Vector2D(-x, -y);
     }
 
-    public void mod(Vector2D range) {
-        x += range.x;
-        y += range.y;
-
-        x %= range.x;
-        y %= range.y;
+    /**
+     * Modulus function for Vector 2D. Note: Nothing is done for negative values!
+     * @param modulo
+     */
+    public void mod(Vector2D modulo) {
+        if (modulo.x > 0) {
+            this.x = (this.x + modulo.x) % modulo.x;
+        }
+        if (modulo.y > 0) {
+            this.y = (this.y + modulo.y) % modulo.y;
+        }
     }
+
+    public Vector2D getMod(Vector2D range) {
+        Vector2D v = this.clone();
+        v.mod(range);
+        return v;
+    }
+
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);
