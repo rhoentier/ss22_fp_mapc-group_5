@@ -60,8 +60,8 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
         
-        /* - Debugging helper
-        System.out.println("iNPUT" + startpoint + " " + target);
+        ///* - Debugging helper
+        System.out.println("INPUT Start - " + startpoint + " Target - " + target);
         System.out.println("Map - " + mapWidth + " " + mapHeight);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
         System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
