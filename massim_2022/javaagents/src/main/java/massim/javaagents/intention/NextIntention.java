@@ -242,9 +242,7 @@ public class NextIntention {
 
 	public void GeneratePathMemory() {
 		NextPlan plan = nextAgent.GetAgentPlan();
-		NextMap map = null;
-		if(this.nextAgent.GetAgentGroup() == null) map = this.nextAgent.GetMap();
-		else map = this.nextAgent.GetAgentGroup().GetGroupMap();
+		NextMap map = this.nextAgent.GetMap();
 
 		nextAgent.SetAgentTask(plan.GetAgentTask());
 
