@@ -1,7 +1,7 @@
 {
   "server" : {
     "tournamentMode" : "round-robin",
-    "teamsPerMatch" : 1,
+    "teamsPerMatch" : 2,
     "launch" : "key",
     "port" : 12300,
     "backlog" : 10000,
@@ -21,14 +21,12 @@
   ],
 
   "match" : [
-    "$(sim/simMiri2.json)",
-    "$(sim/simMiri1.json)",
-    "$(sim/simMiri2.json)",
     "$(sim/simMiri1.json)",
     "$(sim/simMiri2.json)",
   ],
 
   "teams" : {
+    "1" : {"prefix" : "Team", "password" : "Team1"},
     "5" : {"prefix" : "Team", "password" : "Team5"}
   }
 }
