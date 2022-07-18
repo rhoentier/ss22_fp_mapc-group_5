@@ -238,7 +238,7 @@ public class NextAgent extends Agent {
             
             //printActionsReport(); // live String output to console
             //this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
-            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+//            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
             
             Action nextAction = selectNextAction();
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
@@ -517,37 +517,66 @@ public class NextAgent extends Agent {
             String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
 
             NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
-            if (thing != null && !thing.getThingType().contains("block")) // thing vor mir
+            if (thing != null && !thing.IsBlock()) // thing vor mir
             {
-                if (thing.IsObstacle()) {
+                if (thing.IsObstacle()) 
+                {
                     nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
-                } else if (thing.getThingType().contains("entity")) {
-                    nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
-                } else {
+                } 
+                else if (thing.IsEntity()) 
+                {
+                	Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
+                	if(NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector))
+                	{
+                		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));   
+                	}
+                	else
+                	{                	
+                		nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
+                	}
+                }
+                else 
+                {
                     nextAction = pathMemory.remove(0);
                 }
-            } else {
+            } 
+            else 
+            {
+            	// Keinen Block oder 1 Block hinter mir oder naechster Schritt moeglich
                 if (agentStatus.GetAttachedElementsAmount() == 0
                         || (agentStatus.GetAttachedElementsAmount() == 1
                         && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
-                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetObstacles())) // no block or 1 element behind me or next Step is possible
+                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetFullLocalView())) // no block or 1 element behind me or next Step is possible
                 {
                     nextAction = pathMemory.remove(0);
-                } else {
-                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) {
-                        if (!agentStatus.GetLastAction().contains("rotate")) {
+                } 
+                else 
+                {
+                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) 
+                    {
+                        if (!agentStatus.GetLastAction().contains("rotate")) 
+                        {
                             nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else {
+                        } 
+                        else 
+                        {
                             Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirectionInVector2D(ECardinals.valueOf(direction));
                             nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x), new Identifier("" + oppositeDirection.y));
                             pathMemory.remove(0);
                         }
-                    } else {
-                        if (NextAgentUtil.IsRotationPossible(this.agentStatus, "cw")) {
+                    } 
+                    else 
+                    {
+                        if (NextAgentUtil.IsRotationPossible(this.agentStatus, "cw")) 
+                        {
                             nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) {
+                        } 
+                        else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) 
+                        {
                             nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-                        } else {
+                        } 
+                        else 
+                        {
                             // Randomstep
                             nextAction = new NextRandomPath().GenerateNextMove();
                         }
@@ -555,6 +584,13 @@ public class NextAgent extends Agent {
                 }
             }
         }
+        
+        if(nextAction.getName().contains("detach") 
+        	&& nextAction.getName().contains(this.agentStatus.GetLastAction()) && this.agentStatus.GetLastActionResult().contains("failed"))
+        {
+            nextAction = new NextRandomPath().GenerateNextMove();
+        }
+        
         //if(nextAction.getName().contains("skip")) nextAction = new NextRandomPath().GenerateNextMove();
         say(nextAction.toProlog());
         return nextAction;

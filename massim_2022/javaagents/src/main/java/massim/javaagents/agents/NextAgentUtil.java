@@ -249,7 +249,7 @@ public final class NextAgentUtil {
     public static Boolean IsObstacleInPosition(HashSet<NextMapTile> list, Vector2D position)
     {
     	for (NextMapTile tile : list) {
-            if (tile.GetPosition().equals(position) && tile.getThingType().contains("obstacle")) {
+            if (tile.GetPosition().equals(position) && tile.IsObstacle()) {
                 return true;
             }
         }
@@ -538,7 +538,7 @@ public final class NextAgentUtil {
             	return direction;
         }
     }
-
+    
     public static Boolean IsBlockBehindMe(ECardinals direction, Vector2D block) {
         Vector2D newBlockPosition = new Vector2D();
         switch (direction) { // In die Richtung, in die ich gehen mag
@@ -581,12 +581,12 @@ public final class NextAgentUtil {
 
     /**
      * Check if next Step is possible
-     * @param direction
-     * @param attachedElements
-     * @param obstacles
+     * @param direction from the opposide
+     * @param attachedElements all attached Elements
+     * @param obstacles all obstacles
      * @return
      */
-    public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> obstacles) {
+    public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> localView) {
         ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>();
         ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
         Vector2D newDirection = new Vector2D(0, 0);
@@ -649,7 +649,7 @@ public final class NextAgentUtil {
                 break;
         }
 
-        for(NextMapTile tile : obstacles)
+        for(NextMapTile tile : localView)
         {
         	for(Vector2D position : newAgentPositionLst)
         	{
@@ -719,6 +719,14 @@ public final class NextAgentUtil {
     	else if(vector.equals(new Vector2D(0, 1))) return ECardinals.s;
     	else if(vector.equals(new Vector2D(-1, 0))) return ECardinals.w;
     	else return ECardinals.e;
+    }
+    
+    public static Vector2D ConvertECardinalsToVector2D(ECardinals direction)
+    {
+    	if(direction.equals(ECardinals.n)) return new Vector2D(0, -1); 
+    	else if(direction.equals(ECardinals.e)) return new Vector2D(1 ,0); 
+    	else if(direction.equals(ECardinals.s)) return new Vector2D(0, 1); 
+    	else return new Vector2D(-1, 0); 
     }
     
     /**
@@ -828,10 +836,9 @@ public final class NextAgentUtil {
 	 * @param agentID
 	 * @param blockPosition
 	 * @param localView
-	 * @param nextAgentPosition
 	 * @return
 	 */
-	public static Boolean IsAnotherAgentInFrontOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView, Vector2D nextAgentPosition)
+	public static Boolean IsAnotherAgentInNearOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView)
 	{
 		for(NextMapTile tile : localView)
 		{	
