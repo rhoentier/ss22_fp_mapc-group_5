@@ -504,6 +504,11 @@ public class NextAgent extends Agent {
 
     }
 
+    private List<Action> generateAlternativePathMemory(List<Action> currentPathMemory)
+    {
+    	return currentPathMemory;
+    }
+    
     /**
      * Selects the next Action based on the priorityMap
      *
@@ -517,7 +522,7 @@ public class NextAgent extends Agent {
             String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
 
             NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
-            if (thing != null && !thing.IsBlock()) // thing vor mir
+            if (thing != null) // thing vor mir
             {
                 if (thing.IsObstacle()) 
                 {
@@ -534,6 +539,12 @@ public class NextAgent extends Agent {
                 	{                	
                 		nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
                 	}
+                }
+                else if(!thing.IsBlock())
+                {
+                	// um Block herumlaufen 
+                	SetPathMemory(generateAlternativePathMemory(pathMemory));
+                    nextAction = pathMemory.remove(0);
                 }
                 else 
                 {
