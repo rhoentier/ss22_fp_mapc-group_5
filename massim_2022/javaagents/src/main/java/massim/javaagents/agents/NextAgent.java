@@ -543,7 +543,7 @@ public class NextAgent extends Agent {
                 else if(!thing.IsBlock())
                 {
                 	// um Block herumlaufen 
-                	SetPathMemory(generateAlternativePathMemory(pathMemory));
+                	pathMemory = generateAlternativePathMemory(pathMemory);
                     nextAction = pathMemory.remove(0);
                 }
                 else 
