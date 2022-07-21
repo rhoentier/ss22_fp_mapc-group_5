@@ -555,6 +555,7 @@ public class NextMap {
         NextMapTile newMapTile;
         Vector2D sizeMapToAdd = mapToAdd.GetSizeOfMap();
 
+        // add all elements of map array to mapToKeep
         for (int i = 0; i < sizeMapToAdd.x; i++) {
             for (int j = 0; j < sizeMapToAdd.y; j++) {
                 newMapTile = mapToAdd.map[i][j].Clone();
@@ -563,6 +564,21 @@ public class NextMap {
                 offset.subtract(mapMoved);
             }
         }
+
+        // create a combined list of dispensers, goalZones and roleZones
+        HashSet<NextMapTile> combined = new HashSet<>();
+        combined.addAll(mapToAdd.dispensers);
+        combined.addAll(mapToAdd.goalZones);
+        combined.addAll(mapToAdd.roleZones);
+
+        // add all dispensers, goalZones and roleZones to mapToKeep
+        for(NextMapTile comb: combined) {
+            newMapTile = comb.clone();
+            newMapTile.Subtract(offset);
+            Vector2D mapMoved = mapToKeep.setMapTile(newMapTile);
+            offset.subtract(mapMoved); // should not be relevant, because map should be big enough
+        }
+
         return mapToKeep;
     }
     
