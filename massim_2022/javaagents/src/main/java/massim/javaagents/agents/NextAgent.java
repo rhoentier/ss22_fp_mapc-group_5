@@ -235,10 +235,10 @@ public class NextAgent extends Agent {
 
             generatePathMemory();
             generatePossibleActions();
-
+            
             //printActionsReport(); // live String output to console
             //this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
-            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+//            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
             
             Action nextAction = selectNextAction();
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
@@ -361,146 +361,6 @@ public class NextAgent extends Agent {
         return agentPlan;
     }
 
-    /*
-     * ##################### endregion public methods
-     */
-
- /*
-     * ########## region private methods
-     */
-    private void resetAfterInactiveTask() {
-        this.SetActiveTask(null);
-        this.clearPossibleActions();
-        this.ClearPathMemory();
-
-        // TODO miri: Mehrere Blöcke fallen lassen
-        // Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
-//    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
-//    	{
-//    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
-//    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
-//    	}
-    }
-
-    /**
-     * Stops the Agent. Closes the agent window
-     */
-    private void disableAgent() {
-        this.say("All games finished!");
-        System.exit(1); // Kill the window
-    }
-
-    /**
-     * Agent behavior at the start of a new simulation
-     */
-    private void startTheSimulation() {
-        System.out.println("Starting the Simulation");
-        resetAgent();
-    }
-
-    /**
-     * Agent behavior after finishing of the current simulation
-     */
-    private void finishTheSimulation() {
-        this.say("Finishing this Simulation!");
-        this.say("Result: #" + simStatus.GetRanking());
-
-    }
-
-    /**
-     * Selects the next Action based on the priorityMap
-     *
-     * @return Action
-     */
-    private Action selectNextAction() {
-        Action nextAction = intention.SelectNextAction();
-
-        if (!pathMemory.isEmpty()) {
-            Action currentAction = pathMemory.get(0);
-            String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
-
-            NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
-            if (thing != null && !thing.getThingType().contains("block")) // thing vor mir
-            {
-                if (thing.IsObstacle()) {
-                    nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
-                } else if (thing.getThingType().contains("entity")) {
-                    nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
-                } else {
-                    nextAction = pathMemory.remove(0);
-                }
-            } else {
-                if (agentStatus.GetAttachedElementsAmount() == 0
-                        || (agentStatus.GetAttachedElementsAmount() == 1
-                        && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
-                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetObstacles())) // no block or 1 element behind me or next Step is possible
-                {
-                    nextAction = pathMemory.remove(0);
-                } else {
-                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) {
-                        if (!agentStatus.GetLastAction().contains("rotate")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else {
-                            Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirectionInVector2D(ECardinals.valueOf(direction));
-                            nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x), new Identifier("" + oppositeDirection.y));
-                            pathMemory.remove(0);
-                        }
-                    } else {
-                        if (NextAgentUtil.IsRotationPossible(this.agentStatus, "cw")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                        } else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) {
-                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-                        } else {
-                            // Randomstep
-                            nextAction = new NextRandomPath().GenerateNextMove();
-                        }
-                    }
-                }
-            }
-        }
-        //if(nextAction.getName().contains("skip")) nextAction = new NextRandomPath().GenerateNextMove();
-        say(nextAction.toProlog());
-        return nextAction;
-    }
-
-    private void generatePossibleActions() {
-        intention.GeneratePossibleActions();
-    }
-
-    private void generatePathMemory() {
-        intention.GeneratePathMemory();
-    }
-
-    private void clearPossibleActions() {
-        intention.ClearPossibleActions();
-    }
-
-    /**
-     * resets the agent between the Simulations, clears the Belief elements
-     */
-    private void resetAgent() {
-
-        this.lastID = -1;
-        //this.setPercepts(new ArrayList<>(), this.getPercepts());
-
-        this.simStatus = new NextSimulationStatus();
-        this.simStatus.SetActionID(lastID);
-        this.agentStatus = new NextAgentStatus(this);
-
-        this.processor = new NextPerceptReader(this);
-        this.intention = new NextIntention(this);
-
-        this.pathMemory = new ArrayList<>();
-        this.activeTask = null;
-        this.agentActivity = EAgentActivity.exploreMap;
-        this.agentPlan = null;
-        this.taskPlanner = new NextTaskPlanner(this);
-        //this.roleToChangeTo=null;
-
-        agentGroup = null;
-        globalGroupMap = new HashMap<>();
-
-    }
 
     /**
      * CalculatePath to the target cell. The function decides which algorithm to
@@ -519,7 +379,7 @@ public class NextAgent extends Agent {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target);
-                // this.say("A* path:" + pathMemoryA);
+                this.say("A* path:" + pathMemoryA);
                 if (pathMemoryA.size() == 0) {
                     // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
                     return calculateManhattanPath(target);
@@ -563,6 +423,227 @@ public class NextAgent extends Agent {
             this.say("CalculatePathNextToTarget:" + e);
         }
         return CalculatePath(new Vector2D(target.x, target.y));
+    }
+    
+    
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * @param Message - String based message
+     */
+    public void TellGroup (String message) {
+        this.agentGroup.TellGroup(message, this);
+    }
+    
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * @param Message - String based message
+     */
+    public void TellGroupAgent (String message, String agentName) {
+        this.agentGroup.TellGroupAgent(message, agentName, this);
+    }
+    
+    /** Handling of custom groupmessages
+     * 
+     * @param Message - String based message
+     */
+    public void HandleGroupMessage (String message, String agent) {
+        this.say("Message (" + message + ") from " + agent);
+        
+        // definitive implementation needed
+        
+    }  
+    
+    
+    /*
+     * ##################### endregion public methods
+     */
+
+    //--------------------------------------------------------------------------
+    
+    /*
+     * ########## region private methods
+     */
+    private void resetAfterInactiveTask() {
+        this.SetActiveTask(null);
+        this.clearPossibleActions();
+        this.ClearPathMemory();
+
+        // TODO miri: Mehrere Blöcke fallen lassen
+        // Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
+//    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
+//    	{
+//    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
+//    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
+//    	}
+    }
+
+    /**
+     * Stops the Agent. Closes the agent window
+     */
+    private void disableAgent() {
+        this.say("All games finished!");
+        System.exit(1); // Kill the window
+    }
+
+    /**
+     * Agent behavior at the start of a new simulation
+     */
+    private void startTheSimulation() {
+        System.out.println("Starting the Simulation");
+        resetAgent();
+    }
+
+    /**
+     * Agent behavior after finishing of the current simulation
+     */
+    private void finishTheSimulation() {
+        this.say("Finishing this Simulation!");
+        this.say("Result: #" + simStatus.GetRanking());
+
+    }
+
+    private List<Action> generateAlternativePathMemory(List<Action> currentPathMemory)
+    {
+    	return currentPathMemory;
+    }
+    
+    /**
+     * Selects the next Action based on the priorityMap
+     *
+     * @return Action
+     */
+    private Action selectNextAction() {
+        Action nextAction = intention.SelectNextAction();
+
+        if (!pathMemory.isEmpty()) {
+            Action currentAction = pathMemory.get(0);
+            String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
+
+            NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
+            if (thing != null) // thing vor mir
+            {
+                if (thing.IsObstacle()) 
+                {
+                    nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
+                } 
+                else if (thing.IsEntity()) 
+                {
+                	Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
+                	if(NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector))
+                	{
+                		nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));   
+                	}
+                	else
+                	{                	
+                		nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
+                	}
+                }
+                else if(!thing.IsBlock())
+                {
+                	// um Block herumlaufen 
+                	pathMemory = generateAlternativePathMemory(pathMemory);
+                    nextAction = pathMemory.remove(0);
+                }
+                else 
+                {
+                    nextAction = pathMemory.remove(0);
+                }
+            } 
+            else 
+            {
+            	// Keinen Block oder 1 Block hinter mir oder naechster Schritt moeglich
+                if (agentStatus.GetAttachedElementsAmount() == 0
+                        || (agentStatus.GetAttachedElementsAmount() == 1
+                        && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
+                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetFullLocalView())) // no block or 1 element behind me or next Step is possible
+                {
+                    nextAction = pathMemory.remove(0);
+                } 
+                else 
+                {
+                    if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) 
+                    {
+                        if (!agentStatus.GetLastAction().contains("rotate")) 
+                        {
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                        } 
+                        else 
+                        {
+                            Vector2D oppositeDirection = NextAgentUtil.GetOppositeDirectionInVector2D(ECardinals.valueOf(direction));
+                            nextAction = NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + oppositeDirection.x), new Identifier("" + oppositeDirection.y));
+                            pathMemory.remove(0);
+                        }
+                    } 
+                    else 
+                    {
+                        if (NextAgentUtil.IsRotationPossible(this.agentStatus, "cw")) 
+                        {
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                        } 
+                        else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) 
+                        {
+                            nextAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+                        } 
+                        else 
+                        {
+                            // Randomstep
+                            nextAction = new NextRandomPath().GenerateNextMove();
+                        }
+                    }
+                }
+            }
+        }
+        
+        if(nextAction.getName().contains("detach") 
+        	&& nextAction.getName().contains(this.agentStatus.GetLastAction()) && this.agentStatus.GetLastActionResult().contains("failed"))
+        {
+            nextAction = new NextRandomPath().GenerateNextMove();
+        }
+        
+        //if(nextAction.getName().contains("skip")) nextAction = new NextRandomPath().GenerateNextMove();
+        say(nextAction.toProlog());
+        return nextAction;
+    }
+
+    private void generatePossibleActions() {
+        intention.GeneratePossibleActions();
+    }
+
+    private void generatePathMemory() {
+        intention.GeneratePathMemory();
+    }
+
+    private void clearPossibleActions() {
+        intention.ClearPossibleActions();
+    }
+
+    /**
+     * resets the agent between the Simulations, clears the Belief elements
+     */
+    private void resetAgent() {
+
+        this.lastID = -1;
+        //this.setPercepts(new ArrayList<>(), this.getPercepts());
+
+        this.simStatus = new NextSimulationStatus();
+        this.simStatus.SetActionID(lastID);
+        this.agentStatus = new NextAgentStatus(this);
+
+        this.processor = new NextPerceptReader(this);
+        this.intention = new NextIntention(this);
+
+        this.pathMemory = new ArrayList<>();
+        this.activeTask = null;
+        this.agentActivity = EAgentActivity.exploreMap;
+        this.agentPlan = null;
+        this.taskPlanner = new NextTaskPlanner(this);
+        //this.roleToChangeTo=null;
+
+        agentGroup = null;
+        globalGroupMap = new HashMap<>();
+
     }
 
     private List<Action> calculateManhattanPath(Vector2D target) {
@@ -748,6 +829,11 @@ public class NextAgent extends Agent {
         return visibleEntities;
     }
 
+    /**
+     * Selects the friendly agents in the local view. 
+     * Drops the agents known in the group.
+     * Broadcasts 1st message for groupbuilding 
+     */
     private void processFriendlyAgents() {
 
         HashSet<NextMapTile> visibleEntities = findFriendlyAgentsInLocalView();
@@ -790,6 +876,10 @@ public class NextAgent extends Agent {
         }
     }
 
+    /**
+     * Processing of Messages in the Mailstore, used for Groupbuilding
+     * initialises groupjoining process
+     */
     private void processGroupJoinMessages() {
         if (this.messageStore.size() == 1) {
             System.out.println("Unexpected error in GroupJoinMessages - single object in message store");
@@ -815,6 +905,7 @@ public class NextAgent extends Agent {
         }
         this.messageStore.clear();
     }
+    
 
     private void announceMapSizeDiscoveryStart() {
         this.broadcast(new Percept("MapSizeDiscoveryHasStarted"), this.getName());

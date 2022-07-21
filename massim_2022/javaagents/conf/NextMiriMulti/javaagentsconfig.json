@@ -3,6 +3,14 @@
     {
       "count":  10,
       "start-index":  1,
+      "agent-prefix":  "Team1",
+      "entity-prefix":  "Connection1",
+      "team":  "1",
+      "class": "NextAgent"
+    },
+    {
+      "count":  10,
+      "start-index":  1,
       "agent-prefix":  "Team5",
       "entity-prefix":  "Connection5",
       "team":  "5",

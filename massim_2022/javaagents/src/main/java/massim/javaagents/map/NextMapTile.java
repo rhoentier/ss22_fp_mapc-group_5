@@ -137,6 +137,22 @@ public class NextMapTile {
     {
     	return thingType.contains("obstacle");
     }
+    
+    public Boolean IsDispenser()
+    {
+    	return thingType.contains("dispenser");
+    }
+    
+    public Boolean IsBlock()
+    {
+    	return thingType.contains("block");
+    }
+    
+    public Boolean IsEntity()
+    {
+    	return thingType.contains("entity");
+    }
+    
     public boolean isOpen() {
         return open;
     }

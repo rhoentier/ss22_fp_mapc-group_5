@@ -160,6 +160,36 @@ public class NextGroup {
         }
     }
     
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * to be called from agent
+     * 
+     * @param Message - String based message
+     */
+    public void TellGroup (String Message, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet){
+            if(!agent.equals(sourceAgent)){
+                agent.HandleGroupMessage(Message, sourceAgent.getName());
+            }
+        }
+    }
+    
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * to be called from agent
+     *
+     * @param Message - String based message
+     */
+    public void TellGroupAgent (String Message, String targetAgent, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet){
+            if(agent.getName().equals(targetAgent)){
+                agent.HandleGroupMessage(Message, sourceAgent.getName());
+            }
+        }
+    }
+    
     public void ModAllAgents(Vector2D mod) {
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
@@ -170,7 +200,9 @@ public class NextGroup {
      * ##################### endregion public methods
      */
 
- /*
+    // ------------------------------------------------------------------------
+    
+    /*
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
