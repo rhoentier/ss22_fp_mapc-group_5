@@ -250,6 +250,18 @@ public class Vector2D {
         return v;
     }
 
+    public Vector2D getMax(Vector2D v) {
+        int xMax = Math.max(this.x, v.x);
+        int yMax = Math.max(this.y, v.y);
+        return new Vector2D(xMax, yMax);
+    }
+
+    public Vector2D getMin(Vector2D v) {
+        int xMin = Math.min(this.x, v.x);
+        int yMin = Math.min(this.y, v.y);
+        return new Vector2D(xMin, yMin);
+    }
+
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);

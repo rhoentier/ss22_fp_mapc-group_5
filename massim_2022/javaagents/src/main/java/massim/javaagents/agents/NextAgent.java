@@ -374,7 +374,7 @@ public class NextAgent extends Agent {
 
         //NextMap map = GetMap();
         NextMap map = this.agentGroup.GetGroupMap();
-        Boolean targetIsOnMap = map.ContainsPoint(target);
+        Boolean targetIsOnMap = map.IsOnMap(target);
         try {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
