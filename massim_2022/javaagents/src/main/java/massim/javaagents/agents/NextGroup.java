@@ -103,13 +103,13 @@ public class NextGroup {
 
     public void AddGroup(NextGroup newGroup, Vector2D offset) {
 
-        System.out.println("MAP to Keep ______________________________________ \n" + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray()));
+        // System.out.println("MAP to Keep ______________________________________ \n" + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
 
-        System.out.println("MAP to Join______________________________________ \n" + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray()));
+        // System.out.println("MAP to Join______________________________________ \n" + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : newGroup.agentSet) {
             agent.say(agent.GetPosition().toString());
@@ -133,8 +133,8 @@ public class NextGroup {
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        System.out.println("----------------------------------------- joined ----------------------");
-        System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
+        //System.out.println("----------------------------------------- joined ----------------------");
+        //System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
@@ -153,6 +153,11 @@ public class NextGroup {
         agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
     }
 
+    public void ModSingleAgent(NextAgent agent) {
+        Vector2D pos = new Vector2D(agentPositionMap.get(agent).getMod(groupMap.GetSimulationMapSize()));
+        agentPositionMap.put(agent, pos);
+    }
+
     /**
      * Move the position of all agents of this group
      *
@@ -164,6 +169,42 @@ public class NextGroup {
             //    agentPositionMap.get(agent).add(offset);
 
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
+        }
+    }
+
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * to be called from agent
+     *
+     * @param Message - String based message
+     */
+    public void TellGroup (String Message, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet){
+            if(!agent.equals(sourceAgent)){
+                agent.HandleGroupMessage(Message, sourceAgent.getName());
+            }
+        }
+    }
+
+    /**
+     * String-based communication with groupagents
+     * to be extended for further usecases.
+     * to be called from agent
+     *
+     * @param Message - String based message
+     */
+    public void TellGroupAgent (String Message, String targetAgent, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet){
+            if(agent.getName().equals(targetAgent)){
+                agent.HandleGroupMessage(Message, sourceAgent.getName());
+            }
+        }
+    }
+
+    public void ModAllAgents(Vector2D mod) {
+        for (NextAgent agent : agentPositionMap.keySet()) {
+            agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
         }
     }
 
@@ -194,11 +235,13 @@ public class NextGroup {
      */
 
     /*
+    // ------------------------------------------------------------------------
+
+    /*
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
-        return;
-        //this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
+        this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
     }
 
     @Override

@@ -83,6 +83,18 @@ public class NextMapTile {
         this.positionY += moveBy.y;
     }
 
+    public void Subtract(Vector2D v) {
+        this.positionX -= v.x;
+        this.positionY -= v.y;
+    }
+
+    public void ModPosition(Vector2D mod) {
+        Vector2D pos = new Vector2D(this.positionX, this.positionY);
+        pos.mod(mod);
+        this.positionX = pos.x;
+        this.positionY = pos.y;
+    }
+
     public String getThingType() {
         if (isAThing) {
             return thingType;
@@ -113,11 +125,22 @@ public class NextMapTile {
     
     /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
-     * entity, block, obstacle
+     * obstacle, unknown
      *
      * @return
      */
     public Boolean IsWalkable() {
+        //return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
+        return !thingType.contains("obstacle") && !thingType.contains("unknown");
+    }
+    
+    /**
+     * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
+     * entity, block, obstacle, unknown
+     *
+     * @return
+     */
+    public Boolean IsWalkableStrict() {
         return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
     }
     
@@ -125,6 +148,22 @@ public class NextMapTile {
     {
     	return thingType.contains("obstacle");
     }
+    
+    public Boolean IsDispenser()
+    {
+    	return thingType.contains("dispenser");
+    }
+    
+    public Boolean IsBlock()
+    {
+    	return thingType.contains("block");
+    }
+    
+    public Boolean IsEntity()
+    {
+    	return thingType.contains("entity");
+    }
+    
     public boolean isOpen() {
         return open;
     }
