@@ -22,7 +22,7 @@
 
   "match" : [
     "$(sim/simMiri1.json)",
-    "$(sim/simMiri2.json)",
+    "$(sim/simMiri2.json)"
   ],
 
   "teams" : {

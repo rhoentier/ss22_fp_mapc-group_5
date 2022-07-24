@@ -85,7 +85,6 @@ public final class NextAgentUtil {
      * Reports, if a Thing is next to the Agent using Absolute coordinates
      *
      * @param position - x-Value, y-Value of a Thing
-     * @param status - #source of Information
      * @return boolean
      */
     ///**
@@ -99,8 +98,7 @@ public final class NextAgentUtil {
     /**
      * Change Vector Direction to Identifier for using Actions
      *
-     * @param xValue - x-Value of Thing
-     * @param yValue - y-Value of Thing
+     * @param direction - direction as a Vector2D
      * @return Identifier for the direction value of an action.
      */
     public static Identifier ChangeVector2DToIdentifier(Vector2D direction) {
@@ -168,8 +166,8 @@ public final class NextAgentUtil {
     /**
      * Creates an action to survey a remote agent:
      *
-     * @param String X-Coordinate relative to the surveing Agent
-     * @param String Y-Coordinate relative to the surveing Agent
+     * @param xPosition X-Coordinate relative to the surveing Agent
+     * @param yPosition Y-Coordinate relative to the surveing Agent
      * @return Action
      */
     public static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
@@ -464,7 +462,7 @@ public final class NextAgentUtil {
 
     /**
      * Check correct block type
-     * @param nextTask
+     * @param requiredBlocks
      * @param thingType
      * @return
      */
@@ -494,7 +492,7 @@ public final class NextAgentUtil {
     /**
      * check if things in next step
      * @param direction
-     * @param obstacle
+     * @param visibleThings
      * @return
      */
     public static NextMapTile IsThingInNextStep(ECardinals direction, HashSet<NextMapTile> visibleThings) {
@@ -583,7 +581,7 @@ public final class NextAgentUtil {
      * Check if next Step is possible
      * @param direction from the opposide
      * @param attachedElements all attached Elements
-     * @param obstacles all obstacles
+     * @param localView all objects from the localView
      * @return
      */
     public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> localView) {
@@ -833,7 +831,6 @@ public final class NextAgentUtil {
 	
 	/**
 	 * Check, if another Agent is in near from block
-	 * @param agentID
 	 * @param blockPosition
 	 * @param localView
 	 * @return

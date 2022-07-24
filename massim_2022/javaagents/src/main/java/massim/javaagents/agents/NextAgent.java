@@ -435,7 +435,7 @@ public class NextAgent extends Agent {
      * String-based communication with groupagents to be extended for further
      * usecases.
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void TellGroup(String message) {
         this.agentGroup.TellGroup(message, this);
@@ -445,7 +445,7 @@ public class NextAgent extends Agent {
      * String-based communication with groupagents to be extended for further
      * usecases.
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void TellGroupAgent(String message, String agentName) {
         this.agentGroup.TellGroupAgent(message, agentName, this);
@@ -454,7 +454,7 @@ public class NextAgent extends Agent {
     /**
      * Handling of custom groupmessages
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void HandleGroupMessage(String message, String agent) {
         this.say("Message (" + message + ") from " + agent);
