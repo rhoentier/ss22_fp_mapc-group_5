@@ -125,11 +125,22 @@ public class NextMapTile {
     
     /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
-     * entity, block, obstacle
+     * obstacle, unknown
      *
      * @return
      */
     public Boolean IsWalkable() {
+        //return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
+        return !thingType.contains("obstacle") && !thingType.contains("unknown");
+    }
+    
+    /**
+     * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
+     * entity, block, obstacle, unknown
+     *
+     * @return
+     */
+    public Boolean IsWalkableStrict() {
         return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
     }
     

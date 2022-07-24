@@ -28,16 +28,22 @@ public class NextAStarPath {
     private int[] localStartPoint;
 
     private Boolean centerTheMap;
+    private Boolean strictWalkable;
 
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target) {
-        return calculatePath(originalMap, startpoint, target, false);
+        return calculatePath(originalMap, startpoint, target, false, false);
+    }
+    
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap){
+        return calculatePath(originalMap, startpoint, target, centerTheMap , false);
     }
 
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap) {
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable) {
 
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
         this.centerTheMap = centerTheMap;
+        this.strictWalkable = strictWalkable;
 
         if (this.mapWidth == 1 && mapHeight == 1) {
             System.out.println("Map is to small");
@@ -191,7 +197,11 @@ public class NextAStarPath {
     private boolean validTile(int nextX, int nextY) {
         if (nextX >= 0 && nextX < mapWidth) {
             if (nextY >= 0 && nextY < mapHeight) {
-                return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkable() && map[nextX][nextY] != null;
+                if(this.strictWalkable){
+                    return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkableStrict() && map[nextX][nextY] != null;
+                } else{
+                    return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkable() && map[nextX][nextY] != null;
+                }
             }
         }
         return false;
@@ -200,10 +210,16 @@ public class NextAStarPath {
     private int getScoreOfTile(NextMapTile tile, int currentScore) {
         int guessScoreLeft = distanceScoreAway(tile);
         int extraMovementCost = 0;
-        if (!tile.IsWalkable()) {
-
-            // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
-            extraMovementCost += 1000;
+        if(this.strictWalkable){
+            if (!tile.IsWalkableStrict()) {
+                // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
+                extraMovementCost += 1000;
+            }
+        }else{
+            if (!tile.IsWalkable()) {
+                // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
+                extraMovementCost += 1000;
+            }
         }
         int movementScore = currentScore + 1;
         return guessScoreLeft + movementScore + extraMovementCost;
