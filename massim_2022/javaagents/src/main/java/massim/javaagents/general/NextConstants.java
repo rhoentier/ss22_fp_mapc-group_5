@@ -145,6 +145,7 @@ public final class NextConstants {
         surveyDispenser,
         surveyGoalZone,
         surveyRoleZone,
+        surveyRandom,
         discoverMapSize
     }
 
