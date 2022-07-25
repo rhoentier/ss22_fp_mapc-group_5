@@ -93,13 +93,13 @@ public class NextGroup {
 
     public void AddGroup(NextGroup newGroup, Vector2D offset) {
 
-        // System.out.println("MAP to Keep ______________________________________ \n" + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray()));
+         System.out.println("MAP to Keep ______________________________________ \n" + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
 
-        // System.out.println("MAP to Join______________________________________ \n" + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray()));
+         System.out.println("MAP to Join______________________________________ \n" + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : newGroup.agentSet) {
             agent.say(agent.GetPosition().toString());
@@ -123,8 +123,8 @@ public class NextGroup {
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        //System.out.println("----------------------------------------- joined ----------------------");
-        //System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
+        System.out.println("----------------------------------------- joined ----------------------");
+        System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
 
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
