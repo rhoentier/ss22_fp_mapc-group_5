@@ -195,6 +195,12 @@ public class NextGroup {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
         }
     }
+    
+    public HashSet<Vector2D> GetAgentPositions(){
+        HashSet <Vector2D> werte = new HashSet<>();
+        werte.addAll(this.agentPositionMap.values());
+        return werte;
+    }
 
     /*
      * ##################### endregion public methods

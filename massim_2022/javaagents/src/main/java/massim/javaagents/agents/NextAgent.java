@@ -235,10 +235,11 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            //this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
-            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+            printFinalReport(); // live String output to console
+
             Action nextAction = selectNextAction();
-            //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
+            
+            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
 
         }
@@ -611,15 +612,14 @@ public class NextAgent extends Agent {
             NextMap workMap = this.agentGroup.GetGroupMap();
             int xPosition = this.GetPosition().getAdded(target).x;
             int yPosition = this.GetPosition().getAdded(target).y;
-            
-            if (xPosition > -1 && yPosition > -1 && xPosition <= workMap.GetSizeOfMap().x && yPosition <= workMap.GetSizeOfMap().y) {
+
+            if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
                 workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter);
             }
 
         }
         return target;
     }
-
 
     /**
      * Selects the next Action based on the priorityMap
@@ -870,6 +870,20 @@ public class NextAgent extends Agent {
         if (this.activeTask != null) {
             System.out.println("ActiveTask : \n" + this.GetActiveTask().GetName() + " | required Blocks: " + this.GetActiveTask().GetRequiredBlocks().size());
         }
+    }
+
+    /**
+     * Debugging helper - Position, Groups, Last action
+     */
+    private void printFinalReport() {
+        if (this.agentGroup != null) {
+            this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
+        }
+        this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+        this.say(NextMap.MapToStringBuilder(this.agentGroup.GetGroupMap().GetMapArray(),this.agentGroup.GetAgentPositions(),this.agentGroup.GetGroupMap().GetDispenserPositions()));
+        this.say("Aktuelle Position: " + this.GetPosition());
+        this.say("Dispenser : " + this.GetGroup().GetGroupMap().GetDispensers());
+
     }
 
     /**

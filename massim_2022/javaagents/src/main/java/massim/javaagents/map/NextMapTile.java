@@ -112,12 +112,12 @@ public class NextMapTile {
     @Override
     public String toString() {
         if (isAThing) {
-            return "[ " + this.positionX + ", " + this.positionY + " ]\n"
-                    + "Last Step: " + this.lastVisionStep + "\n"
-                    + "Type: " + thingType + "\n";
+            return "\n[ " + this.positionX + ", " + this.positionY + " ]"
+                    + "Last Step: " + this.lastVisionStep + " "
+                    + "Type: " + thingType + " ";
 
         }
-        return "[ " + this.positionX + ", " + this.positionY + " ]\n"
+        return "\n[ " + this.positionX + ", " + this.positionY + " ]"
                 + "Last Step: " + this.lastVisionStep;
     }
     

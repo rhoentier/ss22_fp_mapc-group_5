@@ -439,18 +439,39 @@ public class NextMap {
         }
         return tempMap;
     }
+    
+    public HashSet<Vector2D> GetDispenserPositions(){
+        HashSet <Vector2D> werte = new HashSet<>();
+        for (NextMapTile disp : dispensers){
+            werte.add(new Vector2D(disp.getPositionX(), disp.getPositionY()));
+        }
+        return werte;
+    }
 
     public String MapToStringBuilder() {
         return MapToStringBuilder(this.map);
     }
-
+   
     public static String MapToStringBuilder(NextMapTile[][] map) {
+        return MapToStringBuilder(map, new HashSet<>(),new HashSet<>());
+    }
+    
+    public static String MapToStringBuilder(NextMapTile[][] map, HashSet<Vector2D> agents, HashSet<Vector2D> dispenser) {
         StringBuilder stringForReturn = new StringBuilder();
 
         for (int y = 0; y < map[0].length; y++) {
             StringBuilder subString = new StringBuilder();
 
             for (int x = 0; x < map.length; x++) {
+                if (dispenser.contains(new Vector2D(x,y))) {
+                    subString.append("D");
+                    continue;
+                }
+                if (agents.contains(new Vector2D(x,y))){
+                    subString.append("A");
+                    continue;
+                }
+                
                 if (map[x][y] != null) {
                     if (map[x][y].IsWalkable() != null) {
                         if (map[x][y].IsWalkable()) {
