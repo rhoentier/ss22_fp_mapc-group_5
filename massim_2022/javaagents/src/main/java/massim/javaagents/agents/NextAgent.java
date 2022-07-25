@@ -619,6 +619,33 @@ public class NextAgent extends Agent {
         }
         return target;
     }
+    
+    private Vector2D clearMapTiles( Vector2D startPoint, List<Action> actionList){
+        Vector2D target = new Vector2D();
+        int counter = 0;
+        for (Action step : actionList) {
+            counter += 1;
+            //System.out.println("step.getParameters()" + step.getParameters());
+            if(step.getParameters().get(0).toString().contains("n")){
+                target.add(0,-1);
+            }
+            if(step.getParameters().get(0).toString().contains("e")){
+                target.add(1,0);
+            }
+            if(step.getParameters().get(0).toString().contains("w")){
+                target.add(-1,0);
+            }
+            if(step.getParameters().get(0).toString().contains("s")){
+                target.add(0,1);
+            }
+            //System.out.println("Target: " + target);
+            
+            // Free MapTile
+            this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep()+ counter);
+        
+        }
+        return target;
+    }
 
     /**
      * Selects the next Action based on the priorityMap
