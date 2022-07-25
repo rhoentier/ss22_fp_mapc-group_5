@@ -1,16 +1,13 @@
 package massim.javaagents.map;
 
+import java.util.HashSet;
 import java.util.Objects;
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
  * The Atomic element of a Massim Map
  *
- * ToDo: Compare Manhattan Distance Calculation isEqual toString
- *
- * Vererbung?
- *
- * @author AVL
+ * @author Alexander Lorenz, Sebastian
  */
 public class NextMapTile {
 
@@ -25,7 +22,8 @@ public class NextMapTile {
     private NextMapTile parent = null;
     private int score = 0;
     
-    
+    private HashSet<Integer> stepMemory = new HashSet<>(); 
+        
     public NextMapTile() {
         this.lastVisionStep = -2;
         this.thingType = "unknown";
@@ -135,6 +133,17 @@ public class NextMapTile {
     }
     
     /**
+     * Returns, if a map tile is "walkable" by an agent at a specific step. Tiles which are blocked contain one of the following things:
+     * obstacle, unknown
+     *
+     * @return
+     */
+    public Boolean IsWalkable(Integer step) {
+        return IsWalkable() && !this.stepMemory.contains(step);
+    }
+    
+    
+    /**
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
      * entity, block, obstacle, unknown
      *
@@ -142,6 +151,16 @@ public class NextMapTile {
      */
     public Boolean IsWalkableStrict() {
         return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
+    }
+    
+        /**
+     * Returns, if a map tile is "walkable" by an agent at a specific step. Tiles which are blocked contain one of the following things:
+     * obstacle, unknown
+     *
+     * @return
+     */
+    public Boolean IsWalkableStrict(Integer step) {
+        return IsWalkableStrict() && !this.stepMemory.contains(step);
     }
     
     public Boolean IsObstacle()
@@ -207,6 +226,14 @@ public class NextMapTile {
     @Override
     public NextMapTile clone() {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
+    }
+    
+    public void BlockAtStep (int step) {
+        this.stepMemory.add(step);
+    }
+    
+    public void ReleaseAtStep ( int step) {
+        this.stepMemory.remove(step);
     }
 
     /*

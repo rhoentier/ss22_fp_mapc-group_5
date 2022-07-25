@@ -240,7 +240,7 @@ public class NextAgent extends Agent {
             Action nextAction = selectNextAction();
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms");
             return nextAction;
-            
+
         }
         return null;
 
@@ -374,7 +374,7 @@ public class NextAgent extends Agent {
         try {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
-                pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target);
+                pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target, this.simStatus.GetCurrentStep());
                 this.say("A* path:" + pathMemoryA);
                 if (pathMemoryA.size() == 0) {
                     // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
@@ -506,46 +506,31 @@ public class NextAgent extends Agent {
      * @author Alexander Lorenz
      */
     private List<Action> generateAlternativePathMemory(List<Action> currentPathMemory) {
+
         int vision = this.agentStatus.GetCurrentRole().GetVision();
+        int reach = vision - 1;
         HashSet<NextMapTile> fullLocalView = this.agentStatus.GetFullLocalView();
 
         List<Action> localPath = new ArrayList<>();
         List<Action> pathRest = new ArrayList<>();
-        
+
         //Divide path memory
-        if(pathMemory.size() > vision) {
-        localPath = pathMemory.subList(0, vision);
-        pathRest = pathMemory.subList(vision,pathMemory.size());}
-        else {
+        if (pathMemory.size() > reach) {
+            localPath = pathMemory.subList(0, reach);
+            pathRest = pathMemory.subList(reach, pathMemory.size());
+        } else {
             localPath = pathMemory;
         }
-        
+
         // Report Element  
         /*
         System.out.println("Original " + pathMemory + "/n ---------------------------");
         System.out.println("Local " + localPath);
         System.out.println("Global " + pathRest);
         //*/
-        
-        // Convert local Path to Target Cell
-        Vector2D target = new Vector2D();
-        for (Action step : localPath) {
-            //System.out.println("step.getParameters()" + step.getParameters());
-            if(step.getParameters().get(0).toString().contains("n")){
-                target.add(0,-1);
-            }
-            if(step.getParameters().get(0).toString().contains("e")){
-                target.add(1,0);
-            }
-            if(step.getParameters().get(0).toString().contains("w")){
-                target.add(-1,0);
-            }
-            if(step.getParameters().get(0).toString().contains("s")){
-                target.add(0,1);
-            }
-            //System.out.println("Target: " + target);
-        }
-                
+        // Convert local Path to Target Cell and clear Path in between
+        Vector2D target = clearMapTiles(this.GetPosition(), localPath);
+
         //BuildMap
         NextMapTile[][] localMap = new NextMapTile[2 * vision + 1][2 * vision + 1];
 
@@ -556,15 +541,15 @@ public class NextAgent extends Agent {
         }
         // Fill Visible Area
         HashSet<NextMapTile> emptyVision = new HashSet<>();
-        
+
         for (int i = -1 * vision; i <= vision; i++) {
             for (int j = -1 * vision; j <= vision; j++) {
                 if (Math.abs(i) + Math.abs(j) <= vision) {
-                        emptyVision.add(new NextMapTile(i, j,this.simStatus.GetCurrentStep()));
+                    emptyVision.add(new NextMapTile(i, j, this.simStatus.GetCurrentStep()));
                 }
             }
         }
-        
+
         for (NextMapTile element : emptyVision) {
             int newX = element.getPositionX() + vision;
             int newY = element.getPositionY() + vision;
@@ -572,7 +557,7 @@ public class NextAgent extends Agent {
             localMap[newX][newY] = element.Clone();
             localMap[newX][newY].SetPosition(new Vector2D(newX, newY));
         }
-        
+
         // Fill local percepts
         for (NextMapTile element : fullLocalView) {
             int newX = element.getPositionX() + vision;
@@ -583,27 +568,56 @@ public class NextAgent extends Agent {
         }
 
         //System.out.println(NextMap.MapToStringBuilder(localMap));
-
         // Calculate Path
-        
         List<Action> newPath = new ArrayList<>();
-        newPath = aStar.calculatePath(localMap, new Vector2D(vision,vision), target.getAdded(vision, vision),false,true);
-        
+        newPath = aStar.calculatePath(localMap, new Vector2D(vision, vision), target.getAdded(vision, vision), false, true, this.simStatus.GetCurrentStep());
+
         //System.out.println("path" + newPath);
-                
         // Join Path
-        
         System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
-        
+
         if (newPath.isEmpty()) {
             newPath.add(NextAgentUtil.GenerateRandomMove());
+            clearMapTiles(target, pathRest);
             return newPath;
         }
-        
+
         newPath.addAll(pathRest);
         return newPath;
-        
-    
+
+    }
+
+    private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
+        Vector2D target = new Vector2D();
+        int counter = 0;
+        for (Action step : actionList) {
+            counter += 1;
+            //System.out.println("step.getParameters()" + step.getParameters());
+            if (step.getParameters().get(0).toString().contains("n")) {
+                target.add(0, -1);
+            }
+            if (step.getParameters().get(0).toString().contains("e")) {
+                target.add(1, 0);
+            }
+            if (step.getParameters().get(0).toString().contains("w")) {
+                target.add(-1, 0);
+            }
+            if (step.getParameters().get(0).toString().contains("s")) {
+                target.add(0, 1);
+            }
+            //System.out.println("Target: " + target);
+
+            // Free MapTile
+            NextMap workMap = this.agentGroup.GetGroupMap();
+            int xPosition = this.GetPosition().getAdded(target).x;
+            int yPosition = this.GetPosition().getAdded(target).y;
+            
+            if (xPosition > -1 && yPosition > -1 && xPosition <= workMap.GetSizeOfMap().x && yPosition <= workMap.GetSizeOfMap().y) {
+                workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter);
+            }
+
+        }
+        return target;
     }
 
     /**
