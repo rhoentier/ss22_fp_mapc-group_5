@@ -219,30 +219,32 @@ public class NextMap {
 
         // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
         if (addMaptile) {
-            if (existingMapTile == null || existingMapTile.getLastVisionStep() <= maptile.getLastVisionStep()) {
-                switch (maptile.getThingType().substring(0, 4)) {
-                    case "disp":
-                        dispensers.add(maptile);
-                        availableDispensers.add((maptile.getThingType().substring(10)));
-                        break;
-                    case "goal":
-                        goalZones.add(maptile);
-                        break;
-                    case "role":
-                        roleZones.add(maptile);
-                        break;
-                    case "free":
+            switch (maptile.getThingType().substring(0, 4)) {
+                case "disp":
+                    dispensers.add(maptile);
+                    availableDispensers.add((maptile.getThingType().substring(10)));
+                    break;
+                case "goal":
+                    goalZones.add(maptile);
+                    break;
+                case "role":
+                    roleZones.add(maptile);
+                    break;
+                case "free":
+                    if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
                         this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+                    }
                         removeRoleZone(maptile.GetPosition());
                         removeGoalZone(maptile.GetPosition());
                         removeDispenser(maptile.GetPosition());
-                        break;
-                    default:
+                    break;
+                default:
+                    if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
+
                         this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
-                }
+                    }
             }
         }
-
         return offset;
     }
 
@@ -439,10 +441,10 @@ public class NextMap {
         }
         return tempMap;
     }
-    
-    public HashSet<Vector2D> GetDispenserPositions(){
-        HashSet <Vector2D> werte = new HashSet<>();
-        for (NextMapTile disp : dispensers){
+
+    public HashSet<Vector2D> GetDispenserPositions() {
+        HashSet<Vector2D> werte = new HashSet<>();
+        for (NextMapTile disp : dispensers) {
             werte.add(new Vector2D(disp.getPositionX(), disp.getPositionY()));
         }
         return werte;
@@ -451,11 +453,11 @@ public class NextMap {
     public String MapToStringBuilder() {
         return MapToStringBuilder(this.map);
     }
-   
+
     public static String MapToStringBuilder(NextMapTile[][] map) {
-        return MapToStringBuilder(map, new HashSet<>(),new HashSet<>());
+        return MapToStringBuilder(map, new HashSet<>(), new HashSet<>());
     }
-    
+
     public static String MapToStringBuilder(NextMapTile[][] map, HashSet<Vector2D> agents, HashSet<Vector2D> dispenser) {
         StringBuilder stringForReturn = new StringBuilder();
 
@@ -463,15 +465,15 @@ public class NextMap {
             StringBuilder subString = new StringBuilder();
 
             for (int x = 0; x < map.length; x++) {
-                if (dispenser.contains(new Vector2D(x,y))) {
+                if (dispenser.contains(new Vector2D(x, y))) {
                     subString.append("D");
                     continue;
                 }
-                if (agents.contains(new Vector2D(x,y))){
+                if (agents.contains(new Vector2D(x, y))) {
                     subString.append("A");
                     continue;
                 }
-                
+
                 if (map[x][y] != null) {
                     if (map[x][y].IsWalkable() != null) {
                         if (map[x][y].IsWalkable()) {
@@ -638,10 +640,10 @@ public class NextMap {
             newMapTile = comb.clone();
             newMapTile.Subtract(offset);
             Vector2D mapMoved = mapToKeep.setMapTile(newMapTile);
-            offset.subtract(mapMoved); // should not be relevant, because map should be big enough
+            //offset.subtract(mapMoved); // should not be relevant, because map should be big enough
         }
-
         return mapToKeep;
+       
     }
 
     public void SetSimulationMapHeight(int MapHeight) {

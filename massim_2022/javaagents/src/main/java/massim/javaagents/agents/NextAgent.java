@@ -157,7 +157,7 @@ public class NextAgent extends Agent {
             // this.say("JoinGroup-EXECUTION " + messageContainer[1] + " X: " + messageContainer[2] + " Y: " + messageContainer[3] + " mapOffsetX: " + messageContainer[4] + " mapOffsetY: " + messageContainer[5]);
             NextGroup target = globalGroupMap.get(Integer.parseInt(messageContainer[1]));
             if (target != null) {
-                joinGroup(globalGroupMap.get(Integer.parseInt(messageContainer[1])), new Vector2D(Integer.parseInt(messageContainer[2]), Integer.parseInt(messageContainer[3])), new Vector2D(Integer.parseInt(messageContainer[4]), Integer.parseInt(messageContainer[5])));
+                joinGroup(target, new Vector2D(Integer.parseInt(messageContainer[2]), Integer.parseInt(messageContainer[3])), new Vector2D(Integer.parseInt(messageContainer[4]), Integer.parseInt(messageContainer[5])));
             } else {
                 this.say("Error in group join execution");
             }
@@ -878,12 +878,12 @@ public class NextAgent extends Agent {
     private void printFinalReport() {
         if (this.agentGroup != null) {
             this.say("Agents Group:" + agentGroup + "GroupCount " + globalGroupMap.size());
+            this.say("Dispenser : " + this.GetGroup().GetGroupMap().GetDispensers());
+            this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
+            //this.say(NextMap.MapToStringBuilder(this.agentGroup.GetGroupMap().GetMapArray(),this.agentGroup.GetAgentPositions(),this.agentGroup.GetGroupMap().GetDispenserPositions()));
+            this.say("Aktuelle Position: " + this.GetPosition());
         }
-        this.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
-        this.say(NextMap.MapToStringBuilder(this.agentGroup.GetGroupMap().GetMapArray(),this.agentGroup.GetAgentPositions(),this.agentGroup.GetGroupMap().GetDispenserPositions()));
-        this.say("Aktuelle Position: " + this.GetPosition());
-        this.say("Dispenser : " + this.GetGroup().GetGroupMap().GetDispensers());
-
+        
     }
 
     /**
