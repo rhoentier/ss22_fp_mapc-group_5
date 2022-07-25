@@ -247,7 +247,7 @@ public class NextIntention {
 		nextAgent.SetAgentTask(plan.GetAgentTask());
 
 		// Survey failed 2 times -> Randomstep
-		if(surveyOutOfSteps == 2)
+		if(surveyOutOfSteps == 0)
 		{
 			possibleActions.add(generateDefaultAction()); // fallback
 			surveyOutOfSteps = 0;
@@ -256,15 +256,20 @@ public class NextIntention {
 		System.out.println("---------------------- " + plan.GetAgentTask().toString());
 		
 		// Move to..
+                int vision =this.nextAgent.GetAgentStatus().GetCurrentRole().GetVision();
+                        
 		switch (plan.GetAgentTask()) {
 		case surveyDispenser:
-			survey("dispenser");
+			//survey("dispenser");
+                        this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(this.nextAgent.GetPosition().getAdded(vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2,vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2)));
 			break;
 		case surveyGoalZone:
-			survey("goal");
+			//survey("goal");
+			this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(this.nextAgent.GetPosition().getAdded(vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2,vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2)));
 			break;
 		case surveyRoleZone:
-			survey("role");
+			//survey("role");
+			this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(this.nextAgent.GetPosition().getAdded(vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2,vision*NextAgentUtil.GenerateRandomNumber(4)-vision*2)));
 			break;
 		case goToDispenser:
 			// Only new pathMemory, if the current Path is empty
