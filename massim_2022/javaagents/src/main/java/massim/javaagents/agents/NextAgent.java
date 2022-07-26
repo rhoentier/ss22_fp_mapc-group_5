@@ -1,6 +1,6 @@
 package massim.javaagents.agents;
 
-import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
+import massim.javaagents.groupPlans.NextGroupPlanForAgent;
 import massim.javaagents.intention.NextIntention;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
@@ -221,7 +221,7 @@ public class NextAgent extends Agent {
 
             // new path
             if (agentGroup != null) {
-                NextGroupPlanSolveTask groupPlan = agentGroup.GetPlan(this);
+                NextGroupPlanForAgent groupPlan = agentGroup.GetPlan(this);
                 if (groupPlan != null) {
                     taskPlanner.SetGroupPlan(groupPlan);
                     NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();

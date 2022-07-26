@@ -1,7 +1,7 @@
 package massim.javaagents.plans;
 
 import massim.javaagents.agents.NextAgent;
-import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
+import massim.javaagents.groupPlans.NextGroupPlanForAgent;
 import massim.javaagents.percept.NextTask;
 
 public class NextTaskPlanner {
@@ -33,7 +33,7 @@ public class NextTaskPlanner {
         return null;
     }
 
-    public void SetGroupPlan(NextGroupPlanSolveTask groupPlan) {
+    public void SetGroupPlan(NextGroupPlanForAgent groupPlan) {
         currentPlan = new NextPlanSolveTask(agent, groupPlan);
     }
 

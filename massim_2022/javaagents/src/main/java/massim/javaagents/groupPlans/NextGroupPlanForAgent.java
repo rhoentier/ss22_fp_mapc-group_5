@@ -6,12 +6,12 @@ import massim.javaagents.plans.NextPlan;
 import java.util.ArrayList;
 
 
-public class NextGroupPlanSolveTask{
+public class NextGroupPlanForAgent {
 
     private final NextTask task;
     ArrayList<NextPlan> subPlans;
 
-    public NextGroupPlanSolveTask(NextTask task, ArrayList<NextPlan> subPlans) {
+    public NextGroupPlanForAgent(NextTask task, ArrayList<NextPlan> subPlans) {
         this.task = task;
         this.subPlans = subPlans;
     }

@@ -2,7 +2,7 @@ package massim.javaagents.plans;
 
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
-import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
+import massim.javaagents.groupPlans.NextGroupPlanForAgent;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
@@ -19,7 +19,7 @@ public class NextPlanSolveTask extends NextPlan {
     private final NextTask task;
 
 
-    public NextPlanSolveTask(NextAgent agent, NextGroupPlanSolveTask groupPlan) {
+    public NextPlanSolveTask(NextAgent agent, NextGroupPlanForAgent groupPlan) {
         this.agent = agent;
         this.task = groupPlan.GetTask();
         this.agentTask = NextConstants.EAgentActivity.solveTask;

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class NextGroupTaskPlanner {
 
-    private final HashMap<NextAgent, NextGroupPlanSolveTask> currentPlans = new HashMap<>();
+    private final HashMap<NextAgent, NextGroupPlanForAgent> currentPlans = new HashMap<>();
     private final NextGroup group;
     private final HashSet<NextGroupPlanTask> activePlans = new HashSet<>();
 
@@ -35,7 +35,7 @@ public class NextGroupTaskPlanner {
         }
     }
 
-    private NextGroupPlanSolveTask getBestTaskForOneAgent() {
+    private NextGroupPlanForAgent getBestTaskForOneAgent() {
         NextGroupPlanTask bestPlan = null;
         for (NextGroupPlanTask possiblePlan : activePlans) {
             if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable() && possiblePlan.GetTask().GetRequiredBlocks().size() == 1) {
@@ -48,14 +48,14 @@ public class NextGroupTaskPlanner {
         return createPlanForSingleAgent(bestPlan);
     }
 
-    private NextGroupPlanSolveTask createPlanForSingleAgent(NextGroupPlanTask plan) {
+    private NextGroupPlanForAgent createPlanForSingleAgent(NextGroupPlanTask plan) {
         ArrayList<NextPlan> subPlans = new ArrayList<>();
         HashSet<NextMapTile> requiredBlocks = plan.GetTask().GetRequiredBlocks();
         for (NextMapTile block : requiredBlocks) {
             subPlans.add(new NextPlanDispenser(block));
         }
         subPlans.add(new NextPlanGoalZone());
-        return new NextGroupPlanSolveTask(plan.GetTask(), subPlans);
+        return new NextGroupPlanForAgent(plan.GetTask(), subPlans);
     }
 
     /**
@@ -75,7 +75,7 @@ public class NextGroupTaskPlanner {
     /**
      * Get the plan for one specific agent
      */
-    public NextGroupPlanSolveTask GetPlan(NextAgent agent) {
+    public NextGroupPlanForAgent GetPlan(NextAgent agent) {
         return currentPlans.get(agent);
     }
 

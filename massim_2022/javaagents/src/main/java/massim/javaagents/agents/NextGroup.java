@@ -3,7 +3,7 @@ package massim.javaagents.agents;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import massim.javaagents.groupPlans.NextGroupPlanSolveTask;
+import massim.javaagents.groupPlans.NextGroupPlanForAgent;
 import massim.javaagents.groupPlans.NextGroupTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
@@ -218,7 +218,7 @@ public class NextGroup {
         }
     }
 
-    public NextGroupPlanSolveTask GetPlan(NextAgent agent){
+    public NextGroupPlanForAgent GetPlan(NextAgent agent){
         return taskPlanner.GetPlan(agent);
     }
 
