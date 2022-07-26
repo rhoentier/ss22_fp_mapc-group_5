@@ -26,6 +26,7 @@ import massim.javaagents.percept.NextTask;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
 import massim.javaagents.percept.NextRole;
@@ -37,7 +38,6 @@ import massim.javaagents.percept.NextRole;
  * based on random movement Processing of all percepts and storing in dataVaults
  * <p>
  * ToDo: Gruppenbildung
- *
  */
 public class NextAgent extends Agent {
 
@@ -85,10 +85,11 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion fields
      */
+
     /**
      * ########## region constructor.
      *
-     * @param name the agent's name
+     * @param name    the agent's name
      * @param mailbox the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
@@ -110,7 +111,7 @@ public class NextAgent extends Agent {
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
     // Original Method
@@ -223,7 +224,7 @@ public class NextAgent extends Agent {
                 if (nextTask != null) {
                     if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
                         if (!this.agentActivity.toString().contains("survey")) {
-                            intention.ResetAfterTaskChange(nextTask);
+                            intention.ResetAfterTaskChange();
                         }
                         SetActiveTask(nextTask);
                     }
@@ -235,10 +236,10 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            printFinalReport(); // live String output to console
+            //printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
-            
+
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
 
@@ -614,7 +615,7 @@ public class NextAgent extends Agent {
             int yPosition = this.GetPosition().getAdded(target).y;
 
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                System.out.println("Position was blocked :" +workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
+                System.out.println("Position was blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
                 workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
             }
 
@@ -847,8 +848,8 @@ public class NextAgent extends Agent {
      * Joins the provided group and the group of the agent, if provided group
      * has a lower id. Has to be executed on both agents
      *
-     * @param newGroup - new group to combine
-     * @param offset - Vector2D manhattan distance between agents
+     * @param newGroup  - new group to combine
+     * @param offset    - Vector2D manhattan distance between agents
      * @param mapOffset - Vector2D manhattan distance between maps zero points
      */
     private void joinGroup(NextGroup newGroup, Vector2D offset, Vector2D mapOffset) {
@@ -884,7 +885,7 @@ public class NextAgent extends Agent {
             //this.say(NextMap.MapToStringBuilder(this.agentGroup.GetGroupMap().GetMapArray(),this.agentGroup.GetAgentPositions(),this.agentGroup.GetGroupMap().GetDispenserPositions()));
             this.say("Aktuelle Position: " + this.GetPosition());
         }
-        
+
     }
 
     /**

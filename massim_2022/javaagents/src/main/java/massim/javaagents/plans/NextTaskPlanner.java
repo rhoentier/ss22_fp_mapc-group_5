@@ -10,50 +10,44 @@ import java.util.stream.Collectors;
 public class NextTaskPlanner {
 
     private NextPlanSolveTask currentPlan;
-    private ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
-    private NextAgent agent;
-    private NextPlanRoleZone firstRoleChange;
-
+    private final ArrayList<NextPlanSolveTask> possiblePlans = new ArrayList<>();
+    private final NextAgent agent;
 
     public NextTaskPlanner(NextAgent agent) {
         this.agent = agent;
-        firstRoleChange = new NextPlanRoleZone(agent);
     }
 
     /**
-     * Erzeugt für eine neue Task einen Plan inklusive subplans
+     * Erzeugt für einen neuen Task einen Plan inklusive subplans
      *
-     * @param newTask
+     * @param newTask Die neue Aufgabe
      */
     private void createPlanForGivenTask(NextTask newTask) {
         possiblePlans.add(new NextPlanSolveTask(newTask, agent));
     }
 
     /**
-     * Prüft, ob für eine Task noch ein Plan erzeugt werden muss und speichert die neue Task Liste
+     * Prüft, ob für einen Task noch ein Plan erzeugt werden muss und speichert die neue Taskliste
      *
-     * @param newTasks
+     * @param newTasks Neue Tasks, die vom Server übermittelt wurden
      */
     public void UpdateTasks(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
-            HashSet<String> actualTasks = possiblePlans.stream().map(possiblePlan -> possiblePlan.GetTaskName()).collect(Collectors.toCollection(HashSet::new));
+            HashSet<String> actualTasks = possiblePlans.stream().map(NextPlanSolveTask::GetTaskName).collect(Collectors.toCollection(HashSet::new));
             if (!actualTasks.contains(newTask.GetName())) {
                 createPlanForGivenTask(newTask);
             }
         }
-        possiblePlans.stream().forEach(possiblePlan -> possiblePlan.UpdateInternalBelief());
+        possiblePlans.forEach(NextPlanSolveTask::UpdateInternalBelief);
     }
 
     /**
      * Check if a Task is fulfillable and returns the deepest desire of the task with the max benefit
      * if no task is fulfillable returns the desire to explore the map
      *
-     * @return
+     * @return Aktueller Plan, der ausgeführt werden soll
      */
     public NextPlan GetDeepestEAgentTask() {
-        // gibt den Rollenwechsel zurück, falls dieser noch notwendig ist
-        if (!agent.GetAgentStatus().GetRole().equals("worker")) return firstRoleChange.GetDeepestPlan();
-
         // find a fulfillable plan
         currentPlan = findBestFulfillablePlan();
 
@@ -65,18 +59,6 @@ public class NextTaskPlanner {
             currentPlan.FulfillPrecondition();
         }
         return currentPlan.GetDeepestPlan();
-    }
-
-    /**
-     * Find in possiblePlans a fulfillable plan or return null
-     *
-     * @return
-     */
-    private NextPlanSolveTask findFulfillablePlan() {
-        for (NextPlanSolveTask possiblePlan : possiblePlans) {
-            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable()) return possiblePlan;
-        }
-        return null;
     }
 
     /**
@@ -97,7 +79,7 @@ public class NextTaskPlanner {
     }
 
     /**
-     * findet den besten (Nutzen/Kosten) Plan, egal, ob dieser erfüllbar ist oder null, falls es keine Task mehr gibt
+     * findet den besten (Nutzen/Kosten) Plan, egal, ob dieser erfüllbar ist oder null, falls es kein Task mehr gibt
      *
      * @return NextPlanSolveTask, der alle Vorbedingungen erfüllt
      */
