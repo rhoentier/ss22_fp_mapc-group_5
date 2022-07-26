@@ -236,6 +236,10 @@ public class NextMapTile {
         this.stepMemory.remove(step);
     }
 
+    public boolean CheckAtStep (int step) {
+        return this.stepMemory.contains(step);
+    }
+    
     /*
     @Override
     public boolean equals(Object obj) {

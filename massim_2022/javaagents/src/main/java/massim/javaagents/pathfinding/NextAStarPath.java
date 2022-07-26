@@ -296,7 +296,7 @@ public class NextAStarPath {
             offset_y *= vectorPath.get(i).y;
             
             this.map[startpoint.x+offset_x][startpoint.y+offset_y].BlockAtStep(this.currentStep+i+1);
-            
+            //System.out.println("Blockcheck " + (this.currentStep+i+1) + " Is " + this.map[startpoint.x+offset_x][startpoint.y+offset_y].CheckAtStep(this.currentStep+i+1)     );
         }
         
         

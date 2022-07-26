@@ -247,7 +247,7 @@ public class NextIntention {
 		nextAgent.SetAgentTask(plan.GetAgentTask());
 
 		// Survey failed 2 times -> Randomstep
-		if(surveyOutOfSteps == 0)
+		if(surveyOutOfSteps == 2)
 		{
 			possibleActions.add(generateDefaultAction()); // fallback
 			surveyOutOfSteps = 0;
