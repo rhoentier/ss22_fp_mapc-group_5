@@ -141,7 +141,7 @@ public final class NextAgentUtil {
             }
 
             for (NextMapTile visibleThing : visibleThings) {
-                if (visibleThing.GetPosition().equals(rotateTo) && !visibleThing.IsWalkable()) {
+                if (visibleThing.GetPosition().equals(rotateTo) && !visibleThing.IsWalkableStrict()) {
                     return false;
                 }
             }

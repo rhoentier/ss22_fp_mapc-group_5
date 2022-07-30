@@ -15,7 +15,7 @@ import massim.javaagents.map.Vector2D;
 /**
  * Basic A* pathfinding algorithm Based on https://github.com/Qualia91/AStarAlg
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextAStarPath {
 
@@ -24,26 +24,30 @@ public class NextAStarPath {
     private int mapHeight;
 
     private NextMapTile currentTile;
+    private int currentStep;
     private int[] targetPosition;
     private int[] localStartPoint;
+    private Vector2D startpoint;
 
     private Boolean centerTheMap;
     private Boolean strictWalkable;
 
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target) {
-        return calculatePath(originalMap, startpoint, target, false, false);
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
+        return calculatePath(originalMap, startpoint, target, false, false, currentStep);
     }
     
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap){
-        return calculatePath(originalMap, startpoint, target, centerTheMap , false);
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep){
+        return calculatePath(originalMap, startpoint, target, centerTheMap , false, currentStep);
     }
 
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable) {
+    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
         this.centerTheMap = centerTheMap;
         this.strictWalkable = strictWalkable;
+        this.currentStep = currentStep;
+        this.startpoint = startpoint;
 
         if (this.mapWidth == 1 && mapHeight == 1) {
             System.out.println("Map is to small");
@@ -168,6 +172,9 @@ public class NextAStarPath {
             List<Vector2D> vectorPath = convertToVector2D(path);
             //System.out.println("pfadlänge2 - " + vectorPath.size());
             //System.out.println("pfadlänge2 - " + vectorPath);
+            
+            // Block the tiles for other Agents
+            blockUsedTiles(vectorPath);
 
             // ---- Convert Vector2D Steps to Actions
             List<Action> actionPath = convertVectorToAction(vectorPath);
@@ -211,12 +218,12 @@ public class NextAStarPath {
         int guessScoreLeft = distanceScoreAway(tile);
         int extraMovementCost = 0;
         if(this.strictWalkable){
-            if (!tile.IsWalkableStrict()) {
+            if (!tile.IsWalkableStrict(this.currentStep+currentScore)) {
                 // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
                 extraMovementCost += 1000;
             }
         }else{
-            if (!tile.IsWalkable()) {
+            if (!tile.IsWalkable(this.currentStep+currentScore)) {
                 // We can implement Dig Action here. +1 for Digger +3 for default, worker etc.
                 extraMovementCost += 1000;
             }
@@ -276,5 +283,22 @@ public class NextAStarPath {
             }
         }
         return processedActions;
+    }
+
+    private void blockUsedTiles(List<Vector2D> vectorPath) {
+        //currentStep
+        //this.startpoint
+        int offset_x = 0;
+        int offset_y = 0;
+        
+        for (int i = 0; i < vectorPath.size(); i++) {
+            offset_x *= vectorPath.get(i).x;
+            offset_y *= vectorPath.get(i).y;
+            
+            this.map[startpoint.x+offset_x][startpoint.y+offset_y].BlockAtStep(this.currentStep+i+1);
+            
+        }
+        
+        
     }
 }

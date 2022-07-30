@@ -32,8 +32,10 @@ public class NextMap {
 
     /**
      * Add an array of things to the map.
+     *
      * @param agent
-     * @param percept Array of things as NextMapTiles. Position within NextMapTile is local (rel. to the agents position)
+     * @param percept Array of things as NextMapTiles. Position within
+     * NextMapTile is local (rel. to the agents position)
      */
     public void AddPercept(NextAgent agent, HashSet<NextMapTile> percept) {
         NextMapTile clonedMaptile;
@@ -47,8 +49,9 @@ public class NextMap {
     }
 
     /**
-     * Write map to file with 0/0 in top left corner. First letter of getThingType()
-     * is used for representation. For example: agent -> a, obstacle -> o, dispenser -> d
+     * Write map to file with 0/0 in top left corner. First letter of
+     * getThingType() is used for representation. For example: agent -> a,
+     * obstacle -> o, dispenser -> d
      *
      * @param filename File for export
      */
@@ -66,24 +69,25 @@ public class NextMap {
         }
 
         Vector2D pos;
-        for(NextAgent agent : group.GetAgents()) {
+        for (NextAgent agent : group.GetAgents()) {
             pos = agent.GetPosition();
+
             if (IsOnMap(pos)){
                 stringMap[pos.x][pos.y] += "A";
             }
         }
 
-        for(NextMapTile maptile : roleZones) {
+        for (NextMapTile maptile : roleZones) {
             pos = maptile.GetPosition();
             stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
         }
 
-        for(NextMapTile maptile : goalZones) {
+        for (NextMapTile maptile : goalZones) {
             pos = maptile.GetPosition();
             stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
         }
 
-        for(NextMapTile maptile : dispensers) {
+        for (NextMapTile maptile : dispensers) {
             pos = maptile.GetPosition();
             stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
         }
@@ -103,7 +107,9 @@ public class NextMap {
             for (int i = 0; i < mapArray.length; i++) {
                 tmpString = stringMap[i][j];
                 int rfill = 4 - tmpString.length();
-                for (int f = 0; f < rfill; f++) {tmpString += " ";}
+                for (int f = 0; f < rfill; f++) {
+                    tmpString += " ";
+                }
                 outputString.append(tmpString);
             }
             outputString.append("\n");
@@ -120,13 +126,15 @@ public class NextMap {
     }
 
     /**
-     * Checks if a given position is on the map (x/y not negative and not greater than current size)
+     * Checks if a given position is on the map (x/y not negative and not
+     * greater than current size)
+     *
      * @param pos Position to check
      * @return true/false
      */
     public boolean IsOnMap(Vector2D pos) {
         Vector2D size = GetSizeOfMap();
-        if(pos.x >= 0 && pos.y >= 0 && pos.x < size.x && pos.y < size.y){
+        if (pos.x >= 0 && pos.y >= 0 && pos.x < size.x && pos.y < size.y) {
             return true;
         }
         return false;
@@ -135,7 +143,8 @@ public class NextMap {
     /**
      * Returns the size of the map.
      *
-     * @return Vector object, which represents the number of elements in x- and y-direction.
+     * @return Vector object, which represents the number of elements in x- and
+     * y-direction.
      */
     public Vector2D GetSizeOfMap() {
         Vector2D size;
@@ -148,53 +157,95 @@ public class NextMap {
     }
 
     /**
-     * Returns all dispensers found so far as NextMapTiles. X/Y of each maptile is the position on the map
+     * Returns all dispensers found so far as NextMapTiles. X/Y of each maptile
+     * is the position on the map
+     *
      * @return Dispensers
      */
-    public HashSet<NextMapTile> GetDispensers() {return dispensers;}
+    public HashSet<NextMapTile> GetDispensers() {
+        return dispensers;
+    }
 
     /**
-     * Returns all RoleZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
+     * Returns all RoleZones found so far as NextMapTiles. X/Y of each maptile
+     * is the position on the map
+     *
      * @return RoleZones
      */
-    public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
+    public HashSet<NextMapTile> GetRoleZones() {
+        return roleZones;
+    }
 
-    public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
+    public HashSet<NextMapTile> GetGoalZones() {
+        return goalZones;
+    }
 
     /**
      * Sets an object on the map.
+     * Returns a map tile at a position on the map with 0/0 in top left corner
+     *
+     * @param position
+     * @return maptile object
+     */
+    public NextMapTile GetMapTile(Vector2D position) {
+        return map[position.x][position.y];
+    }
+
+    /**
+     * Sets an object on the absolute position of the map.
      *
      * @param maptile: MapTile to add.
      */
     public void setMapTile(NextMapTile maptile) {
 
-        // Check if type of maptile is part of the exclude list. If yes, return
+        Vector2D offset = new Vector2D(extendArray(this, maptile.GetPosition()));
+        group.MoveAllAgents(offset);
+        maptile.MovePosition(offset);
+
+        NextMapTile existingMapTile = this.map[maptile.getPositionX()][maptile.getPositionY()];
+
+        // Check if type of maptile is part of the exclude list. If yes, set flag addMaptile to false
+        boolean addMaptile = true;
         for (String e : excludeThingTypes) {
-            if (maptile.getThingType().startsWith(e))
-                return;
+            if (maptile.getThingType().startsWith(e)) {
+                addMaptile = false;
+            }
         }
 
-        switch (maptile.getThingType().substring(0, 4)) {
-            case "disp":
-                dispensers.add(maptile);
-                availableDispensers.add((maptile.getThingType().substring(10)));
-                break;
-            case "goal":
-                goalZones.add(maptile);
-                break;
-            case "role":
-                roleZones.add(maptile);
-                break;
-            default: // If none of the above match (e.g. free or obstacles)
-                this.maplist.add(maptile);
-                removeRoleZone(maptile.GetPosition());
-                removeGoalZone(maptile.GetPosition());
-                break;
+        // Only add maptile if: flag addMapTile is true AND (existingMapTile is null OR existingMapTile is older)
+        if (addMaptile) {
+            switch (maptile.getThingType().substring(0, 4)) {
+                case "disp":
+                    dispensers.add(maptile);
+                    availableDispensers.add((maptile.getThingType().substring(10)));
+                    break;
+                case "goal":
+                    goalZones.add(maptile);
+                    break;
+                case "role":
+                    roleZones.add(maptile);
+                    break;
+                case "free":
+                    if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
+                        this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+                    }
+                        removeRoleZone(maptile.GetPosition());
+                        removeGoalZone(maptile.GetPosition());
+                        removeDispenser(maptile.GetPosition());
+                    break;
+                default:
+                    if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
+
+                        this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
+                    }
+            }
         }
+        return offset;
     }
 
     /**
      * Removes a roleZone at a specific position from the list of roleZones
+     *
      * @param pos Position
      */
     private void removeRoleZone(Vector2D pos) {
@@ -202,7 +253,17 @@ public class NextMap {
     }
 
     /**
+     * Removes a roleZone at a specific position from the list of roleZones
+     *
+     * @param pos Position
+     */
+    private void removeDispenser(Vector2D pos) {
+        this.dispensers.remove(new NextMapTile(pos.x, pos.y, 0, "dispenser"));
+    }
+
+    /**
      * Removes a goalZone at a specific position from the list of goalZones
+     *
      * @param pos Position
      */
     private void removeGoalZone(Vector2D pos) {
@@ -210,15 +271,17 @@ public class NextMap {
     }
 
     /**
-     * Moves all Maptiles within a HashSet by an offset. With HashSets it is necessary to copy/paste all elements
-     * instead of just executing a function for each element.
+     * Moves all Maptiles within a HashSet by an offset. With HashSets it is
+     * necessary to copy/paste all elements instead of just executing a function
+     * for each element.
+     *
      * @param hashSet HashSet to be shifted
      * @param offset Offset by which the data is to be moved
      * @return The new Hashset with the moved Maptiles
      */
     private static HashSet<NextMapTile> moveMaptilesInHashset(HashSet<NextMapTile> hashSet, Vector2D offset) {
         HashSet<NextMapTile> newHashSet = new HashSet<>();
-        for ( NextMapTile tile : hashSet ) {
+        for (NextMapTile tile : hashSet) {
             NextMapTile newTile = tile.Clone();
             newTile.MovePosition(offset);
             newHashSet.add(newTile);
@@ -229,7 +292,7 @@ public class NextMap {
 
     private static HashSet<NextMapTile> modMaptilesInHashset(HashSet<NextMapTile> hashSet, Vector2D mod) {
         HashSet<NextMapTile> newHashSet = new HashSet<>();
-        for ( NextMapTile tile : hashSet ) {
+        for (NextMapTile tile : hashSet) {
             NextMapTile newTile = tile.Clone();
             newTile.ModPosition(mod);
             newHashSet.add(newTile);
@@ -254,6 +317,7 @@ public class NextMap {
 
     /**
      * Returns the map with coordinates 0/0 in upper left corner
+     *
      * @return Map
      */
     public NextMapTile[][] GetMapArray() {
@@ -274,22 +338,22 @@ public class NextMap {
 
         return mapArray;
     }
-    
+
     public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
-        if(mapOld.length == 1 && mapOld[0].length == 1 ) {
-            return mapOld;      
+        if (mapOld.length == 1 && mapOld[0].length == 1) {
+            return mapOld;
         }
-        
+
         int mapWidth = mapOld.length;
         int mapHeight = mapOld[0].length;
-        int xOffset = (int)position.x  - ((int)(mapWidth / 2));
-        int yOffset = (int)position.y - ((int)(mapHeight / 2)); 
-        NextMapTile[][] tempMap = new NextMapTile[mapWidth][ mapHeight];
-        
+        int xOffset = (int) position.x - ((int) (mapWidth / 2));
+        int yOffset = (int) position.y - ((int) (mapHeight / 2));
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
+
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
-                int oldX = (x-xOffset+mapWidth)%(mapWidth-1);
-                int oldY = (y-yOffset+mapHeight)%(mapHeight-1);
+                int oldX = (x - xOffset + mapWidth) % (mapWidth - 1);
+                int oldY = (y - yOffset + mapHeight) % (mapHeight - 1);
                 tempMap[x][y] = new NextMapTile(
                         x,
                         y,
@@ -299,22 +363,23 @@ public class NextMap {
         }
         return tempMap;
     }
-    
+
     /**
-     * Creates a copy of the map and transforms the maptiles to absolte position 
-     * 
+     * Creates a copy of the map and transforms the maptiles to absolte position
+     *
      * @param mapOld
-     * @return Returns an copy of the map with NextMapTiles using absolute coordinates.
+     * @return Returns an copy of the map with NextMapTiles using absolute
+     * coordinates.
      */
     public static NextMapTile[][] copyAbsoluteMap(NextMapTile[][] mapOld) {
-        if(mapOld.length == 1 && mapOld[0].length == 1 ) {
-            return mapOld;      
+        if (mapOld.length == 1 && mapOld[0].length == 1) {
+            return mapOld;
         }
-        
+
         int mapWidth = mapOld.length;
         int mapHeight = mapOld[0].length;
-        NextMapTile[][] tempMap = new NextMapTile[mapWidth][ mapHeight];
-        
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
+
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
                 tempMap[x][y] = new NextMapTile(
@@ -327,17 +392,38 @@ public class NextMap {
         return tempMap;
     }
 
+    public HashSet<Vector2D> GetDispenserPositions() {
+        HashSet<Vector2D> werte = new HashSet<>();
+        for (NextMapTile disp : dispensers) {
+            werte.add(new Vector2D(disp.getPositionX(), disp.getPositionY()));
+        }
+        return werte;
+    }
+
     public String MapToStringBuilder() {
         return MapToStringBuilder(GetMapArray());
     }
 
-    public static String MapToStringBuilder( NextMapTile[][] map) {
+    public static String MapToStringBuilder(NextMapTile[][] map) {
+        return MapToStringBuilder(map, new HashSet<>(), new HashSet<>());
+    }
+
+    public static String MapToStringBuilder(NextMapTile[][] map, HashSet<Vector2D> agents, HashSet<Vector2D> dispenser) {
         StringBuilder stringForReturn = new StringBuilder();
 
         for (int y = 0; y < map[0].length; y++) {
             StringBuilder subString = new StringBuilder();
 
             for (int x = 0; x < map.length; x++) {
+                if (dispenser.contains(new Vector2D(x, y))) {
+                    subString.append("D");
+                    continue;
+                }
+                if (agents.contains(new Vector2D(x, y))) {
+                    subString.append("A");
+                    continue;
+                }
+
                 if (map[x][y] != null) {
                     if (map[x][y].IsWalkable() != null) {
                         if (map[x][y].IsWalkable()) {
@@ -350,20 +436,20 @@ public class NextMap {
                     subString.append("#");
                 }
             }
-            
+
             stringForReturn.append(subString + "\n");
         }
         return "NextMap:" + "\n" + stringForReturn;
     }
 
     public Boolean IsGoalZoneAvailable() {
-    	return !goalZones.isEmpty();
+        return !goalZones.isEmpty();
     }
-    
+
     public Boolean IsRoleZoneAvailable() {
         return !roleZones.isEmpty();
     }
-    
+
     public Boolean IsDispenserAvailable() {
         return !dispensers.isEmpty();
     }
@@ -391,7 +477,6 @@ public class NextMap {
                     lastStep = new Vector2D(-1, 0);
                     break;
             }
-
 
             agent.MovePosition(lastStep);
             agent.ModPosition();
@@ -443,7 +528,7 @@ public class NextMap {
      * @param includeCenter
      * @return
      */
-    private static HashSet<Vector2D> generateVectorsInView (int vision, boolean includeCenter){
+    private static HashSet<Vector2D> generateVectorsInView(int vision, boolean includeCenter) {
         HashSet<Vector2D> view = new HashSet<>();
         for (int i = -1 * vision; i <= vision; i++) {
             for (int j = -1 * vision; j <= vision; j++) {
@@ -493,12 +578,13 @@ public class NextMap {
 
     /**
      * Joins one Map into another map
+     *
      * @param mapToKeep The map in which the other map is joined / merged
      * @param mapToAdd The map to be joined/merged into the other map
      * @param offset Offset of both maps according to their upper left corner
      * @return
      */
-    public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
+    public static NextMap JoinMap(NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
 
         NextMapTile newMapTile;
         Vector2D sizeMapToAdd = mapToAdd.GetSizeOfMap();
@@ -516,8 +602,9 @@ public class NextMap {
         mapToKeep.shiftToZero();
 
         return mapToKeep;
+       
     }
-    
+
     public void SetSimulationMapHeight(int MapHeight) {
         this.simulationMapSize.y = MapHeight;
         this.resizeMap();
@@ -540,13 +627,19 @@ public class NextMap {
         return this.simulationMapSize;
     }
 
-    private void resizeMap(){
+
+    private void resizeMap() {
+
 
         // Calc new mapsize
         Vector2D currentMapSize = GetSizeOfMap();
         Vector2D newMapSize = new Vector2D(currentMapSize.x, currentMapSize.y);
-        if (simulationMapSize.x > 0) newMapSize.x = simulationMapSize.x;
-        if (simulationMapSize.y > 0) newMapSize.y = simulationMapSize.y;
+        if (simulationMapSize.x > 0) {
+            newMapSize.x = simulationMapSize.x;
+        }
+        if (simulationMapSize.y > 0) {
+            newMapSize.y = simulationMapSize.y;
+        }
 
         dispensers = modMaptilesInHashset(dispensers, simulationMapSize);
         goalZones = modMaptilesInHashset(goalZones, simulationMapSize);

@@ -21,8 +21,8 @@
   ],
 
   "match" : [
-    "$(sim/simBob2.json)",
-    "$(sim/simMiri2.json)",
+    "$(sim/simTurnier4_1.json)",
+    "$(sim/simTurnier4_2.json)"
   ],
 
   "teams" : {

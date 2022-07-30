@@ -93,14 +93,20 @@ public class NextGroup {
 
     public void AddGroup(NextGroup newGroup, Vector2D offset) {
 
-        // System.out.println("MAP to Keep ______________________________________ \n" + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray()));
-
+         System.out.println("MAP to Keep ______________________________________ \n" + 
+                NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),GetAgentPositions(),GetGroupMap().GetDispenserPositions()));
+        
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
+        
+        System.out.println("Dispenser: " + this.groupMap.GetDispensers());
+        
+        
 
-        // System.out.println("MAP to Join______________________________________ \n" + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray()));
-
+         System.out.println("MAP to Join______________________________________ \n" + 
+                NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray(),newGroup.GetAgentPositions(),newGroup.GetGroupMap().GetDispenserPositions()));
+        
         for (NextAgent agent : newGroup.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
@@ -114,6 +120,8 @@ public class NextGroup {
             agentToAdd.SetAgentGroup(this);
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
+        
+        System.out.println("Dispenser: " + newGroup.groupMap.GetDispensers());
 
         joinGroupMap(newGroup.groupMap, offset);
 
@@ -123,13 +131,15 @@ public class NextGroup {
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        //System.out.println("----------------------------------------- joined ----------------------");
-        //System.out.println("MAP ______________________________________ \n" + NextMap.MapToStringBuilder(this.GetGroupMap().GetMapArray()));
-
+        System.out.println("----------------------------------------- joined ----------------------");
+        System.out.println("MAP ______________________________________ \n" + 
+                NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),GetAgentPositions(),GetGroupMap().GetDispenserPositions()));
+        
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
 
+        System.out.println("Dispenser: " + this.groupMap.GetDispensers());
     }
 
     /**
@@ -194,6 +204,12 @@ public class NextGroup {
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
         }
+    }
+    
+    public HashSet<Vector2D> GetAgentPositions(){
+        HashSet <Vector2D> werte = new HashSet<>();
+        werte.addAll(this.agentPositionMap.values());
+        return werte;
     }
 
     /*
