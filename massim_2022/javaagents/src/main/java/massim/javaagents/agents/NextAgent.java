@@ -34,16 +34,19 @@ import massim.javaagents.percept.NextRole;
 /**
  * First iteration of an experimental agent.
  * <p>
- * Done: Handling of transition between simulations Basic action generation
+ * Done: 
+ * - Handling of transition between simulations Basic action generation
  * based on random movement Processing of all percepts and storing in dataVaults
+ * - Gruppenbildung
  * <p>
- * ToDo: Gruppenbildung
+ * @Author Alexander, Miriam
  */
 public class NextAgent extends Agent {
 
     public static HashMap<Integer, NextGroup> globalGroupMap = new HashMap<>();
     public static HashMap<String, HashSet<Vector2D>> GroupBuildingSkipMemory = new HashMap<>();
-
+    public static int lastGroupJoinAtStep = -1;
+    
     /*
      * ########## region fields
      */
@@ -198,8 +201,9 @@ public class NextAgent extends Agent {
         }
 
         // GroupJoining delayed, to spread agents
-        if (lastID > 3) {
+        if (lastID > 3 && lastGroupJoinAtStep != simStatus.GetCurrentStep()) {
             // Check if friendly Agents are visible and join them to groups
+            // Map Information of the last step is used to ensure consistency
             processFriendlyAgents();
             processGroupJoinMessages();
         }
@@ -239,6 +243,12 @@ public class NextAgent extends Agent {
             //printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
+            
+            if( agentGroup != null) {
+            this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+            this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+            this.say("Current Step " + this.simStatus.GetCurrentStep());
+            }
 
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
@@ -990,6 +1000,7 @@ public class NextAgent extends Agent {
             for (String message : messageStore) {
                 // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), reciever, sender, deltaX, deltaY, mapOffsetX, mapOffsetY,)
                 String[] messageContainer = message.split(",");
+                lastGroupJoinAtStep = simStatus.GetCurrentStep();
                 this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1] + "," + messageContainer[4] + "," + messageContainer[5] + "," + messageContainer[6] + "," + messageContainer[7]), messageContainer[2], messageContainer[3]);
             }
         } else {
