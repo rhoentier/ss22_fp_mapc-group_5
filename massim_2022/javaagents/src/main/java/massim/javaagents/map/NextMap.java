@@ -3,23 +3,22 @@ package massim.javaagents.map;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextGroup;
 
 public class NextMap {
 
-    private HashSet<NextMapTile> maplist = new HashSet<>();
+    private HashSet<NextMapTile> map = new HashSet<>();
     private HashSet<String> excludeThingTypes = new HashSet<>(Arrays.asList("entity", "block", "unknown"));;
     private NextGroup group;
     private Vector2D simulationMapSize;
-    private HashSet<NextMapTile> dispensers = new HashSet<>();
-    private HashSet<NextMapTile> goalZones = new HashSet<>();
-    private HashSet<NextMapTile> roleZones = new HashSet<>();
-    private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
+        private HashSet<String> availableDispensers = new HashSet<String>(); // Speichert nur die Blocktypen (b0, b1, etc) ab
 
     public NextMap(NextGroup group) {
         this.group = group;
@@ -46,6 +45,29 @@ public class NextMap {
         shiftToZero();
     }
 
+    private String sortString(String stringToSort, String pattern) {
+
+        char[] str = stringToSort.toCharArray();
+        char[] pat = pattern.toCharArray();
+
+        int count[] = new int[26];
+
+        // Count number of occurrences
+        for (int i = 0; i < str.length; i++) {
+            count[str[i] - 'a']++;
+        }
+
+        // Print chars in the number they are present
+        int index = 0;
+        for (int i = 0; i < pat.length; i++) {
+            for (int j = 0; j < count[pat[i] - 'a']; j++) {
+                str[index++] = pat[i];
+            }
+        }
+
+        return new String(str);
+    }
+
     /**
      * Write map to file with 0/0 in top left corner. First letter of getThingType()
      * is used for representation. For example: agent -> a, obstacle -> o, dispenser -> d
@@ -54,13 +76,13 @@ public class NextMap {
      */
     public void WriteToFile(String filename, int step) {
 
-        NextMapTile[][] mapArray = GetMapArray();
+        //NextMapTile[][] mapArray = GetMapArray();
         Vector2D size = GetSizeOfMap();
 
         String[][] stringMap = new String[size.x][size.y];
 
-        for (int j = 0; j < mapArray[0].length; j++) {
-            for (int i = 0; i < mapArray.length; i++) {
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
                 stringMap[i][j] = "";
             }
         }
@@ -68,29 +90,21 @@ public class NextMap {
         Vector2D pos;
         for(NextAgent agent : group.GetAgents()) {
             pos = agent.GetPosition();
-            if (IsOnMap(pos)){
-                stringMap[pos.x][pos.y] += "A";
+            if (IsOnMap(pos)) {
+                stringMap[pos.x][pos.y] += "a";
             }
         }
 
-        for(NextMapTile maptile : roleZones) {
+        for(NextMapTile maptile : map) {
             pos = maptile.GetPosition();
             stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
         }
 
-        for(NextMapTile maptile : goalZones) {
-            pos = maptile.GetPosition();
-            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
-        }
-
-        for(NextMapTile maptile : dispensers) {
-            pos = maptile.GetPosition();
-            stringMap[pos.x][pos.y] += maptile.getThingType().charAt(0);
-        }
-
-        for (int j = 0; j < mapArray[0].length; j++) {
-            for (int i = 0; i < mapArray.length; i++) {
-                stringMap[i][j] += mapArray[i][j].getThingType().charAt(0);
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.y; j++) {
+                if (stringMap[i][j].length() == 0) {
+                    stringMap[i][j] = "u";
+                }
             }
         }
 
@@ -99,9 +113,9 @@ public class NextMap {
         outputString.append("Step: " + step + "\n");
 
         String tmpString;
-        for (int j = 0; j < mapArray[0].length; j++) {
-            for (int i = 0; i < mapArray.length; i++) {
-                tmpString = stringMap[i][j];
+        for (int j = 0; j < size.y; j++) {          // first y,
+            for (int i = 0; i < size.x; i++) {      // then x, for correct representation
+                tmpString = sortString(stringMap[i][j], "aodgrfu");
                 int rfill = 4 - tmpString.length();
                 for (int f = 0; f < rfill; f++) {tmpString += " ";}
                 outputString.append(tmpString);
@@ -138,28 +152,49 @@ public class NextMap {
      * @return Vector object, which represents the number of elements in x- and y-direction.
      */
     public Vector2D GetSizeOfMap() {
-        Vector2D size;
-        size = posExtendInHashset(maplist);
-        size = size.getMax(posExtendInHashset(dispensers));
-        size = size.getMax(posExtendInHashset(goalZones));
-        size = size.getMax(posExtendInHashset(roleZones));
-        size.add(1, 1);
-        return size;
+        return posExtendInHashset(map).getAdded(1, 1);
     }
 
     /**
      * Returns all dispensers found so far as NextMapTiles. X/Y of each maptile is the position on the map
      * @return Dispensers
      */
-    public HashSet<NextMapTile> GetDispensers() {return dispensers;}
+    public HashSet<NextMapTile> GetDispensers() {
+        HashSet<NextMapTile> dispensers = new HashSet<>();
+        for (NextMapTile maptile : map) {
+            if (maptile.getThingType().startsWith("dispenser")) {
+                dispensers.add(maptile.clone());
+            }
+        }
+
+        return dispensers;
+    }
 
     /**
      * Returns all RoleZones found so far as NextMapTiles. X/Y of each maptile is the position on the map
      * @return RoleZones
      */
-    public HashSet<NextMapTile> GetRoleZones() {return roleZones;}
+    public HashSet<NextMapTile> GetRoleZones() {
+        HashSet<NextMapTile> roleZones = new HashSet<>();
+        for (NextMapTile maptile : map) {
+            if (maptile.getThingType().startsWith("role")) {
+                roleZones.add(maptile.clone());
+            }
+        }
 
-    public HashSet<NextMapTile> GetGoalZones() {return goalZones;}
+        return roleZones;
+    }
+
+    public HashSet<NextMapTile> GetGoalZones() {
+        HashSet<NextMapTile> goalZones = new HashSet<>();
+        for (NextMapTile maptile : map) {
+            if (maptile.getThingType().startsWith("goal")) {
+                goalZones.add(maptile.clone());
+            }
+        }
+
+        return goalZones;
+    }
 
     /**
      * Sets an object on the map.
@@ -174,39 +209,38 @@ public class NextMap {
                 return;
         }
 
+        removeAt(maptile.GetPosition());
+        this.map.add(maptile);
+
+        // Special things to do for some thing Types
         switch (maptile.getThingType().substring(0, 4)) {
             case "disp":
-                dispensers.add(maptile);
                 availableDispensers.add((maptile.getThingType().substring(10)));
                 break;
-            case "goal":
-                goalZones.add(maptile);
-                break;
             case "role":
-                roleZones.add(maptile);
                 break;
-            default: // If none of the above match (e.g. free or obstacles)
-                this.maplist.add(maptile);
-                removeRoleZone(maptile.GetPosition());
-                removeGoalZone(maptile.GetPosition());
+            case "goal":
+                break;
+            case "obst":
+                break;
+            case "free":
+                break;
+            case "bloc":
                 break;
         }
     }
 
     /**
-     * Removes a roleZone at a specific position from the list of roleZones
+     * Removes all Maptiles at a specific position from the map
      * @param pos Position
      */
-    private void removeRoleZone(Vector2D pos) {
-        this.roleZones.remove(new NextMapTile(pos.x, pos.y, 0, "roleZone"));
-    }
-
-    /**
-     * Removes a goalZone at a specific position from the list of goalZones
-     * @param pos Position
-     */
-    private void removeGoalZone(Vector2D pos) {
-        this.goalZones.remove(new NextMapTile(pos.x, pos.y, 0, "goalZone"));
+    private void removeAt(Vector2D pos) {
+        for (Iterator<NextMapTile> i = map.iterator(); i.hasNext();) {
+            NextMapTile element = i.next();
+            if (element.GetPosition().equals(pos)) {
+                i.remove();
+            }
+        }
     }
 
     /**
@@ -267,9 +301,12 @@ public class NextMap {
             }
         }
 
-        // Fill with tiles from maplist
-        for (NextMapTile maptile : maplist) {
-            mapArray[maptile.getPositionX()][maptile.getPositionY()] = maptile.clone();
+        // Fill with tiles from map which are not dispenser, roleZones or goalZones
+        for (NextMapTile maptile : map) {
+            String type = maptile.getThingType();
+            if (!type.startsWith("goal") && !type.startsWith("role") && !type.startsWith("disp")) {
+                mapArray[maptile.getPositionX()][maptile.getPositionY()] = maptile.clone();
+            }
         }
 
         return mapArray;
@@ -357,15 +394,15 @@ public class NextMap {
     }
 
     public Boolean IsGoalZoneAvailable() {
-    	return !goalZones.isEmpty();
+    	return !GetGoalZones().isEmpty();
     }
     
     public Boolean IsRoleZoneAvailable() {
-        return !roleZones.isEmpty();
+        return !GetRoleZones().isEmpty();
     }
     
     public Boolean IsDispenserAvailable() {
-        return !dispensers.isEmpty();
+        return !GetDispensers().isEmpty();
     }
 
     public static void UpdateMap(NextAgent agent) {
@@ -476,17 +513,11 @@ public class NextMap {
     private void shiftToZero() {
         Vector2D offset;
 
-        offset = negExtendInHashset(maplist);
-        offset = offset.getMin(negExtendInHashset(dispensers));
-        offset = offset.getMin(negExtendInHashset(goalZones));
-        offset = offset.getMin(negExtendInHashset(roleZones));
+        offset = negExtendInHashset(map);
 
         offset.reverse();
 
-        maplist = moveMaptilesInHashset(maplist, offset);
-        dispensers = moveMaptilesInHashset(dispensers, offset);
-        goalZones = moveMaptilesInHashset(goalZones, offset);
-        roleZones = moveMaptilesInHashset(roleZones, offset);
+        map = moveMaptilesInHashset(map, offset);
 
         group.MoveAllAgents(offset);
     }
@@ -500,18 +531,11 @@ public class NextMap {
      */
     public static NextMap JoinMap ( NextMap mapToKeep, NextMap mapToAdd, Vector2D offset) {
 
-        NextMapTile newMapTile;
-        Vector2D sizeMapToAdd = mapToAdd.GetSizeOfMap();
+        moveMaptilesInHashset(mapToAdd.map, offset.getReversed());
 
-        moveMaptilesInHashset(mapToAdd.maplist, offset.getReversed());
-        moveMaptilesInHashset(mapToAdd.dispensers, offset.getReversed());
-        moveMaptilesInHashset(mapToAdd.goalZones, offset.getReversed());
-        moveMaptilesInHashset(mapToAdd.roleZones, offset.getReversed());
-
-        mapToKeep.maplist.addAll(mapToAdd.maplist);
-        mapToKeep.dispensers.addAll(mapToAdd.dispensers);
-        mapToKeep.goalZones.addAll(mapToAdd.goalZones);
-        mapToKeep.roleZones.addAll(mapToAdd.roleZones);
+        for (NextMapTile maptile : mapToAdd.map) {
+            mapToKeep.setMapTile(maptile.clone());
+        }
 
         mapToKeep.shiftToZero();
 
@@ -548,10 +572,7 @@ public class NextMap {
         if (simulationMapSize.x > 0) newMapSize.x = simulationMapSize.x;
         if (simulationMapSize.y > 0) newMapSize.y = simulationMapSize.y;
 
-        dispensers = modMaptilesInHashset(dispensers, simulationMapSize);
-        goalZones = modMaptilesInHashset(goalZones, simulationMapSize);
-        roleZones = modMaptilesInHashset(roleZones, simulationMapSize);
-        maplist = modMaptilesInHashset(maplist, simulationMapSize);
+        map = modMaptilesInHashset(map, simulationMapSize);
 
         group.ModAllAgents(newMapSize);
 
