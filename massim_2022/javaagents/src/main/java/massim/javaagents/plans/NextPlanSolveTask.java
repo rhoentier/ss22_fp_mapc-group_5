@@ -1,8 +1,9 @@
 package massim.javaagents.plans;
 
 import massim.javaagents.agents.NextAgent;
+import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.general.NextConstants;
-import massim.javaagents.groupPlans.NextGroupPlanForAgent;
+import massim.javaagents.groupPlans.NextAgentPlan;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
@@ -18,8 +19,7 @@ public class NextPlanSolveTask extends NextPlan {
     private boolean isPreconditionFulfilled = false;
     private final NextTask task;
 
-
-    public NextPlanSolveTask(NextAgent agent, NextGroupPlanForAgent groupPlan) {
+    public NextPlanSolveTask(NextAgent agent, NextAgentPlan groupPlan) {
         this.agent = agent;
         this.task = groupPlan.GetTask();
         this.agentTask = NextConstants.EAgentActivity.solveTask;
@@ -27,16 +27,15 @@ public class NextPlanSolveTask extends NextPlan {
         subPlans = groupPlan.GetSubPlans();
     }
 
-
     /**
-     * Versucht die Karte zu durchsuchen um eine Aufgabe zu lösen
+     * Versucht die Karte zu durchsuchen, um eine Aufgabe zu lösen
      */
     private void fulfillPrecondition() {
         subPlans.add(0, new NextPlanExploreMap(task.GetRequiredBlocks(), agent));
     }
 
     /**
-     * prüft, ob die Vorbedingung erfüllt ist
+     * Prüft, ob die Vorbedingung erfüllt ist
      */
     public void CheckIfPreConditionIsFulfilled() {
         HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
@@ -45,7 +44,7 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     /**
-     * prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
+     * Prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
     public boolean CheckIfTaskIsFulfilled() {
         if (agent.GetAgentStatus().GetLastAction().equals("submit") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
@@ -55,13 +54,6 @@ public class NextPlanSolveTask extends NextPlan {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Wird nicht mehr benötigt
-     */
-    @Override
-    public void CreateSubPlans() {
     }
 
     public NextTask GetTask() {
@@ -93,6 +85,11 @@ public class NextPlanSolveTask extends NextPlan {
                 }
                 //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
                 subPlan.SetPlanIsFulfilled(attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()));
+            }
+            if (subPlan instanceof NextPlanGoalZone) {
+                if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(agent.GetAgentStatus().GetGoalZones())) {
+                    if (subPlanIterator.hasNext()) subPlan.SetPlanIsFulfilled(true);
+                }
             }
         }
     }

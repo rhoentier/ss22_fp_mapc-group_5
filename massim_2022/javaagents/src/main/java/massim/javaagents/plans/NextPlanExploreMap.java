@@ -19,7 +19,6 @@ public class NextPlanExploreMap extends NextPlan {
         CreateSubPlans();
     }
 
-    @Override
     public void CreateSubPlans() {
         if (agent.GetMap().GetGoalZones().isEmpty()) subPlans.add(new NextPlanSurveyGoalZone());
         for (NextMapTile wantedMapTile : wantedMapTiles) {

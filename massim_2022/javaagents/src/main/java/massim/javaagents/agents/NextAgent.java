@@ -1,6 +1,6 @@
 package massim.javaagents.agents;
 
-import massim.javaagents.groupPlans.NextGroupPlanForAgent;
+import massim.javaagents.groupPlans.NextAgentPlan;
 import massim.javaagents.intention.NextIntention;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
@@ -17,7 +17,7 @@ import massim.javaagents.general.NextConstants.EActions;
 import massim.javaagents.general.NextConstants.EAgentActivity;
 import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.plans.NextPlan;
-import massim.javaagents.plans.NextTaskPlanner;
+import massim.javaagents.plans.NextTaskHandler;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
@@ -66,7 +66,7 @@ public class NextAgent extends Agent {
 
     //BDI
     private NextIntention intention;
-    private NextTaskPlanner taskPlanner;
+    private NextTaskHandler taskHandler;
 
     // --- Algorithms ---
     NextPerceptReader processor; // Eismassim interpreter
@@ -107,7 +107,7 @@ public class NextAgent extends Agent {
 
         this.processor = new NextPerceptReader(this);
 
-        taskPlanner = new NextTaskPlanner(this);
+        taskHandler = new NextTaskHandler(this);
     }
 
     /*
@@ -221,12 +221,12 @@ public class NextAgent extends Agent {
 
             // new path
             if (agentGroup != null) {
-                NextGroupPlanForAgent groupPlan = agentGroup.GetPlan(this);
+                NextAgentPlan groupPlan = agentGroup.GetPlan(this);
                 if (groupPlan != null) {
-                    taskPlanner.SetGroupPlan(groupPlan);
-                    NextPlan nextPlan = taskPlanner.GetDeepestEAgentTask();
+                    taskHandler.SetAgentPlan(groupPlan);
+                    NextPlan nextPlan = taskHandler.GetDeepestEAgentTask();
                     if (nextPlan != null) {
-                        NextTask nextTask = taskPlanner.GetCurrentTask();
+                        NextTask nextTask = taskHandler.GetCurrentTask();
                         // Neuen Task nur setzen, wenn sich der Task verändert hat.
                         if (nextTask != null) {
                             if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
@@ -245,7 +245,7 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            printFinalReport(); // live String output to console
+            // printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
 
@@ -361,8 +361,8 @@ public class NextAgent extends Agent {
         return (int) agentStatus.GetCurrentRole().GetSpeed().stream().filter(speed -> speed > 0).count();
     }
 
-    public NextTaskPlanner GetTaskPlanner() {
-        return this.taskPlanner;
+    public NextTaskHandler GetTaskPlanner() {
+        return this.taskHandler;
     }
 
     public NextPlan GetAgentPlan() {
@@ -461,6 +461,19 @@ public class NextAgent extends Agent {
         this.say("Message (" + message + ") from " + agent);
 
         // definitive implementation needed
+    }
+
+    public HashMap<NextMapTile, Integer> GetDispenserDistances(HashSet<NextMapTile> requiredBlocks) {
+        HashMap<NextMapTile, Integer> distances = new HashMap<>();
+        for (NextMapTile requiredBlock : requiredBlocks) {
+            NextMapTile nearestDispenser = NextAgentUtil.GetNearestDispenserFromType(GetMap().GetDispensers(), requiredBlock.getThingType(), GetPosition());
+            if (nearestDispenser == null) {
+                distances.put(requiredBlock, 1000);
+                continue;
+            }
+            distances.put(requiredBlock, aStar.calculatePath(GetMap().GetMapArray(), GetPosition(), nearestDispenser.GetPosition(), simStatus.GetCurrentStep()).size());
+        }
+        return distances;
     }
 
     /*
@@ -586,7 +599,7 @@ public class NextAgent extends Agent {
         //System.out.println("path" + newPath);
         // Join Path
         System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
-        
+
         if (newPath.isEmpty()) {
             newPath.add(NextAgentUtil.GenerateRandomMove());
             clearMapTiles(target, pathRest);
@@ -734,7 +747,7 @@ public class NextAgent extends Agent {
         this.activeTask = null;
         this.agentActivity = EAgentActivity.exploreMap;
         this.agentPlan = null;
-        this.taskPlanner = new NextTaskPlanner(this);
+        this.taskHandler = new NextTaskHandler(this);
         //this.roleToChangeTo=null;
 
         agentGroup = null;
@@ -827,7 +840,7 @@ public class NextAgent extends Agent {
      */
     private void updateTasks() {
         CheckIfMaxAttemptsAreReached();
-        taskPlanner.UpdateTasks();
+        taskHandler.UpdateTasks();
         if (agentGroup != null) {
             agentGroup.UpdateTasks(simStatus.GetTasksList(), simStatus.GetActionID());
         }

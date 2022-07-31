@@ -59,6 +59,10 @@ public class NextMapTile {
         return isAThing;
     }
 
+    public Vector2D getPosition(){
+        return new Vector2D(positionX,positionY);
+    }
+
     public Integer getPositionX() {
         return positionX;
     }

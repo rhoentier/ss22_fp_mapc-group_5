@@ -8,12 +8,4 @@ public class NextPlanGoalZone extends NextPlan {
     public NextPlanGoalZone() {
         this.agentTask = NextConstants.EAgentActivity.goToGoalzone;
     }
-
-    /**
-     * Ereugt keine weiteren Subplans
-     */
-    @Override
-    public void CreateSubPlans() {
-
-    }
 }

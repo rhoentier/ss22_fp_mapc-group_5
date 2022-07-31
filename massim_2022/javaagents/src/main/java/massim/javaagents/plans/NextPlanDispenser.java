@@ -12,14 +12,6 @@ public class NextPlanDispenser extends NextPlan {
         this.dispenser = dispenser;
     }
 
-    /**
-     * Erzeugt keine weiteren SubPlans
-     */
-    @Override
-    public void CreateSubPlans() {
-
-    }
-
     public NextMapTile GetDispenser() {
         return dispenser;
     }

@@ -12,14 +12,6 @@ public class NextPlanSurveyDispenser extends NextPlan {
         this.wantedMapTile = wantedMapTile;
     }
 
-    /**
-     * Erzeugt momentan keine weiteren Subplans
-     */
-    @Override
-    public void CreateSubPlans() {
-
-    }
-
     public NextMapTile GetWantedMapTile() {
         return wantedMapTile;
     }

@@ -3,8 +3,8 @@ package massim.javaagents.agents;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import massim.javaagents.groupPlans.NextGroupPlanForAgent;
-import massim.javaagents.groupPlans.NextGroupTaskPlanner;
+import massim.javaagents.groupPlans.NextAgentPlan;
+import massim.javaagents.groupPlans.NextTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
@@ -33,7 +33,7 @@ public class NextGroup {
 
     private NextMap groupMap = new NextMap(this);
 
-    private NextGroupTaskPlanner taskPlanner;
+    private NextTaskPlanner taskPlanner;
 
     /*
      * ##################### endregion fields
@@ -49,7 +49,7 @@ public class NextGroup {
         this.agentSet.add(agent);
         this.agentPositionMap.put(agent, new Vector2D(0, 0));
 
-        this.taskPlanner = new NextGroupTaskPlanner(this);
+        this.taskPlanner = new NextTaskPlanner(this);
     }
 
     /*
@@ -230,11 +230,11 @@ public class NextGroup {
     public void UpdateTasks(HashSet<NextTask> newTasks, int actionId) {
         if(actionId > lastActionId){
             this.lastActionId = actionId;
-            taskPlanner.UpdateTasks(newTasks);
+            taskPlanner.UpdateTasksAndAgents(newTasks);
         }
     }
 
-    public NextGroupPlanForAgent GetPlan(NextAgent agent){
+    public NextAgentPlan GetPlan(NextAgent agent){
         return taskPlanner.GetPlan(agent);
     }
 

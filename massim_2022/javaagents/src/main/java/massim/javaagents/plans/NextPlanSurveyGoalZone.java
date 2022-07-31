@@ -7,9 +7,4 @@ public class NextPlanSurveyGoalZone extends NextPlan {
     public NextPlanSurveyGoalZone() {
         this.agentTask = NextConstants.EAgentActivity.surveyGoalZone;
     }
-
-    @Override
-    public void CreateSubPlans() {
-
-    }
 }

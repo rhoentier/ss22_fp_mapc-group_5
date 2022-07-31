@@ -12,6 +12,7 @@ import java.util.HashMap;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.ECardinals;
+import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -239,6 +240,22 @@ public final class NextAgentUtil {
         	if (tile.getThingType().contains(type)) {
                 result = tile.GetPosition();  // AVL - Trying a different approach
                 //result = new Vector2D(next.getPositionX(), next.getPositionY());
+            }
+        }
+        return result;
+    }
+
+    public static NextMapTile GetNearestDispenserFromType(HashSet<NextMapTile> dispenser, String type, Vector2D position) {
+        NextMapTile result = null;
+        int nearestDistanz = 1000;
+        for(NextMapTile tile : dispenser)
+        {
+            if (tile.getThingType().contains(type)) {
+                int distanz = ManhattanDistance(tile.GetPosition(), position);
+                if (distanz < nearestDistanz){
+                    nearestDistanz = distanz;
+                    result = tile;
+                }
             }
         }
         return result;
