@@ -258,9 +258,10 @@ public class NextMapTile {
         return intListe.toString();
     }
     
-    public HashSet GetStepMemory(){
+    public HashSet<Integer> GetStepMemory(){
         return stepMemory;
     }
+    
     
     /*
     @Override

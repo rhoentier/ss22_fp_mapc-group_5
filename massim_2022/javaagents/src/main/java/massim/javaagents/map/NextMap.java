@@ -232,15 +232,20 @@ public class NextMap {
                     break;
                 case "free":
                     if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
+                        for (int step : existingMapTile.GetStepMemory()) {
+                            maptile.BlockAtStep(step);
+                        }
                         this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
                     }
-                        removeRoleZone(maptile.GetPosition());
-                        removeGoalZone(maptile.GetPosition());
-                        removeDispenser(maptile.GetPosition());
+                    removeRoleZone(maptile.GetPosition());
+                    removeGoalZone(maptile.GetPosition());
+                    removeDispenser(maptile.GetPosition());
                     break;
                 default:
                     if (existingMapTile == null || existingMapTile.getLastVisionStep() < maptile.getLastVisionStep()) {
-
+                        for (int step : existingMapTile.GetStepMemory()) {
+                            maptile.BlockAtStep(step);
+                        }
                         this.map[maptile.getPositionX()][maptile.getPositionY()] = maptile;
                     }
             }
@@ -645,7 +650,7 @@ public class NextMap {
             //offset.subtract(mapMoved); // should not be relevant, because map should be big enough
         }
         return mapToKeep;
-       
+
     }
 
     public void SetSimulationMapHeight(int MapHeight) {
