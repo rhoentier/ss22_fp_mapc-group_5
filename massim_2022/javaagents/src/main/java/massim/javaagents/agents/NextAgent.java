@@ -338,6 +338,12 @@ public class NextAgent extends Agent {
         }
         return agentGroup.GetAgentPosition(this).clone();
     }
+    public Vector2D GetPositionRef() {
+        if (agentGroup == null) {
+            return new Vector2D(0, 0);
+        }
+        return agentGroup.GetAgentPosition(this);
+    }
 
     public NextMap GetMap() {
         if (this.agentGroup == null) {      // Workaround for deep linking
@@ -382,7 +388,7 @@ public class NextAgent extends Agent {
 
         //NextMap map = GetMap();
         NextMap map = this.agentGroup.GetGroupMap();
-        Boolean targetIsOnMap = map.ContainsPoint(target);
+        Boolean targetIsOnMap = map.IsOnMap(target);
         try {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
@@ -437,7 +443,7 @@ public class NextAgent extends Agent {
      * String-based communication with groupagents to be extended for further
      * usecases.
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void TellGroup(String message) {
         this.agentGroup.TellGroup(message, this);
@@ -447,7 +453,7 @@ public class NextAgent extends Agent {
      * String-based communication with groupagents to be extended for further
      * usecases.
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void TellGroupAgent(String message, String agentName) {
         this.agentGroup.TellGroupAgent(message, agentName, this);
@@ -456,7 +462,7 @@ public class NextAgent extends Agent {
     /**
      * Handling of custom groupmessages
      *
-     * @param Message - String based message
+     * @param message - String based message
      */
     public void HandleGroupMessage(String message, String agent) {
         this.say("Message (" + message + ") from " + agent);
