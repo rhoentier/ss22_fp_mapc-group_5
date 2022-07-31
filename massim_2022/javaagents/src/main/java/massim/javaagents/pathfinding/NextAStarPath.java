@@ -63,7 +63,7 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         } else {
             // - A Star without map shift
-            this.map = NextMap.copyAbsoluteMap(originalMap);
+            this.map = NextMap.CloneMapArray(originalMap);
             int targetX = target.x;
             int targetY = target.y;
             this.localStartPoint = new int[]{startpoint.x, startpoint.y};
