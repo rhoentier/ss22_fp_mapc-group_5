@@ -1,6 +1,10 @@
 package massim.javaagents.map;
 
 
+import massim.javaagents.agents.Agent;
+import massim.javaagents.agents.NextAgent;
+
+import java.util.HashSet;
 import java.util.Objects;
 
 public class Vector2D {
@@ -250,16 +254,43 @@ public class Vector2D {
         return v;
     }
 
-    public Vector2D getMax(Vector2D v) {
-        int xMax = Math.max(this.x, v.x);
-        int yMax = Math.max(this.y, v.y);
+    public static Vector2D getMax(Vector2D v1, Vector2D v2) {
+        int xMax = Math.max(v1.x, v2.x);
+        int yMax = Math.max(v1.y, v2.y);
         return new Vector2D(xMax, yMax);
     }
+    public static Vector2D getMax(HashSet<Vector2D> vectors) {
+        Vector2D maxSoFar = new Vector2D(0, 0);
+        for (Vector2D v : vectors) {
+            maxSoFar = getMax(maxSoFar, v);
+        }
+        return maxSoFar.clone();
+    }
 
-    public Vector2D getMin(Vector2D v) {
-        int xMin = Math.min(this.x, v.x);
-        int yMin = Math.min(this.y, v.y);
+    public static Vector2D getMin(Vector2D v1, Vector2D v2) {
+        int xMin = Math.min(v1.x, v2.x);
+        int yMin = Math.min(v1.y, v2.y);
         return new Vector2D(xMin, yMin);
+    }
+    public static Vector2D getMin(HashSet<Vector2D> vectors) {
+        Vector2D minSoFar = new Vector2D(0, 0);
+        for (Vector2D v : vectors) {
+            minSoFar = getMin(minSoFar, v);
+        }
+        return minSoFar.clone();
+    }
+
+    /**
+     * Extract positions from a hashset of NextMapTiles
+     * @param mapTileHashSet HashSet of NextMapTiles
+     * @return HashSet of Vector2D
+     */
+    public static HashSet<Vector2D> extractPositionsFromMapTiles(HashSet<NextMapTile> mapTileHashSet) {
+        HashSet<Vector2D> vectorHashSet = new HashSet<>();
+        for (NextMapTile maptile : mapTileHashSet) {
+            vectorHashSet.add(new Vector2D(maptile.GetPosition()));
+        }
+        return vectorHashSet;
     }
 
     @Override
