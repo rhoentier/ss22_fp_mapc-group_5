@@ -234,6 +234,10 @@ public class NextMap {
             }
         }
 
+        // Transfer StepMemory to new MapTile
+        NextMapTile existingMapTile = GetMapTile(maptile.GetPosition());
+        maptile.AddToStepMemory(existingMapTile.GetStepMemory());
+
         // Only add maptile if: existingMapTile is null OR existingMapTile is older
         Vector2D maptilePosition = maptile.GetPosition();
         switch (maptile.getThingType().substring(0, 4)) {
