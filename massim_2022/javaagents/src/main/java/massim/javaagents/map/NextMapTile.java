@@ -30,6 +30,16 @@ public class NextMapTile {
     }
     
 
+    public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType, HashSet<Integer> stepMemory) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.lastVisionStep = lastStepObserved;
+        this.isAThing = true;
+        this.thingType = thingType;
+        this.stepMemory = stepMemory;
+
+    }
+    
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -151,18 +161,18 @@ public class NextMapTile {
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked contain one of the following things:
      * entity, block, obstacle, unknown
      *
-     * @return
+     * @return Boolean
      */
     public Boolean IsWalkableStrict() {
         return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
     }
     
-        /**
-     * Returns, if a map tile is "walkable" by an agent at a specific step. Tiles which are blocked contain one of the following things:
-     * obstacle, unknown
-     *
-     * @return
-     */
+    /**
+    * Returns, if a map tile is "walkable" by an agent at a specific step. Tiles which are blocked contain one of the following things:
+    * obstacle, unknown
+    *
+    * @return Boolean  
+    */
     public Boolean IsWalkableStrict(Integer step) {
         return IsWalkableStrict() && !this.stepMemory.contains(step);
     }
@@ -220,7 +230,7 @@ public class NextMapTile {
     }
 
     public NextMapTile Clone() {
-        return new NextMapTile(this.positionX, this.positionY, this.lastVisionStep, this.thingType);
+        return new NextMapTile(this.positionX, this.positionY, this.lastVisionStep, this.thingType,this.stepMemory);
     }
 
     public void SetLastVisionStep(Integer lastVisionStep) {
@@ -229,7 +239,7 @@ public class NextMapTile {
 
     @Override
     public NextMapTile clone() {
-        return new NextMapTile(positionX, positionY, lastVisionStep, thingType);
+        return new NextMapTile(positionX, positionY, lastVisionStep, thingType, stepMemory);
     }
     
     public void BlockAtStep (int step) {
@@ -240,6 +250,22 @@ public class NextMapTile {
         this.stepMemory.remove(step);
     }
 
+    public boolean CheckAtStep (int step) {
+        return this.stepMemory.contains(step);
+    }
+    
+    public String ReportBlockedSteps (){
+        StringBuilder intListe = new StringBuilder();
+        for (int value : stepMemory) {
+            intListe.append(" " + value);
+        }
+        return intListe.toString();
+    }
+    
+    public HashSet GetStepMemory(){
+        return stepMemory;
+    }
+    
     /*
     @Override
     public boolean equals(Object obj) {
@@ -272,7 +298,7 @@ public class NextMapTile {
         int hash = 7;
         hash = 61 * hash + Objects.hashCode(this.positionX);
         hash = 61 * hash + Objects.hashCode(this.positionY);
-        //hash = 61 * hash + Objects.hashCode(this.isAThing);
+        hash = 61 * hash + Objects.hashCode(this.isAThing);
         hash = 61 * hash + Objects.hashCode(this.thingType);
         return hash;
     }

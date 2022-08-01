@@ -38,6 +38,12 @@ public class NextPlanSolveTask extends NextPlan {
      * Prüft, ob die Vorbedingung erfüllt ist
      */
     public void CheckIfPreConditionIsFulfilled() {
+
+        if (!subPlans.isEmpty()) {
+            if (!agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker") && !subPlans.get(0).GetAgentTask().equals(NextConstants.EAgentActivity.exploreMap))
+                subPlans.add(0, new NextPlanRoleZone(agent, "worker"));
+        }
+
         HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
         if (!isPreconditionFulfilled) fulfillPrecondition();
@@ -65,9 +71,14 @@ public class NextPlanSolveTask extends NextPlan {
         if (CheckIfTaskIsFulfilled()) return;
         for (Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext(); ) {
             NextPlan subPlan = subPlanIterator.next();
+            if (subPlan instanceof NextPlanRoleZone) {
+                if (agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker")) subPlanIterator.remove();
+                continue;
+            }
             if (subPlan instanceof NextPlanExploreMap) {
                 if (isPreconditionFulfilled) subPlanIterator.remove();
                 else ((NextPlanExploreMap) subPlan).CheckPreconditionStatus();
+                continue;
             }
             if (subPlan instanceof NextPlanDispenser) {
                 // prüft, welche Blöcke momentan attached sind

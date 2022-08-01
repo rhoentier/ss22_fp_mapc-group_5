@@ -144,8 +144,9 @@ public final class NextConstants {
         surveyDispenser,
         surveyGoalZone,
         surveyRoleZone,
-        discoverMapSize,
-        connectToAgent
+        surveyRandom,
+        connectToAgent,
+        discoverMapSize
     }
 
     public static enum EVisibleThings {

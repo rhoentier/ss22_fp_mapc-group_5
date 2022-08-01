@@ -21,6 +21,7 @@ import massim.javaagents.plans.NextTaskHandler;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
+import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.util.HashSet;
@@ -34,15 +35,18 @@ import massim.javaagents.percept.NextRole;
 /**
  * First iteration of an experimental agent.
  * <p>
- * Done: Handling of transition between simulations Basic action generation
+ * Done:
+ * - Handling of transition between simulations Basic action generation
  * based on random movement Processing of all percepts and storing in dataVaults
+ * - Gruppenbildung
  * <p>
- * ToDo: Gruppenbildung
+ * @Author Alexander, Miriam
  */
 public class NextAgent extends Agent {
 
     public static HashMap<Integer, NextGroup> globalGroupMap = new HashMap<>();
     public static HashMap<String, HashSet<Vector2D>> GroupBuildingSkipMemory = new HashMap<>();
+    public static int lastGroupJoinAtStep = -1;
 
     /*
      * ########## region fields
@@ -201,8 +205,9 @@ public class NextAgent extends Agent {
         }
 
         // GroupJoining delayed, to spread agents
-        if (lastID > 3) {
+        if (lastID > 3 && lastGroupJoinAtStep != simStatus.GetCurrentStep()) {
             // Check if friendly Agents are visible and join them to groups
+            // Map Information of the last step is used to ensure consistency
             processFriendlyAgents();
             processGroupJoinMessages();
         }
@@ -231,7 +236,7 @@ public class NextAgent extends Agent {
                         if (nextTask != null) {
                             if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
                                 if (!this.agentActivity.toString().contains("survey")) {
-                                    intention.ResetAfterTaskChange(nextTask);
+                                    intention.ResetAfterTaskChange();
                                 }
                                 SetActiveTask(nextTask);
                             }
@@ -245,9 +250,15 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
-            // printFinalReport(); // live String output to console
+            //printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
+
+            if( agentGroup != null) {
+            // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+            // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+            // this.say("Current Step " + this.simStatus.GetCurrentStep());
+            }
 
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
@@ -485,7 +496,7 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion public methods
      */
-
+    //--------------------------------------------------------------------------
     /*
      * ########## region private methods
      */
@@ -552,7 +563,7 @@ public class NextAgent extends Agent {
             localPath = pathMemory;
         }
 
-        // Report Element
+        // Report Element  
         /*
         System.out.println("Original " + pathMemory + "/n ---------------------------");
         System.out.println("Local " + localPath);
@@ -643,7 +654,8 @@ public class NextAgent extends Agent {
             int yPosition = this.GetPosition().getAdded(target).y;
 
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter);
+                System.out.println("Position was blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
+                workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
             }
 
         }
@@ -675,7 +687,7 @@ public class NextAgent extends Agent {
                         nextAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
                     }
                 } else if (!thing.IsBlock()) {
-                    // um Block herumlaufen
+                    // um Block herumlaufen 
                     pathMemory = generateAlternativePathMemory(pathMemory);
                     nextAction = pathMemory.remove(0);
                 } else {
@@ -1033,6 +1045,7 @@ public class NextAgent extends Agent {
             for (String message : messageStore) {
                 // ("JoinGroup-Execution," + this.agentGroup.getGroupID()), reciever, sender, deltaX, deltaY, mapOffsetX, mapOffsetY,)
                 String[] messageContainer = message.split(",");
+                lastGroupJoinAtStep = simStatus.GetCurrentStep();
                 this.sendMessage(new Percept(messageContainer[0] + "," + messageContainer[1] + "," + messageContainer[4] + "," + messageContainer[5] + "," + messageContainer[6] + "," + messageContainer[7]), messageContainer[2], messageContainer[3]);
             }
         } else {
