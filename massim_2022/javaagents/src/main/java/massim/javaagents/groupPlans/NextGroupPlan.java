@@ -49,7 +49,7 @@ public class NextGroupPlan {
         //calculate ways from dispensers to nearestGoalZone
         for (NextMapTile block : task.GetRequiredBlocks()) {
             for (NextMapTile dispenser : dispensers) {
-                // TODO: Vielleicht liegt hier noch ein Fehler
+                // TODO: Noch Testen, ob dies wirklich den besten Task gibt
                 if (!dispenser.getThingType().substring(dispenser.getThingType().length() - 2).equals(block.getThingType())) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
                 // TODO: Hier muss der Pfad verbessert werden

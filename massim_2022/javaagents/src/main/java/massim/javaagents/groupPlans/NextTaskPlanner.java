@@ -133,13 +133,13 @@ public class NextTaskPlanner {
 
         ArrayList<NextPlan> subPlans = new ArrayList<>();
         boolean main = blockArray.get(0).GetPosition().equals(topBlock);
-        HashSet<NextAgent> involvedAgents = new HashSet();
+        HashSet<NextAgent> involvedAgents;
 
         if (estimatedStepsInPartition[0] <= estimatedStepsInPartition[1]) {
             subPlans.add(new NextPlanDispenser(blockArray.get(0)));
             subPlans.add(new NextPlanGoalZone());
 
-            involvedAgents = new HashSet();
+            involvedAgents = new HashSet<>();
             involvedAgents.add(agentArray.get(1));
             subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition(), involvedAgents));
 
@@ -149,14 +149,14 @@ public class NextTaskPlanner {
             subPlans.add(new NextPlanDispenser(blockArray.get(1)));
             subPlans.add(new NextPlanGoalZone());
 
-            involvedAgents = new HashSet();
+            involvedAgents = new HashSet<>();
             involvedAgents.add(agentArray.get(0));
             subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition(), involvedAgents));
         } else {
             subPlans.add(new NextPlanDispenser(blockArray.get(1)));
             subPlans.add(new NextPlanGoalZone());
 
-            involvedAgents = new HashSet();
+            involvedAgents = new HashSet<>();
             involvedAgents.add(agentArray.get(1));
             subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition(), involvedAgents));
 
@@ -166,7 +166,7 @@ public class NextTaskPlanner {
             subPlans.add(new NextPlanDispenser(blockArray.get(0)));
             subPlans.add(new NextPlanGoalZone());
 
-            involvedAgents = new HashSet();
+            involvedAgents = new HashSet<>();
             involvedAgents.add(agentArray.get(0));
             subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition(), involvedAgents));
         }
