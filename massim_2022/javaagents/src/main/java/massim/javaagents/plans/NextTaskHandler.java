@@ -17,7 +17,6 @@ public class NextTaskHandler {
     /**
      * Check if a Task is fulfillable and returns the deepest desire of the task with the max benefit
      * if no task is fulfillable returns the desire to explore the map
-     *
      */
     public NextPlan GetDeepestEAgentTask() {
         if (currentPlan != null) return currentPlan.GetDeepestPlan();
@@ -30,7 +29,12 @@ public class NextTaskHandler {
     }
 
     public void SetAgentPlan(NextAgentPlan groupPlan) {
-        currentPlan = new NextPlanSolveTask(agent, groupPlan);
+        if (currentPlan == null) {
+            currentPlan = new NextPlanSolveTask(agent, groupPlan);
+            return;
+        }
+        if (!groupPlan.GetTask().GetName().equals(currentPlan.GetTask().GetName()))
+            currentPlan = new NextPlanSolveTask(agent, groupPlan);
     }
 
     public void UpdateTasks() {

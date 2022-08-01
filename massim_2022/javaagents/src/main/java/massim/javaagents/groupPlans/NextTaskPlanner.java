@@ -133,27 +133,42 @@ public class NextTaskPlanner {
 
         ArrayList<NextPlan> subPlans = new ArrayList<>();
         boolean main = blockArray.get(0).GetPosition().equals(topBlock);
+        HashSet<NextAgent> involvedAgents = new HashSet();
 
         if (estimatedStepsInPartition[0] <= estimatedStepsInPartition[1]) {
             subPlans.add(new NextPlanDispenser(blockArray.get(0)));
             subPlans.add(new NextPlanGoalZone());
-            subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition()));
+
+            involvedAgents = new HashSet();
+            involvedAgents.add(agentArray.get(1));
+            subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition(), involvedAgents));
+
             currentPlans.put(agentArray.get(0), new NextAgentPlan(plan.GetTask(), subPlans));
 
             subPlans = new ArrayList<>();
             subPlans.add(new NextPlanDispenser(blockArray.get(1)));
             subPlans.add(new NextPlanGoalZone());
-            subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition()));
+
+            involvedAgents = new HashSet();
+            involvedAgents.add(agentArray.get(0));
+            subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition(), involvedAgents));
         } else {
             subPlans.add(new NextPlanDispenser(blockArray.get(1)));
             subPlans.add(new NextPlanGoalZone());
-            subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition()));
+
+            involvedAgents = new HashSet();
+            involvedAgents.add(agentArray.get(0));
+            subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition(), involvedAgents));
+
             currentPlans.put(agentArray.get(0), new NextAgentPlan(plan.GetTask(), subPlans));
 
             subPlans = new ArrayList<>();
             subPlans.add(new NextPlanDispenser(blockArray.get(0)));
             subPlans.add(new NextPlanGoalZone());
-            subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition()));
+
+            involvedAgents = new HashSet();
+            involvedAgents.add(agentArray.get(1));
+            subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition(), involvedAgents));
         }
         currentPlans.put(agentArray.get(1), new NextAgentPlan(plan.GetTask(), subPlans));
     }
