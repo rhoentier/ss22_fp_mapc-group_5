@@ -157,7 +157,7 @@ public class NextTaskPlanner {
             subPlans.add(new NextPlanGoalZone());
 
             involvedAgents = new HashSet();
-            involvedAgents.add(agentArray.get(0));
+            involvedAgents.add(agentArray.get(1));
             subPlans.add(new NextPlanConnect(!main, blockArray.get(1).GetPosition(), involvedAgents));
 
             currentPlans.put(agentArray.get(0), new NextAgentPlan(plan.GetTask(), subPlans));
@@ -167,7 +167,7 @@ public class NextTaskPlanner {
             subPlans.add(new NextPlanGoalZone());
 
             involvedAgents = new HashSet();
-            involvedAgents.add(agentArray.get(1));
+            involvedAgents.add(agentArray.get(0));
             subPlans.add(new NextPlanConnect(main, blockArray.get(0).GetPosition(), involvedAgents));
         }
         currentPlans.put(agentArray.get(1), new NextAgentPlan(plan.GetTask(), subPlans));
