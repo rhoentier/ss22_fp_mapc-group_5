@@ -9,6 +9,7 @@ import java.util.HashSet;
 public class NextPlanConnect extends NextPlan{
 
     private final boolean mainAgent;
+    private boolean isAgentConnected;
     private final Vector2D position;
     HashSet<NextAgent> involvedAgents = new HashSet<>();
 
@@ -29,5 +30,15 @@ public class NextPlanConnect extends NextPlan{
 
     public Vector2D GetTargetBlockPosition(){
         return position;
+    }
+    
+    public boolean IsAgentConnected()
+    {
+    	return isAgentConnected;
+    }
+    
+    public void SetAgentConnection(boolean value)
+    {
+    	isAgentConnected = value;
     }
 }

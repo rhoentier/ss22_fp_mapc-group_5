@@ -21,7 +21,6 @@ import massim.javaagents.plans.NextTaskHandler;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
-import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.util.HashSet;
@@ -260,7 +259,11 @@ public class NextAgent extends Agent {
             // this.say("Current Step " + this.simStatus.GetCurrentStep());
             }
 
-            System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
+            if(this.agentStatus.GetLastActionResult().contains("fail"))
+            {            	
+            	System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+            }
+            //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
 
         }

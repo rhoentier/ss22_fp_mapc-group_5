@@ -430,6 +430,18 @@ public final class NextAgentUtil {
         return false;
     }
 
+    public static Boolean IsBlockInPosition(Vector2D blockPosition, HashSet<Vector2D> attachedElements)
+    {
+    	for(Vector2D attachedElement : attachedElements)
+        {
+    		if(attachedElement.equals(blockPosition))
+    		{
+    			return true;
+    		}
+        }
+    	return false;
+    }
+    
     /**
      * Check if block in correct Position
      * @param nextAgent

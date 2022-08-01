@@ -15,6 +15,7 @@ import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
 import massim.javaagents.plans.NextPlan;
+import massim.javaagents.plans.NextPlanConnect;
 import massim.javaagents.plans.NextPlanDispenser;
 import massim.javaagents.percept.NextRole;
 import massim.javaagents.percept.NextSurveyedThing;
@@ -75,7 +76,7 @@ public class NextIntention {
         }
 
         detachUnusedBlocks();
-
+        
         // Aktuelle Sicht des Agenten
         for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
 
@@ -105,15 +106,61 @@ public class NextIntention {
                 }
             }
 
+            Vector2D requiredBlockPosition = new Vector2D(0,0);
             // ********************** GoalZone (1Block)
-            if (this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone && nextAgentStatus.GetAttachedElementsAmount() > 0 && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) {
-                if (NextAgentUtil.IsBlockInCorrectPosition(nextAgent)) {
-                    // Korrekte Blockposition
-                    // -- ("Action - Submit");
-                    possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
+            if (nextAgentStatus.GetAttachedElementsAmount() > 0 
+            		&& NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())
+            		&& ( this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone 
+            		|| this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent) ) 
+            {
+            	NextPlanConnect nextPlanConnect = null;
+            	if(this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent)
+            	{
+            		// TODO aendern bei 3er blocks
+            		nextPlanConnect = ((NextPlanConnect)this.nextAgent.GetAgentPlan());
+            		requiredBlockPosition = nextPlanConnect.GetTargetBlockPosition();            		
+            		if(!nextPlanConnect.IsAgentMain())
+            		{
+            			requiredBlockPosition = new Vector2D(0, -1);
+            		}
+            	}
+            	else
+            	{
+            		requiredBlockPosition = nextAgent.GetActiveTask().GetRequiredBlocks().iterator().next().GetPosition();
+            	}
+            	
+                if (NextAgentUtil.IsBlockInPosition(requiredBlockPosition, nextAgentStatus.GetAttachedElementsVector2D())) {
+                	if(nextPlanConnect != null)
+                	{
+                		if(this.nextAgentStatus.GetLastActionResult().contains("fail") && this.nextAgentStatus.GetLastAction().contains("connect"))
+                    	{
+                    		nextPlanConnect.SetAgentConnection(false);
+                    	}
+                    	
+                    	if(nextPlanConnect.GetInvolvedAgents().size() == 0 || nextPlanConnect.IsAgentConnected())
+                    	{
+                    		// Korrekte Blockposition
+                    		// -- ("Action - Submit");
+                    		possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
+                    		break;
+                    	}
+                    	
+                    	// connect to Agent
+                    	possibleActions.add(NextActionWrapper.CreateAction(EActions.connect, 
+                    			new Identifier(nextPlanConnect.GetInvolvedAgents().iterator().next().getName()), 
+                    			new Identifier("" + nextPlanConnect.GetTargetBlockPosition().x), 
+                    			new Identifier("" + nextPlanConnect.GetTargetBlockPosition().y))
+                    	);
+                    	nextPlanConnect.SetAgentConnection(true);
+                	}
+                	else
+                	{
+                		possibleActions.add(NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName())));
+                	}
+                	
                 } else {
                     // Blockposition falsch
-                    Vector2D requiredBlockPosition = nextAgent.GetActiveTask().GetRequiredBlocks().iterator().next().GetPosition();
+                    // requiredBlockPosition = nextAgent.GetActiveTask().GetRequiredBlocks().iterator().next().GetPosition();
                     Vector2D blockPosition = nextAgentStatus.GetAttachedElementsVector2D().iterator().next();
                     Vector2D oppositeBlockPosition = NextAgentUtil.GetOppositeVector(blockPosition);
                     String direction = NextAgentUtil.RotateInWhichDirection(nextAgentStatus.GetAttachedElementsVector2D(), nextAgent.GetActiveTask().GetRequiredBlocks());
@@ -183,6 +230,7 @@ public class NextIntention {
         }
     }
 
+    
     private Action generateDefaultAction() {
         return NextAgentUtil.GenerateRandomMove();
     }
@@ -247,6 +295,19 @@ public class NextIntention {
                     }
                 }
                 break;
+            case connectToAgent: 
+            	if (this.nextAgent.GetPathMemory().isEmpty() && this.nextAgent.GetAgentPlan() != null && map.IsGoalZoneAvailable()) {
+            		NextPlanConnect nextPlanConnect = ((NextPlanConnect)this.nextAgent.GetAgentPlan());
+            		if(nextPlanConnect.IsAgentMain()) 
+            		{
+            			// Is der Weg für den zweiten Agentn frei? → Wenn nicht position ändern
+            		}
+            		else
+            		{
+            			// Weg zum abgabeort
+            		}            		
+            	}
+            	break;
             default:
                 break;
         }
