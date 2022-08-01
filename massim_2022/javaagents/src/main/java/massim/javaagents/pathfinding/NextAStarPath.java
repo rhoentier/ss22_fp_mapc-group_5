@@ -20,6 +20,7 @@ import massim.javaagents.map.Vector2D;
 public class NextAStarPath {
 
     private NextMapTile[][] map;
+    private NextMapTile[][] originalMap;
     private int mapWidth;
     private int mapHeight;
 
@@ -42,6 +43,7 @@ public class NextAStarPath {
 
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
+        this.originalMap = originalMap;
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
         this.centerTheMap = centerTheMap;
@@ -292,11 +294,11 @@ public class NextAStarPath {
         int offset_y = 0;
         
         for (int i = 0; i < vectorPath.size(); i++) {
-            offset_x *= vectorPath.get(i).x;
-            offset_y *= vectorPath.get(i).y;
+            offset_x += vectorPath.get(i).x;
+            offset_y += vectorPath.get(i).y;
             
-            this.map[startpoint.x+offset_x][startpoint.y+offset_y].BlockAtStep(this.currentStep+i+1);
-            
+            originalMap[startpoint.x+offset_x][startpoint.y+offset_y].BlockAtStep(this.currentStep+i+1);
+            System.out.println("Blockcheck " + (this.currentStep+i+1) + " Is " + originalMap[startpoint.x+offset_x][startpoint.y+offset_y].CheckAtStep(this.currentStep+i+1)     );
         }
         
         

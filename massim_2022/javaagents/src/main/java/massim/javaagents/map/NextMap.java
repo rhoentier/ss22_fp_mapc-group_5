@@ -386,7 +386,8 @@ public class NextMap {
                         x,
                         y,
                         mapOld[oldX][oldY].getLastVisionStep(),
-                        mapOld[oldX][oldY].getThingType());
+                        mapOld[oldX][oldY].getThingType(),
+                        mapOld[oldX][oldY].GetStepMemory());
             }
         }
         return tempMap;
@@ -414,7 +415,8 @@ public class NextMap {
                         x,
                         y,
                         mapOld[x][y].getLastVisionStep(),
-                        mapOld[x][y].getThingType());
+                        mapOld[x][y].getThingType(),
+                        mapOld[x][y].GetStepMemory());
             }
         }
         return tempMap;

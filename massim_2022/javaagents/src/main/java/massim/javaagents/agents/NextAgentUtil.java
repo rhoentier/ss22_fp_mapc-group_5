@@ -757,8 +757,9 @@ public final class NextAgentUtil {
      * @return
      */
     public static Vector2D RandomPointInDirection(String direction, Vector2D agentPosition, int distance) {
-    	int x = agentPosition.x + GenerateRandomNumber(distance/2);
-    	int y = agentPosition.y + GenerateRandomNumber(distance/2);
+    	int x = agentPosition.x + distance/4 + GenerateRandomNumber(distance/4);
+    	int y = agentPosition.y + distance/4 + GenerateRandomNumber(distance/4);
+        
         switch (direction) {
             case "ne":
                 return new Vector2D(x , y *-1);
