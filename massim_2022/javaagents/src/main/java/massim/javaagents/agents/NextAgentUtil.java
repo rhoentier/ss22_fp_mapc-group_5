@@ -12,7 +12,6 @@ import java.util.HashMap;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.ECardinals;
-import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
@@ -465,6 +464,20 @@ public final class NextAgentUtil {
             }
         }
 
+        return false;
+    }
+
+    /**
+     * Check if a position is free
+     * @param pos target position
+     * @param localView the agent's local view
+     * @return if the position is free true else false
+     */
+    public static Boolean IsPositionFreeUsingLocalView(Vector2D pos, HashSet<NextMapTile> localView){
+        for (NextMapTile field : localView){
+            if (field.GetPosition().equals(pos)) return field.IsWalkable();
+        }
+        // pos is not in localView
         return false;
     }
 
