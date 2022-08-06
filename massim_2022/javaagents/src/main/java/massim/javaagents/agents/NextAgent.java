@@ -661,7 +661,7 @@ public class NextAgent extends Agent {
             int yPosition = this.GetPosition().getAdded(target).y;
 
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                System.out.println("Position was blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
+                System.out.print("blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
                 workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
             }
 
