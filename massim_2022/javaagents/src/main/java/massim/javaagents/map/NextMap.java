@@ -581,7 +581,12 @@ public class NextMap {
 
             // map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
 
+        } else if (agent.GetAgentStatus().GetLastAction().contains("move") && !agent.GetAgentStatus().GetLastActionResult().equals("success")) {
+            agent.clearAgentStepMemory();
+        } else if (agent.GetAgentStatus().GetLastAction().contains("clear")) {
+            agent.clearAgentStepMemory();
         }
+        
     }
 
     /**
