@@ -10,11 +10,9 @@ import massim.javaagents.map.Vector2D;
  * Funkctions: Grouping of Agents, handling of common map and higher level
  * reasoning.
  *
- * Todo: register of agents, joining maps, ...
+ * Done: registering of agents, joining maps, Group Based Communication
  *
- * Done:
- *
- * @author Alexander Lorenz
+ * @author Alexander, Sebastian
  */
 public class NextGroup {
 
@@ -173,7 +171,7 @@ public class NextGroup {
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
-     * to be called from agent
+     * Is called from the agent
      * 
      * @param Message - String based message
      */
@@ -188,7 +186,7 @@ public class NextGroup {
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
-     * to be called from agent
+     * Is called from the agent
      *
      * @param Message - String based message
      */

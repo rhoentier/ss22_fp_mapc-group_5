@@ -173,6 +173,10 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("MapSizeDiscoveryHasStarted")) {
             this.simStatus.ActivateMapSizeDiscovery();
         }
+        // "MapSizeDiscoveryHasStarted"
+        if (messageContainer[0].contains("MapSizeDiscoveryAborted")) {
+            this.simStatus.RestartMapSizeDiscovery();
+        }
         // "MapHeightFound"
         if (messageContainer[0].contains("MapHeightFound")) {
             this.SetSimulationMapHeight(Integer.parseInt(messageContainer[1]));
