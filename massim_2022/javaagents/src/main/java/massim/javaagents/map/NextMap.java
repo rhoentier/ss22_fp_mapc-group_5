@@ -234,6 +234,12 @@ public class NextMap {
             }
         }
 
+        // Transfer StepMemory to new MapTile
+        NextMapTile existingMapTile = GetMapTile(maptile.GetPosition());
+        if (existingMapTile != null) {
+            maptile.AddToStepMemory(existingMapTile.GetStepMemory());
+        }
+
         // Only add maptile if: existingMapTile is null OR existingMapTile is older
         Vector2D maptilePosition = maptile.GetPosition();
         switch (maptile.getThingType().substring(0, 4)) {
@@ -575,7 +581,12 @@ public class NextMap {
 
             // map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
 
+        } else if (agent.GetAgentStatus().GetLastAction().contains("move") && !agent.GetAgentStatus().GetLastActionResult().equals("success")) {
+            agent.clearAgentStepMemory();
+        } else if (agent.GetAgentStatus().GetLastAction().contains("clear")) {
+            agent.clearAgentStepMemory();
         }
+        
     }
 
     /**
@@ -636,6 +647,46 @@ public class NextMap {
         }
     }
 
+    private static HashSet<NextMapTile> mergeLists(HashSet<NextMapTile> hashSet1, HashSet<NextMapTile> hashSet2) {
+
+        HashMap<Vector2D, NextMapTile> mergedHashMap = new HashMap<>();
+
+        // Add all maptiles from hashSet1 to hashMap
+        for (NextMapTile maptile : hashSet1) {
+            mergedHashMap.put(maptile.GetPosition(), maptile);
+        }
+
+        // Add maptiles from hashSet2, if newer or not there yet
+        for (NextMapTile maptile : hashSet2) {
+            Vector2D pos = maptile.GetPosition();
+            if (mergedHashMap.containsKey(pos)) {
+                // If already there, compare maptile and merge
+                NextMapTile existingMapTile = mergedHashMap.get(pos);
+                NextMapTile newMapTile = maptile.clone();
+
+                // If maptile from hashSet2 is newer, replace the existing one from hashSet1
+                if (maptile.getLastVisionStep() > existingMapTile.getLastVisionStep()){
+                    newMapTile.AddToStepMemory(existingMapTile.GetStepMemory());
+                    mergedHashMap.put(pos, newMapTile);
+                } else {
+                    existingMapTile.AddToStepMemory(newMapTile.GetStepMemory());
+                    mergedHashMap.put(pos, existingMapTile);
+                }
+            } else {
+                // If not yet there, just add the maptile
+                mergedHashMap.put(pos, maptile);
+            }
+        }
+
+        // Transfer from HashMap to HashSet
+        HashSet<NextMapTile> mergedHashSet = new HashSet<>();
+        for (NextMapTile maptile : mergedHashMap.values()) {
+            mergedHashSet.add(maptile);
+        }
+
+        return mergedHashSet;
+    }
+
     /**
      * Joins one Map into another map
      *
@@ -648,10 +699,11 @@ public class NextMap {
 
         mapToAdd.moveMapTiles(offset.getReversed());
 
-        mapToKeep.maplist.addAll(mapToAdd.maplist);
-        mapToKeep.dispensers.addAll(mapToAdd.dispensers);
-        mapToKeep.goalZones.addAll(mapToAdd.goalZones);
-        mapToKeep.roleZones.addAll(mapToAdd.roleZones);
+        mapToKeep.maplist = NextMap.mergeLists(mapToAdd.maplist, mapToKeep.maplist);
+        mapToKeep.dispensers = NextMap.mergeLists(mapToAdd.dispensers, mapToKeep.dispensers);
+        mapToKeep.goalZones = NextMap.mergeLists(mapToAdd.goalZones, mapToKeep.goalZones);
+        mapToKeep.roleZones = NextMap.mergeLists(mapToAdd.roleZones, mapToKeep.roleZones);
+
         mapToKeep.updateAvailableDispensers();
 
         mapToKeep.shiftToZero();

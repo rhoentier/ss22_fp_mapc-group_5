@@ -13,12 +13,10 @@ import massim.javaagents.percept.NextTask;
 /**
  * Funkctions: Grouping of Agents, handling of common map and higher level
  * reasoning.
- * <p>
- * Todo: register of agents, joining maps, ...
- * <p>
- * Done:
  *
- * @author Alexander Lorenz
+ * Done: registering of agents, joining maps, Group Based Communication
+ *
+ * @author Alexander, Sebastian
  */
 public class NextGroup {
 
@@ -176,12 +174,10 @@ public class NextGroup {
     public void MoveAllAgents(Vector2D offset) {
 
         for (NextAgent agent : agentPositionMap.keySet()) {
-            //    agentPositionMap.get(agent).add(offset);
-
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
         }
     }
-
+    
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
@@ -200,7 +196,7 @@ public class NextGroup {
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
-     * to be called from agent
+     * Is called from the agent
      *
      * @param Message - String based message
      */
@@ -250,9 +246,8 @@ public class NextGroup {
      * ##################### endregion public methods
      */
 
-    /*
     // ------------------------------------------------------------------------
-
+    
     /*
      * ########## region private methods
      */

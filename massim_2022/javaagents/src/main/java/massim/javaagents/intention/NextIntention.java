@@ -273,7 +273,7 @@ public class NextIntention {
 
         switch (plan.GetAgentTask()) {
             case surveyRandom:
-                if (this.nextAgent.GetGroup() != null) {
+                if (this.nextAgent.GetGroup() != null && this.nextAgent.GetPathMemory().isEmpty()) {
                     this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(this.nextAgent.GetPosition()
                             .getAdded(vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2,
                                     vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2)));
