@@ -14,7 +14,7 @@ import massim.javaagents.agents.NextGroup;
 
 /**
  * Interne Karte zum Speichern bisher wahrgenommener Dinge wie z.B. Hindernisse, Dispenser, Goal- oder Role-Zones.
- * @author Sebastian Loder
+ * @author Sebastian Loder, Alexander Lorenz
  *
  */
 public class NextMap {
@@ -371,8 +371,16 @@ public class NextMap {
 
         return mapArray;
     }
+    
+    /**
+     * Used in pathfinding to center the Map around startpoint
+     * @param mapOld NextMapTile[][] original map array
+     * @param position Vector2D position to center around 
+     * @return NextMapTile[][] centered map array
+     * 
+     * @author Alexander Lorenz
+     */
 
-    // ToDo: Wird das noch benötigt?
     public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
         if (mapOld.length == 1 && mapOld[0].length == 1) {
             return mapOld;
@@ -380,20 +388,20 @@ public class NextMap {
 
         int mapWidth = mapOld.length;
         int mapHeight = mapOld[0].length;
-        int xOffset = (int) position.x - ((int) (mapWidth / 2));
-        int yOffset = (int) position.y - ((int) (mapHeight / 2));
+        int xOffset = (int) position.x - ((int) (mapWidth / 2) );
+        int yOffset = (int) position.y - ((int) (mapHeight / 2) );
         NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
 
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
-                int oldX = (x - xOffset + mapWidth) % (mapWidth - 1);
-                int oldY = (y - yOffset + mapHeight) % (mapHeight - 1);
-                tempMap[x][y] = new NextMapTile(
-                        x,
-                        y,
-                        mapOld[oldX][oldY].getLastVisionStep(),
-                        mapOld[oldX][oldY].getThingType(),
-                        mapOld[oldX][oldY].GetStepMemory());
+                int newX = (x - xOffset) % mapWidth;
+                int newY = (y - yOffset) % mapHeight;
+                tempMap[newX][newY] = new NextMapTile(
+                        newX,
+                        newY,
+                        mapOld[x][y].getLastVisionStep(),
+                        mapOld[x][y].getThingType(),
+                        mapOld[x][y].GetStepMemory());
             }
         }
         return tempMap;
