@@ -386,14 +386,13 @@ public class NextAgent extends Agent {
     /**
      * CalculateDistance between two cells using Manhattan or A*JPS if applicable
      * 
-     * @param groupMap NextMap Agents Map to calculate on
      * @param startPosition Vector2D Start of calculation
      * @param targetPosition Vector2D Targetof calculation
      * @return int distance between the points using Manhattan or A*
      */
     
-    private int calculateDistance(NextMap map, Vector2D startPosition, Vector2D targetPosition){
-        return NextPathfindingUtil.calculateDistance(map, startPosition, targetPosition);
+    private int calculateDistance(Vector2D startPosition, Vector2D targetPosition){
+        return NextPathfindingUtil.calculateDistance(this.GetMap(), startPosition, targetPosition);
     }
 
     /**
