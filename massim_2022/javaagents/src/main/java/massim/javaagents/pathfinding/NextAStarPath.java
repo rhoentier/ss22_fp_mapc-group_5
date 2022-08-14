@@ -22,6 +22,9 @@ import massim.javaagents.map.Vector2D;
  */
 public class NextAStarPath {
 
+    /*
+     * ########## region fields
+     */
     private NextMapTile[][] map;
     private NextMapTile[][] originalMap;
     private int mapWidth;
@@ -37,6 +40,12 @@ public class NextAStarPath {
     private Boolean strictWalkable;
     private Boolean aStarJps;
 
+    /*
+     * ##################### endregion fields
+     */
+ /*
+     * ########## region constructor.
+     */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, false, false, currentStep);
     }
@@ -103,6 +112,19 @@ public class NextAStarPath {
 
         //fillAllTiles(); // - Not needed anymore. handled in NextMap
         resetAllTiles();
+
+        return executeMainLogic();
+
+    }
+
+    /*
+     * ##################### endregion constructor
+     */
+
+ /*
+     * ########## region public methods
+     */
+    public List<Action> executeMainLogic() {
 
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
             @Override
@@ -237,6 +259,14 @@ public class NextAStarPath {
 
     }
 
+
+    /*
+     * ##################### endregion public methods
+     */
+    // ------------------------------------------------------------------------
+    /*
+     * ########## region private methods
+     */
     private void resetAllTiles() {
         for (NextMapTile[] tile : map) {
             for (int col = 0; col < map[0].length; col++) {
@@ -331,7 +361,7 @@ public class NextAStarPath {
                 int offset_y = 0;
 
                 //Get Direction
-                Vector2D direction = Vector2D.calculateNormalisedDirection(actualStep.GetPosition(),previousStep.GetPosition() );
+                Vector2D direction = Vector2D.calculateNormalisedDirection(actualStep.GetPosition(), previousStep.GetPosition());
 
                 // Get number of steps
                 int steps = Math.max(Math.abs(xValue), Math.abs(yValue)); // The values are equal or one is zero
@@ -395,22 +425,25 @@ public class NextAStarPath {
     }
 
     private void blockUsedTiles(List<Vector2D> vectorPath) {
+
         //currentStep
         //this.startpoint
         int offset_x = 0;
         int offset_y = 0;
+        if (currentStep != -1) {
+            for (int i = 0; i < vectorPath.size(); i++) {
+                offset_x += vectorPath.get(i).x;
+                offset_y += vectorPath.get(i).y;
 
-        for (int i = 0; i < vectorPath.size(); i++) {
-            offset_x += vectorPath.get(i).x;
-            offset_y += vectorPath.get(i).y;
-
-            originalMap[startpoint.x + offset_x][startpoint.y + offset_y].BlockAtStep(this.currentStep + i + 1);
-            System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[startpoint.x + offset_x][startpoint.y + offset_y].CheckAtStep(this.currentStep + i + 1));
+                originalMap[startpoint.x + offset_x][startpoint.y + offset_y].BlockAtStep(this.currentStep + i + 1);
+                System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[startpoint.x + offset_x][startpoint.y + offset_y].CheckAtStep(this.currentStep + i + 1));
+            }
         }
-
     }
 
     // JPS Methods -------------------
+    
+
     private ArrayList<NextMapTile> identifySuccessors(NextMapTile baseTile) {
         //System.out.println("identifySuccessors triggered");
         ArrayList<NextMapTile> successors = new ArrayList<>();  // empty sucessors List to be returned
@@ -578,7 +611,7 @@ public class NextAStarPath {
         }
     }
 
-    public Vector2D[] getAllNeighbors(Vector2D basePoint) {
+    private Vector2D[] getAllNeighbors(Vector2D basePoint) {
         //System.out.println("getAllNeighbors triggered");
         Vector2D[] neighbors = new Vector2D[8];
         boolean diagonal0 = false; // Check if diagonal tile is accessible
@@ -629,5 +662,7 @@ public class NextAStarPath {
         return neighbors;
 
     }
-
+    /*
+     * ##################### endregion private methods
+     */
 }
