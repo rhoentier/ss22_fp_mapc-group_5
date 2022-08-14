@@ -55,7 +55,7 @@ public class NextAStarPath {
     }
 
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
-        return calculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
+        return calculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
     }
 
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
@@ -85,8 +85,8 @@ public class NextAStarPath {
         if (centerTheMap) {
             //- Centering the map 
             this.map = NextMap.CenterMapAroundPosition(originalMap, startpoint);
-            int targetX = ((target.x - startpoint.x + ((mapWidth / 2))) % mapWidth); //- 1;
-            int targetY = ((target.y - startpoint.y + ((mapHeight / 2))) % mapHeight); //- 1;
+            int targetX = (( target.x + (mapWidth / 2  - startpoint.x) ) % mapWidth); 
+            int targetY = (( target.y + (mapHeight / 2 - startpoint.y) ) % mapHeight);
             this.localStartPoint = new int[]{(mapWidth / 2), (mapHeight / 2)};
             this.targetPosition = new int[]{targetX, targetY};
         } else {
@@ -98,12 +98,12 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
 
-        /* - Debugging helper
+        ///* - Debugging helper
         System.out.println("iNPUT" + startpoint + " " + target);
         System.out.println("Map - " + mapWidth + " " + mapHeight);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
-        System.out.println("Output Start - " + this.localStartPoint[0] + " - " +this.localStartPoint[1] );
-        System.out.println("Output Target - " + this.targetPosition[0] + " - " +this.targetPosition[1] );
+        System.out.println("Output Start - " + this.localStartPoint[0] + " - " + this.localStartPoint[1]);
+        System.out.println("Output Target - " + this.targetPosition[0] + " - " + this.targetPosition[1]);
         //*/
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");
@@ -155,7 +155,7 @@ public class NextAStarPath {
                         break;
                     }
                     currentTile = queue.remove();
-                    //System.out.println("JPS Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
+                    System.out.println("JPS Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
 
                 } while (!currentTile.isOpen());
 
@@ -170,7 +170,7 @@ public class NextAStarPath {
                 }
 
                 queue.addAll(identifySuccessors(currentTile));
-                //System.out.println("Queue: " + queue);
+                System.out.println("Queue: " + queue);
 
             }
 
@@ -344,7 +344,7 @@ public class NextAStarPath {
 
     private List<Vector2D> convertMultiStepsToVector2D(List<NextMapTile> path) {
         System.out.println("convertMultiStepsToVector2D triggered ");
-
+        Vector2D position = new Vector2D(localStartPoint[0], localStartPoint[1]);
         List<Vector2D> processedList = new ArrayList<>();
         if (path.size() > 0) {
             for (int i = path.size() - 1; i > 0; i--) {
@@ -361,10 +361,8 @@ public class NextAStarPath {
 
                 //Get Direction
                 Vector2D direction = Vector2D.calculateNormalisedDirection(actualStep.GetPosition(), previousStep.GetPosition());
-
                 // Get number of steps
                 int steps = Math.max(Math.abs(xValue), Math.abs(yValue)); // The values are equal or one is zero
-
                 // Add direction x-Times
                 for (int j = 0; j < steps; j++) {
 
@@ -375,8 +373,7 @@ public class NextAStarPath {
 
                         int xSubValue = previousStep.GetPosition().x + offset_x;
                         int ySubValue = previousStep.GetPosition().y + offset_y;
-
-                        if (validTile(xSubValue, ySubValue + direction.y)) {
+                        if (validTile(position.x, position.y + direction.y)) {
                             processedList.add(new Vector2D(0, direction.y));
                             processedList.add(new Vector2D(direction.x, 0));
                         } else {
@@ -389,6 +386,7 @@ public class NextAStarPath {
                         processedList.add(new Vector2D(direction.x, direction.y));
                     }
 
+                    position.add(direction);
                 }
 
             }
@@ -424,7 +422,7 @@ public class NextAStarPath {
     }
 
     private void blockUsedTiles(List<Vector2D> vectorPath) {
-
+        System.out.println("startpoint" + startpoint);
         //currentStep
         //this.startpoint
         int offset_x = 0;
@@ -433,9 +431,10 @@ public class NextAStarPath {
             for (int i = 0; i < vectorPath.size(); i++) {
                 offset_x += vectorPath.get(i).x;
                 offset_y += vectorPath.get(i).y;
-
-                originalMap[startpoint.x + offset_x][startpoint.y + offset_y].BlockAtStep(this.currentStep + i + 1);
-                System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[startpoint.x + offset_x][startpoint.y + offset_y].CheckAtStep(this.currentStep + i + 1));
+                int xOnMap = (startpoint.x + offset_x + mapWidth) % mapWidth; 
+                int yOnMap = (startpoint.y + offset_y + mapHeight) % mapHeight;
+                originalMap[xOnMap][yOnMap].BlockAtStep(this.currentStep + i + 1);
+                System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[xOnMap][yOnMap].CheckAtStep(this.currentStep + i + 1));
             }
         }
     }
@@ -453,7 +452,7 @@ public class NextAStarPath {
             }
 
             temporalPosition = jump(neighbors[i], baseTile.GetPosition());
-
+            //System.out.println("Temporal Position" + temporalPosition);
             if (temporalPosition.x != -1) {
                 int ng = (int) temporalPosition.distance(startpoint) + baseTile.getScore();
                 NextMapTile temporalTile = map[temporalPosition.x][temporalPosition.y];
@@ -545,7 +544,7 @@ public class NextAStarPath {
 
             }
         } else {
-            //System.out.println("No Parent Triggered");
+            // System.out.println("No Parent Triggered");
             // return all neighbors
             return getAllNeighbors(position);
         }
@@ -561,7 +560,7 @@ public class NextAStarPath {
             return new Vector2D(-1, -1);
         }
 
-        if (currentNode.equals(targetPosition)) {
+        if (currentNode.x == targetPosition[0] && currentNode.y == targetPosition[1]) {
             return currentNode;
         }
 
@@ -602,7 +601,7 @@ public class NextAStarPath {
         }
 
         if (validTile(currentNode.x + direction.x, currentNode.y) || validTile(currentNode.x, currentNode.y + direction.y)) {  //moving diagonally, one of the vertical/horizontal neighbors must be open
-            return jump(currentNode.getAdded(direction), currentNode);
+            return jump(new Vector2D(currentNode.x + direction.x, currentNode.y + direction.y), currentNode);
         } else { //moving diagonally but blocked by two touching corners of obstacles
             return new Vector2D(-1, -1);
         }
