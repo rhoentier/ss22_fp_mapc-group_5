@@ -6,8 +6,10 @@ import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 
+import massim.javaagents.pathfinding.NextPathfindingUtil;
+
 /**
- * Funkctions: Grouping of Agents, handling of common map and higher level
+ * Functions: Grouping of Agents, handling of a common map and higher level
  * reasoning.
  *
  * Done: registering of agents, joining maps, Group Based Communication
@@ -25,6 +27,7 @@ public class NextGroup {
     private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
 
     private NextMap groupMap = new NextMap(this);
+    
 
     /*
      * ##################### endregion fields
@@ -44,7 +47,7 @@ public class NextGroup {
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
     public void addAgent(NextAgent agent) {
@@ -59,7 +62,9 @@ public class NextGroup {
         return this.agentSet.size();
     }
 
-    public HashSet<NextAgent> GetAgents() {return this.agentSet;}
+    public HashSet<NextAgent> GetAgents() {
+        return this.agentSet;
+    }
 
     public int getGroupID() {
         return groupID;
@@ -91,20 +96,18 @@ public class NextGroup {
 
     public void AddGroup(NextGroup newGroup, Vector2D offset) {
 
-         System.out.println("MAP to Keep ______________________________________ \n" + 
-                NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),GetAgentPositions(),GetGroupMap().GetDispenserPositions()));
-        
+        System.out.println("MAP to Keep ______________________________________ \n"
+                + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(), GetAgentPositions(), GetGroupMap().GetDispenserPositions()));
+
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
-        
-        System.out.println("Dispenser: " + this.groupMap.GetDispensers());
-        
-        
 
-         System.out.println("MAP to Join______________________________________ \n" + 
-                NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray(),newGroup.GetAgentPositions(),newGroup.GetGroupMap().GetDispenserPositions()));
-        
+        System.out.println("Dispenser: " + this.groupMap.GetDispensers());
+
+        System.out.println("MAP to Join______________________________________ \n"
+                + NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray(), newGroup.GetAgentPositions(), newGroup.GetGroupMap().GetDispenserPositions()));
+
         for (NextAgent agent : newGroup.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
@@ -113,12 +116,12 @@ public class NextGroup {
             this.addAgent(agentToAdd);
             agentToAdd.say("OldPosition: " + agentToAdd.GetPosition());
             agentToAdd.say("Offset: " + offset);
-            this.agentPositionMap.put(agentToAdd,agentToAdd.GetPosition().getSubtracted(offset));
+            this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getSubtracted(offset));
             //this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getAdded(offset));
             agentToAdd.SetAgentGroup(this);
             agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
-        
+
         System.out.println("Dispenser: " + newGroup.groupMap.GetDispensers());
 
         joinGroupMap(newGroup.groupMap, offset);
@@ -130,9 +133,9 @@ public class NextGroup {
         NextAgent.RemoveEmptyGroup(newGroup);
 
         System.out.println("----------------------------------------- joined ----------------------");
-        System.out.println("MAP ______________________________________ \n" + 
-                NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),GetAgentPositions(),GetGroupMap().GetDispenserPositions()));
-        
+        System.out.println("MAP ______________________________________ \n"
+                + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(), GetAgentPositions(), GetGroupMap().GetDispenserPositions()));
+
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
@@ -167,45 +170,43 @@ public class NextGroup {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
         }
     }
-    
+
     /**
-     * String-based communication with groupagents
-     * to be extended for further usecases.
-     * Is called from the agent
-     * 
-     * @param Message - String based message
-     */
-    public void TellGroup (String Message, NextAgent sourceAgent) {
-        for (NextAgent agent : agentSet){
-            if(!agent.equals(sourceAgent)){
-                agent.HandleGroupMessage(Message, sourceAgent.getName());
-            }
-        }
-    }
-    
-    /**
-     * String-based communication with groupagents
-     * to be extended for further usecases.
-     * Is called from the agent
+     * String-based communication with groupagents to be extended for further
+     * usecases. Is called from the agent
      *
      * @param Message - String based message
      */
-    public void TellGroupAgent (String Message, String targetAgent, NextAgent sourceAgent) {
-        for (NextAgent agent : agentSet){
-            if(agent.getName().equals(targetAgent)){
+    public void TellGroup(String Message, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet) {
+            if (!agent.equals(sourceAgent)) {
                 agent.HandleGroupMessage(Message, sourceAgent.getName());
             }
         }
     }
-    
+
+    /**
+     * String-based communication with groupagents to be extended for further
+     * usecases. Is called from the agent
+     *
+     * @param Message - String based message
+     */
+    public void TellGroupAgent(String Message, String targetAgent, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet) {
+            if (agent.getName().equals(targetAgent)) {
+                agent.HandleGroupMessage(Message, sourceAgent.getName());
+            }
+        }
+    }
+
     public void ModAllAgents(Vector2D mod) {
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
         }
     }
-    
-    public HashSet<Vector2D> GetAgentPositions(){
-        HashSet <Vector2D> werte = new HashSet<>();
+
+    public HashSet<Vector2D> GetAgentPositions() {
+        HashSet<Vector2D> werte = new HashSet<>();
         werte.addAll(this.agentPositionMap.values());
         return werte;
     }
@@ -213,15 +214,26 @@ public class NextGroup {
     /*
      * ##################### endregion public methods
      */
-
     // ------------------------------------------------------------------------
-    
     /*
      * ########## region private methods
      */
     private void joinGroupMap(NextMap newMap, Vector2D offset) {
         this.groupMap = NextMap.JoinMap(this.groupMap, newMap, offset);
     }
+    
+    /**
+     * CalculateDistance between two cells using Manhattan or A*JPS if applicable
+     * 
+     * @param groupMap NextMap Agents Map to calculate on
+     * @param startPosition Vector2D Start of calculation
+     * @param targetPosition Vector2D Targetof calculation
+     * @return int distance between the points using Manhattan or A*
+     */
+    private int calculateDistance(NextMap groupMap, Vector2D startPosition, Vector2D targetPosition){
+        return NextPathfindingUtil.calculateDistance(groupMap, startPosition, targetPosition);
+    }
+ 
 
     @Override
     public String toString() {

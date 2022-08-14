@@ -29,6 +29,7 @@ import java.util.List;
 
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
+import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextRole;
 
 /**
@@ -248,7 +249,7 @@ public class NextAgent extends Agent {
 
             Action nextAction = selectNextAction();
             
-            /**
+            ///**
             if( agentGroup != null) {
             this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
@@ -380,6 +381,19 @@ public class NextAgent extends Agent {
 
     public NextPlan GetAgentPlan() {
         return agentPlan;
+    }
+    
+    /**
+     * CalculateDistance between two cells using Manhattan or A*JPS if applicable
+     * 
+     * @param groupMap NextMap Agents Map to calculate on
+     * @param startPosition Vector2D Start of calculation
+     * @param targetPosition Vector2D Targetof calculation
+     * @return int distance between the points using Manhattan or A*
+     */
+    
+    private int calculateDistance(NextMap map, Vector2D startPosition, Vector2D targetPosition){
+        return NextPathfindingUtil.calculateDistance(map, startPosition, targetPosition);
     }
 
     /**
