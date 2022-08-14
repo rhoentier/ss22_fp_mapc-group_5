@@ -121,10 +121,17 @@ public class NextAStarPath {
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
-    public List<Action> executeMainLogic() {
+    /*
+     * ##################### endregion public methods
+     */
+    // ------------------------------------------------------------------------
+    /*
+     * ########## region private methods
+     */
+    private List<Action> executeMainLogic() {
 
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
             @Override
@@ -259,14 +266,6 @@ public class NextAStarPath {
 
     }
 
-
-    /*
-     * ##################### endregion public methods
-     */
-    // ------------------------------------------------------------------------
-    /*
-     * ########## region private methods
-     */
     private void resetAllTiles() {
         for (NextMapTile[] tile : map) {
             for (int col = 0; col < map[0].length; col++) {
@@ -442,8 +441,6 @@ public class NextAStarPath {
     }
 
     // JPS Methods -------------------
-    
-
     private ArrayList<NextMapTile> identifySuccessors(NextMapTile baseTile) {
         //System.out.println("identifySuccessors triggered");
         ArrayList<NextMapTile> successors = new ArrayList<>();  // empty sucessors List to be returned

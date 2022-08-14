@@ -40,17 +40,17 @@ public class NextPathfindingUtil {
      */
     public static int calculateDistance(NextMap groupMap, Vector2D startPosition, Vector2D targetPosition) {
 
-        int distance = 0;
         List<Action> steps = new ArrayList<>();
         
         if(groupMap.GetMapTile(startPosition).IsWalkable() && groupMap.GetMapTile(targetPosition).IsWalkable()) {
             NextAStarPath aStarPathfinder = new NextAStarPath();
             steps = aStarPathfinder.calculatePath(Boolean.TRUE, groupMap.GetMapArray(), startPosition, targetPosition, -1);
-        } else {
+        } 
+        
+        if (steps.isEmpty()) {
             steps = NextManhattanPath.CalculatePath(startPosition, targetPosition);
         }
-        distance = steps.size();
-
-        return distance;
+        
+        return steps.size();
     }
 }
