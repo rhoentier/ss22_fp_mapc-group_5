@@ -98,7 +98,7 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
 
-        /* - Debugging helper
+        ///* - Debugging helper
         System.out.println("iNPUT" + startpoint + " " + target);
         System.out.println("Map - " + mapWidth + " " + mapHeight);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
@@ -121,10 +121,20 @@ public class NextAStarPath {
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
-    public List<Action> executeMainLogic() {
+    
+     /*
+     * ##################### endregion public methods
+     */
+    
+    // ------------------------------------------------------------------------
+    
+    /*
+     * ########## region private methods
+     */
+    private List<Action> executeMainLogic() {
 
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
             @Override
@@ -148,7 +158,7 @@ public class NextAStarPath {
                         break;
                     }
                     currentTile = queue.remove();
-                    //System.out.println("JPS Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
+                    System.out.println("JPS Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
 
                 } while (!currentTile.isOpen());
 
@@ -161,9 +171,9 @@ public class NextAStarPath {
                     System.out.println("Path Found");
                     break;
                 }
-
+                
                 queue.addAll(identifySuccessors(currentTile));
-                //System.out.println("Queue: " + queue);
+                System.out.println("Queue: " + queue);
 
             }
 
@@ -260,13 +270,7 @@ public class NextAStarPath {
     }
 
 
-    /*
-     * ##################### endregion public methods
-     */
-    // ------------------------------------------------------------------------
-    /*
-     * ########## region private methods
-     */
+   
     private void resetAllTiles() {
         for (NextMapTile[] tile : map) {
             for (int col = 0; col < map[0].length; col++) {
@@ -442,8 +446,6 @@ public class NextAStarPath {
     }
 
     // JPS Methods -------------------
-    
-
     private ArrayList<NextMapTile> identifySuccessors(NextMapTile baseTile) {
         //System.out.println("identifySuccessors triggered");
         ArrayList<NextMapTile> successors = new ArrayList<>();  // empty sucessors List to be returned
@@ -456,7 +458,7 @@ public class NextAStarPath {
             }
 
             temporalPosition = jump(neighbors[i], baseTile.GetPosition());
-
+            //System.out.println("Temporal Position" + temporalPosition);
             if (temporalPosition.x != -1) {
                 int ng = (int) temporalPosition.distance(startpoint) + baseTile.getScore();
                 NextMapTile temporalTile = map[temporalPosition.x][temporalPosition.y];
@@ -548,7 +550,7 @@ public class NextAStarPath {
 
             }
         } else {
-            //System.out.println("No Parent Triggered");
+            // System.out.println("No Parent Triggered");
             // return all neighbors
             return getAllNeighbors(position);
         }
@@ -564,7 +566,7 @@ public class NextAStarPath {
             return new Vector2D(-1, -1);
         }
 
-        if (currentNode.equals(targetPosition)) {
+        if (currentNode.x == targetPosition[0] && currentNode.y == targetPosition[1]) {
             return currentNode;
         }
 
@@ -605,7 +607,7 @@ public class NextAStarPath {
         }
 
         if (validTile(currentNode.x + direction.x, currentNode.y) || validTile(currentNode.x, currentNode.y + direction.y)) {  //moving diagonally, one of the vertical/horizontal neighbors must be open
-            return jump(currentNode.getAdded(direction), currentNode);
+            return jump( new Vector2D(currentNode.x+direction.x,currentNode.y + direction.y), currentNode);
         } else { //moving diagonally but blocked by two touching corners of obstacles
             return new Vector2D(-1, -1);
         }
