@@ -13,7 +13,7 @@ import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.map.Vector2D;
 
 /**
- * Extended A* pathfinding algorithm Based on https://github.com/Qualia91/AStarAlg
+ * Basic A* pathfinding algorithm Based on https://github.com/Qualia91/AStarAlg
  *
  * @author Alexander Lorenz
  */

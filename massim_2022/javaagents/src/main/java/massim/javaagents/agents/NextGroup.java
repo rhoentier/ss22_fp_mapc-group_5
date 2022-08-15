@@ -177,7 +177,7 @@ public class NextGroup {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
         }
     }
-    
+
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
@@ -196,7 +196,7 @@ public class NextGroup {
     /**
      * String-based communication with groupagents
      * to be extended for further usecases.
-     * Is called from the agent
+     * to be called from agent
      *
      * @param Message - String based message
      */
@@ -247,7 +247,7 @@ public class NextGroup {
      */
 
     // ------------------------------------------------------------------------
-    
+
     /*
      * ########## region private methods
      */

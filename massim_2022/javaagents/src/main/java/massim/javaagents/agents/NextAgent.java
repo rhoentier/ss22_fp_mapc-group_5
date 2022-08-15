@@ -176,10 +176,6 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("MapSizeDiscoveryHasStarted")) {
             this.simStatus.ActivateMapSizeDiscovery();
         }
-        // "MapSizeDiscoveryHasStarted"
-        if (messageContainer[0].contains("MapSizeDiscoveryAborted")) {
-            this.simStatus.RestartMapSizeDiscovery();
-        }
         // "MapHeightFound"
         if (messageContainer[0].contains("MapHeightFound")) {
             this.SetSimulationMapHeight(Integer.parseInt(messageContainer[1]));
@@ -502,32 +498,6 @@ public class NextAgent extends Agent {
         return distances;
     }
 
-        /**
-     * Clears the occupied MapTiles in case of an error in movement
-     */
-    public void clearAgentStepMemory() {
-        Vector2D startPoint = this.GetPosition();
-        int counter = 0;
-        char[] lastAction = this.agentStatus.GetLastActionParams().toCharArray();
-
-        for (Character step : lastAction) {
-            if (step.equals('n')) {
-                startPoint.add(0, -1);
-            }
-            if (step.equals('e')) {
-                startPoint.add(1, 0);
-            }
-            if (step.equals('w')) {
-                startPoint.add(-1, 0);
-            }
-            if (step.equals('s')) {
-                startPoint.add(0, 1);
-            }
-        }
-        System.out.println("clearMapTiles At: " + startPoint );
-        clearMapTiles( startPoint, pathMemory);
-    }
-
     /*
      * ##################### endregion public methods
      */
@@ -696,6 +666,8 @@ public class NextAgent extends Agent {
         }
         return target;
     }
+    
+    
 
     /**
      * Selects the next Action based on the priorityMap
