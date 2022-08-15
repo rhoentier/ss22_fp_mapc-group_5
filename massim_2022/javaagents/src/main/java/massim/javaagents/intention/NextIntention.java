@@ -386,17 +386,33 @@ public class NextIntention {
         // Handling to get easy access to involved agents
         HashSet<NextAgent> involvedAgentSet = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents();
         NextAgent[] involvedAgents = new NextAgent[involvedAgentSet.size()];
-        involvedAgentSet.toArray(involvedAgents);
-        //TODO: Wenn Task mit mehr Blöcken abgearbeitet wird, dann hier verbessern
-        Vector2D involvedAgentPos = nextAgent.GetGroup().GetAgentPosition(involvedAgents[0]);
-
-        // Calculate target position for the agent (one field below the block has to be)
-        Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
-        Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0,1));
-        this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
-
-        if (this.nextAgent.GetPathMemory().isEmpty()) {
-            possibleActions.add(generateDefaultAction()); // fallback
+        NextAgent firstInvolvedAgent = involvedAgentSet.iterator().next();
+        if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(firstInvolvedAgent.GetAgentStatus().GetGoalZones()))
+        {
+        	involvedAgentSet.toArray(involvedAgents);
+        
+	        //TODO: Wenn Task mit mehr Blöcken abgearbeitet wird, dann hier verbessern
+	        Vector2D involvedAgentPos = nextAgent.GetGroup().GetAgentPosition(involvedAgents[0]);
+	
+	        // Calculate target position for the agent (one field below the block has to be)
+	        Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
+	        Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0,1));
+	        if(!targetPos.equals(this.nextAgent.GetPosition()))
+	        {
+	        	this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
+	        }
+	        else
+	        {
+	            possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
+	        }
+	
+//	        if (this.nextAgent.GetPathMemory().isEmpty()) {
+//	            possibleActions.add(generateDefaultAction()); // fallback
+//	        }
+        }
+        else
+        {
+            possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
         }
     }
 
