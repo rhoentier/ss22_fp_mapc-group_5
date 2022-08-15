@@ -40,11 +40,13 @@ public class NextPlanSolveTask extends NextPlan {
     public void CheckIfPreConditionIsFulfilled() {
 
         if (!subPlans.isEmpty()) {
-            if (!agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker") && !subPlans.get(0).GetAgentTask().equals(NextConstants.EAgentActivity.exploreMap))
+            if (!agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker") && !subPlans.get(0).GetAgentTask()
+                    .equals(NextConstants.EAgentActivity.exploreMap))
                 subPlans.add(0, new NextPlanRoleZone(agent, "worker"));
         }
 
-        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
+        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType)
+                .collect(Collectors.toCollection(HashSet::new));
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
         if (!isPreconditionFulfilled) fulfillPrecondition();
     }
@@ -53,7 +55,8 @@ public class NextPlanSolveTask extends NextPlan {
      * Prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
     public boolean CheckIfTaskIsFulfilled() {
-        if (agent.GetAgentStatus().GetLastAction().equals("submit") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
+        if (agent.GetAgentStatus().GetLastAction().equals("submit") && agent.GetAgentStatus().GetLastActionResult()
+                .equals("success")) {
             for (NextPlan subplan : subPlans) {
                 subplan.SetPlanIsFulfilled(false);
             }
@@ -82,20 +85,17 @@ public class NextPlanSolveTask extends NextPlan {
             }
             if (subPlan instanceof NextPlanDispenser) {
                 // prüft, welche Blöcke momentan attached sind
-                HashSet<NextMapTile> visibleThings = agent.GetAgentStatus().GetVisibleThings();
-                HashSet<Vector2D> attachedElements = agent.GetAgentStatus().GetAttachedElementsVector2D();
+                HashSet<NextMapTile> attachedElements = agent.GetAgentStatus().GetAttachedElementsNextMapTiles();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
-                for (Vector2D attachedElement : attachedElements) {
-                    for (NextMapTile visibleThing : visibleThings) {
-                        if (attachedElement.equals(visibleThing.GetPosition())) {
-                            if (visibleThing.getThingType().contains("block")) {
-                                attachedBlockTypes.add(visibleThing.getThingType().substring(visibleThing.getThingType().length() - 2));
-                            }
-                        }
+                for (NextMapTile attachedElement : attachedElements) {
+                    if (attachedElement.getThingType().contains("block")) {
+                        attachedBlockTypes.add(
+                                attachedElement.getThingType().substring(attachedElement.getThingType().length() - 2));
                     }
                 }
                 //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
-                subPlan.SetPlanIsFulfilled(attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()));
+                subPlan.SetPlanIsFulfilled(
+                        attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()));
             }
             if (subPlan instanceof NextPlanGoalZone) {
                 if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(agent.GetAgentStatus().GetGoalZones())) {
