@@ -429,7 +429,12 @@ public class NextPerceptReader {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
         for(NextMapTile tile : processThingsSet())
         {
-        	if(tile.getThingType().contains("block")) 
+        	if(tile.getThingType().contains("block") && 
+        		(tile.getPosition().equals(NextConstants.WestPoint)
+                    || tile.getPosition().equals(NextConstants.NorthPoint)
+                    || tile.getPosition().equals(NextConstants.EastPoint)
+                    || tile.getPosition().equals(NextConstants.SouthPoint))
+        	) 
     		{
         		for(Vector2D attachedSet : processAttachedSet())
         		{

@@ -35,6 +35,8 @@ public class NextIntention {
     private String lastDirection = "n";
     private int surveySteps = 0;
     private int surveyOutOfSteps = 0;
+    
+    private Vector2D lastDetachPosition = new Vector2D(0,0);
 
     public NextIntention(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
@@ -120,7 +122,9 @@ public class NextIntention {
             Vector2D requiredBlockPosition = new Vector2D(0, 0);
             // ********************** GoalZone (1Block)
             if (nextAgentStatus.GetAttachedElementsAmount() > 0 && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(
-                    nextAgentStatus.GetGoalZones()) && (this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone || this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent)) {
+                    nextAgentStatus.GetGoalZones()) && 
+            		(this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone || this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent)) 
+            {
                 NextPlanConnect nextPlanConnect = null;
                 if (this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent) {
                     // TODO aendern bei 3er blocks
@@ -227,24 +231,50 @@ public class NextIntention {
                 }
                 this.nextAgent.ClearPathMemory();
             }
+            
+        }
+        if(this.nextAgentStatus.GetLastActionResult().contains("success") && this.nextAgentStatus.GetLastAction().contains("detach"))
+        {
+        	possibleActions.clear();
+        	clearDetachedBlock();
         }
     }
 
-    private void detachUnusedBlocks() {
+    private void detachUnusedBlocks() 
+    {
         NextTask nextTask = nextAgent.GetActiveTask();
+        Boolean blocksNeeded = true;
         // Blöcke loswerden, die nicht zu meinem aktuellen Task passen
         if (nextTask != null && nextAgentStatus.GetAttachedElementsAmount() > 0) {
             for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
                 for (NextMapTile block : nextTask.GetRequiredBlocks()) {
-                    if (!attachedElement.getThingType().contains(block.getThingType())) {
-                        possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(
-                                NextAgentUtil.ConvertVector2DToECardinals(attachedElement.GetPosition()).toString())));
-                        this.nextAgent.ClearPathMemory();
-                        break;
+                    if (attachedElement.getThingType().contains(block.getThingType())) {
+                    	blocksNeeded = true;
+                    	break;
+                    }
+                    else 
+                    {
+                    	blocksNeeded = false;
+                    	lastDetachPosition = attachedElement.GetPosition();                    	
                     }
                 }
             }
         }
+        if(!blocksNeeded)
+        {
+            possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(
+            		NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString())));
+            this.nextAgent.ClearPathMemory();
+        }
+    }
+    
+    // Clear detached block
+    private void clearDetachedBlock()
+    {
+    	possibleActions.add(NextActionWrapper.CreateAction(
+    			EActions.clear, new Identifier("" + lastDetachPosition.x), new Identifier("" + lastDetachPosition.y))
+    	);
+    	this.nextAgent.ClearPathMemory();
     }
 
 
@@ -340,7 +370,8 @@ public class NextIntention {
                         Collectors.toCollection(HashSet::new));
         // filter the positions that are not free
         connectPositions = connectPositions.stream()
-                .filter(pos -> !NextAgentUtil.IsPositionFreeUsingLocalView(pos, nextAgentStatus.GetFullLocalView()))
+                .filter(pos -> NextAgentUtil.IsPositionFreeUsingLocalView(pos, nextAgentStatus.GetFullLocalView())) 
+                .filter(pos -> pos.equals(new Vector2D(0,1)))
                 .collect(Collectors.toCollection(HashSet::new));
         // if all positions are free, then the agent should wait
         if(connectPositions.isEmpty()){
@@ -364,7 +395,7 @@ public class NextIntention {
         Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0,1));
         this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
 
-        if (this.nextAgent.GetPathMemory().size() == 0) {
+        if (this.nextAgent.GetPathMemory().isEmpty()) {
             possibleActions.add(generateDefaultAction()); // fallback
         }
     }

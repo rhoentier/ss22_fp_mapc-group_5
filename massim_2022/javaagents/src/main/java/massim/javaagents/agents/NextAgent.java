@@ -507,14 +507,6 @@ public class NextAgent extends Agent {
         this.SetActiveTask(null);
         this.clearPossibleActions();
         this.ClearPathMemory();
-
-        // TODO miri: Mehrere Blöcke fallen lassen
-        // Erst schauen, ob es gerade einen Task gibt, den ich sonst abgeben könnte
-//    	if(nextAgentStatus.GetAttachedElementsAmount() > 0)
-//    	{
-//    		possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, 
-//    				NextAgentUtil.GetDirection(nextAgentStatus.GetAttachedElements().iterator().next().getLocation())));
-//    	}
     }
 
     /**
