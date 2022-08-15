@@ -431,8 +431,8 @@ public class NextAgent extends Agent {
     /**
      * Calculate Path to the Target, ending on a free Tile next to it
      *
-     * @param target
-     * @return
+     * @param target Vector2D position to walk to ( dispenser )
+     * @return List<Action> PathMemory to arrive at adjacent point
      */
     public List<Action> CalculatePathNextToTarget(Vector2D target) {
 
@@ -443,14 +443,14 @@ public class NextAgent extends Agent {
             if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
                 return CalculatePath(new Vector2D(target.x + 1, target.y));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x][target.y + 1].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x, target.y + 1));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x - 1][target.y].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x - 1, target.y));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x ][target.y -1].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x , target.y -1));
             }
         } catch (Exception e) {
             this.say("CalculatePathNextToTarget:" + e);
