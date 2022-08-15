@@ -253,14 +253,16 @@ public class NextAgent extends Agent {
 
             Action nextAction = selectNextAction();
 
+            /**
             if( agentGroup != null) {
             // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
             // this.say("Current Step " + this.simStatus.GetCurrentStep());
             }
+            //**/
 
             if(this.agentStatus.GetLastActionResult().contains("fail"))
-            {            	
+            {
             	System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
@@ -649,13 +651,15 @@ public class NextAgent extends Agent {
             int yPosition = this.GetPosition().getAdded(target).y;
 
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                System.out.println("Position was blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
+                //System.out.print(" blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
                 workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
             }
 
         }
         return target;
     }
+    
+    
 
     /**
      * Selects the next Action based on the priorityMap
