@@ -29,7 +29,6 @@ import java.util.List;
 
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
-import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextRole;
 
 /**
@@ -177,10 +176,6 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("MapSizeDiscoveryHasStarted")) {
             this.simStatus.ActivateMapSizeDiscovery();
         }
-        // "MapSizeDiscoveryHasStarted"
-        if (messageContainer[0].contains("MapSizeDiscoveryAborted")) {
-            this.simStatus.RestartMapSizeDiscovery();
-        }
         // "MapHeightFound"
         if (messageContainer[0].contains("MapHeightFound")) {
             this.SetSimulationMapHeight(Integer.parseInt(messageContainer[1]));
@@ -257,14 +252,12 @@ public class NextAgent extends Agent {
             //printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
-            
-            ///**
+
             if( agentGroup != null) {
             // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
             // this.say("Current Step " + this.simStatus.GetCurrentStep());
             }
-            //**/
 
             if(this.agentStatus.GetLastActionResult().contains("fail"))
             {            	
@@ -395,18 +388,6 @@ public class NextAgent extends Agent {
     public NextPlan GetAgentPlan() {
         return agentPlan;
     }
-    
-    /**
-     * CalculateDistance between two cells using Manhattan or A*JPS if applicable
-     * 
-     * @param startPosition Vector2D Start of calculation
-     * @param targetPosition Vector2D Targetof calculation
-     * @return int distance between the points using Manhattan or A*
-     */
-    
-    private int calculateDistance(Vector2D startPosition, Vector2D targetPosition){
-        return NextPathfindingUtil.calculateDistance(this.GetMap(), startPosition, targetPosition);
-    }
 
     /**
      * CalculatePath to the target cell. The function decides which algorithm to
@@ -500,32 +481,6 @@ public class NextAgent extends Agent {
         this.say("Message (" + message + ") from " + agent);
 
         // definitive implementation needed
-    }
-
-        /** 
-     * Clears the occupied MapTiles in case of an error in movement 
-     */
-    public void clearAgentStepMemory() {
-        Vector2D startPoint = this.GetPosition();
-        int counter = 0;
-        char[] lastAction = this.agentStatus.GetLastActionParams().toCharArray();
-        
-        for (Character step : lastAction) {
-            if (step.equals('n')) {
-                startPoint.add(0, -1);
-            }
-            if (step.equals('e')) {
-                startPoint.add(1, 0);
-            }
-            if (step.equals('w')) {
-                startPoint.add(-1, 0);
-            }
-            if (step.equals('s')) {
-                startPoint.add(0, 1);
-            }
-        }
-        System.out.println("clearMapTiles At: " + startPoint );
-        clearMapTiles( startPoint, pathMemory);
     }
 
     public HashMap<NextMapTile, Integer> GetDispenserDistances(HashSet<NextMapTile> requiredBlocks) {
@@ -702,15 +657,13 @@ public class NextAgent extends Agent {
             int yPosition = this.GetPosition().getAdded(target).y;
 
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                //System.out.print(" blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
+                System.out.println("Position was blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
                 workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
             }
 
         }
         return target;
     }
-
-    
 
     /**
      * Selects the next Action based on the priorityMap

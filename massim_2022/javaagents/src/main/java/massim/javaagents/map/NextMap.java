@@ -14,7 +14,7 @@ import massim.javaagents.agents.NextGroup;
 
 /**
  * Interne Karte zum Speichern bisher wahrgenommener Dinge wie z.B. Hindernisse, Dispenser, Goal- oder Role-Zones.
- * @author Sebastian Loder, Alexander Lorenz
+ * @author Sebastian Loder
  *
  */
 public class NextMap {
@@ -234,12 +234,6 @@ public class NextMap {
             }
         }
 
-        // Transfer StepMemory to new MapTile
-        NextMapTile existingMapTile = GetMapTile(maptile.GetPosition());
-        if (existingMapTile != null) {
-            maptile.AddToStepMemory(existingMapTile.GetStepMemory());
-        }
-
         // Only add maptile if: existingMapTile is null OR existingMapTile is older
         Vector2D maptilePosition = maptile.GetPosition();
         switch (maptile.getThingType().substring(0, 4)) {
@@ -371,16 +365,8 @@ public class NextMap {
 
         return mapArray;
     }
-    
-    /**
-     * Used in pathfinding to center the Map around startpoint
-     * @param mapOld NextMapTile[][] original map array
-     * @param position Vector2D position to center around 
-     * @return NextMapTile[][] centered map array
-     * 
-     * @author Alexander Lorenz
-     */
 
+    // ToDo: Wird das noch benötigt?
     public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
         if (mapOld.length == 1 && mapOld[0].length == 1) {
             return mapOld;
@@ -388,20 +374,20 @@ public class NextMap {
 
         int mapWidth = mapOld.length;
         int mapHeight = mapOld[0].length;
-        int xOffset = (int) position.x - ((int) (mapWidth / 2) );
-        int yOffset = (int) position.y - ((int) (mapHeight / 2) );
+        int xOffset = (int) position.x - ((int) (mapWidth / 2));
+        int yOffset = (int) position.y - ((int) (mapHeight / 2));
         NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
 
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
-                int newX = (x - xOffset) % mapWidth;
-                int newY = (y - yOffset) % mapHeight;
-                tempMap[newX][newY] = new NextMapTile(
-                        newX,
-                        newY,
-                        mapOld[x][y].getLastVisionStep(),
-                        mapOld[x][y].getThingType(),
-                        mapOld[x][y].GetStepMemory());
+                int oldX = (x - xOffset + mapWidth) % (mapWidth - 1);
+                int oldY = (y - yOffset + mapHeight) % (mapHeight - 1);
+                tempMap[x][y] = new NextMapTile(
+                        x,
+                        y,
+                        mapOld[oldX][oldY].getLastVisionStep(),
+                        mapOld[oldX][oldY].getThingType(),
+                        mapOld[oldX][oldY].GetStepMemory());
             }
         }
         return tempMap;
@@ -589,12 +575,7 @@ public class NextMap {
 
             // map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
 
-        } else if (agent.GetAgentStatus().GetLastAction().contains("move") && !agent.GetAgentStatus().GetLastActionResult().equals("success")) {
-            agent.clearAgentStepMemory();
-        } else if (agent.GetAgentStatus().GetLastAction().contains("clear")) {
-            agent.clearAgentStepMemory();
         }
-        
     }
 
     /**
@@ -655,46 +636,6 @@ public class NextMap {
         }
     }
 
-    private static HashSet<NextMapTile> mergeLists(HashSet<NextMapTile> hashSet1, HashSet<NextMapTile> hashSet2) {
-
-        HashMap<Vector2D, NextMapTile> mergedHashMap = new HashMap<>();
-
-        // Add all maptiles from hashSet1 to hashMap
-        for (NextMapTile maptile : hashSet1) {
-            mergedHashMap.put(maptile.GetPosition(), maptile);
-        }
-
-        // Add maptiles from hashSet2, if newer or not there yet
-        for (NextMapTile maptile : hashSet2) {
-            Vector2D pos = maptile.GetPosition();
-            if (mergedHashMap.containsKey(pos)) {
-                // If already there, compare maptile and merge
-                NextMapTile existingMapTile = mergedHashMap.get(pos);
-                NextMapTile newMapTile = maptile.clone();
-
-                // If maptile from hashSet2 is newer, replace the existing one from hashSet1
-                if (maptile.getLastVisionStep() > existingMapTile.getLastVisionStep()){
-                    newMapTile.AddToStepMemory(existingMapTile.GetStepMemory());
-                    mergedHashMap.put(pos, newMapTile);
-                } else {
-                    existingMapTile.AddToStepMemory(newMapTile.GetStepMemory());
-                    mergedHashMap.put(pos, existingMapTile);
-                }
-            } else {
-                // If not yet there, just add the maptile
-                mergedHashMap.put(pos, maptile);
-            }
-        }
-
-        // Transfer from HashMap to HashSet
-        HashSet<NextMapTile> mergedHashSet = new HashSet<>();
-        for (NextMapTile maptile : mergedHashMap.values()) {
-            mergedHashSet.add(maptile);
-        }
-
-        return mergedHashSet;
-    }
-
     /**
      * Joins one Map into another map
      *
@@ -707,11 +648,10 @@ public class NextMap {
 
         mapToAdd.moveMapTiles(offset.getReversed());
 
-        mapToKeep.maplist = NextMap.mergeLists(mapToAdd.maplist, mapToKeep.maplist);
-        mapToKeep.dispensers = NextMap.mergeLists(mapToAdd.dispensers, mapToKeep.dispensers);
-        mapToKeep.goalZones = NextMap.mergeLists(mapToAdd.goalZones, mapToKeep.goalZones);
-        mapToKeep.roleZones = NextMap.mergeLists(mapToAdd.roleZones, mapToKeep.roleZones);
-
+        mapToKeep.maplist.addAll(mapToAdd.maplist);
+        mapToKeep.dispensers.addAll(mapToAdd.dispensers);
+        mapToKeep.goalZones.addAll(mapToAdd.goalZones);
+        mapToKeep.roleZones.addAll(mapToAdd.roleZones);
         mapToKeep.updateAvailableDispensers();
 
         mapToKeep.shiftToZero();
