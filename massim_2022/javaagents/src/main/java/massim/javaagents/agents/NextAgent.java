@@ -249,13 +249,13 @@ public class NextAgent extends Agent {
 
             Action nextAction = selectNextAction();
             
-            /**
+            ///*
             if( agentGroup != null) {
             this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
             this.say("Current Step " + this.simStatus.GetCurrentStep());
             }
-            //**/
+            //*/
 
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             

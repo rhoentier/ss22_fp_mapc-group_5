@@ -43,7 +43,8 @@ public class NextAStarPath {
     /*
      * ##################### endregion fields
      */
- /*
+    
+    /*
      * ########## region constructor.
      */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
@@ -84,7 +85,7 @@ public class NextAStarPath {
 
         if (centerTheMap) {
             //- Centering the map 
-            this.map = NextMap.CenterMapAroundPosition(originalMap, startpoint);
+            this.map = centerMapAroundPosition(originalMap, startpoint);
             int targetX = (( target.x + (mapWidth / 2  - startpoint.x) ) % mapWidth); 
             int targetY = (( target.y + (mapHeight / 2 - startpoint.y) ) % mapHeight);
             this.localStartPoint = new int[]{(mapWidth / 2), (mapHeight / 2)};
@@ -98,7 +99,7 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
 
-        ///* - Debugging helper
+        /* - Debugging helper
         System.out.println("iNPUT" + startpoint + " " + target);
         System.out.println("Map - " + mapWidth + " " + mapHeight);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
@@ -658,6 +659,41 @@ public class NextAStarPath {
         return neighbors;
 
     }
+    
+    /**
+     * centers the Map around startpoint
+     * @param mapOld NextMapTile[][] original map array
+     * @param position Vector2D position to center around 
+     * @return NextMapTile[][] centered map array
+     * 
+     */
+
+    private NextMapTile[][] centerMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
+        if (mapOld.length == 1 && mapOld[0].length == 1) {
+            return mapOld;
+        }
+
+        int mapWidth = mapOld.length;
+        int mapHeight = mapOld[0].length;
+        int xOffset = (int) position.x - ((int) (mapWidth / 2) );
+        int yOffset = (int) position.y - ((int) (mapHeight / 2) );
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
+
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                int newX = (x - xOffset) % mapWidth;
+                int newY = (y - yOffset) % mapHeight;
+                tempMap[newX][newY] = new NextMapTile(
+                        newX,
+                        newY,
+                        mapOld[x][y].getLastVisionStep(),
+                        mapOld[x][y].getThingType(),
+                        mapOld[x][y].GetStepMemory());
+            }
+        }
+        return tempMap;
+    }
+    
     /*
      * ##################### endregion private methods
      */
