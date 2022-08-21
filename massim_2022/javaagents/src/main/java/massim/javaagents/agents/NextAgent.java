@@ -867,9 +867,9 @@ public class NextAgent extends Agent {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     private void CheckIfMaxAttemptsAreReached() {
-        if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target") && agentStatus.GetName().equals(activeTask.GetName()))
+        if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target"))
             failStatus += 1;
-        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success") && agentStatus.GetName().equals(activeTask.GetName()))
+        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success"))
             failStatus = 0;
 
         if (failStatus == failOffest) agentGroup.SetMaxAttemptsAreReached(activeTask);

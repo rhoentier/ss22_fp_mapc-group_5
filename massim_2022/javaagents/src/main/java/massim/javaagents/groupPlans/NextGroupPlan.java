@@ -50,11 +50,14 @@ public class NextGroupPlan {
         for (NextMapTile block : task.GetRequiredBlocks()) {
             for (NextMapTile dispenser : dispensers) {
                 // TODO: Noch Testen, ob dies wirklich den besten Task gibt
-                if (!dispenser.getThingType().substring(dispenser.getThingType().length() - 2).equals(block.getThingType())) continue;
+                if (!dispenser.getThingType().substring(dispenser.getThingType().length() - 2)
+                        .equals(block.getThingType())) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
                 // TODO: Hier muss der Pfad verbessert werden
-                int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(), nearestGoalZone).size();
-                shortestWayFromDispenserToGoalZone = Math.min(wayFromDispenserToGoalZone, shortestWayFromDispenserToGoalZone);
+                int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(),
+                        nearestGoalZone).size();
+                shortestWayFromDispenserToGoalZone = Math.min(wayFromDispenserToGoalZone,
+                        shortestWayFromDispenserToGoalZone);
             }
             longestWay = Math.max(shortestWayFromDispenserToGoalZone, longestWay);
         }
@@ -68,7 +71,8 @@ public class NextGroupPlan {
      * @param estimatedStepsToSolveTask Summe der Wege von Dispensern zu den GoalZones
      */
     private void setUtilization(int estimatedStepsToSolveTask) {
-        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask / (float) task.GetRequiredBlocks().size();
+        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask / (float) task.GetRequiredBlocks()
+                .size();
     }
 
     /**
@@ -91,7 +95,8 @@ public class NextGroupPlan {
      * prüft, ob die Vorbedingung erfüllt ist
      */
     private void checkIfPreConditionIsFulfilled() {
-        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
+        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType)
+                .collect(Collectors.toCollection(HashSet::new));
         isPreconditionFulfilled = group.GetGroupMap().IsTaskExecutable(requiredBlocks);
     }
 
@@ -106,6 +111,7 @@ public class NextGroupPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void checkIfDeadlineIsReached() {
+        if (!isDeadlineFulfillable) return;
         int stepsUntilTaskIsFinished = group.GetLastStep() + estimatedStepsToSolveTask;
         isDeadlineFulfillable = stepsUntilTaskIsFinished < (int) task.GetDeadline();
     }
