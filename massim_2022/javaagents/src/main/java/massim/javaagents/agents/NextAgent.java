@@ -220,7 +220,7 @@ public class NextAgent extends Agent {
             lastID = simStatus.GetActionID();
 
             updateInternalBeliefs();
-            //printBeliefReport(); // live String output to console
+            printBeliefReport(); // live String output to console
 
             // -----------------------------------
             clearPossibleActions();
@@ -249,13 +249,13 @@ public class NextAgent extends Agent {
 
             Action nextAction = selectNextAction();
             
-            /**
+            ///*
             if( agentGroup != null) {
             this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
             this.say("Current Step " + this.simStatus.GetCurrentStep());
             }
-            //**/
+            //*/
 
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             
@@ -290,16 +290,16 @@ public class NextAgent extends Agent {
     }
 
     /**
-     * Set flag to disable agent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check if
-     * needed or ok to remove.
+     * Set flag to disable agent
+     * currently not used
      */
     public void setFlagDisableAgent() {
         this.disableAgentFlag = true;
     }
 
     /**
-     * Set flag - action request active !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     * Check if needed or ok to remove.
+     * Set flag - action request 
+     * currently not used
      */
     public void setFlagActionRequest() {
         this.actionRequestActive = true;
@@ -562,6 +562,7 @@ public class NextAgent extends Agent {
      * Agent behavior after finishing of the current simulation
      */
     private void finishTheSimulation() {
+        this.agentGroup = null;
         this.say("Finishing this Simulation!");
         this.say("Result: #" + simStatus.GetRanking());
 
