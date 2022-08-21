@@ -38,7 +38,7 @@ public class NextTaskPlanner {
                 getBestPlanForAgents(new ArrayList<>(agents.subList((4 * i), 4 + (4 * i))));
             }
             int mod = size % 4;
-            System.out.println("mod " + mod + " -- groups of four " + groupsOfFour);
+//            System.out.println("mod " + mod + " -- groups of four " + groupsOfFour);
             switch (mod) {
                 case 1 -> getBestPlanForAgents(new ArrayList<>(agents.subList((4 * groupsOfFour), 1 + (4 * groupsOfFour))));
                 case 2 -> getBestPlanForAgents(new ArrayList<>(agents.subList((4 * groupsOfFour), 2 + (4 * groupsOfFour))));

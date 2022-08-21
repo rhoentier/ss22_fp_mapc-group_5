@@ -68,7 +68,7 @@ public class NextGroupPlan {
      * @param estimatedStepsToSolveTask Summe der Wege von Dispensern zu den GoalZones
      */
     private void setUtilization(int estimatedStepsToSolveTask) {
-        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask;
+        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask / (float) task.GetRequiredBlocks().size();
     }
 
     /**
@@ -106,7 +106,7 @@ public class NextGroupPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void checkIfDeadlineIsReached() {
-        int stepsUntilTaskIsFinished = group.GetLastActionId() + estimatedStepsToSolveTask;
+        int stepsUntilTaskIsFinished = group.GetLastStep() + estimatedStepsToSolveTask;
         isDeadlineFulfillable = stepsUntilTaskIsFinished < (int) task.GetDeadline();
     }
 

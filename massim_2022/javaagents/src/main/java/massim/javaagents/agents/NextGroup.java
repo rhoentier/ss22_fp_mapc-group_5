@@ -24,7 +24,7 @@ public class NextGroup {
      * ########## region fields
      */
     private int groupID;
-    private int lastActionId;
+    private int lastStep;
 
     private HashSet<NextAgent> agentSet = new HashSet<>();
     private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
@@ -46,6 +46,7 @@ public class NextGroup {
         this.groupID = id;
         this.agentSet.add(agent);
         this.agentPositionMap.put(agent, new Vector2D(0, 0));
+        this.lastStep = -1;
 
         this.taskPlanner = new NextTaskPlanner(this);
     }
@@ -223,9 +224,9 @@ public class NextGroup {
     /**
      * updates all tasks and plans for the group
      */
-    public void UpdateTasks(HashSet<NextTask> newTasks, int actionId) {
-        if(actionId > lastActionId){
-            this.lastActionId = actionId;
+    public void UpdateTasks(HashSet<NextTask> newTasks, int currentStep) {
+        if(currentStep > lastStep){
+            this.lastStep = currentStep;
             taskPlanner.UpdateTasksAndAgents(newTasks);
         }
     }
@@ -234,8 +235,8 @@ public class NextGroup {
         return taskPlanner.GetPlan(agent);
     }
 
-    public int GetLastActionId() {
-        return lastActionId;
+    public int GetLastStep() {
+        return lastStep;
     }
 
     public void SetMaxAttemptsAreReached(NextTask task){

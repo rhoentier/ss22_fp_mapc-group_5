@@ -859,7 +859,7 @@ public class NextAgent extends Agent {
         CheckIfMaxAttemptsAreReached();
         taskHandler.UpdateTasks();
         if (agentGroup != null) {
-            agentGroup.UpdateTasks(simStatus.GetTasksList(), simStatus.GetActionID());
+            agentGroup.UpdateTasks(simStatus.GetTasksList(), simStatus.GetCurrentStep());
         }
     }
 
