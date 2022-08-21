@@ -84,6 +84,10 @@ public class NextPlanSolveTask extends NextPlan {
                 continue;
             }
             if (subPlan instanceof NextPlanDispenser) {
+                if (agent.GetAgentStatus().GetAttachedElementsAmount() == 0) {
+                    subPlan.SetPlanIsFulfilled(false);
+                    continue;
+                }
                 // prüft, welche Blöcke momentan attached sind
                 HashSet<NextMapTile> attachedElements = agent.GetAgentStatus().GetAttachedElementsNextMapTiles();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
@@ -94,12 +98,19 @@ public class NextPlanSolveTask extends NextPlan {
                     }
                 }
                 //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
-                subPlan.SetPlanIsFulfilled(
-                        attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()));
+                if (attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()))
+                    subPlan.SetPlanIsFulfilled(true);
+                continue;
             }
             if (subPlan instanceof NextPlanGoalZone) {
-                if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(agent.GetAgentStatus().GetGoalZones())) {
-                    if (subPlanIterator.hasNext()) subPlan.SetPlanIsFulfilled(true);
+                if (subPlanIterator.hasNext()) subPlan.SetPlanIsFulfilled(
+                        NextAgentUtil.CheckIfAgentInZoneUsingLocalView(agent.GetAgentStatus().GetGoalZones()));
+                continue;
+            }
+            if (subPlan instanceof NextPlanConnect) {
+                if (agent.GetAgentStatus().GetLastAction().contains("connect") && agent.GetAgentStatus()
+                        .GetLastActionResult().contains("success")) {
+                    ((NextPlanConnect) subPlan).SetAgentConnection(true);
                 }
             }
         }

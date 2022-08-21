@@ -52,7 +52,7 @@ public class NextTaskPlanner {
         NextGroupPlan bestPlan = null;
         for (NextGroupPlan possiblePlan : activePlans) {
             if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable() && possiblePlan.GetTask().GetRequiredBlocks().size() == agents.size()) {
-                if (bestPlan == null || bestPlan.GetUtilization() < possiblePlan.GetUtilization()) {
+                if (bestPlan == null || bestPlan.GetUtilization() <= possiblePlan.GetUtilization()) {
                     foundPlanForAll = true;
                     bestPlan = possiblePlan;
                 }

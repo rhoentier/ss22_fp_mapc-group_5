@@ -35,8 +35,8 @@ public class NextIntention {
     private String lastDirection = "n";
     private int surveySteps = 0;
     private int surveyOutOfSteps = 0;
-    
-    private Vector2D lastDetachPosition = new Vector2D(0,0);
+
+    private Vector2D lastDetachPosition = new Vector2D(0, 0);
 
     public NextIntention(NextAgent nextAgent) {
         this.nextAgent = nextAgent;
@@ -122,9 +122,8 @@ public class NextIntention {
             Vector2D requiredBlockPosition = new Vector2D(0, 0);
             // ********************** GoalZone (1Block)
             if (nextAgentStatus.GetAttachedElementsAmount() > 0 && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(
-                    nextAgentStatus.GetGoalZones()) && 
-            		(this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone || this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent)) 
-            {
+                    nextAgentStatus.GetGoalZones()) &&
+                    (this.nextAgent.GetAgentTask() == EAgentActivity.goToGoalzone || this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent)) {
                 NextPlanConnect nextPlanConnect = null;
                 if (this.nextAgent.GetAgentTask() == EAgentActivity.connectToAgent) {
                     // TODO aendern bei 3er blocks
@@ -141,10 +140,10 @@ public class NextIntention {
                 if (NextAgentUtil.IsBlockInPosition(requiredBlockPosition,
                         nextAgentStatus.GetAttachedElementsVector2D())) {
                     if (nextPlanConnect != null) {
-                        if (this.nextAgentStatus.GetLastActionResult()
-                                .contains("fail") && this.nextAgentStatus.GetLastAction().contains("connect")) {
-                            nextPlanConnect.SetAgentConnection(false);
-                        }
+//                        if (this.nextAgentStatus.GetLastActionResult()
+//                                .contains("fail") && this.nextAgentStatus.GetLastAction().contains("connect")) {
+//                            nextPlanConnect.SetAgentConnection(false);
+//                        }
 
                         if (nextPlanConnect.GetInvolvedAgents().size() == 0 || nextPlanConnect.IsAgentConnected()) {
                             // Korrekte Blockposition
@@ -159,7 +158,7 @@ public class NextIntention {
                                 new Identifier(nextPlanConnect.GetInvolvedAgents().iterator().next().getName()),
                                 new Identifier("" + nextPlanConnect.GetTargetBlockPosition().x),
                                 new Identifier("" + nextPlanConnect.GetTargetBlockPosition().y)));
-                        nextPlanConnect.SetAgentConnection(true);
+//                        nextPlanConnect.SetAgentConnection(true);
                     } else {
                         possibleActions.add(NextActionWrapper.CreateAction(EActions.submit,
                                 new Identifier(nextAgent.GetActiveTask().GetName())));
@@ -231,17 +230,16 @@ public class NextIntention {
                 }
                 this.nextAgent.ClearPathMemory();
             }
-            
+
         }
-        if(this.nextAgentStatus.GetLastActionResult().contains("success") && this.nextAgentStatus.GetLastAction().contains("detach"))
-        {
-        	possibleActions.clear();
-        	clearDetachedBlock();
+        if (nextAgentStatus.GetLastActionResult().contains("success") && this.nextAgentStatus.GetLastAction()
+                .contains("detach")) {
+            possibleActions.clear();
+            clearDetachedBlock();
         }
     }
 
-    private void detachUnusedBlocks() 
-    {
+    private void detachUnusedBlocks() {
         NextTask nextTask = nextAgent.GetActiveTask();
         Boolean blocksNeeded = true;
         // Blöcke loswerden, die nicht zu meinem aktuellen Task passen
@@ -249,32 +247,28 @@ public class NextIntention {
             for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
                 for (NextMapTile block : nextTask.GetRequiredBlocks()) {
                     if (attachedElement.getThingType().contains(block.getThingType())) {
-                    	blocksNeeded = true;
-                    	break;
-                    }
-                    else 
-                    {
-                    	blocksNeeded = false;
-                    	lastDetachPosition = attachedElement.GetPosition();                    	
+                        blocksNeeded = true;
+                        break;
+                    } else {
+                        blocksNeeded = false;
+                        lastDetachPosition = attachedElement.GetPosition();
                     }
                 }
             }
         }
-        if(!blocksNeeded)
-        {
+        if (!blocksNeeded) {
             possibleActions.add(NextActionWrapper.CreateAction(EActions.detach, new Identifier(
-            		NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString())));
+                    NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString())));
             this.nextAgent.ClearPathMemory();
         }
     }
-    
+
     // Clear detached block
-    private void clearDetachedBlock()
-    {
-    	possibleActions.add(NextActionWrapper.CreateAction(
-    			EActions.clear, new Identifier("" + lastDetachPosition.x), new Identifier("" + lastDetachPosition.y))
-    	);
-    	this.nextAgent.ClearPathMemory();
+    private void clearDetachedBlock() {
+        possibleActions.add(NextActionWrapper.CreateAction(
+                EActions.clear, new Identifier("" + lastDetachPosition.x), new Identifier("" + lastDetachPosition.y))
+        );
+        this.nextAgent.ClearPathMemory();
     }
 
 
@@ -296,7 +290,7 @@ public class NextIntention {
             surveyOutOfSteps = 0;
         }
 
-        System.out.println("---------------------- " + plan.GetAgentTask().toString());
+        System.out.println("[ " + nextAgent.getName() + " ]" + " ---------------------- " + plan.GetAgentTask().toString());
 
         // Move to..
         int vision = this.nextAgent.GetAgentStatus().GetCurrentRole().GetVision();
@@ -370,11 +364,11 @@ public class NextIntention {
                         Collectors.toCollection(HashSet::new));
         // filter the positions that are not free
         connectPositions = connectPositions.stream()
-                .filter(pos -> NextAgentUtil.IsPositionFreeUsingLocalView(pos, nextAgentStatus.GetFullLocalView())) 
-                .filter(pos -> pos.equals(new Vector2D(0,1)))
+                .filter(pos -> NextAgentUtil.IsPositionFreeUsingLocalView(pos, nextAgentStatus.GetFullLocalView()))
+                .filter(pos -> pos.equals(new Vector2D(0, 1)))
                 .collect(Collectors.toCollection(HashSet::new));
         // if all positions are free, then the agent should wait
-        if(connectPositions.isEmpty()){
+        if (connectPositions.isEmpty()) {
             possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
             return;
         }
@@ -386,32 +380,23 @@ public class NextIntention {
         // Handling to get easy access to involved agents
         HashSet<NextAgent> involvedAgentSet = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents();
         NextAgent[] involvedAgents = new NextAgent[involvedAgentSet.size()];
-        NextAgent firstInvolvedAgent = involvedAgentSet.iterator().next();
-        if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(firstInvolvedAgent.GetAgentStatus().GetGoalZones()))
-        {
-        	involvedAgentSet.toArray(involvedAgents);
-        
-	        //TODO: Wenn Task mit mehr Blöcken abgearbeitet wird, dann hier verbessern
-	        Vector2D involvedAgentPos = nextAgent.GetGroup().GetAgentPosition(involvedAgents[0]);
-	
-	        // Calculate target position for the agent (one field below the block has to be)
-	        Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
-	        Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0,1));
-	        if(!targetPos.equals(this.nextAgent.GetPosition()))
-	        {
-	        	this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
-	        }
-	        else
-	        {
-	            possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
-	        }
-	
+        involvedAgents = involvedAgentSet.toArray(involvedAgents);
+        if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(involvedAgents[0].GetAgentStatus().GetGoalZones())) {
+            //TODO: Wenn Task mit mehr Blöcken abgearbeitet wird, dann hier verbessern
+            Vector2D involvedAgentPos = nextAgent.GetGroup().GetAgentPosition(involvedAgents[0]);
+            // Calculate target position for the agent (one field below the block has to be)
+            Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
+            Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0, 1));
+            if (!targetPos.equals(this.nextAgent.GetPosition())) {
+                this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
+            } else {
+                possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
+            }
+
 //	        if (this.nextAgent.GetPathMemory().isEmpty()) {
 //	            possibleActions.add(generateDefaultAction()); // fallback
 //	        }
-        }
-        else
-        {
+        } else {
             possibleActions.add(NextActionWrapper.CreateAction(NextConstants.EActions.skip));
         }
     }
