@@ -37,7 +37,7 @@ public class NextAStarPath {
     private Vector2D startpoint;
 
     private Boolean centerTheMap;
-    private Boolean strictWalkable;
+    private Boolean strictWalkable;  
     private Boolean aStarJps;
 
     /*
@@ -47,26 +47,94 @@ public class NextAStarPath {
     /*
      * ########## region constructor.
      */
+    
+    /**
+     * Shortcut for Pathfinding Processor. A*JPS, centerTheMap, strictWalkable - disabled
+     * 
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, false, false, currentStep);
     }
 
+    /**
+     * Shortcut for Pathfinding Processor. A*JPS, strictWalkable - disabled
+     * 
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param centerTheMap      Boolean - true if map should be centered for optimal distance calculation
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
+
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
     }
+    
+    /**
+     * Shortcut for Pathfinding Processor. A*JPS - disabled
+     * 
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param centerTheMap      Boolean - true if map should be centered for optimal distance calculation
+     * @param strictWalkable    Boolean - True if  other agents and Blocks 
+     *                          should be considered as not Walkable (Used in local view) 
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
 
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
     }
 
+    /**
+     * Shortcut for Pathfinding Processor. centerTheMap, strictWalkable - disabled
+     * 
+     * @param aStarJps          Boolean - True to use A*JPS for faster calculation. Not compatible with StepMemory
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return calculatePath(aStarJps, originalMap, startpoint, target, false, false, currentStep);
     }
 
+    /**
+     * Shortcut for Pathfinding Processor. strictWalkable - disabled
+     * 
+     * @param aStarJps          Boolean - True to use A*JPS for faster calculation. Not compatible with StepMemory
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param centerTheMap      Boolean - true if map should be centered for optimal distance calculation
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return calculatePath(aStarJps, originalMap, startpoint, target, centerTheMap, false, currentStep);
     }
 
+    /**
+     * Full Pathfinding Processor, to generate path to a taget.
+     * 
+     * @param aStarJps          Boolean - True to use A*JPS for faster calculation. Not compatible with StepMemory
+     * @param originalMap       NextMapTile[][] - Array of Tiles to describe the Environent
+     * @param startpoint        Vector2D - Position of Pathstart
+     * @param target            Vector2D - Position of targetpoint
+     * @param centerTheMap      Boolean - true if map should be centered for optimal distance calculation
+     * @param strictWalkable    Boolean - True if  other agents and Blocks 
+     *                          should be considered as not Walkable (Used in local view) 
+     * @param currentStep       int - current simulation step for StepMemory 
+     * @return List<Action> Collection of actions to describe the path
+     */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
         this.aStarJps = aStarJps;
@@ -78,11 +146,14 @@ public class NextAStarPath {
         this.currentStep = currentStep;
         this.startpoint = startpoint;
 
+        // Guardcase - Check if the mapsize is sufficient
         if (this.mapWidth == 1 && mapHeight == 1) {
             System.out.println("Map is too small");
             return new ArrayList<>();
         }
 
+        // Logoc Gate - Checks if the map should be centered. 
+        // Clone the map and adjust startPoint and targetPosition correspondingly.
         if (centerTheMap) {
             //- Centering the map 
             this.map = centerMapAroundPosition(originalMap, startpoint);
@@ -99,19 +170,21 @@ public class NextAStarPath {
             this.targetPosition = new int[]{targetX, targetY};
         }
 
-        /* - Debugging helper
+        /* - Debugging helper for live view evaluation. Place "//" in front to activate.
         System.out.println("iNPUT" + startpoint + " " + target);
         System.out.println("Map - " + mapWidth + " " + mapHeight);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
         System.out.println("Output Start - " + this.localStartPoint[0] + " - " + this.localStartPoint[1]);
         System.out.println("Output Target - " + this.targetPosition[0] + " - " + this.targetPosition[1]);
         //*/
+        
+        // Guardcase - Checks if target is a viable tile.
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");
             return new ArrayList<>();
         }
 
-        //fillAllTiles(); // - Not needed anymore. handled in NextMap
+        // reset the map for pathfinding process 
         resetAllTiles();
 
         return executeMainLogic();
@@ -121,19 +194,19 @@ public class NextAStarPath {
     /*
      * ##################### endregion constructor
      */
-
-    /*
-     * ########## region public methods
-     */
-    /*
-     * ##################### endregion public methods
-     */
-    // ------------------------------------------------------------------------
+    
     /*
      * ########## region private methods
      */
+    
+    /**
+     * Main Part of AStar calculation
+     * 
+     * return List<Action> Collection of actions to describe the path
+     */  
     private List<Action> executeMainLogic() {
 
+        // Queue of tiles to be visited. Sorted by score.
         PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
             @Override
             public int compare(NextMapTile o1, NextMapTile o2) {
@@ -141,16 +214,20 @@ public class NextAStarPath {
             }
         });
 
+        // Initialise queue with start point
         queue.add(this.map[this.localStartPoint[0]][this.localStartPoint[1]]);
 
         boolean routeAvailable = false;
 
         //System.out.println("Map Size" + mapWidth + " " + mapHeight + "\n" + "X " + queue.peek().getPositionX() + " Y " + queue.peek().getPositionY() + " TX " + targetPosition[0] + " TY " + targetPosition[1]);
+        
+        // LogicGate - Select if Jump Ponit Search acceleraion is used.
         if (aStarJps) {
-
             // aStar JPS 
+            
             while (!queue.isEmpty()) {
 
+                // retrieve an open tile from queue
                 do {
                     if (queue.isEmpty()) {
                         break;
@@ -160,8 +237,10 @@ public class NextAStarPath {
 
                 } while (!currentTile.isOpen());
 
+                // set the tile to checked
                 currentTile.setOpen(false);
 
+                //GuardCase - target was found
                 if (currentTile.getPositionX() == targetPosition[0] && currentTile.getPositionY() == targetPosition[1]) {
                     // at the end, return path
                     routeAvailable = true;
@@ -170,16 +249,16 @@ public class NextAStarPath {
                     break;
                 }
 
+                // Add relevant tiles to queue 
                 queue.addAll(identifySuccessors(currentTile));
-                System.out.println("Queue: " + queue);
-
+                
             }
 
         } else {
-
-            // Classic aStar 
+            // ----- Classic aStar 
             while (!queue.isEmpty()) {
 
+                // retrieve an open tile from queue
                 do {
                     if (queue.isEmpty()) {
                         break;
@@ -187,12 +266,14 @@ public class NextAStarPath {
                     currentTile = queue.remove();
                 } while (!currentTile.isOpen());
 
+                // set the tile to checked
                 currentTile.setOpen(false);
 
                 int currentX = currentTile.getPositionX();
                 int currentY = currentTile.getPositionY();
                 int currentScore = currentTile.getScore();
 
+                //GuardCase - target was found
                 if (currentTile.getPositionX() == targetPosition[0] && currentTile.getPositionY() == targetPosition[1]) {
                     // at the end, return path
                     routeAvailable = true;
@@ -201,33 +282,39 @@ public class NextAStarPath {
                     break;
                 }
 
-                // loop through neighbours and get scores. add these onto temp open list
+                // loop through neighbours and get scores. add these onto open tiles queue
                 int smallestScore = 9999999;
+                //Check left and right tile
                 for (int x = -1; x <= 1; x += 2) {
                     int nextX = (currentX + x) % mapWidth;
                     // currentY is now nextY
-                    if (validTile(nextX, currentY)) {
+                    if (validTile(nextX, currentY)) { // check if open and walkable
+                        //calculate score
                         int score = getScoreOfTile(map[nextX][currentY], currentScore);
+                        //check if smallest Score (shortest path)
                         if (score < smallestScore) {
                             smallestScore = score;
                         }
+                        // place to queue, set parent and score
                         NextMapTile thisTile = map[nextX][currentY];
                         thisTile.setScore(score);
                         queue.add(thisTile);
                         thisTile.setParent(currentTile);
-                        //System.out.println("Trggered-2");
-
                     }
                 }
-
+                
+                //Check top and bottom tile
                 for (int y = -1; y <= 1; y += 2) {
                     // currentX is now nextX
                     int nextY = (currentY + y) % mapHeight;
-                    if (validTile(currentX, nextY)) {
+                    if (validTile(currentX, nextY)) {  // check if open and walkable
+                        //calculate score
                         int score = getScoreOfTile(map[currentX][nextY], currentScore);
+                        //check if smallest Score (shortest path)
                         if (score < smallestScore) {
                             smallestScore = score;
                         }
+                        // place to queue, set parent and score
                         NextMapTile thisTile = map[currentX][nextY];
                         thisTile.setScore(score);
                         queue.add(thisTile);
@@ -237,36 +324,35 @@ public class NextAStarPath {
             }
         }
 
+        // GuardCase - route was found
         if (routeAvailable) {
 
-            //System.out.println("Convert to TargetData");
-            //System.out.println("Start:" + localStartPoint[0] +" " + localStartPoint[1]);
             // ---- Retrieve Path
             List<NextMapTile> path = getPath(currentTile);
-            //System.out.println("pfadlänge - " + path.size());
-            //System.out.println("pfadlänge - " + path);
-
+            
             // ---- Convert Path to Vector2D Steps + Flip List
             List<Vector2D> vectorPath = convertMultiStepsToVector2D(path);
-            //System.out.println("pfadlänge2 - " + vectorPath.size());
-            //System.out.println("pfadlänge2 - " + vectorPath);
-
+            
             // Block the tiles for other Agents
             blockUsedTiles(vectorPath);
 
             // ---- Convert Vector2D Steps to Actions
             List<Action> actionPath = convertVectorToAction(vectorPath);
-            //System.out.println("pfadlänge3 - " + actionPath.size());
-
+            
             return actionPath;
 
         }
-
+        
+        // no path found, return empty List
         System.out.println("No Path Found");
         return new ArrayList<>();
 
     }
 
+    /**
+     * Prepare all mapTiles for calculation
+     * Set to open, score = 0 and parent = 0
+     */
     private void resetAllTiles() {
         for (NextMapTile[] tile : map) {
             for (int col = 0; col < map[0].length; col++) {
@@ -278,6 +364,14 @@ public class NextAStarPath {
             }
         }
     }
+    
+    /**
+     * check if a tile is open and walkable, and inside the map
+     * 
+     * @param nextX int - x position of a tile
+     * @param nextY int - y position of a tile
+     * @return boolean true if valis
+     */
 
     private boolean validTile(int nextX, int nextY) {
         if (nextX >= 0 && nextX < mapWidth) {
@@ -355,7 +449,7 @@ public class NextAStarPath {
                 int xValue = previousStep.getPositionX() - actualStep.getPositionX();
                 int yValue = previousStep.getPositionY() - actualStep.getPositionY();
 
-                System.out.println("Step: X " + xValue + " Y " + yValue);
+                //System.out.println("Step: X " + xValue + " Y " + yValue);
 
                 int offset_x = 0;
                 int offset_y = 0;
@@ -394,7 +488,7 @@ public class NextAStarPath {
         }
 
         for (Vector2D element : processedList) {
-            System.out.println("orthogonal processedList: " + element);
+            //System.out.println("orthogonal processedList: " + element);
         }
         return processedList;
     }
@@ -423,9 +517,7 @@ public class NextAStarPath {
     }
 
     private void blockUsedTiles(List<Vector2D> vectorPath) {
-        System.out.println("startpoint" + startpoint);
-        //currentStep
-        //this.startpoint
+        //System.out.println("startpoint" + startpoint);
         int offset_x = 0;
         int offset_y = 0;
         if (currentStep != -1) {
@@ -435,7 +527,7 @@ public class NextAStarPath {
                 int xOnMap = (startpoint.x + offset_x + mapWidth) % mapWidth; 
                 int yOnMap = (startpoint.y + offset_y + mapHeight) % mapHeight;
                 originalMap[xOnMap][yOnMap].BlockAtStep(this.currentStep + i + 1);
-                System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[xOnMap][yOnMap].CheckAtStep(this.currentStep + i + 1));
+                //System.out.println("Blockcheck " + (this.currentStep + i + 1) + " Is " + originalMap[xOnMap][yOnMap].CheckAtStep(this.currentStep + i + 1));
             }
         }
     }
