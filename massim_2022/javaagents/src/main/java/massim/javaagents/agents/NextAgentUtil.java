@@ -914,4 +914,32 @@ public final class NextAgentUtil {
 		}
 		return false;
 	}
+	
+	public static HashSet<NextAgent> getAgentsInFrontOfBlock(Vector2D agentPosition, HashSet<NextAgent> agentSet, Vector2D blockPosition)
+	{
+		HashSet<NextAgent> agentsInFront = new HashSet<NextAgent>();
+		for(NextAgent agent : agentSet)
+		{
+			Vector2D newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(0, -1)); //n
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+			
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(1, 0)); //e
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(0, 1)); //s
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(-1, 0)); //w
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+		}
+		return agentsInFront;
+	}
 }

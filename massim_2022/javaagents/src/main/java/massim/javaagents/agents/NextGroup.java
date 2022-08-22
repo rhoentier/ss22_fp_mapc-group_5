@@ -186,10 +186,10 @@ public class NextGroup {
      *
      * @param Message - String based message
      */
-    public void TellGroup (String Message, NextAgent sourceAgent) {
+    public void TellGroup (String Message, NextAgent sourceAgent, NextAgent targetAgent) {
         for (NextAgent agent : agentSet){
             if(!agent.equals(sourceAgent)){
-                agent.HandleGroupMessage(Message, sourceAgent.getName());
+                agent.HandleGroupMessage(Message, sourceAgent.getName(), targetAgent.getName());
             }
         }
     }
@@ -201,10 +201,10 @@ public class NextGroup {
      *
      * @param Message - String based message
      */
-    public void TellGroupAgent (String Message, String targetAgent, NextAgent sourceAgent) {
+    public void TellGroupAgent (String Message, NextAgent targetAgent, NextAgent sourceAgent) {
         for (NextAgent agent : agentSet){
             if(agent.getName().equals(targetAgent)){
-                agent.HandleGroupMessage(Message, sourceAgent.getName());
+                agent.HandleGroupMessage(Message, sourceAgent.getName(), targetAgent.getName());
             }
         }
     }
