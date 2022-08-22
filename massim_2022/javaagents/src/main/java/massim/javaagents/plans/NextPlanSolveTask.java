@@ -23,8 +23,8 @@ public class NextPlanSolveTask extends NextPlan {
         this.agent = agent;
         this.task = groupPlan.GetTask();
         this.agentTask = NextConstants.EAgentActivity.solveTask;
-        CheckIfPreConditionIsFulfilled();
         subPlans = groupPlan.GetSubPlans();
+        UpdateInternalBelief();
     }
 
     /**
