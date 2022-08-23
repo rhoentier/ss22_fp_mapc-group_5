@@ -23,6 +23,20 @@ public class NextTaskHandler {
         return null;
     }
 
+    /**
+     * Get the ThingType of the required blocl
+     * @return thingType is a plan is set, "Empty" else
+     */
+    public String GetRequiredBlockType(){
+        if (currentPlan != null){
+            for(NextPlan subPlan : currentPlan.subPlans){
+                if (subPlan instanceof NextPlanDispenser)
+                    return ((NextPlanDispenser) subPlan).GetDispenser().getThingType();
+            }
+        }
+        return "Empty";
+    }
+
     public NextTask GetCurrentTask() {
         if (currentPlan != null) return currentPlan.GetTask();
         return null;
