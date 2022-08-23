@@ -39,6 +39,7 @@ import massim.javaagents.percept.NextRole;
  * based on random movement Processing of all percepts and storing in dataVaults
  * - Gruppenbildung
  * <p>
+ *
  * @Author Alexander, Miriam
  */
 public class NextAgent extends Agent {
@@ -89,7 +90,7 @@ public class NextAgent extends Agent {
     private int failStatus = 0;
 
     public NextMessage nextMessage = new NextMessage();
-    
+
     /*
      * ##################### endregion fields
      */
@@ -254,40 +255,38 @@ public class NextAgent extends Agent {
             //printFinalReport(); // live String output to console
 
             //Action nextAction = selectNextAction();
-            
-            
-            if(nextAction == null)
-        	{
-        		// Weg generiert - aktuelle Action auswählen
-            	nextAction = selectNextAction2();
-        		//nextAction = intention.GeneratePossibleAction();
-        	}
+
+
+            if (nextAction == null) {
+                // Weg generiert - aktuelle Action auswählen
+                nextAction = selectNextAction2();
+                //nextAction = intention.GeneratePossibleAction();
+            }
 //        	else
 //        	{
 //        		// Aktueller Weg vorhanden
 //        		nextAction = selectNextAction();
 //        	}
-            
+
 //            if(nextAction == null)
 //            {            	
 //        		//nextAction = intention.GeneratePossibleAction();
 //            	nextAction = selectNextAction2();
 //            }
-        	System.out.println();
-        	System.out.println("NextPossibleAction .... " + nextAction.toString());
-        	System.out.println();
-            
-            /**
-            if( agentGroup != null) {
-            // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
-            // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
-            // this.say("Current Step " + this.simStatus.GetCurrentStep());
-            }
-            //**/
+            System.out.println();
+            System.out.println("NextPossibleAction .... " + nextAction.toString());
+            System.out.println();
 
-            if(this.agentStatus.GetLastActionResult().contains("fail"))
-            {
-            	System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+            /**
+             if( agentGroup != null) {
+             // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+             // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+             // this.say("Current Step " + this.simStatus.GetCurrentStep());
+             }
+             //**/
+
+            if (this.agentStatus.GetLastActionResult().contains("fail")) {
+                System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
@@ -377,6 +376,7 @@ public class NextAgent extends Agent {
         }
         return agentGroup.GetAgentPosition(this).clone();
     }
+
     public Vector2D GetPositionRef() {
         if (agentGroup == null) {
             return new Vector2D(0, 0);
@@ -508,6 +508,17 @@ public class NextAgent extends Agent {
     public HashMap<NextMapTile, Integer> GetDispenserDistances(HashSet<NextMapTile> requiredBlocks) {
         HashMap<NextMapTile, Integer> distances = new HashMap<>();
         for (NextMapTile requiredBlock : requiredBlocks) {
+            HashSet<NextMapTile> attachedElements = agentStatus.GetAttachedElementsNextMapTiles();
+            boolean hasCorrectBlockAttached = false;
+            for (NextMapTile attachedElement : attachedElements) {
+                if (attachedElement.getThingType().contains(requiredBlock.getThingType())) {
+                    hasCorrectBlockAttached = true;
+                }
+            }
+            if (hasCorrectBlockAttached) {
+                distances.put(requiredBlock, 0);
+                continue;
+            }
             NextMapTile nearestDispenser = NextAgentUtil.GetNearestDispenserFromType(GetMap().GetDispensers(), requiredBlock.getThingType(), GetPosition());
             if (nearestDispenser == null) {
                 distances.put(requiredBlock, 1000);
@@ -683,18 +694,16 @@ public class NextAgent extends Agent {
         }
         return target;
     }
-    
-    
-    private Action selectNextAction2()
-    {
-    	// -- Mögliche Action holen, um auf lokale sicht zu reagieren.
-    	// -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
-    	Action possibleAction = intention.GeneratePossibleAction();
-    	if(possibleAction == null)
-    	{
-    		return selectNextAction();
-    	}
-    	return possibleAction;
+
+
+    private Action selectNextAction2() {
+        // -- Mögliche Action holen, um auf lokale sicht zu reagieren.
+        // -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
+        Action possibleAction = intention.GeneratePossibleAction();
+        if (possibleAction == null) {
+            return selectNextAction();
+        }
+        return possibleAction;
 //    	if(pathMemory.isEmpty())
 //    	{
 //    		// Kein aktueller Weg vorhanden
@@ -706,64 +715,60 @@ public class NextAgent extends Agent {
 //    		return selectNextAction();
 //    	}
     }
-    
+
 
     /**
      * Selects the next Action with pathMemory
      *
      * @return Action
      */
-    private Action selectNextAction() {    	
-    	Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+    private Action selectNextAction() {
+        Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
-    	if(!pathMemory.isEmpty()) {
-	        Action currentAction = pathMemory.get(0);
-	        String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
-	
-	        NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
-	        if (thing != null) // thing vor mir
-	        {
-	            if (thing.IsObstacle()) {
-	                return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
-	            } else if (thing.IsEntity()) {
-	                Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
-	                if (NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector)) {
-	                    return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));
-	                } else {
-	                    return NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
-	                }
-	            } else if (!thing.IsBlock()) {
-	                // um Block herumlaufen 
-	                pathMemory = generateAlternativePathMemory(pathMemory);
-	                return pathMemory.remove(0);
-	            } else if(thing.IsBlock()) {
-	            	if(!NextAgentUtil.IsBlockInPosition(thing.getPosition(), agentStatus.GetAttachedElementsVector2D()))
-	            	{
-	            		// Block den ich seh, gehört nicht zu mir
-	            		return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
-	            	}
-	            	else 
-	            	{
-		            	return blockInFrontOfMeAction(direction);
-	            	}
-	            }
-	            else {
-	            	return pathMemory.remove(0);
-	            }
-	        } else {
-	            // Keinen Block oder 1 Block hinter mir oder naechster Schritt moeglich
-	            if (agentStatus.GetAttachedElementsAmount() == 0
-	                    || (agentStatus.GetAttachedElementsAmount() == 1
-	                    && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
-	                    || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetFullLocalView())) // no block or 1 element behind me or next Step is possible
-	            {
-	                return pathMemory.remove(0);
-	            } else {
-	            	return blockInFrontOfMeAction(direction);
-	            }
-	        }
+        if (!pathMemory.isEmpty()) {
+            Action currentAction = pathMemory.get(0);
+            String direction = currentAction.getParameters().toString().replace("[", "").replace("]", "");
+
+            NextMapTile thing = NextAgentUtil.IsThingInNextStep(ECardinals.valueOf(direction), agentStatus.GetFullLocalView());
+            if (thing != null) // thing vor mir
+            {
+                if (thing.IsObstacle()) {
+                    return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
+                } else if (thing.IsEntity()) {
+                    Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
+                    if (NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector)) {
+                        return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));
+                    } else {
+                        return NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
+                    }
+                } else if (!thing.IsBlock()) {
+                    // um Block herumlaufen
+                    pathMemory = generateAlternativePathMemory(pathMemory);
+                    return pathMemory.remove(0);
+                } else if (thing.IsBlock()) {
+                    if (!NextAgentUtil.IsBlockInPosition(thing.getPosition(), agentStatus.GetAttachedElementsVector2D())) {
+                        // Block den ich seh, gehört nicht zu mir
+                        return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
+                    } else {
+                        return blockInFrontOfMeAction(direction);
+                    }
+                } else {
+                    return pathMemory.remove(0);
+                }
+            } else {
+                // Keinen Block oder 1 Block hinter mir oder naechster Schritt moeglich
+                if (agentStatus.GetAttachedElementsAmount() == 0
+                        || (agentStatus.GetAttachedElementsAmount() == 1
+                        && NextAgentUtil.IsBlockBehindMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next()))
+                        || NextAgentUtil.IsNextStepPossible(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D(), agentStatus.GetFullLocalView())) // no block or 1 element behind me or next Step is possible
+                {
+                    return pathMemory.remove(0);
+                } else {
+                    return blockInFrontOfMeAction(direction);
+                }
+            }
         }
-    	return nextAction;
+        return nextAction;
 
 //        if (nextAction.getName().contains("detach")
 //                && nextAction.getName().contains(this.agentStatus.GetLastAction()) && this.agentStatus.GetLastActionResult().contains("failed")) {
@@ -774,9 +779,8 @@ public class NextAgent extends Agent {
         //return nextAction;
     }
 
-    private Action blockInFrontOfMeAction(String direction)
-    {
-    	if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) {
+    private Action blockInFrontOfMeAction(String direction) {
+        if (NextAgentUtil.IsBlockInFrontOfMe(ECardinals.valueOf(direction), agentStatus.GetAttachedElementsVector2D().iterator().next())) {
             if (!agentStatus.GetLastAction().contains("rotate")) {
                 return NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
             } else {
@@ -795,7 +799,7 @@ public class NextAgent extends Agent {
             }
         }
     }
-    
+
     private void generatePossibleActions() {
         intention.GeneratePossibleActions();
     }
