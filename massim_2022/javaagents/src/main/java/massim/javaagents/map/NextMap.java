@@ -335,7 +335,7 @@ public class NextMap {
      * @return
      */
     public boolean IsTaskExecutable(HashSet<String> requiredBlocks) {
-        if (IsGoalZoneAvailable() && availableDispensers.containsAll(requiredBlocks)) {
+        if (IsGoalZoneAvailable() && availableDispensers.containsAll(requiredBlocks) && IsRoleZoneAvailable()) {
             return true;
         }
         return false;
