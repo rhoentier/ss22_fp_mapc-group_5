@@ -220,7 +220,7 @@ public class NextAgent extends Agent {
             lastID = simStatus.GetActionID();
 
             updateInternalBeliefs();
-            printBeliefReport(); // live String output to console
+            //printBeliefReport(); // live String output to console
 
             // -----------------------------------
             clearPossibleActions();
@@ -245,18 +245,11 @@ public class NextAgent extends Agent {
             generatePossibleActions();
 
             //printActionsReport(); // live String output to console
+            printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
 
             Action nextAction = selectNextAction();
             
-            ///*
-            if( agentGroup != null) {
-            this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
-            this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
-            this.say("Current Step " + this.simStatus.GetCurrentStep());
-            }
-            //*/
-
             System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             
             // Clears StepMemory if walking was interrupted.
@@ -959,7 +952,7 @@ public class NextAgent extends Agent {
     }
 
     /**
-     * Debugging helper - current beliefs
+     * Debugging helper- live report - current beliefs
      */
     private void printBeliefReport() {
 
@@ -982,6 +975,18 @@ public class NextAgent extends Agent {
             this.say("Agent Position" + this.GetGroup().GetAgentPosition(this).toString());
 
         }
+    }
+    
+    /**
+     * Debugging helper - live report - prints blocked steps for a tile
+     */
+    private void printBlockedStepsReport() {
+    
+            if( agentGroup != null) {
+            this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+            this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+            this.say("Current Step " + this.simStatus.GetCurrentStep());
+            }
     }
 
     private HashSet<NextMapTile> findFriendlyAgentsInLocalView() {
@@ -1110,4 +1115,5 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion private methods
      */
+
 }
