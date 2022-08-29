@@ -409,7 +409,7 @@ public class NextAgent extends Agent {
         return (int) agentStatus.GetCurrentRole().GetSpeed().stream().filter(speed -> speed > 0).count();
     }
 
-    public NextTaskHandler GetTaskPlanner() {
+    public NextTaskHandler GetTaskHandler() {
         return this.taskHandler;
     }
 

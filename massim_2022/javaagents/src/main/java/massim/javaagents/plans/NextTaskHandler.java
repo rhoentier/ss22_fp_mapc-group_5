@@ -66,6 +66,12 @@ public class NextTaskHandler {
             currentPlan = new NextPlanSolveTask(agent, groupPlan);
     }
 
+    public void SetReadyToConnect(){
+        if (currentPlan != null){
+            currentPlan.SetReadyToConnect();
+        }
+    }
+
     public void UpdateTasks() {
         if (currentPlan != null) currentPlan.UpdateInternalBelief();
     }

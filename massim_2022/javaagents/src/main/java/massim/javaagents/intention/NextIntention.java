@@ -116,7 +116,7 @@ public class NextIntention {
         Boolean blocksNeeded = true;
         // Blöcke loswerden, die nicht zu meinem aktuellen Task passen
         for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
-            if (attachedElement.getThingType().contains(nextAgent.GetTaskPlanner().GetRequiredBlockType())) {
+            if (attachedElement.getThingType().contains(nextAgent.GetTaskHandler().GetRequiredBlockType())) {
                 blocksNeeded = true;
                 break;
             } else {
@@ -542,6 +542,8 @@ public class NextIntention {
                 }
                 return null;
             case goToGoalzone:
+                NextMessage message = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "readyToConnect");
+                if (message != null) nextAgent.GetTaskHandler().SetReadyToConnect();
                 if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
                     this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(
                             NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
@@ -588,6 +590,7 @@ public class NextIntention {
         }
         // Position to secondAgent
         NextAgent involvedAgent = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents().iterator().next();
+        NextMessageUtil.addSpecificMessageToStore("readyToConnect", this.nextAgent.getName(), involvedAgent.getName());
         if (involvedAgent.GetAgentTask().equals(EAgentActivity.connectToAgent)) {
             Vector2D blockPos = ((NextPlanConnect) involvedAgent.GetAgentPlan()).GetTargetBlockPosition();
             Vector2D targetPos = this.nextAgent.GetPosition().getAdded(blockPos).getAdded(new Vector2D(0, 1));

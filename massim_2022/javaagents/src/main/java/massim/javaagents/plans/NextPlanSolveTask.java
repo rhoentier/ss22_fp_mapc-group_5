@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class NextPlanSolveTask extends NextPlan {
 
     private boolean isPreconditionFulfilled = false;
+    private boolean readyToConnect = false;
     private final NextTask task;
 
     public NextPlanSolveTask(NextAgent agent, NextAgentPlan groupPlan) {
@@ -50,7 +51,9 @@ public class NextPlanSolveTask extends NextPlan {
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
         if (!isPreconditionFulfilled) fulfillPrecondition();
     }
-
+    public void SetReadyToConnect(){
+        readyToConnect = true;
+    }
     /**
      * Prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
@@ -60,6 +63,7 @@ public class NextPlanSolveTask extends NextPlan {
             for (NextPlan subplan : subPlans) {
                 subplan.SetPlanIsFulfilled(false);
             }
+            readyToConnect = false;
             return true;
         }
         return false;
@@ -103,6 +107,10 @@ public class NextPlanSolveTask extends NextPlan {
                 continue;
             }
             if (subPlan instanceof NextPlanGoalZone) {
+                if (readyToConnect) {
+                    subPlan.SetPlanIsFulfilled(true);
+                    continue;
+                }
                 if (subPlanIterator.hasNext()) subPlan.SetPlanIsFulfilled(
                         NextAgentUtil.CheckIfAgentInZoneUsingLocalView(agent.GetAgentStatus().GetGoalZones()));
                 continue;
