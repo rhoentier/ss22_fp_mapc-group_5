@@ -251,31 +251,16 @@ public class NextAgent extends Agent {
                 }
             }
 
-            Action nextAction = generatePathMemory();
-            //generatePossibleActions();
 
             //printActionsReport(); // live String output to console
             //printFinalReport(); // live String output to console
 
-            //Action nextAction = selectNextAction();
-
-
+            Action nextAction = generatePathMemory();
             if (nextAction == null) {
                 // Weg generiert - aktuelle Action auswählen
                 nextAction = selectNextAction2();
-                //nextAction = intention.GeneratePossibleAction();
             }
-//        	else
-//        	{
-//        		// Aktueller Weg vorhanden
-//        		nextAction = selectNextAction();
-//        	}
-
-//            if(nextAction == null)
-//            {            	
-//        		//nextAction = intention.GeneratePossibleAction();
-//            	nextAction = selectNextAction2();
-//            }
+            
             System.out.println();
             System.out.println("NextPossibleAction .... " + nextAction.toString());
             System.out.println();
@@ -290,11 +275,7 @@ public class NextAgent extends Agent {
 
             if (this.agentStatus.GetLastActionResult().contains("fail")) {
                 System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
-                this.connectedToAgent = false;
-            }
-            if (this.agentStatus.GetLastAction().contains("connect") && this.agentStatus.GetLastActionResult().contains("success")) {
-            	this.connectedToAgent = true;
-                System.out.println("Letzte ConnectAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+                //this.connectedToAgent = false;
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
@@ -730,16 +711,6 @@ public class NextAgent extends Agent {
             return selectNextAction();
         }
         return possibleAction;
-//    	if(pathMemory.isEmpty())
-//    	{
-//    		// Kein aktueller Weg vorhanden
-//    		return intention.GeneratePossibleAction();
-//    	}
-//    	else
-//    	{
-//    		// Aktueller Weg vorhanden
-//    		return selectNextAction();
-//    	}
     }
 
 
@@ -795,14 +766,6 @@ public class NextAgent extends Agent {
             }
         }
         return nextAction;
-
-//        if (nextAction.getName().contains("detach")
-//                && nextAction.getName().contains(this.agentStatus.GetLastAction()) && this.agentStatus.GetLastActionResult().contains("failed")) {
-//            return new NextRandomPath().GenerateNextMove();
-//        }
-
-        //say(nextAction.toProlog());
-        //return nextAction;
     }
 
     private Action blockInFrontOfMeAction(String direction) {
@@ -881,6 +844,16 @@ public class NextAgent extends Agent {
         // Update Tasks at taskPlanner
         updateTasks();
         taskHandler.SetInitialTask();
+        
+        // handle connect status
+        if (this.agentStatus.GetLastAction().contains("connect") && this.agentStatus.GetLastActionResult().contains("success")) {
+        	this.connectedToAgent = true;
+            //System.out.println("Letzte ConnectAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+        }
+        else
+        {
+        	this.connectedToAgent = false;
+        }
     }
 
     /**
@@ -922,7 +895,7 @@ public class NextAgent extends Agent {
             //Stop processing after last Simulation
             if (percept.getName().contains("bye")) {
                 //disableAgent(); //---- closing the window is disabled to keep the logdata visible.
-            }
+            }            
         }
     }
 

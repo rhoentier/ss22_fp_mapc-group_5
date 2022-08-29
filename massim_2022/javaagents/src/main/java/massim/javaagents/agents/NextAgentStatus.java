@@ -54,7 +54,7 @@ public class NextAgentStatus {
     private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing distance to the targeted elements.
 
     private HashSet<NextMapTile> dispenser;
-
+    
     /*
      * ##################### endregion fields
      */
@@ -88,20 +88,6 @@ public class NextAgentStatus {
      * ########## region public methods
      */
 
-     /*  To Delete - backup for Testing
-    // compare attached elements to NextConstants directions and convert to array ?
-    public void SetAttachedElements(HashSet<Point> attachedElements) {
-        this.attachedElements = new HashSet();
-        for (Point attached : attachedElements) {
-            if (attached.equals(NextConstants.WestPoint)
-                    || attached.equals(NextConstants.NorthPoint)
-                    || attached.equals(NextConstants.EastPoint)
-                    || attached.equals(NextConstants.SouthPoint)) {
-                this.attachedElements.add(attached);
-            }
-        }
-    }
-*/
     // compare attached elements to NextConstants directions and convert to array ?
     public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
             this.attachedElements = new HashSet();

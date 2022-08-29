@@ -169,13 +169,19 @@ public class NextIntention {
                 } else {
                     if (nextAgentStatus.GetAttachedElementsAmount() == 0 &&
                             NextAgentUtil.IsAnotherAgentInNearOfBlock(position, this.nextAgentStatus.GetFullLocalView())) {
-                        HashSet<NextAgent> agentSet = NextAgentUtil.getAgentsInFrontOfBlock(nextAgent.GetPosition(), nextAgent.GetAgentGroup().GetAgents(), position);
-                        for (NextAgent agent : agentSet) {
-                        	NextMessageUtil.addSpecificMessageToStore("gehweg", this.nextAgent.getName(), agent.getName());
-                        }
-                        nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.request,
-                                NextAgentUtil.ChangeVector2DToIdentifier(position));
-                        return true;
+
+                    	nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
+                    	if(nextMessage == null)
+                    	{
+	                    	HashSet<NextAgent> agentSet = NextAgentUtil.getAgentsInFrontOfBlock(nextAgent.GetPosition(), nextAgent.GetAgentGroup().GetAgents(), position);
+	                        for (NextAgent agent : agentSet) {
+	                        	NextMessageUtil.addSpecificMessageToStore("gehweg", this.nextAgent.getName(), agent.getName());
+	                        }
+                    	}
+                    	else
+                    	{
+                    		return false;
+                    	}
                     }
 
                     if (visibleThing.IsDispenser() && !this.nextAgentStatus.GetLastAction().contains("request")) {
