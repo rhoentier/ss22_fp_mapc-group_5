@@ -23,7 +23,7 @@ public final class NextMessageUtil {
 	
 	public static void removeFromMessageStore(NextMessage message)
 	{
-		if(isMessageInStore(message)) messageStore.remove(message);
+		messageStore.remove(message);
 	}
 	
 	public static void clearMessageStore()

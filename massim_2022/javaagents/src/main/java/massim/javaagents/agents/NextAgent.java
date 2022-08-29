@@ -92,6 +92,7 @@ public class NextAgent extends Agent {
     private boolean correctPosition = false;
     
     private Vector2D goToPosition = new Vector2D(); 
+    public boolean connectedToAgent = false;
 
     /*
      * ##################### endregion fields
@@ -289,6 +290,11 @@ public class NextAgent extends Agent {
 
             if (this.agentStatus.GetLastActionResult().contains("fail")) {
                 System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+                this.connectedToAgent = false;
+            }
+            if (this.agentStatus.GetLastAction().contains("connect") && this.agentStatus.GetLastActionResult().contains("success")) {
+            	this.connectedToAgent = true;
+                System.out.println("Letzte ConnectAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             return nextAction;
@@ -818,10 +824,6 @@ public class NextAgent extends Agent {
                 return new NextRandomPath().GenerateNextMove();
             }
         }
-    }
-
-    private void generatePossibleActions() {
-        intention.GeneratePossibleActions();
     }
 
     private Action generatePathMemory() {
