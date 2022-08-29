@@ -230,22 +230,21 @@ public class NextAgent extends Agent {
             // new path
             if (agentGroup != null) {
                 NextAgentPlan groupPlan = agentGroup.GetPlan(this);
-                if (groupPlan != null) {
-                    taskHandler.SetAgentPlan(groupPlan);
-                    NextPlan nextPlan = taskHandler.GetDeepestEAgentTask();
-                    if (nextPlan != null) {
-                        NextTask nextTask = taskHandler.GetCurrentTask();
-                        // Neuen Task nur setzen, wenn sich der Task verändert hat.
-                        if (nextTask != null) {
-                            if (this.GetActiveTask() == null || !this.GetActiveTask().GetName().contains(nextTask.GetName())) {
-                                if (!this.agentActivity.toString().contains("survey")) {
-                                    intention.ResetAfterTaskChange();
-                                }
-                                SetActiveTask(nextTask);
+                taskHandler.SetAgentPlan(groupPlan);
+                NextPlan nextPlan = taskHandler.GetDeepestEAgentTask();
+                if (nextPlan != null) {
+                    NextTask nextTask = taskHandler.GetCurrentTask();
+                    // Neuen Task nur setzen, wenn sich der Task verändert hat.
+                    if (nextTask != null) {
+                        if (this.GetActiveTask() == null || !this.GetActiveTask().GetName()
+                                .contains(nextTask.GetName())) {
+                            if (!this.agentActivity.toString().contains("survey")) {
+                                intention.ResetAfterTaskChange();
                             }
+                            SetActiveTask(nextTask);
                         }
-                        SetAgentPlan(nextPlan);
                     }
+                    SetAgentPlan(nextPlan);
                 }
             }
 
@@ -867,6 +866,7 @@ public class NextAgent extends Agent {
 
         // Update Tasks at taskPlanner
         updateTasks();
+        taskHandler.SetInitialTask();
     }
 
     /**
