@@ -13,7 +13,7 @@ import massim.javaagents.general.NextConstants.ECardinals;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
-import massim.javaagents.percept.NextTask;
+import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextPlanConnect;
 import massim.javaagents.plans.NextPlanDispenser;
@@ -556,7 +556,7 @@ public class NextIntention {
 
                     // TODO hier weitern, damit die 2er Task in der Mitte der Goalzone abgegeben werden können
                     if (nextPlanConnect.IsAgentMain()) {
-                        checkIfConnectPositionIsEmpty();
+                        calcBestPosForMainAgent();
                     } else {
                         calcWayToConnectPosition();
                     }
@@ -567,23 +567,25 @@ public class NextIntention {
         }
     }
 
-    private void checkIfConnectPositionIsEmpty() {
-        // get only the Vector2D position of the required blocks
-        HashSet<Vector2D> connectPositions = nextAgent.GetActiveTask().GetRequiredBlocks().stream()
+    private void calcBestPosForMainAgent() {
+
+        // check if agent is in middle of goalZone
+        //move agent to middle of goalZone
+        HashSet<Vector2D> goalPositions = nextAgent.GetAgentStatus().GetGoalZones().stream()
                 .map(NextMapTile::GetPosition).collect(
                         Collectors.toCollection(HashSet::new));
-        // filter the positions that are not free
-        connectPositions = connectPositions.stream()
-                .filter(pos -> NextAgentUtil.IsPositionFreeUsingLocalView(pos, nextAgentStatus.GetFullLocalView()))
-                .filter(pos -> pos.equals(new Vector2D(0, 1)))
-                .collect(Collectors.toCollection(HashSet::new));
-        // if all positions are free, then the agent should wait
-        if (connectPositions.isEmpty()) {
-            nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
-            return;
+        if (!goalPositions.contains(new Vector2D(0, 2)) ||
+                !goalPositions.contains(new Vector2D(0, -2)) ||
+                !goalPositions.contains(new Vector2D(2, 0)) ||
+                !goalPositions.contains(new Vector2D(-2, 0))) {
+            for (NextMapTile mapTile : nextAgent.GetAgentStatus().GetGoalZones()) {
+                if (NextManhattanPath.CalculatePath(nextAgent.GetPosition(), mapTile.GetPosition()).size() >= 3) {
+                    nextAgent.SetCorrectPosition(true);
+                    nextAgent.SetPathMemory(nextAgent.CalculatePath(mapTile.getPosition()));
+                    return;
+                }
+            }
         }
-        // create a move that the connectPos is free
-        //NextAgentUtil.GenerateNorthMove();
     }
 
 
@@ -599,12 +601,9 @@ public class NextIntention {
             Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
             Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0, 1));
             if (!targetPos.equals(this.nextAgent.GetPosition())) {
+                nextAgent.SetCorrectPosition(true);
                 this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
-            } else {
-                nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
             }
-        } else {
-            nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
         }
     }
 

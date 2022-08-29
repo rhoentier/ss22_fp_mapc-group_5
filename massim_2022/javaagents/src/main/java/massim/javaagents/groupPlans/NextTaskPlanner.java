@@ -13,7 +13,8 @@ import massim.javaagents.plans.NextPlanGoalZone;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toCollection;
 
 public class NextTaskPlanner {
 
@@ -40,9 +41,12 @@ public class NextTaskPlanner {
             int mod = size % 4;
 //            System.out.println("mod " + mod + " -- groups of four " + groupsOfFour);
             switch (mod) {
-                case 1 -> getBestPlanForAgents(new ArrayList<>(agents.subList((4 * groupsOfFour), 1 + (4 * groupsOfFour))));
-                case 2 -> getBestPlanForAgents(new ArrayList<>(agents.subList((4 * groupsOfFour), 2 + (4 * groupsOfFour))));
-                case 3 -> getBestPlanForAgents(new ArrayList<>(agents.subList((4 * groupsOfFour), 3 + (4 * groupsOfFour))));
+                case 1 -> getBestPlanForAgents(
+                        new ArrayList<>(agents.subList((4 * groupsOfFour), 1 + (4 * groupsOfFour))));
+                case 2 -> getBestPlanForAgents(
+                        new ArrayList<>(agents.subList((4 * groupsOfFour), 2 + (4 * groupsOfFour))));
+                case 3 -> getBestPlanForAgents(
+                        new ArrayList<>(agents.subList((4 * groupsOfFour), 3 + (4 * groupsOfFour))));
             }
         }
     }
@@ -51,10 +55,16 @@ public class NextTaskPlanner {
         boolean foundPlanForAll = false;
         NextGroupPlan bestPlan = null;
         for (NextGroupPlan possiblePlan : activePlans) {
-            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable() && possiblePlan.GetTask().GetRequiredBlocks().size() == agents.size()) {
-                if (bestPlan == null || bestPlan.GetUtilization() <= possiblePlan.GetUtilization()) {
-                    foundPlanForAll = true;
-                    bestPlan = possiblePlan;
+            if (possiblePlan.IsPreconditionFulfilled() && possiblePlan.IsDeadlineFulfillable() && possiblePlan.GetTask()
+                    .GetRequiredBlocks().size() == agents.size()) {
+                ArrayList<NextAgentPlan> currentAgentPlans = currentPlans.values().stream()
+                        .filter(plan -> plan.GetTask().GetName().equals(possiblePlan.GetTask().GetName()))
+                        .collect(toCollection(ArrayList::new));
+                if (currentAgentPlans.size() < 4) {
+                    if (bestPlan == null || bestPlan.GetUtilization() <= possiblePlan.GetUtilization()) {
+                        foundPlanForAll = true;
+                        bestPlan = possiblePlan;
+                    }
                 }
             }
         }
@@ -125,11 +135,15 @@ public class NextTaskPlanner {
 
         int[] estimatedStepsInPartition = {0, 0};
 
-        estimatedStepsInPartition[0] = estimatedStepsInPartition[0] + stepsToDispenser.get(agentArray.get(0)).get(blockArray.get(0));
-        estimatedStepsInPartition[1] = estimatedStepsInPartition[1] + stepsToDispenser.get(agentArray.get(0)).get(blockArray.get(1));
+        estimatedStepsInPartition[0] = estimatedStepsInPartition[0] + stepsToDispenser.get(agentArray.get(0))
+                .get(blockArray.get(0));
+        estimatedStepsInPartition[1] = estimatedStepsInPartition[1] + stepsToDispenser.get(agentArray.get(0))
+                .get(blockArray.get(1));
 
-        estimatedStepsInPartition[0] = estimatedStepsInPartition[0] + stepsToDispenser.get(agentArray.get(1)).get(blockArray.get(1));
-        estimatedStepsInPartition[1] = estimatedStepsInPartition[1] + stepsToDispenser.get(agentArray.get(1)).get(blockArray.get(0));
+        estimatedStepsInPartition[0] = estimatedStepsInPartition[0] + stepsToDispenser.get(agentArray.get(1))
+                .get(blockArray.get(1));
+        estimatedStepsInPartition[1] = estimatedStepsInPartition[1] + stepsToDispenser.get(agentArray.get(1))
+                .get(blockArray.get(0));
 
         ArrayList<NextPlan> subPlans = new ArrayList<>();
         boolean main = blockArray.get(0).GetPosition().equals(topBlock);
@@ -190,7 +204,8 @@ public class NextTaskPlanner {
      */
     public void UpdateTasksAndAgents(HashSet<NextTask> newTasks) {
         for (NextTask newTask : newTasks) {
-            HashSet<String> actualTasks = activePlans.stream().map(activeTask -> activeTask.GetTask().GetName()).collect(Collectors.toCollection(HashSet::new));
+            HashSet<String> actualTasks = activePlans.stream().map(activeTask -> activeTask.GetTask().GetName())
+                    .collect(toCollection(HashSet::new));
             if (!actualTasks.contains(newTask.GetName())) {
                 activePlans.add(new NextGroupPlan(group, newTask));
             }

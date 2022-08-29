@@ -90,6 +90,7 @@ public class NextAgent extends Agent {
     private int failStatus = 0;
 
     public NextMessage nextMessage = new NextMessage();
+    private boolean correctPosition = false;
 
     /*
      * ##################### endregion fields
@@ -366,6 +367,10 @@ public class NextAgent extends Agent {
         this.pathMemory = pathMemory;
     }
 
+    public void SetCorrectPosition(boolean correctPosition) {
+        this.correctPosition = correctPosition;
+    }
+
     public void ClearPathMemory() {
         this.pathMemory = new ArrayList<Action>();
     }
@@ -528,10 +533,9 @@ public class NextAgent extends Agent {
         }
         return distances;
     }
-    
-    public boolean IsAgentActivity(EAgentActivity activity)
-    {
-    	return this.agentActivity.equals(activity);
+
+    public boolean IsAgentActivity(EAgentActivity activity) {
+        return this.agentActivity.equals(activity);
     }
 
     /*
@@ -697,6 +701,11 @@ public class NextAgent extends Agent {
 
 
     private Action selectNextAction2() {
+        if (correctPosition) {
+            if (pathMemory.isEmpty()) correctPosition = false;
+            else return selectNextAction();
+        }
+
         // -- Mögliche Action holen, um auf lokale sicht zu reagieren.
         // -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
         Action possibleAction = intention.GeneratePossibleAction();
@@ -1157,6 +1166,7 @@ public class NextAgent extends Agent {
             this.agentGroup.GetGroupMap().SetSimulationMapHeight(MapHeight);
         }
     }
+
 
     /*
      * ##################### endregion private methods
