@@ -314,6 +314,10 @@ public class NextIntention {
         }
         return null;
     }
+    
+    
+    
+    
 
 
     // ALTE FUNKTION
@@ -553,8 +557,6 @@ public class NextIntention {
                 if (this.nextAgent.GetPathMemory()
                         .isEmpty() && this.nextAgent.GetAgentPlan() != null && map.IsGoalZoneAvailable()) {
                     NextPlanConnect nextPlanConnect = ((NextPlanConnect) this.nextAgent.GetAgentPlan());
-
-                    // TODO hier weitern, damit die 2er Task in der Mitte der Goalzone abgegeben werden können
                     if (nextPlanConnect.IsAgentMain()) {
                         calcBestPosForMainAgent();
                     } else {

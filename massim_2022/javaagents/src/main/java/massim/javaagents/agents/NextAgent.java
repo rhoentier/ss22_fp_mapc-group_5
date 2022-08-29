@@ -433,7 +433,7 @@ public class NextAgent extends Agent {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].getThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
                 pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target, this.simStatus.GetCurrentStep());
-                this.say("A* path:" + pathMemoryA);
+                //this.say("A* path:" + pathMemoryA);
                 if (pathMemoryA.size() == 0) {
                     // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
                     return calculateManhattanPath(target);
@@ -652,7 +652,7 @@ public class NextAgent extends Agent {
 
         //System.out.println("path" + newPath);
         // Join Path
-        System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
+        //System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
 
         if (newPath.isEmpty()) {
             newPath.add(NextAgentUtil.GenerateRandomMove());
@@ -853,7 +853,7 @@ public class NextAgent extends Agent {
         int targetY = target.y - GetPosition().y;
         // this.say("Values path: " + targetX +" "+ targetY);
         pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
-        this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
+        //this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
         return pathMemoryB;
     }
 

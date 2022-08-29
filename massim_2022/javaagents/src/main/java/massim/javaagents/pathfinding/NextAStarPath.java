@@ -120,7 +120,7 @@ public class NextAStarPath {
                 // at the end, return path
                 routeAvailable = true;
 
-                System.out.println("Path Found");
+                //System.out.println("Path Found");
                 break;
             }
 
