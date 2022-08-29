@@ -4,14 +4,27 @@ import massim.javaagents.agents.NextAgent;
 import massim.javaagents.groupPlans.NextAgentPlan;
 import massim.javaagents.percept.NextTask;
 
+import java.util.ArrayList;
+
 public class NextTaskHandler {
 
     private NextPlanSolveTask currentPlan;
     private final NextAgent agent;
+    private boolean initialTask = false;
 
 
     public NextTaskHandler(NextAgent agent) {
         this.agent = agent;
+    }
+
+    public void SetInitialTask() {
+        if (!initialTask) {
+            initialTask = true;
+            NextTask task = agent.GetSimulationStatus().GetTasksList().iterator().next();
+            ArrayList<NextPlan> subPlans = new ArrayList<>();
+            subPlans.add(new NextPlanDispenser(task.GetRequiredBlocks().iterator().next()));
+            currentPlan = new NextPlanSolveTask(agent, new NextAgentPlan(task, subPlans));
+        }
     }
 
     /**
@@ -24,12 +37,13 @@ public class NextTaskHandler {
     }
 
     /**
-     * Get the ThingType of the required blocl
+     * Get the ThingType of the required block
+     *
      * @return thingType is a plan is set, "Empty" else
      */
-    public String GetRequiredBlockType(){
-        if (currentPlan != null){
-            for(NextPlan subPlan : currentPlan.subPlans){
+    public String GetRequiredBlockType() {
+        if (currentPlan != null) {
+            for (NextPlan subPlan : currentPlan.subPlans) {
                 if (subPlan instanceof NextPlanDispenser)
                     return ((NextPlanDispenser) subPlan).GetDispenser().getThingType();
             }
@@ -43,6 +57,7 @@ public class NextTaskHandler {
     }
 
     public void SetAgentPlan(NextAgentPlan groupPlan) {
+        if (groupPlan == null) return;
         if (currentPlan == null) {
             currentPlan = new NextPlanSolveTask(agent, groupPlan);
             return;
@@ -52,7 +67,6 @@ public class NextTaskHandler {
     }
 
     public void UpdateTasks() {
-        if (currentPlan != null)
-            currentPlan.UpdateInternalBelief();
+        if (currentPlan != null) currentPlan.UpdateInternalBelief();
     }
 }
