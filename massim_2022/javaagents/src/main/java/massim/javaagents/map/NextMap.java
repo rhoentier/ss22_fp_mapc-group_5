@@ -554,7 +554,7 @@ public class NextMap {
 
             // Only for debugging
 
-            // map.WriteToFile("map_" + agent.GetGroup().getGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
+            // map.WriteToFile("map_" + agent.GetGroup().GetGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
 
         } else if (agent.GetAgentStatus().GetLastAction().contains("move") && !agent.GetAgentStatus().GetLastActionResult().equals("success")) {
             agent.clearAgentStepMemory();
