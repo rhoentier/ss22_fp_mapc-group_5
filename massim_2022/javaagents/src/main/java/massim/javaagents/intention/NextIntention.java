@@ -554,21 +554,11 @@ public class NextIntention {
                 }
                 return null;
             case connectToAgent:
-                if (this.nextAgent.GetPathMemory()
-                        .isEmpty() && this.nextAgent.GetAgentPlan() != null && map.IsGoalZoneAvailable()) {
-                    NextPlanConnect nextPlanConnect = ((NextPlanConnect) this.nextAgent.GetAgentPlan());
-                    if (nextPlanConnect.IsAgentMain()) {
-                        calcBestPosForMainAgent();
-                    } else {
-                    	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "position");
-                    	if(nextMessage != null
-                    			&& !nextMessage.getPosition().equals(this.nextAgent.GetPosition()))
-                    	{
-                    		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(nextMessage.getPosition()));
-                    		NextMessageUtil.removeFromMessageStore(nextMessage);
-                    	}
-                        //calcWayToConnectPosition();
-                    }
+                NextPlanConnect nextPlanConnect = ((NextPlanConnect) this.nextAgent.GetAgentPlan());
+                if (nextPlanConnect.IsAgentMain()) {
+                    calcBestPosForMainAgent();
+                } else {
+                    calcWayToConnectPosition();
                 }
                 return null;
             default:
@@ -577,51 +567,44 @@ public class NextIntention {
     }
 
     private void calcBestPosForMainAgent() {
-
+        if (!nextAgent.GetPathMemory().isEmpty()) return;
         // check if agent is in middle of goalZone
         //move agent to middle of goalZone
         HashSet<Vector2D> goalPositions = nextAgent.GetAgentStatus().GetGoalZones().stream()
-                .map(NextMapTile::GetPosition).collect(
-                        Collectors.toCollection(HashSet::new));
-        if (!goalPositions.contains(new Vector2D(0, 2)) ||
-                !goalPositions.contains(new Vector2D(0, -2)) ||
-                !goalPositions.contains(new Vector2D(2, 0)) ||
-                !goalPositions.contains(new Vector2D(-2, 0))) {
+                .map(NextMapTile::GetPosition).collect(Collectors.toCollection(HashSet::new));
+        if (!goalPositions.contains(new Vector2D(0, 1)) || !goalPositions.contains(
+                new Vector2D(0, -1)) || !goalPositions.contains(new Vector2D(1, 0)) || !goalPositions.contains(
+                new Vector2D(-1, 0))) {
             for (NextMapTile mapTile : nextAgent.GetAgentStatus().GetGoalZones()) {
-                if (NextManhattanPath.CalculatePath(nextAgent.GetPosition(), mapTile.GetPosition()).size() >= 3) {
+                int pathLength = NextManhattanPath.CalculatePath(nextAgent.GetPosition(),
+                        nextAgent.GetPosition().getAdded(mapTile.GetPosition())).size();
+                if (pathLength >= 3 && pathLength <= 5) {
                     nextAgent.SetCorrectPosition(true);
-                    nextAgent.SetPathMemory(nextAgent.CalculatePath(mapTile.getPosition().getAdded(this.nextAgent.GetPosition())));
+                    nextAgent.SetPathMemory(
+                            nextAgent.CalculatePath(mapTile.getPosition().getAdded(this.nextAgent.GetPosition())));
                     return;
                 }
             }
         }
         // Position to secondAgent
         NextAgent involvedAgent = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents().iterator().next();
-        if(involvedAgent.IsAgentActivity(EAgentActivity.connectToAgent))
-        {
-	        Vector2D blockPos = ((NextPlanConnect) involvedAgent.GetAgentPlan()).GetTargetBlockPosition();
-	        Vector2D targetPos = this.nextAgent.GetPosition().getAdded(blockPos).getAdded(new Vector2D(0, 1));
-	        
-	        NextMessageUtil.addSpecificMessageToStore("position", this.nextAgent.getName(), involvedAgent.getName(), targetPos);
+        if (involvedAgent.GetAgentTask().equals(EAgentActivity.connectToAgent)) {
+            Vector2D blockPos = ((NextPlanConnect) involvedAgent.GetAgentPlan()).GetTargetBlockPosition();
+            Vector2D targetPos = this.nextAgent.GetPosition().getAdded(blockPos).getAdded(new Vector2D(0, 1));
+
+            NextMessageUtil.addSpecificMessageToStore("position", this.nextAgent.getName(), involvedAgent.getName(),
+                    targetPos);
         }
     }
 
 
     private void calcWayToConnectPosition() {
-    	// Handling to get easy access to involved agents
-        HashSet<NextAgent> involvedAgentSet = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents();
-        NextAgent[] involvedAgents = new NextAgent[involvedAgentSet.size()];
-        involvedAgents = involvedAgentSet.toArray(involvedAgents);
-        if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(involvedAgents[0].GetAgentStatus().GetGoalZones())) {
-            //TODO: Wenn Task mit mehr Blöcken abgearbeitet wird, dann hier verbessern
-            Vector2D involvedAgentPos = nextAgent.GetAgentGroup().GetAgentPosition(involvedAgents[0]);
-            // Calculate target position for the agent (one field below the block has to be)
-            Vector2D blockPos = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetTargetBlockPosition();
-            Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0, 1));
-            if (!targetPos.equals(this.nextAgent.GetPosition())) {
-                nextAgent.SetCorrectPosition(true);
-                this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(targetPos));
-            }
+        if (!nextAgent.GetPathMemory().isEmpty()) return;
+        NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "position");
+        if (nextMessage != null && !nextMessage.getPosition().equals(this.nextAgent.GetPosition())) {
+            nextAgent.SetCorrectPosition(true);
+            this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(nextMessage.getPosition()));
+            NextMessageUtil.removeFromMessageStore(nextMessage);
         }
     }
 
