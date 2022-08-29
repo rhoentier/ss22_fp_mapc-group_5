@@ -34,13 +34,13 @@ public final class NextMessageUtil {
 	public static void addSpecificMessageToStore(String message, String senderAgent, String targetAgent)
 	{
 		NextMessage nextMessage = new NextMessage(message, senderAgent, targetAgent);
-		messageStore.add(nextMessage);
+		if(!isMessageInStore(nextMessage)) messageStore.add(nextMessage);
 	}
 	
 	public static void addSpecificMessageToStore(String message, String senderAgent, String targetAgent, Vector2D position)
 	{
 		NextMessage nextMessage = new NextMessage(message, senderAgent, targetAgent, position);
-		messageStore.add(nextMessage);
+		if(!isMessageInStore(nextMessage)) messageStore.add(nextMessage);
 	}
 	
 	public static  NextMessage getMessageFromAgent(String agentName, String message)

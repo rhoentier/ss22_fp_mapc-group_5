@@ -38,6 +38,7 @@ public class NextIntention {
     private String lastDirection = "n";
     private int surveySteps = 0;
     private int surveyOutOfSteps = 0;
+    private int countWaitForDispenser = 0;
 
     private Vector2D lastDetachPosition = new Vector2D(0, 0);
 
@@ -155,8 +156,15 @@ public class NextIntention {
             ) {
             	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
                 if (nextMessage != null) {
+                	if(countWaitForDispenser < 2) // wait for 2 steps
+                	{
+                		nextPossibleAction = generateDefaultAction();
+                		countWaitForDispenser++;
+                		return true;
+                	}
                     // Nachricht betrifft mich ich setz eine Runde aus--
                     NextMessageUtil.removeFromMessageStore(nextMessage);
+                    countWaitForDispenser = 0;
                     return false;
                 } else {
                     if (nextAgentStatus.GetAttachedElementsAmount() == 0 &&
@@ -165,7 +173,9 @@ public class NextIntention {
                         for (NextAgent agent : agentSet) {
                         	NextMessageUtil.addSpecificMessageToStore("gehweg", this.nextAgent.getName(), agent.getName());
                         }
-                        return false;
+                        nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.request,
+                                NextAgentUtil.ChangeVector2DToIdentifier(position));
+                        return true;
                     }
 
                     if (visibleThing.IsDispenser() && !this.nextAgentStatus.GetLastAction().contains("request")) {

@@ -74,4 +74,15 @@ public final class NextMessage {
 	public void setPosition(Vector2D position) {
 		this.position = position;
 	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		NextMessage nextMessage = (NextMessage)o;
+		return this.getMessage().equals(nextMessage.getMessage())
+				&& this.getPosition() != null && nextMessage.getPosition() != null
+				&& this.getPosition().equals(nextMessage.getPosition())
+				&& this.getSenderAgent().equals(nextMessage.getSenderAgent())
+				&& this.getTargetAgent().equals(nextMessage.getTargetAgent());
+	}
 }
