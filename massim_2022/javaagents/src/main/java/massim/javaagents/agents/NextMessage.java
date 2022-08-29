@@ -2,7 +2,7 @@ package massim.javaagents.agents;
 
 import massim.javaagents.map.Vector2D;
 
-public class NextMessage {
+public final class NextMessage {
 
 	private String message;
 	private String senderAgent;
@@ -18,30 +18,30 @@ public class NextMessage {
 		this.message = message;
 	}
 
-	public void newMessage(String message, String senderAgent, String receiverAgent)
+	public NextMessage(String message, String senderAgent, String targetAgent)
 	{
 		this.message = message;
 		this.senderAgent = senderAgent;
-		this.targetAgent = receiverAgent;
+		this.targetAgent = targetAgent;
 		this.hasMessage = true;
 	}
 	
-	public void newMessage(String message, String senderAgent, String receiverAgent, Vector2D position)
+	public NextMessage(String message, String senderAgent, String targetAgent, Vector2D position)
 	{
 		this.message = message;
 		this.senderAgent = senderAgent;
-		this.targetAgent = receiverAgent;
+		this.targetAgent = targetAgent;
 		this.hasMessage = true;
 		this.position = position;
 	}
 	
-	public void clearMessage() {
-		this.message = "";
-		this.senderAgent = "";
-		this.targetAgent = "";
-		this.hasMessage = false;
-		this.position = new Vector2D(0,0);
-	}
+//	public void clearMessage() {
+//		this.message = "";
+//		this.senderAgent = "";
+//		this.targetAgent = "";
+//		this.hasMessage = false;
+//		this.position = new Vector2D(0,0);
+//	}
 
 	public String getSenderAgent() {
 		return senderAgent;

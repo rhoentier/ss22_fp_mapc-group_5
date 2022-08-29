@@ -89,8 +89,9 @@ public class NextAgent extends Agent {
     private int failOffest = 2;
     private int failStatus = 0;
 
-    public NextMessage nextMessage = new NextMessage();
     private boolean correctPosition = false;
+    
+    private Vector2D goToPosition = new Vector2D(); 
 
     /*
      * ##################### endregion fields
@@ -115,6 +116,7 @@ public class NextAgent extends Agent {
         this.processor = new NextPerceptReader(this);
 
         taskHandler = new NextTaskHandler(this);
+        this.setGoToPosition(new Vector2D(0, 0));
     }
 
     /*
@@ -426,6 +428,7 @@ public class NextAgent extends Agent {
         // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
 
         //NextMap map = GetMap();
+    	this.setGoToPosition(target);
         NextMap map = this.agentGroup.GetGroupMap();
         Boolean targetIsOnMap = map.IsOnMap(target);
         try {
@@ -505,7 +508,7 @@ public class NextAgent extends Agent {
      */
     public void HandleGroupMessage(String message, String senderAgent, String targetAgent) {
         this.say("Message (" + message + ") from " + senderAgent + " to " + targetAgent);
-        this.nextMessage.newMessage(message, senderAgent, targetAgent);
+        //this.nextMessage.newMessage(message, senderAgent, targetAgent);
         // definitive implementation needed
     }
 
@@ -536,6 +539,15 @@ public class NextAgent extends Agent {
     public boolean IsAgentActivity(EAgentActivity activity) {
         return this.agentActivity.equals(activity);
     }
+
+	public Vector2D getGoToPosition() {
+		return goToPosition;
+	}
+
+	public void setGoToPosition(Vector2D goToPosition) {
+		this.goToPosition = goToPosition;
+	}
+
 
     /*
      * ##################### endregion public methods
@@ -1166,7 +1178,6 @@ public class NextAgent extends Agent {
             this.agentGroup.GetGroupMap().SetSimulationMapHeight(MapHeight);
         }
     }
-
 
     /*
      * ##################### endregion private methods

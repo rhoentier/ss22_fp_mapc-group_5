@@ -5,6 +5,8 @@ import eis.iilang.Identifier;
 import massim.javaagents.agents.NextAgent;
 import massim.javaagents.agents.NextAgentStatus;
 import massim.javaagents.agents.NextAgentUtil;
+import massim.javaagents.agents.NextMessage;
+import massim.javaagents.agents.NextMessageUtil;
 import massim.javaagents.general.NextActionWrapper;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.general.NextConstants.EActions;
@@ -151,16 +153,17 @@ public class NextIntention {
                     && NextAgentUtil.HasFreeSlots(nextAgentStatus)
                     && NextAgentUtil.NextToUsingLocalView(position, nextAgent)
             ) {
-                if (nextAgent.nextMessage.hasMessage() && nextAgent.nextMessage.getTargetAgent().contains(nextAgent.getName())) {
+            	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
+                if (nextMessage != null) {
                     // Nachricht betrifft mich ich setz eine Runde aus--
-                    nextAgent.nextMessage.clearMessage();
+                    NextMessageUtil.removeFromMessageStore(nextMessage);
                     return false;
                 } else {
                     if (nextAgentStatus.GetAttachedElementsAmount() == 0 &&
                             NextAgentUtil.IsAnotherAgentInNearOfBlock(position, this.nextAgentStatus.GetFullLocalView())) {
                         HashSet<NextAgent> agentSet = NextAgentUtil.getAgentsInFrontOfBlock(nextAgent.GetPosition(), nextAgent.GetAgentGroup().GetAgents(), position);
                         for (NextAgent agent : agentSet) {
-                            nextAgent.nextMessage.newMessage("Gehweg", this.nextAgent.getName(), agent.getName());
+                        	NextMessageUtil.addSpecificMessageToStore("gehweg", this.nextAgent.getName(), agent.getName());
                         }
                         return false;
                     }
@@ -233,17 +236,15 @@ public class NextIntention {
                             new Identifier(nextPlanConnect.GetInvolvedAgents().iterator().next().getName()),
                             new Identifier("" + nextPlanConnect.GetTargetBlockPosition().x),
                             new Identifier("" + nextPlanConnect.GetTargetBlockPosition().y));
-                    nextAgent.nextMessage.newMessage("connect",
+                    NextMessageUtil.addSpecificMessageToStore("connect",
                             nextAgent.getName(),
                             nextPlanConnect.GetInvolvedAgents().iterator().next().getName()
-                            // position nextPlanConnect.get
                     );
                 } else {
-                    if (nextAgent.nextMessage.hasMessage()
-                            && nextAgent.nextMessage.getTargetAgent().contains(nextAgent.getName())
-                            && nextAgent.nextMessage.getMessage().contains("connect")) {
+                	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "connect");
+                    if (nextMessage != null) {
                         nextPossibleAction = NextActionWrapper.CreateAction(EActions.connect,
-                                new Identifier(nextAgent.nextMessage.getSenderAgent()),
+                                new Identifier(nextMessage.getSenderAgent()),
                                 new Identifier("" + nextPlanConnect.GetTargetBlockPosition().x),
                                 new Identifier("" + nextPlanConnect.GetTargetBlockPosition().y));
                         return true;
@@ -265,7 +266,6 @@ public class NextIntention {
         }
         return false;
     }
-
 
     private Action wrongBlockPositionAction(Vector2D requiredBlockPosition, String direction) {
         Vector2D oppositeBlockPosition = NextAgentUtil.GetOppositeVector(requiredBlockPosition);
@@ -560,7 +560,14 @@ public class NextIntention {
                     if (nextPlanConnect.IsAgentMain()) {
                         calcBestPosForMainAgent();
                     } else {
-                        calcWayToConnectPosition();
+                    	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "position");
+                    	if(nextMessage != null
+                    			&& !nextMessage.getPosition().equals(this.nextAgent.GetPosition()))
+                    	{
+                    		this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(nextMessage.getPosition()));
+                    		NextMessageUtil.removeFromMessageStore(nextMessage);
+                    	}
+                        //calcWayToConnectPosition();
                     }
                 }
                 return null;
@@ -583,16 +590,25 @@ public class NextIntention {
             for (NextMapTile mapTile : nextAgent.GetAgentStatus().GetGoalZones()) {
                 if (NextManhattanPath.CalculatePath(nextAgent.GetPosition(), mapTile.GetPosition()).size() >= 3) {
                     nextAgent.SetCorrectPosition(true);
-                    nextAgent.SetPathMemory(nextAgent.CalculatePath(mapTile.getPosition()));
+                    nextAgent.SetPathMemory(nextAgent.CalculatePath(mapTile.getPosition().getAdded(this.nextAgent.GetPosition())));
                     return;
                 }
             }
+        }
+        // Position to secondAgent
+        NextAgent involvedAgent = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents().iterator().next();
+        if(involvedAgent.IsAgentActivity(EAgentActivity.connectToAgent))
+        {
+	        Vector2D blockPos = ((NextPlanConnect) involvedAgent.GetAgentPlan()).GetTargetBlockPosition();
+	        Vector2D targetPos = this.nextAgent.GetPosition().getAdded(blockPos).getAdded(new Vector2D(0, 1));
+	        
+	        NextMessageUtil.addSpecificMessageToStore("position", this.nextAgent.getName(), involvedAgent.getName(), targetPos);
         }
     }
 
 
     private void calcWayToConnectPosition() {
-        // Handling to get easy access to involved agents
+    	// Handling to get easy access to involved agents
         HashSet<NextAgent> involvedAgentSet = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents();
         NextAgent[] involvedAgents = new NextAgent[involvedAgentSet.size()];
         involvedAgents = involvedAgentSet.toArray(involvedAgents);
@@ -604,11 +620,10 @@ public class NextIntention {
             Vector2D targetPos = involvedAgentPos.getAdded(blockPos).getAdded(new Vector2D(0, 1));
             if (!targetPos.equals(this.nextAgent.GetPosition())) {
                 nextAgent.SetCorrectPosition(true);
-                this.nextAgent.SetPathMemory(this.nextAgent.CalculatePathNextToTarget(targetPos));
+                this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(targetPos));
             }
         }
     }
-
 
     private boolean survey(String type) {
         boolean result = true;
