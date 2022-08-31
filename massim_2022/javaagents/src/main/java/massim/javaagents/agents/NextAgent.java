@@ -90,9 +90,9 @@ public class NextAgent extends Agent {
     private int failStatus = 0;
 
     private boolean correctPosition = false;
-    
-    private Vector2D goToPosition = new Vector2D(); 
-    public boolean connectedToAgent = false;
+
+    private Vector2D goToPosition = new Vector2D();
+    private boolean connectedToAgent = false;
 
     /*
      * ##################### endregion fields
@@ -355,9 +355,16 @@ public class NextAgent extends Agent {
         this.pathMemory = pathMemory;
     }
 
+
     public void SetCorrectPosition(boolean correctPosition) {
         this.correctPosition = correctPosition;
     }
+
+    public boolean GetCorrectPosition() {
+        return correctPosition;
+    }
+
+    public boolean GetConnectedToAgent(){return connectedToAgent;}
 
     public void ClearPathMemory() {
         this.pathMemory = new ArrayList<Action>();
@@ -699,11 +706,6 @@ public class NextAgent extends Agent {
 
 
     private Action selectNextAction2() {
-        if (correctPosition) {
-            if (pathMemory.isEmpty()) correctPosition = false;
-            else return selectNextAction();
-        }
-
         // -- Mögliche Action holen, um auf lokale sicht zu reagieren.
         // -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
         Action possibleAction = intention.GeneratePossibleAction();

@@ -231,12 +231,19 @@ public class NextIntention {
     }
 
     private boolean connectToAgentAction() {
-    	if(this.nextAgent.connectedToAgent)
-    	{
-    		// -- ("Action - Submit");
-            nextPossibleAction = NextActionWrapper.CreateAction(EActions.submit, new Identifier(nextAgent.GetActiveTask().GetName()));
-    		return true;
-    	}
+        // correct the own position if necessary
+        if (nextAgent.GetCorrectPosition()) {
+            if (nextAgent.GetPathMemory().isEmpty())
+                nextAgent.SetCorrectPosition(false);
+            else return false;
+        }
+        // agent is already connected and ready to submit
+        if (this.nextAgent.GetConnectedToAgent()) {
+            // -- ("Action - Submit");
+            nextPossibleAction = NextActionWrapper.CreateAction(EActions.submit,
+                    new Identifier(nextAgent.GetActiveTask().GetName()));
+            return true;
+        }
         // Verbindung zweier Agenten
         NextPlanConnect nextPlanConnect = ((NextPlanConnect) this.nextAgent.GetAgentPlan());
         if (nextPlanConnect != null && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) {
