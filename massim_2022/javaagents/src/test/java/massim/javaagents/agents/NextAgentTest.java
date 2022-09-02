@@ -5,6 +5,8 @@
 package massim.javaagents.agents;
 
 import eis.iilang.Action;
+import eis.iilang.Identifier;
+import eis.iilang.Parameter;
 import eis.iilang.Percept;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,35 +30,32 @@ public class NextAgentTest {
     public NextAgentTest() {
     }
 
-    
     /**
      * Test of handleMessage method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testHandleMessage() {
-        System.out.println("handleMessage");
-        Percept message = null;
-        String sender = "";
-        NextAgent instance = null;
+        NextAgent instance = new NextAgent("first", null);
+        Percept message = new Percept("MapSizeDiscoveryHasStarted");
+        String sender = "testAgent";
         instance.handleMessage(message, sender);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(instance.GetSimulationStatus().HasMapSizeDiscoveryStarted());
     }
 
     /**
      * Test of step method, of class NextAgent.
      */
     @Test
-    @Ignore
-    public void testStep() {
-        System.out.println("step");
+    public void testStepGroupBuilding() {
         NextAgent instance = new NextAgent("1", null);
         Action expResult = null;
         Action result = instance.step();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        NextGroup expGroupResult = new NextGroup(instance, 0);
+        NextGroup groupResult = instance.GetAgentGroup();
+        assertFalse(groupResult == null);
+        assertTrue(groupResult instanceof NextGroup);
+        assertEquals(expGroupResult, groupResult);
     }
 
     /**
@@ -157,7 +156,7 @@ public class NextAgentTest {
         instance.SetPathMemory(pathMemory);
         assertFalse(instance.GetPathMemory().isEmpty());
         assertEquals(pathMemory, instance.GetPathMemory());
-        
+
         instance.ClearPathMemory();
         assertTrue(instance.GetPathMemory().isEmpty());
     }
@@ -170,7 +169,7 @@ public class NextAgentTest {
         NextAgent instance = new NextAgent("first", null);
         NextGroup group = new NextGroup(instance, 0);
         group.SetAgentPosition(instance, new Vector2D(10, 10));
-        
+
         Vector2D expResult = new Vector2D(10, 10);
         Vector2D result = instance.GetPosition();
         assertEquals(expResult, result);
@@ -184,7 +183,7 @@ public class NextAgentTest {
         NextAgent instance = new NextAgent("first", null);
         NextGroup group = new NextGroup(instance, 0);
         group.SetAgentPosition(instance, new Vector2D(10, 10));
-        
+
         Vector2D expResult = new Vector2D(10, 10);
         Vector2D result = instance.GetPositionRef();
         assertEquals(expResult, result);
@@ -209,77 +208,116 @@ public class NextAgentTest {
      * Test of GetGroup method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testGetGroup() {
-        System.out.println("GetGroup");
-        NextAgent instance = null;
-        NextGroup expResult = null;
-        NextGroup result = instance.GetGroup();
+        NextAgent instance = new NextAgent("1", null);
+        NextGroup group1 = new NextGroup(instance, 0);
+        NextGroup expResult = group1;
+        NextGroup result = instance.GetAgentGroup();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
-    
-    
+
     /**
      * Test of CalculatePath method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testCalculatePath() {
-        System.out.println("CalculatePath");
-        Vector2D target = null;
-        NextAgent instance = null;
-        List<Action> expResult = null;
+        Vector2D target = new Vector2D(-2, 4);
+        NextAgent instance = new NextAgent("1", null);
+        NextGroup group1 = new NextGroup(instance, 0);
+        List<Action> expResult = new ArrayList<>();
+        expResult.add(new Action("move", new Identifier("w")));
+        expResult.add(new Action("move", new Identifier("w")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
         List<Action> result = instance.CalculatePath(target);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result.size() == 6);
     }
 
     /**
-     * Test of CalculatePathNextToTarget method, of class NextAgent.
+     * Test of CalculatePathNextToTarget method, of class NextAgent. Method
+     * returns default path when adjasent tiles are not reachable
      */
     @Test
-    @Ignore
     public void testCalculatePathNextToTarget() {
-        System.out.println("CalculatePathNextToTarget");
-        Vector2D target = null;
-        NextAgent instance = null;
-        List<Action> expResult = null;
+        Vector2D target = new Vector2D(-2, 4);
+        NextAgent instance = new NextAgent("1", null);
+        NextGroup group1 = new NextGroup(instance, 0);
+        List<Action> expResult = new ArrayList<>();
+
+        expResult.add(new Action("move", new Identifier("w")));
+        expResult.add(new Action("move", new Identifier("w")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
+        expResult.add(new Action("move", new Identifier("s")));
+
         List<Action> result = instance.CalculatePathNextToTarget(target);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
     }
 
     /**
      * Test of TellGroup method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testTellGroup() {
-        System.out.println("TellGroup");
-        String message = "";
-        NextAgent instance = null;
-        instance.TellGroup(message);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        NextAgent instance1 = new NextAgent("1", null);
+        NextAgent instance2 = new NextAgent("2", null);
+        NextAgent instance3 = new NextAgent("3", null);
+        NextAgent instance4 = new NextAgent("4", null);
+
+        NextGroup group1 = new NextGroup(instance1, 0);
+        group1.AddAgent(instance2);
+        group1.AddAgent(instance3);
+        group1.AddAgent(instance4);
+
+        String message = "JUNIT TEST";
+        instance1.TellGroup(message);
+
+        for (NextAgent agent : group1.GetAgents()) {
+            if (!agent.getName().equals("1")) {
+                assertEquals("JUNIT TEST", agent.GetAgentStatus().GetName());
+            }
+        }
     }
 
     /**
      * Test of TellGroupAgent method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testTellGroupAgent() {
-        System.out.println("TellGroupAgent");
-        String message = "";
-        String agentName = "";
-        NextAgent instance = null;
-        instance.TellGroupAgent(message, agentName);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        NextAgent instance1 = new NextAgent("1", null);
+        instance1.GetAgentStatus().SetName("1");
+        NextAgent instance2 = new NextAgent("2", null);
+        instance2.GetAgentStatus().SetName("2");
+        NextAgent instance3 = new NextAgent("3", null);
+        instance3.GetAgentStatus().SetName("3");
+        NextAgent instance4 = new NextAgent("4", null);
+        instance4.GetAgentStatus().SetName("4");
+
+        NextGroup group1 = new NextGroup(instance1, 0);
+        group1.AddAgent(instance2);
+        group1.AddAgent(instance3);
+        group1.AddAgent(instance4);
+
+        for (NextAgent agent : group1.GetAgents()) {
+            assertFalse(agent.GetAgentStatus().GetName().equals("JUNIT TEST"));
+        }
+
+        String message = "JUNIT TEST";
+        instance1.TellGroupAgent(message, instance3.GetAgentStatus().GetName());
+
+        for (NextAgent agent : group1.GetAgents()) {
+            if (agent.getName().equals("3")) {
+                assertEquals("JUNIT TEST", agent.GetAgentStatus().GetName());
+            } else {
+                assertFalse(agent.GetAgentStatus().GetName().equals("JUNIT TEST"));
+            }
+        }
     }
 
     /**
