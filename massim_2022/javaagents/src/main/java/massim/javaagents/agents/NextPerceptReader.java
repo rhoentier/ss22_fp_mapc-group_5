@@ -112,11 +112,11 @@ public class NextPerceptReader {
                         // - AllSimulationsAreFinished Message
                         case bye:
                             // is called, when last Simulation is finished.
-                            agent.setFlagDisableAgent();
+                            // no action, should be handled in NextAgent
                             break;
                         // - Request Action Messages
                         case requestAction:
-                            agent.setFlagActionRequest();
+                            // no action, should be handled in NextAgent
                             break;
                         case actionID:
                             simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
