@@ -52,8 +52,6 @@ public class NextAgent extends Agent {
      * ########## region fields
      */
     private int lastID = -1;        // Is used to compare with actionID -> new Step Recognition
-    private Boolean actionRequestActive = false; // Todo: implement reaction to True if needed. Is activated, before next Step.
-    private Boolean disableAgentFlag = false; // True when all Simulations are finished 
 
     //Agent related attributes
     private NextAgentStatus agentStatus;
@@ -280,22 +278,6 @@ public class NextAgent extends Agent {
      */
     public NextSimulationStatus GetSimulationStatus() {
         return simStatus;
-    }
-
-    /**
-     * Set flag to disable agent
-     * currently not used
-     */
-    public void setFlagDisableAgent() {
-        this.disableAgentFlag = true;
-    }
-
-    /**
-     * Set flag - action request 
-     * currently not used
-     */
-    public void setFlagActionRequest() {
-        this.actionRequestActive = true;
     }
 
     public NextTask GetActiveTask() {
