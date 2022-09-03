@@ -87,8 +87,10 @@ public class NextAgent extends Agent {
     private EAgentActivity agentActivity;
     private NextPlan agentPlan;
 
-    private int failOffest = 2;
+    private int failOffset = 2;
     private int failStatus = 0;
+    // Counter for successful submits for a single task
+    private int solvedTasks = 0;
 
     private boolean correctPosition = false;
 
@@ -237,8 +239,13 @@ public class NextAgent extends Agent {
 
             // new path
             if (agentGroup != null) {
-                NextAgentPlan groupPlan = agentGroup.GetPlan(this);
-                taskHandler.SetAgentPlan(groupPlan);
+                if (solvedTasks >= 1 || agentGroup.IsDeadlineReached(GetActiveTask())
+                        || agentActivity.equals(EAgentActivity.cleanMap)){
+                    solvedTasks = 0;
+                    failStatus = 0;
+                    NextAgentPlan groupPlan = agentGroup.GetPlan(this);
+                    taskHandler.SetAgentPlan(groupPlan);
+                }
                 NextPlan nextPlan = taskHandler.GetDeepestEAgentTask();
                 if (nextPlan != null) {
                     NextTask nextTask = taskHandler.GetCurrentTask();
@@ -258,7 +265,7 @@ public class NextAgent extends Agent {
 
 
             //printActionsReport(); // live String output to console
-            printBlockedStepsReport(); // live String output to console
+            //printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
 
 			System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
@@ -989,11 +996,12 @@ public class NextAgent extends Agent {
     private void CheckIfMaxAttemptsAreReached() {
         if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target"))
             failStatus += 1;
-        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success"))
+        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success")) {
             failStatus = 0;
+            solvedTasks +=1;
+        }
 
-        if (failStatus == failOffest) agentGroup.SetMaxAttemptsAreReached(activeTask);
-
+        if (failStatus == failOffset) agentGroup.SetMaxAttemptsAreReached(activeTask);
     }
 
     /**

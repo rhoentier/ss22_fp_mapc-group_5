@@ -456,8 +456,8 @@ public class NextIntention {
                 }
                 if (nextAgent.GetPathMemory().isEmpty()) {
                     nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
-                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision),
-                                    NextAgentUtil.GenerateRandomNumber(vision))));
+                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision * 2),
+                                    NextAgentUtil.GenerateRandomNumber(vision * 2))));
                 }
                 return null;
             default:

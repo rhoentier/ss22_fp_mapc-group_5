@@ -254,7 +254,7 @@ public class NextAStarPath {
                     // at the end, return path
                     routeAvailable = true;
 
-                    System.out.println("Path Found");
+//                    System.out.println("Path Found");
                     break;
                 }
 
@@ -287,7 +287,7 @@ public class NextAStarPath {
                     // at the end, return path
                     routeAvailable = true;
 
-                    System.out.println("Path Found");
+//                    System.out.println("Path Found");
                     break;
                 }
 
@@ -353,7 +353,7 @@ public class NextAStarPath {
         }
 
         // no path found, return empty List
-        System.out.println("No Path Found");
+//        System.out.println("No Path Found");
         return new ArrayList<>();
 
     }
