@@ -18,7 +18,7 @@ import org.junit.Before;
  *
  * @author Alexander Lorenz
  */
-@Ignore
+
 public class NextGroupTest {
 
     public NextGroupTest() {
@@ -35,13 +35,13 @@ public class NextGroupTest {
         NextAgent agent = new NextAgent("second", null);
         NextGroup instance = defaultGroup;
         assertEquals(instance.GetAgents().size(), 1);
-        instance.addAgent(agent);
+        instance.AddAgent(agent);
         assertEquals(instance.GetAgents().size(), 2);
         assertTrue(instance.GetAgents().contains(agent));
     }
 
     /**
-     * Test of removeAgent method, of class NextGroup.
+     * Test of RemoveAgent method, of class NextGroup.
      */
     @Test
     public void testRemoveAgent() {
@@ -49,9 +49,9 @@ public class NextGroupTest {
         NextAgent agent = new NextAgent("second", null);
         NextGroup defaultGroup = new NextGroup(defaultAgent, 0);
         NextGroup instance = defaultGroup;
-        instance.addAgent(agent);
+        instance.AddAgent(agent);
         assertEquals(instance.GetAgents().size(), 2);
-        instance.removeAgent(agent);
+        instance.RemoveAgent(agent);
         assertEquals(instance.GetAgents().size(), 1);
         assertTrue(!instance.GetAgents().contains(agent));
     }
@@ -65,9 +65,9 @@ public class NextGroupTest {
         NextAgent agent = new NextAgent("second", null);
         NextGroup defaultGroup = new NextGroup(defaultAgent, 0);
         NextGroup instance = defaultGroup;
-        instance.addAgent(agent);
+        instance.AddAgent(agent);
         int expResult = 2;
-        int result = instance.countAgents();
+        int result = instance.CountAgents();
         assertEquals(expResult, result);
     }
 
@@ -91,7 +91,7 @@ public class NextGroupTest {
         NextAgent defaultAgent = new NextAgent("first", null);
         NextGroup instance = new NextGroup(defaultAgent, 12);
         int expResult = 12;
-        int result = instance.getGroupID();
+        int result = instance.GetGroupID();
         assertEquals(expResult, result);
     }
 
@@ -105,11 +105,11 @@ public class NextGroupTest {
         NextAgent agent3 = new NextAgent("third", null);
 
         NextGroup instance = new NextGroup(agent1, 0);
-        instance.addAgent(agent1);
+        instance.AddAgent(agent1);
         instance.SetAgentPosition(agent1, new Vector2D(10, 10));
-        instance.addAgent(agent2);
+        instance.AddAgent(agent2);
         instance.SetAgentPosition(agent2, new Vector2D(14, 12));
-        instance.addAgent(agent3);
+        instance.AddAgent(agent3);
         instance.SetAgentPosition(agent3, new Vector2D(8, 11));
 
         Vector2D centerPosition = new Vector2D(10, 10);
@@ -120,7 +120,7 @@ public class NextGroupTest {
 
         HashSet<NextMapTile> expResult = new HashSet<>();
         expResult.add(new NextMapTile(1, 1, 0));
-        HashSet<NextMapTile> result = instance.removePositionsOfKnownAgents(centerPosition, positions);
+        HashSet<NextMapTile> result = instance.RemovePositionsOfKnownAgents(centerPosition, positions);
         assertEquals(expResult, result);
     }
 
@@ -133,7 +133,7 @@ public class NextGroupTest {
         NextGroup defaultGroup = new NextGroup(defaultAgent, 0);
         NextAgent agent = defaultAgent;
         NextGroup instance = defaultGroup;
-        instance.addAgent(agent);
+        instance.AddAgent(agent);
         instance.SetAgentPosition(agent, new Vector2D(10, 10));
 
         Vector2D expResult = new Vector2D(10, 10);
@@ -150,7 +150,7 @@ public class NextGroupTest {
         NextGroup defaultGroup = new NextGroup(defaultAgent, 0);
         NextAgent agent = defaultAgent;
         NextGroup instance = defaultGroup;
-        instance.addAgent(agent);
+        instance.AddAgent(agent);
         instance.SetAgentPosition(agent, new Vector2D(10, 10));
 
         assertTrue(instance.GetAgentPositions().contains(new Vector2D(10, 10)));
@@ -180,7 +180,7 @@ public class NextGroupTest {
 
         NextGroup group1 = new NextGroup(agent1, 0);
         NextGroup group2 = new NextGroup(agent2, 0);
-        group2.addAgent(agent3);
+        group2.AddAgent(agent3);
         
         group1.SetAgentPosition(agent1,new Vector2D(2, 2));
         group2.SetAgentPosition(agent2,new Vector2D(0, 0));
@@ -209,17 +209,16 @@ public class NextGroupTest {
         NextAgent agent2 = new NextAgent("2", null);
         NextAgent agent3 = new NextAgent("3", null);
         NextGroup instance = new NextGroup(agent1, 0);
-        instance.addAgent(agent2);
-        instance.addAgent(agent3);
+        instance.AddAgent(agent2);
+        instance.AddAgent(agent3);
         agent1.GetAgentStatus().SetName("1");
         agent2.GetAgentStatus().SetName("2");
         agent3.GetAgentStatus().SetName("3");
 
         String Message = "JUNIT TEST";
         NextAgent sourceAgent = agent1;
-        NextAgent targetAgent = agent2;
 
-        instance.TellGroupAgent(Message, targetAgent, sourceAgent);
+        instance.TellGroup(Message, sourceAgent);
 
         assertNotEquals("JUNIT TEST", agent1.GetAgentStatus().GetName());
         assertEquals("JUNIT TEST", agent2.GetAgentStatus().GetName());
@@ -237,8 +236,8 @@ public class NextGroupTest {
         NextAgent agent2 = new NextAgent("2", null);
         NextAgent agent3 = new NextAgent("3", null);
         NextGroup instance = new NextGroup(agent1, 0);
-        instance.addAgent(agent2);
-        instance.addAgent(agent3);
+        instance.AddAgent(agent2);
+        instance.AddAgent(agent3);
         agent1.GetAgentStatus().SetName("1");
         agent2.GetAgentStatus().SetName("2");
         agent3.GetAgentStatus().SetName("3");
@@ -247,7 +246,7 @@ public class NextGroupTest {
         NextAgent sourceAgent = agent1;
         NextAgent targetAgent = agent2;
 
-        instance.TellGroupAgent(Message, targetAgent, sourceAgent);
+        instance.TellGroupAgent(Message, targetAgent.GetAgentStatus().GetName(), sourceAgent);
 
         assertNotEquals("JUNIT TEST", agent1.GetAgentStatus().GetName());
         assertEquals("JUNIT TEST", agent2.GetAgentStatus().GetName());
@@ -264,8 +263,8 @@ public class NextGroupTest {
         NextAgent agent2 = new NextAgent("2", null);
         NextAgent agent3 = new NextAgent("3", null);
         NextGroup instance = new NextGroup(agent1, 0);
-        instance.addAgent(agent2);
-        instance.addAgent(agent3);
+        instance.AddAgent(agent2);
+        instance.AddAgent(agent3);
         instance.SetAgentPosition(agent1, new Vector2D(10, 10));
         instance.SetAgentPosition(agent2, new Vector2D(15, 10));
         instance.SetAgentPosition(agent3, new Vector2D(10, 15));

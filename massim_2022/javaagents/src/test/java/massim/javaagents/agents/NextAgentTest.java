@@ -16,7 +16,7 @@ import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
 import massim.javaagents.plans.NextPlan;
-import massim.javaagents.plans.NextTaskPlanner;
+import massim.javaagents.plans.NextTaskHandler;
 import org.junit.Test;
 import org.junit.Ignore;
 import static org.junit.Assert.*;
@@ -104,9 +104,9 @@ public class NextAgentTest {
         NextGroup group1 = new NextGroup(instance, 0);
         NextGroup group2 = new NextGroup(instance2, 0);
 
-        assertEquals(group2, instance2.GetGroup());
+        assertEquals(group2, instance2.GetAgentGroup());
         instance2.SetAgentGroup(group1);
-        assertEquals(group1, instance2.GetGroup());
+        assertEquals(group1, instance2.GetAgentGroup());
     }
 
     /**
@@ -390,7 +390,7 @@ public class NextAgentTest {
         NextAgent instance = new NextAgent("1", null);
         NextGroup group = new NextGroup(instance, 0);
         
-        assertTrue(instance.GetGroup() == group);
+        assertTrue(instance.GetAgentGroup() == group);
         assertTrue(instance.CountAllGroups() == 1);
         
         instance.SetAgentGroup(null);
