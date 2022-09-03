@@ -983,9 +983,9 @@ public final class NextAgentUtil {
 		for(NextAgent agent : agentSet)
 		{
 			NextAgentStatus agentStatus = agent.GetAgentStatus();
-			if(agentStatus.GetAttachedElementsAmount() > 0
-				&& !agentPosition.equals(position)
-				&& agentStatus.GetAttachedElementsNextMapTiles().iterator().next().getPosition().equals(position))
+			if(agentStatus.GetAttachedElementsAmount() > 0 
+					&& !agentPosition.equals(position)
+					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position))
 			{
 				return true;
 			}

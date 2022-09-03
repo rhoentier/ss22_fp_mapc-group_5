@@ -260,7 +260,8 @@ public class NextIntention {
         }
         // Verbindung zweier Agenten
         NextPlanConnect nextPlanConnect = ((NextPlanConnect) this.nextAgent.GetAgentPlan());
-        if (nextPlanConnect != null && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) {
+        if (nextPlanConnect != null) // && NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) 
+        {
             Vector2D requiredBlockPosition = new Vector2D(0, 0);
             requiredBlockPosition = nextPlanConnect.GetTargetBlockPosition();
             if (!nextPlanConnect.IsAgentMain()) {
@@ -284,35 +285,18 @@ public class NextIntention {
                             nextPlanConnect.GetInvolvedAgents().iterator().next().getName()
                     );
                 } else {
-                	if(!NextAgentUtil.IsBlockInPosition(requiredBlockPosition, this.nextAgentStatus.GetAttachedElementsVector2D()))
-                	{                
-                		direction = NextAgentUtil.RotateInWhichDirection(
-                            nextAgentStatus.GetAttachedElementsVector2D(),
-                            nextAgent.GetActiveTask().GetRequiredBlocks());
-                        nextPossibleAction = wrongBlockPositionAction(requiredBlockPosition, direction);
-//                		 if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "cw")) {
-//                             nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-//                             return true;
-//                         } else if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "ccw")) {
-//                        	 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-//                        	 return true;
-//                         }
-                        return true;
-                	}
-                	
                 	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "connect");
-                    if (nextMessage != null) {
+                    if (nextMessage != null && this.nextAgent.GetPosition().equals(this.nextAgent.getGoToPosition())) {
                         nextPossibleAction = NextActionWrapper.CreateAction(EActions.connect,
                                 new Identifier(nextMessage.getSenderAgent()),
                                 new Identifier("" + nextAgentStatus.GetAttachedElementsVector2D().iterator().next().x),
                                 new Identifier("" + nextAgentStatus.GetAttachedElementsVector2D().iterator().next().y));
+                        NextMessageUtil.removeFromMessageStore(nextMessage);
                         return true;
                     } else {
                         // Warten
-                    	
-
-                    	nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
-                        return true;
+                    	//nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+                        return false;
                     }
                 }
             } else {
@@ -386,6 +370,11 @@ public class NextIntention {
 
         if (plan == null) return null;
 
+        // Wechsel des Plans
+        if(!nextAgent.GetAgentTask().equals(plan.GetAgentTask()))
+        {
+        	nextAgent.ClearPathMemory();
+        }
         nextAgent.SetAgentTask(plan.GetAgentTask());
 
         // Survey failed 2 times -> RandomStep

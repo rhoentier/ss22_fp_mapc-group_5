@@ -304,7 +304,7 @@ public class NextAgent extends Agent {
              //**/
 
             if (this.agentStatus.GetLastActionResult().contains("fail")) {
-                //System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+                System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
                 //this.connectedToAgent = false;
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
