@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
  *
  * @author Alexander Lorenz
  */
+@Ignore
 public class NextAgentTest {
 
     public NextAgentTest() {

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.junit.Before;
  *
  * @author Alexander Lorenz
  */
+@Ignore
 public class NextGroupTest {
 
     public NextGroupTest() {

@@ -5,7 +5,6 @@ import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.groupPlans.NextAgentPlan;
 import massim.javaagents.map.NextMapTile;
-import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
 
 import java.util.ArrayList;
@@ -51,9 +50,11 @@ public class NextPlanSolveTask extends NextPlan {
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
         if (!isPreconditionFulfilled) fulfillPrecondition();
     }
-    public void SetReadyToConnect(){
+
+    public void SetReadyToConnect() {
         readyToConnect = true;
     }
+
     /**
      * Prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
@@ -64,6 +65,7 @@ public class NextPlanSolveTask extends NextPlan {
                 subplan.SetPlanIsFulfilled(false);
             }
             readyToConnect = false;
+
             return true;
         }
         return false;
@@ -107,7 +109,7 @@ public class NextPlanSolveTask extends NextPlan {
                 continue;
             }
             if (subPlan instanceof NextPlanGoalZone) {
-                if (readyToConnect) {
+                if (readyToConnect && subPlanIterator.hasNext()) {
                     subPlan.SetPlanIsFulfilled(true);
                     continue;
                 }

@@ -232,8 +232,21 @@ public class NextTaskPlanner {
     }
 
     public void SetMaxAttemptsAreReached(NextTask task) {
+        if(task == null) return;
         for (NextGroupPlan plan : activePlans) {
             if (plan.GetTask().GetName().equals(task.GetName())) plan.SetMaxAttemptsAreReached();
         }
+    }
+
+    public boolean IsDeadlineReached(NextTask activeTask) {
+        if (activeTask == null){
+            return true;
+        }
+        for (NextGroupPlan plan : activePlans){
+            if(plan.GetTask().GetName().equals(activeTask.GetName())){
+                return !plan.IsDeadlineFulfillable();
+            }
+        }
+        return true;
     }
 }

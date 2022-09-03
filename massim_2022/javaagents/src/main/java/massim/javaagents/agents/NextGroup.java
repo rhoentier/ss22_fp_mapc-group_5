@@ -335,6 +335,10 @@ public class NextGroup {
         return "NextGroup{" + "groupID=" + groupID + ", agentCount=" + agentSet.size() + '}';
     }
 
+    public boolean IsDeadlineReached(NextTask activeTask) {
+        return taskPlanner.IsDeadlineReached(activeTask);
+    }
+
     /*
      * ##################### endregion private methods
      */

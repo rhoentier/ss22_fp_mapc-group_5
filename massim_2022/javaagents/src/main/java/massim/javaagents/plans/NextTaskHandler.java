@@ -22,7 +22,7 @@ public class NextTaskHandler {
             initialTask = true;
             NextTask task = agent.GetSimulationStatus().GetTasksList().iterator().next();
             ArrayList<NextPlan> subPlans = new ArrayList<>();
-            subPlans.add(new NextPlanDispenser(task.GetRequiredBlocks().iterator().next()));
+            subPlans.add(new NextPlanCleanMap());
             currentPlan = new NextPlanSolveTask(agent, new NextAgentPlan(task, subPlans));
         }
     }
@@ -32,7 +32,11 @@ public class NextTaskHandler {
      * if no task is fulfillable returns the desire to explore the map
      */
     public NextPlan GetDeepestEAgentTask() {
-        if (currentPlan != null) return currentPlan.GetDeepestPlan();
+        NextPlan deepestPlan;
+        if (currentPlan != null) {
+            deepestPlan = currentPlan.GetDeepestPlan();
+            return deepestPlan;
+        }
         return null;
     }
 

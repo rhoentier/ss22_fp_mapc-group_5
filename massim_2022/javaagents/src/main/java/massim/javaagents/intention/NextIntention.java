@@ -463,8 +463,8 @@ public class NextIntention {
                 }
                 if (nextAgent.GetPathMemory().isEmpty()) {
                     nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
-                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision),
-                                    NextAgentUtil.GenerateRandomNumber(vision))));
+                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision * 2),
+                                    NextAgentUtil.GenerateRandomNumber(vision * 2))));
                 }
                 return null;
             default:
@@ -476,7 +476,7 @@ public class NextIntention {
         if (!nextAgent.GetPathMemory().isEmpty()) return;
 
         //move agent to middle of goalZone
-        if (positionHasBeenCorrected) {
+        if (!positionHasBeenCorrected) {
             positionHasBeenCorrected = true;
             HashSet<Vector2D> goalPositions = nextAgent.GetAgentStatus().GetGoalZones().stream().map(NextMapTile::GetPosition).collect(Collectors.toCollection(HashSet::new));
             Vector2D target = new Vector2D(0, 0);
