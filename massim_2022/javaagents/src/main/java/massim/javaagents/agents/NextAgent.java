@@ -258,12 +258,23 @@ public class NextAgent extends Agent {
 
 
             //printActionsReport(); // live String output to console
-            printBlockedStepsReport(); // live String output to console
+            //printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
 
-			System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
+			//System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
+            Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
             
-            Action nextAction = generatePathMemory();
+            // Auf Events reagieren
+            HashSet<NextMapTile> markers = this.agentStatus.GetMarkers();
+            if(markers != null && markers.size() > 0)
+            {            	
+//	            for(NextMapTile marker : this.agentStatus.GetMarkers())
+//	            {
+//	            	//Vector2D position = marker.getPosition();
+//	            }
+            }
+            
+            nextAction = generatePathMemory();
             if (nextAction == null) {
                 // Weg generiert - aktuelle Action auswählen
                 nextAction = selectNextAction2();
@@ -287,7 +298,7 @@ public class NextAgent extends Agent {
              //**/
 
             if (this.agentStatus.GetLastActionResult().contains("fail")) {
-                System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
+                //System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
                 //this.connectedToAgent = false;
             }
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report

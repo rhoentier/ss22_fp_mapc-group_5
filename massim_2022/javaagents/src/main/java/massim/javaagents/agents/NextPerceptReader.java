@@ -151,7 +151,7 @@ public class NextPerceptReader {
                                 obstacles.add(percept.getParameters());
                                 continue;
                             }
-                            if (percept.getParameters().get(2).toProlog().equals("markers")) {
+                            if (percept.getParameters().get(2).toProlog().equals("marker")) {
                                 markers.add(percept.getParameters());
                                 continue;
                             }
@@ -251,7 +251,7 @@ public class NextPerceptReader {
         processedMarkers = processThingsSet(markers);
         processedObstacles = processObstaclesSet();
         fullLocalView.addAll(processedThings);
-        // fullLocalView.addAll(processedMarkers); 
+        //fullLocalView.addAll(processedMarkers); 
         fullLocalView.addAll(processedObstacles);
         agentStatus.SetVision(processedThings); 
         agentStatus.SetMarkers(processedMarkers);

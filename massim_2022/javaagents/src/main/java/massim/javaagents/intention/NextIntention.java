@@ -284,6 +284,22 @@ public class NextIntention {
                             nextPlanConnect.GetInvolvedAgents().iterator().next().getName()
                     );
                 } else {
+                	if(!NextAgentUtil.IsBlockInPosition(requiredBlockPosition, this.nextAgentStatus.GetAttachedElementsVector2D()))
+                	{                
+                		direction = NextAgentUtil.RotateInWhichDirection(
+                            nextAgentStatus.GetAttachedElementsVector2D(),
+                            nextAgent.GetActiveTask().GetRequiredBlocks());
+                        nextPossibleAction = wrongBlockPositionAction(requiredBlockPosition, direction);
+//                		 if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "cw")) {
+//                             nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+//                             return true;
+//                         } else if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "ccw")) {
+//                        	 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+//                        	 return true;
+//                         }
+                        return true;
+                	}
+                	
                 	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "connect");
                     if (nextMessage != null) {
                         nextPossibleAction = NextActionWrapper.CreateAction(EActions.connect,
@@ -293,16 +309,7 @@ public class NextIntention {
                         return true;
                     } else {
                         // Warten
-                    	if(!NextAgentUtil.IsBlockInPosition(requiredBlockPosition, this.nextAgentStatus.GetAttachedElementsVector2D()))
-                    	{
-                    		 if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "cw")) {
-                                 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
-                                 return true;
-                             } else if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "ccw")) {
-                            	 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-                            	 return true;
-                             }
-                    	}
+                    	
 
                     	nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
                         return true;

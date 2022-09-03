@@ -992,4 +992,9 @@ public final class NextAgentUtil {
 		}
 		return false;
 	}
+	
+//	public static boolean IsNextToEvents(NextAgent nextAgent)
+//	{
+//		
+//	}
 }
