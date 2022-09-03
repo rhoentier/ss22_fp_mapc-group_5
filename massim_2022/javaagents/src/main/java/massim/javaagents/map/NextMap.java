@@ -373,6 +373,32 @@ public class NextMap {
     }
     
 
+    // ToDo: Wird das noch benötigt?
+    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
+        if (mapOld.length == 1 && mapOld[0].length == 1) {
+            return mapOld;
+        }
+
+        int mapWidth = mapOld.length;
+        int mapHeight = mapOld[0].length;
+        int xOffset = (int) position.x - ((int) (mapWidth / 2));
+        int yOffset = (int) position.y - ((int) (mapHeight / 2));
+        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
+
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                int oldX = (x - xOffset + mapWidth) % (mapWidth - 1);
+                int oldY = (y - yOffset + mapHeight) % (mapHeight - 1);
+                tempMap[x][y] = new NextMapTile(
+                        x,
+                        y,
+                        mapOld[oldX][oldY].getLastVisionStep(),
+                        mapOld[oldX][oldY].getThingType(),
+                        mapOld[oldX][oldY].GetStepMemory());
+            }
+        }
+        return tempMap;
+    }
 
     /**
      * Creates a copy of the map

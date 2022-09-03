@@ -69,6 +69,10 @@ public class NextMapTile {
         return isAThing;
     }
 
+    public Vector2D getPosition(){
+        return new Vector2D(positionX,positionY);
+    }
+
     public Integer getPositionX() {
         return positionX;
     }
@@ -265,6 +269,7 @@ public class NextMapTile {
     public void SetStepMemory(HashSet<Integer> stepMemory) {this.stepMemory = stepMemory;}
 
     public void AddToStepMemory(HashSet<Integer> stepMemory) {this.stepMemory.addAll(stepMemory);}
+    
     /*
     @Override
     public boolean equals(Object obj) {

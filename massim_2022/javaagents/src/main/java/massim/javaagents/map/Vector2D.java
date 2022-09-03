@@ -311,7 +311,7 @@ public class Vector2D {
         int directionY = (tY - sY)/Math.max(Math.abs(tY-sY), 1);;
         return new Vector2D(directionX, directionY);
     }
-    
+
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);

@@ -151,7 +151,7 @@ public class NextPerceptReader {
                                 obstacles.add(percept.getParameters());
                                 continue;
                             }
-                            if (percept.getParameters().get(2).toProlog().equals("markers")) {
+                            if (percept.getParameters().get(2).toProlog().equals("marker")) {
                                 markers.add(percept.getParameters());
                                 continue;
                             }
@@ -251,7 +251,7 @@ public class NextPerceptReader {
         processedMarkers = processThingsSet(markers);
         processedObstacles = processObstaclesSet();
         fullLocalView.addAll(processedThings);
-        // fullLocalView.addAll(processedMarkers); 
+        //fullLocalView.addAll(processedMarkers); 
         fullLocalView.addAll(processedObstacles);
         agentStatus.SetVision(processedThings); 
         agentStatus.SetMarkers(processedMarkers);
@@ -439,7 +439,12 @@ public class NextPerceptReader {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
         for(NextMapTile tile : processThingsSet(things))
         {
-        	if(tile.getThingType().contains("block")) 
+        	if(tile.getThingType().contains("block") && 
+        		(tile.getPosition().equals(NextConstants.WestPoint)
+                    || tile.getPosition().equals(NextConstants.NorthPoint)
+                    || tile.getPosition().equals(NextConstants.EastPoint)
+                    || tile.getPosition().equals(NextConstants.SouthPoint))
+        	) 
     		{
         		for(Vector2D attachedSet : processAttachedSet())
         		{

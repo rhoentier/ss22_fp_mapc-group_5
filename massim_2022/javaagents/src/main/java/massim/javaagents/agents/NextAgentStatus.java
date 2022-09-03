@@ -55,7 +55,7 @@ public class NextAgentStatus {
     private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing distance to the targeted elements.
 
     private HashSet<NextMapTile> dispenser;
-
+    
     /*
      * ##################### endregion fields
      */
@@ -166,6 +166,13 @@ public class NextAgentStatus {
 
     public String GetName() {
         return this.name;
+    }
+
+    /**
+     * Extracts the id from the name
+     */
+    public int GetId() {
+        return Integer.parseInt(name.substring(5, name.length()-1));
     }
 
     public void SetLastActionParams(String lastActionParams) {

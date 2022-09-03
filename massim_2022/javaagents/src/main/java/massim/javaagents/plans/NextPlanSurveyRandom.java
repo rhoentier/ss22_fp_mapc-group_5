@@ -12,7 +12,6 @@ public class NextPlanSurveyRandom extends NextPlan {
     /**
      * Erzeugt momentan keine weiteren Subplans
      */
-    @Override
     public void CreateSubPlans() {
 
     }

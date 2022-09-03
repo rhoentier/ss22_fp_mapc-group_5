@@ -85,7 +85,6 @@ public final class NextAgentUtil {
      * Reports, if a Thing is next to the Agent using Absolute coordinates
      *
      * @param position - x-Value, y-Value of a Thing
-     * @param status - #source of Information
      * @return boolean
      */
     ///**
@@ -99,8 +98,7 @@ public final class NextAgentUtil {
     /**
      * Change Vector Direction to Identifier for using Actions
      *
-     * @param xValue - x-Value of Thing
-     * @param yValue - y-Value of Thing
+     * @param direction - direction as a Vector2D
      * @return Identifier for the direction value of an action.
      */
     public static Identifier ChangeVector2DToIdentifier(Vector2D direction) {
@@ -168,8 +166,8 @@ public final class NextAgentUtil {
     /**
      * Creates an action to survey a remote agent:
      *
-     * @param String X-Coordinate relative to the surveing Agent
-     * @param String Y-Coordinate relative to the surveing Agent
+     * @param xPosition X-Coordinate relative to the surveing Agent
+     * @param yPosition Y-Coordinate relative to the surveing Agent
      * @return Action
      */
     public static Action GenerateSurveyAgentAction(int xPosition, int yPosition) {
@@ -241,6 +239,22 @@ public final class NextAgentUtil {
         	if (tile.getThingType().contains(type)) {
                 result = tile.GetPosition();  // AVL - Trying a different approach
                 //result = new Vector2D(next.getPositionX(), next.getPositionY());
+            }
+        }
+        return result;
+    }
+
+    public static NextMapTile GetNearestDispenserFromType(HashSet<NextMapTile> dispenser, String type, Vector2D position) {
+        NextMapTile result = null;
+        int nearestDistanz = 1000;
+        for(NextMapTile tile : dispenser)
+        {
+            if (tile.getThingType().contains(type)) {
+                int distanz = ManhattanDistance(tile.GetPosition(), position);
+                if (distanz < nearestDistanz){
+                    nearestDistanz = distanz;
+                    result = tile;
+                }
             }
         }
         return result;
@@ -416,12 +430,29 @@ public final class NextAgentUtil {
     }
 
     /**
+     * Correct Block position 
+     * @param blockPosition
+     * @param attachedElements
+     * @return
+     */
+    public static Boolean IsBlockInPosition(Vector2D blockPosition, HashSet<Vector2D> attachedElements)
+    {
+    	for(Vector2D attachedElement : attachedElements)
+        {
+    		if(attachedElement.equals(blockPosition))
+    		{
+    			return true;
+    		}
+        }
+    	return false;
+    }
+    
+    /**
      * Check if block in correct Position
      * @param nextAgent
      * @return
      */
     public static Boolean IsBlockInCorrectPosition(NextAgent nextAgent) {
-        // TODO miri Vergleich aller Blöcke - derzeit nur mit 1
         if (nextAgent.GetActiveTask() != null) {
             HashSet<Vector2D> attachedElements = nextAgent.GetAgentStatus().GetAttachedElementsVector2D();
             HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
@@ -438,6 +469,20 @@ public final class NextAgentUtil {
             }
         }
 
+        return false;
+    }
+
+    /**
+     * Check if a position is free
+     * @param pos target position
+     * @param localView the agent's local view
+     * @return if the position is free true else false
+     */
+    public static Boolean IsPositionFreeUsingLocalView(Vector2D pos, HashSet<NextMapTile> localView){
+        for (NextMapTile field : localView){
+            if (field.GetPosition().equals(pos)) return field.IsWalkable();
+        }
+        // pos is not in localView
         return false;
     }
 
@@ -464,7 +509,7 @@ public final class NextAgentUtil {
 
     /**
      * Check correct block type
-     * @param nextTask
+     * @param requiredBlocks
      * @param thingType
      * @return
      */
@@ -494,7 +539,7 @@ public final class NextAgentUtil {
     /**
      * check if things in next step
      * @param direction
-     * @param obstacle
+     * @param visibleThings
      * @return
      */
     public static NextMapTile IsThingInNextStep(ECardinals direction, HashSet<NextMapTile> visibleThings) {
@@ -583,7 +628,7 @@ public final class NextAgentUtil {
      * Check if next Step is possible
      * @param direction from the opposide
      * @param attachedElements all attached Elements
-     * @param obstacles all obstacles
+     * @param localView all objects from the localView
      * @return
      */
     public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> localView) {
@@ -842,7 +887,6 @@ public final class NextAgentUtil {
 	
 	/**
 	 * Check, if another Agent is in near from block
-	 * @param agentID
 	 * @param blockPosition
 	 * @param localView
 	 * @return
@@ -883,4 +927,74 @@ public final class NextAgentUtil {
 		}
 		return false;
 	}
+	
+	public static HashSet<NextAgent> getAgentsInFrontOfBlock(Vector2D agentPosition, HashSet<NextAgent> agentSet, Vector2D blockPosition)
+	{
+		HashSet<NextAgent> agentsInFront = new HashSet<NextAgent>();
+		for(NextAgent agent : agentSet)
+		{
+			Vector2D newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(0, -1)); //n
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+			
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(1, 0)); //e
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(0, 1)); //s
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+
+			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
+			newBlockPosition.add(new Vector2D(-1, 0)); //w
+			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
+				agentsInFront.add(agent);
+		}
+		return agentsInFront;
+	}
+	
+    /**
+     * Gets the ECardinal from thing
+     *
+     * @param position - x-Value, y-Value of a Thing
+     * @param agent - the Agent to be compared to
+     * @return boolean
+     */
+    public static ECardinals GetECardinalFromThing(Vector2D thingPosition) {
+        if (thingPosition.equals(NextConstants.WestPoint)) {
+            return ECardinals.w;
+        }
+        if (thingPosition.equals(NextConstants.NorthPoint)) {
+            return ECardinals.n;
+        }
+        if (thingPosition.equals(NextConstants.EastPoint)) {
+            return ECardinals.e;
+        }
+        if (thingPosition.equals(NextConstants.SouthPoint)) {
+            return ECardinals.s;
+        }
+        return ECardinals.n;
+    }
+
+	public static boolean IsThisBlockAttachedToOtherAgent(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
+		for(NextAgent agent : agentSet)
+		{
+			NextAgentStatus agentStatus = agent.GetAgentStatus();
+			if(agentStatus.GetAttachedElementsAmount() > 0 
+					&& !agentPosition.equals(position)
+					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//	public static boolean IsNextToEvents(NextAgent nextAgent)
+//	{
+//		
+//	}
 }

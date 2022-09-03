@@ -137,7 +137,6 @@ public final class NextConstants {
 
     public static enum EAgentActivity {
         exploreMap,
-        carryBlog,
         goToDispenser,
         goToGoalzone,
         goToRolezone,
@@ -146,7 +145,9 @@ public final class NextConstants {
         surveyGoalZone,
         surveyRoleZone,
         surveyRandom,
-        discoverMapSize
+        connectToAgent,
+        discoverMapSize,
+        cleanMap,
     }
 
     public static enum EVisibleThings {

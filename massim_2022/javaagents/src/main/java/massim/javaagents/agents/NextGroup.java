@@ -2,11 +2,14 @@ package massim.javaagents.agents;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
+import massim.javaagents.groupPlans.NextAgentPlan;
+import massim.javaagents.groupPlans.NextTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
-
 import massim.javaagents.pathfinding.NextPathfindingUtil;
+import massim.javaagents.percept.NextTask;
 
 /**
  * Functions: Grouping of Agents, handling of a common map and higher level
@@ -22,16 +25,19 @@ public class NextGroup {
      * ########## region fields
      */
     private int groupID;
+    private int lastStep;
 
-    private HashSet<NextAgent> agentSet = new HashSet<>();  // a collection of agents having joined the group
-    private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>(); // maping of current position for each agent
+    private HashSet<NextAgent> agentSet = new HashSet<>();
+    private HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>();
 
-    private NextMap groupMap = new NextMap(this); // environment map shared by all agents
+    private NextMap groupMap = new NextMap(this);
 
+    private NextTaskPlanner taskPlanner;
 
     /*
      * ##################### endregion fields
      */
+
     /**
      * ########## region constructor.
      */
@@ -43,15 +49,18 @@ public class NextGroup {
      */
     public NextGroup(NextAgent agent, int id) {
         this.groupID = id;
-        this.AddAgent(agent);
-        this.SetAgentPosition(agent, new Vector2D(0, 0));
+        this.agentSet.add(agent);
+        this.agentPositionMap.put(agent, new Vector2D(0, 0));
+        this.lastStep = -1;
+
+        this.taskPlanner = new NextTaskPlanner(this);
     }
 
     /*
      * ##################### endregion constructor
      */
 
- /*
+    /*
      * ########## region public methods
      */
     /**
@@ -59,9 +68,8 @@ public class NextGroup {
      *
      * @param agent NextAgent to be added
      */
-    public void AddAgent(NextAgent agent) {
+    public void addAgent(NextAgent agent) {
         this.agentSet.add(agent);
-        agent.SetAgentGroup(this);
     }
 
     /**
@@ -69,16 +77,15 @@ public class NextGroup {
      *
      * @param agent NextAgent to be removed
      */
-    public void RemoveAgent(NextAgent agent) {
+    public void removeAgent(NextAgent agent) {
         this.agentSet.remove(agent);
     }
-
     /**
      * Add agent to the group
      *
      * @return int the current amount of agents in the group
      */
-    public int CountAgents() {
+    public int countAgents() {
         return this.agentSet.size();
     }
 
@@ -87,16 +94,14 @@ public class NextGroup {
      *
      * @return HashSet agents forming the group
      */
-    public HashSet<NextAgent> GetAgents() {
-        return this.agentSet;
-    }
+    public HashSet<NextAgent> GetAgents() {return this.agentSet;}
 
     /**
      * Retrieve the group ID
      *
      * @return int group identificator
      */
-    public int GetGroupID() {
+    public int getGroupID() {
         return groupID;
     }
 
@@ -107,19 +112,16 @@ public class NextGroup {
      * @param positions positions of possible groupagents
      * @return stripped set containing only unknown agents
      */
-    public HashSet<NextMapTile> RemovePositionsOfKnownAgents(Vector2D centerPosition, HashSet<NextMapTile> positions) {
-        HashSet<NextMapTile> removeSet = new HashSet<>();
+    public HashSet<NextMapTile> removePositionsOfKnownAgents(Vector2D centerPosition, HashSet<NextMapTile> positions) {
+        HashSet<NextMapTile> returnSet = new HashSet<>();
         for (NextMapTile agentPosition : positions) {
-
-            for (NextAgent agent : this.GetAgents()) {
-                if (agentPosition.GetPosition().clone().getAdded(centerPosition).equals(this.GetAgentPosition(agent))) {
-                    removeSet.add(agentPosition);
+            for (NextAgent agent : agentSet) {
+                if (!agentPosition.GetPosition().clone().getAdded(centerPosition).equals(agent.GetPosition())) {
+                    returnSet.add(agentPosition);
                 }
             }
         }
-        positions.removeAll(removeSet);
-
-        return positions;
+        return returnSet;
     }
 
     /**
@@ -186,30 +188,34 @@ public class NextGroup {
          *
          */
         for (NextAgent agentToAdd : newGroup.agentSet) {
-            System.out.println(" " + agentToAdd + " " + agentToAdd.GetPosition().getSubtracted(offset));
+            this.addAgent(agentToAdd);
+            agentToAdd.say("OldPosition: " + agentToAdd.GetPosition());
+            agentToAdd.say("Offset: " + offset);
             this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getSubtracted(offset));
-            this.AddAgent(agentToAdd);
+            //this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().getAdded(offset));
+            agentToAdd.SetAgentGroup(this);
+            agentToAdd.say("NewPosition: " + agentToAdd.GetPosition());
         }
+        
+        System.out.println("Dispenser: " + newGroup.groupMap.GetDispensers());
 
         joinGroupMap(newGroup.groupMap, offset);
 
         for (NextAgent agentToAdd : this.agentSet) {
-            newGroup.RemoveAgent(agentToAdd);
+            newGroup.removeAgent(agentToAdd);
         }
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        /*
         System.out.println("----------------------------------------- joined ----------------------");
-        System.out.println("MAP ______________________________________ \n"
-                + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(), GetAgentPositions(), GetGroupMap().GetDispenserPositions()));
-
+        System.out.println("MAP ______________________________________ \n" + 
+                NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),GetAgentPositions(),GetGroupMap().GetDispenserPositions()));
+        
         for (NextAgent agent : this.agentSet) {
             agent.say(agent.GetPosition().toString());
         }
 
         System.out.println("Dispenser: " + this.groupMap.GetDispensers());
-         */
     }
 
     /**
@@ -240,40 +246,26 @@ public class NextGroup {
         }
     }
 
+    /**
+     * String-based communication with groupagents to be extended for further
+     * usecases. Is called from within the agent
+     *
+     * @param Message - String based message
+     */
+    public void TellGroupAgent (String Message, NextAgent targetAgent, NextAgent sourceAgent) {
+        for (NextAgent agent : agentSet){
+            if(agent.getName().equals(targetAgent)){
+                agent.HandleGroupMessage(Message, sourceAgent.getName(), targetAgent.getName());
+            }
+        }
+    }
+
     public void ModAllAgents(Vector2D mod) {
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
         }
     }
-
-    /**
-     * String-based communication with groupagents to be extended for further
-     * usecases. Is called from within the agent
-     *
-     * @param Message - String based message
-     */
-    public void TellGroup(String Message, NextAgent sourceAgent) {
-        for (NextAgent agent : agentSet) {
-            if (!agent.equals(sourceAgent)) {
-                agent.HandleGroupMessage(Message, sourceAgent.getName());
-            }
-        }
-    }
-
-    /**
-     * String-based communication with groupagents to be extended for further
-     * usecases. Is called from within the agent
-     *
-     * @param Message - String based message
-     */
-    public void TellGroupAgent(String Message, String targetAgent, NextAgent sourceAgent) {
-        for (NextAgent agent : agentSet) {
-            if (agent.getName().equals(targetAgent)) {
-                agent.HandleGroupMessage(Message, sourceAgent.getName());
-            }
-        }
-    }
-
+    
     /**
      * Retrieve a set of positions of all agents in the group
      *
@@ -285,10 +277,34 @@ public class NextGroup {
         return werte;
     }
 
+    /**
+     * updates all tasks and plans for the group
+     */
+    public void UpdateTasks(HashSet<NextTask> newTasks, int currentStep) {
+        if(currentStep > lastStep){
+            this.lastStep = currentStep;
+            taskPlanner.UpdateTasksAndAgents(newTasks);
+        }
+    }
+
+    public NextAgentPlan GetPlan(NextAgent agent){
+        return taskPlanner.GetPlan(agent);
+    }
+
+    public int GetLastStep() {
+        return lastStep;
+    }
+
+    public void SetMaxAttemptsAreReached(NextTask task){
+        taskPlanner.SetMaxAttemptsAreReached(task);
+    }
+
     /*
      * ##################### endregion public methods
      */
+
     // ------------------------------------------------------------------------
+
     /*
      * ########## region private methods
      */
@@ -317,6 +333,10 @@ public class NextGroup {
     @Override
     public String toString() {
         return "NextGroup{" + "groupID=" + groupID + ", agentCount=" + agentSet.size() + '}';
+    }
+
+    public boolean IsDeadlineReached(NextTask activeTask) {
+        return taskPlanner.IsDeadlineReached(activeTask);
     }
 
     /*

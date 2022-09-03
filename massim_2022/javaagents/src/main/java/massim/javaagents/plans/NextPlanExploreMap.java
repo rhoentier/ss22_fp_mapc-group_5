@@ -19,7 +19,6 @@ public class NextPlanExploreMap extends NextPlan {
         CreateSubPlans();
     }
 
-    @Override
     public void CreateSubPlans() {
         if (agent.GetMap().GetRoleZones().isEmpty()) subPlans.add(new NextPlanSurveyRandom());
         if (!agent.GetAgentStatus().GetCurrentRole().GetAction().contains("survey"))

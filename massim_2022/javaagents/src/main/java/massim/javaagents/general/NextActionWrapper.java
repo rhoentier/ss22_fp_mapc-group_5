@@ -10,6 +10,26 @@ import massim.javaagents.map.Vector2D;
 public class NextActionWrapper {
 
     /**
+     * Create an Action with three Paramters
+     * @param action
+     * @param parameter1
+     * @param parameter2
+     * @param parameter3
+     * @return An Action with parameter or null if a required parameter is missing
+     */
+    public static Action CreateAction(EActions action, Identifier parameter1, Identifier parameter2, Identifier parameter3) {
+        switch (action) {
+            case connect: {
+            	// connect(agent2,0,2) 
+                if (parameter1 != null && parameter2 != null && parameter3 != null)
+                    return new Action(EActions.connect.toString(), parameter1, parameter2, parameter3);
+            }
+            default:
+                return null;
+        }
+    }
+    
+    /**
      * Create an Action with two parameters.
      *
      * @param action
@@ -19,10 +39,6 @@ public class NextActionWrapper {
      */
     public static Action CreateAction(EActions action, Identifier parameter1, Identifier parameter2) {
         switch (action) {
-            case connect: {
-                if (parameter1 != null && parameter2 != null)
-                    return new Action(EActions.connect.toString(), parameter1, parameter2);
-            }
             case disconnect: {
                 if (parameter1 != null && parameter2 != null)
                     return new Action(EActions.disconnect.toString(), parameter1, parameter2);
@@ -35,7 +51,7 @@ public class NextActionWrapper {
                 return null;
         }
     }
-
+    
     /**
      * Create an Action with one parameter.
      *

@@ -4,7 +4,6 @@ import massim.javaagents.agents.NextAgent;
 import massim.javaagents.general.NextConstants;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public abstract class NextPlan {
     ArrayList<NextPlan> subPlans = new ArrayList<>();
@@ -28,12 +27,7 @@ public abstract class NextPlan {
         this.isPlanFulfilled = status;
     }
 
-    /**
-     * Create a list of subPlans
-     */
-    public abstract void CreateSubPlans();
-
-    /**
+     /**
      * DeepFirstSearch to get the current plan to execute
      *
      * @return plan to execute
@@ -44,16 +38,6 @@ public abstract class NextPlan {
             return plan.GetDeepestPlan();
         }
         return this;
-    }
-
-    /**
-     * Set plan and sub plans to not fulfilled
-     */
-    public void ResetAllPlans() {
-        for (NextPlan plan : subPlans) {
-            plan.ResetAllPlans();
-        }
-        isPlanFulfilled = false;
     }
 
     /**
