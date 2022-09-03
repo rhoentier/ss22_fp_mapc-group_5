@@ -18,6 +18,9 @@ import massim.javaagents.map.Vector2D;
 public class NextManhattanPath {
 
     /**
+     * Generate walk actions using local coordinates
+     * AgentPosition (0,0)
+     * 
      * @param X X position to Walk to
      * @param Y Y Position to Wals to
      * @return ArrayList of "walk" Actions
@@ -42,6 +45,8 @@ public class NextManhattanPath {
     }
 
     /**
+     * Generate walk actions using start and target Coordinates
+     * 
      * @param startPosition position where the walk should start
      * @param endPosition   position where the walk should end
      * @return ArrayList of "walk" Actions

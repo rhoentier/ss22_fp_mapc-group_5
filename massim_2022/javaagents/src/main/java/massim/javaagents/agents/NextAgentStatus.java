@@ -44,7 +44,8 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> attachedElementsNextMapTile;
 
     private HashSet<NextMapTile> fullLocalView;         // Unsorted list containing visible elements and obstacles as NextMapTile: contains - entity, block, dispenser, marker,...
-    private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
+    private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser...
+    private HashSet<NextMapTile> markers;               // Unsorted list of visible Markers as NextMapTile
     private HashSet<NextMapTile> obstacles;             // Unsorted list of visible obstacles as NextMapTile
     private HashSet<NextMapTile> roleZones;             // Unsorted list of visible zones for rolechange
     private HashSet<NextMapTile> goalZones;             // Unsorted list of visible zones for submitting a task
@@ -88,20 +89,6 @@ public class NextAgentStatus {
      * ########## region public methods
      */
 
-     /*  To Delete - backup for Testing
-    // compare attached elements to NextConstants directions and convert to array ?
-    public void SetAttachedElements(HashSet<Point> attachedElements) {
-        this.attachedElements = new HashSet();
-        for (Point attached : attachedElements) {
-            if (attached.equals(NextConstants.WestPoint)
-                    || attached.equals(NextConstants.NorthPoint)
-                    || attached.equals(NextConstants.EastPoint)
-                    || attached.equals(NextConstants.SouthPoint)) {
-                this.attachedElements.add(attached);
-            }
-        }
-    }
-*/
     // compare attached elements to NextConstants directions and convert to array ?
     public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
             this.attachedElements = new HashSet();
@@ -223,6 +210,15 @@ public class NextAgentStatus {
         return this.visibleThings;
     }
 
+    public HashSet<NextMapTile> GetMarkers() {
+        return markers;
+    }
+
+    public void SetMarkers(HashSet<NextMapTile> markers) {
+        this.markers = markers;
+    }
+
+    
     public HashSet<NextMapTile> GetObstacles() {
         return obstacles;
     }

@@ -1,6 +1,12 @@
 package massim.javaagents.map;
 
 
+import massim.javaagents.agents.Agent;
+import massim.javaagents.agents.NextAgent;
+
+import java.util.HashSet;
+import java.util.Objects;
+
 public class Vector2D {
 
     public int x;
@@ -229,27 +235,86 @@ public class Vector2D {
         return new Vector2D(-x, -y);
     }
 
-    public void mod(Vector2D range) {
-        x += range.x;
-        y += range.y;
-
-        x %= range.x;
-        y %= range.y;
+    /**
+     * Modulus function for Vector 2D. Note: Nothing is done for negative values!
+     * @param modulo
+     */
+    public void mod(Vector2D modulo) {
+        if (modulo.x > 0) {
+            this.x = (this.x + modulo.x) % modulo.x;
+        }
+        if (modulo.y > 0) {
+            this.y = (this.y + modulo.y) % modulo.y;
+        }
     }
+
+    public Vector2D getMod(Vector2D range) {
+        Vector2D v = this.clone();
+        v.mod(range);
+        return v;
+    }
+
+    public static Vector2D getMax(Vector2D v1, Vector2D v2) {
+        int xMax = Math.max(v1.x, v2.x);
+        int yMax = Math.max(v1.y, v2.y);
+        return new Vector2D(xMax, yMax);
+    }
+    public static Vector2D getMax(HashSet<Vector2D> vectors) {
+        Vector2D maxSoFar = new Vector2D(0, 0);
+        for (Vector2D v : vectors) {
+            maxSoFar = getMax(maxSoFar, v);
+        }
+        return maxSoFar.clone();
+    }
+
+    public static Vector2D getMin(Vector2D v1, Vector2D v2) {
+        int xMin = Math.min(v1.x, v2.x);
+        int yMin = Math.min(v1.y, v2.y);
+        return new Vector2D(xMin, yMin);
+    }
+    public static Vector2D getMin(HashSet<Vector2D> vectors) {
+        Vector2D minSoFar = new Vector2D(0, 0);
+        for (Vector2D v : vectors) {
+            minSoFar = getMin(minSoFar, v);
+        }
+        return minSoFar.clone();
+    }
+
+    /**
+     * Extract positions from a hashset of NextMapTiles
+     * @param mapTileHashSet HashSet of NextMapTiles
+     * @return HashSet of Vector2D
+     */
+    public static HashSet<Vector2D> extractPositionsFromMapTiles(HashSet<NextMapTile> mapTileHashSet) {
+        HashSet<Vector2D> vectorHashSet = new HashSet<>();
+        for (NextMapTile maptile : mapTileHashSet) {
+            vectorHashSet.add(new Vector2D(maptile.GetPosition()));
+        }
+        return vectorHashSet;
+    }
+
+    /**
+     * Get the normalized direction of travel
+     * 
+     * @param startPoint beginning point of the travel
+     * @param targetPoint end point of the travel
+     * @return Vector2D normalised direction 
+     * @author Alexander
+     */
+    
+    public static Vector2D calculateNormalisedDirection (Vector2D startPoint, Vector2D targetPoint) {
+        int tX = targetPoint.x;
+        int tY = targetPoint.y;
+        int sX = startPoint.x;
+        int sY = startPoint.y;
+        int directionX = (tX - sX)/Math.max(Math.abs(tX-sX), 1);
+        int directionY = (tY - sY)/Math.max(Math.abs(tY-sY), 1);;
+        return new Vector2D(directionX, directionY);
+    }
+    
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof Vector2D v) {
-            return (x == v.x) && (y == v.y);
-        }
-        return false;
     }
 
     @Override
@@ -263,6 +328,20 @@ public class Vector2D {
         hash = 37 * hash + this.x;
         hash = 37 * hash + this.y;
         return hash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
+
+        Vector2D v2 = (Vector2D) o;
+
+        return Objects.equals(x, v2.x) && Objects.equals(y, v2.y);
     }
 }
 

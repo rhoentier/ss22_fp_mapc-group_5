@@ -16,25 +16,19 @@ import java.util.stream.Collectors;
 
 public class NextPlanSolveTask extends NextPlan {
 
-    private NextTask task;
+    private final NextTask task;
     private int estimatedStepsToSolveTask = 0;
-    private int maxPossibleProfit = 0;
     private float utilization = 0;
-    private int carryableBlocks = 0;
     private boolean isPreconditionFulfilled = false;
     private boolean isDeadlineFulfillable = true;
-    private String taskName;
 
-    private int failOffest = 2;
     private int failStatus = 0;
 
 
     public NextPlanSolveTask(NextTask task, NextAgent agent) {
         this.agent = agent;
         this.task = task;
-        this.carryableBlocks = agent.GetCarryableBlocks();
         this.agentTask = NextConstants.EAgentActivity.solveTask;
-        this.taskName = task.GetName();
         CheckIfPreConditionIsFulfilled();
         CreateSubPlans();
         calculateProfit();
@@ -52,8 +46,9 @@ public class NextPlanSolveTask extends NextPlan {
         //calculate ways from dispensers to nearestGoalZone
         for (NextMapTile block : task.GetRequiredBlocks()) {
             for (NextMapTile dispenser : dispensers) {
-                if (dispenser.getThingType() != block.getThingType()) continue;
+                if (!dispenser.getThingType().equals(block.getThingType())) continue;
                 Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
+                // TODO: Hier muss der Pfad verbessert werden
                 int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(), nearestGoalZone).size();
                 if (shortestWayFromDispenserToGoalZone == 0 || wayFromDispenserToGoalZone < shortestWayFromDispenserToGoalZone)
                     shortestWayFromDispenserToGoalZone = wayFromDispenserToGoalZone;
@@ -62,7 +57,6 @@ public class NextPlanSolveTask extends NextPlan {
         }
         if (sumOfShortestWays > 0) {
             estimatedStepsToSolveTask = sumOfShortestWays;
-            setMaxPossibleProfit(sumOfShortestWays);
             setUtilization(sumOfShortestWays);
         }
     }
@@ -77,17 +71,7 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     /**
-     * Berechnet den maximalen Nutzen, der durch diese Aufgabe noch erreicht werden kann
-     *
-     * @param sumOfShortestWays Summe der Wege von Dispensern zu den GoalZones
-     */
-    private void setMaxPossibleProfit(int sumOfShortestWays) {
-        int remainingSteps = (int) task.GetDeadline() - agent.getSimulationStatus().GetCurrentStep();
-        maxPossibleProfit = (int) task.GetReward() * (remainingSteps / sumOfShortestWays);
-    }
-
-    /**
-     * Versucht die Karte zu durchsuchen um eine Aufgabe zu lösen
+     * Versucht die Karte zu durchsuchen, um eine Aufgabe zu lösen
      */
     public void FulfillPrecondition() {
         subPlans.add(0, new NextPlanExploreMap(task.GetRequiredBlocks(), agent));
@@ -116,13 +100,14 @@ public class NextPlanSolveTask extends NextPlan {
      * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
      */
     public void CheckIfDeadlineIsReached() {
-        if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(taskName))
+        if (agent.GetAgentStatus().GetLastAction().contains("submit") && agent.GetAgentStatus().GetLastActionResult().contains("failed_target") && agent.GetActiveTask().GetName().equals(task.GetName()))
             failStatus += 1;
-        else if (agent.getAgentStatus().GetLastAction().contains("submit") && agent.getAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(taskName))
+        else if (agent.GetAgentStatus().GetLastAction().contains("submit") && agent.GetAgentStatus().GetLastActionResult().contains("success") && agent.GetActiveTask().GetName().equals(task.GetName()))
             failStatus = 0;
 
-        if (failStatus == failOffest) isDeadlineFulfillable = false;
-        int stepsUntilTaskIsFinished = agent.getSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
+        int failOffset = 2;
+        if (failStatus == failOffset) isDeadlineFulfillable = false;
+        int stepsUntilTaskIsFinished = agent.GetSimulationStatus().GetCurrentStep() + estimatedStepsToSolveTask;
         if (stepsUntilTaskIsFinished >= (int) task.GetDeadline()) isDeadlineFulfillable = false;
     }
 
@@ -130,7 +115,7 @@ public class NextPlanSolveTask extends NextPlan {
      * prüft, ob der Task vollständig erfüllt ist und setzt ggf. die subPlans zurück
      */
     public boolean CheckIfTaskIsFulfilled() {
-        if (agent.getAgentStatus().GetLastAction().equals("submit") && agent.getAgentStatus().GetLastActionResult().equals("success")) {
+        if (agent.GetAgentStatus().GetLastAction().equals("submit") && agent.GetAgentStatus().GetLastActionResult().equals("success")) {
             for (NextPlan subplan : subPlans) {
                 subplan.SetPlanIsFulfilled(false);
             }
@@ -141,11 +126,12 @@ public class NextPlanSolveTask extends NextPlan {
 
 
     /**
-     * Erzeugt eine Liste mit subPlans - Hier werden zuerst alle Dispenser abgegangen und dann zur Zielzone
+     * Erzeugt eine Liste mit subPlans - hier werden zuerst alle Dispenser abgegangen und dann zur Zielzone
      */
     @Override
     public void CreateSubPlans() {
-        // TODO: Einbauen, dass der Agent evtl. die Rolle wechseln muss
+        if (!agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker"))
+            subPlans.add(new NextPlanRoleZone(agent, "worker"));
         HashSet<NextMapTile> requiredBlocks = task.GetRequiredBlocks();
         for (NextMapTile block : requiredBlocks) {
             subPlans.add(new NextPlanDispenser(block));
@@ -161,18 +147,11 @@ public class NextPlanSolveTask extends NextPlan {
     }
 
     public String GetTaskName() {
-        return taskName;
+        return task.GetName();
     }
 
     public NextTask GetTask() {
         return task;
-    }
-
-    /**
-     * @return Maximaler Profit, der durch diese Aufgabe gelöst werden kann
-     */
-    public int GetMaxPossibleProfit() {
-        return maxPossibleProfit;
     }
 
     /**
@@ -188,14 +167,19 @@ public class NextPlanSolveTask extends NextPlan {
         if (CheckIfTaskIsFulfilled()) return;
         for (Iterator<NextPlan> subPlanIterator = subPlans.iterator(); subPlanIterator.hasNext(); ) {
             NextPlan subPlan = subPlanIterator.next();
+            if (subPlan instanceof NextPlanRoleZone) {
+                if (agent.GetAgentStatus().GetCurrentRole().GetName().equals("worker")) subPlanIterator.remove();
+                continue;
+            }
             if (subPlan instanceof NextPlanExploreMap) {
                 if (isPreconditionFulfilled) subPlanIterator.remove();
                 else ((NextPlanExploreMap) subPlan).CheckPreconditionStatus();
+                continue;
             }
             if (subPlan instanceof NextPlanDispenser) {
                 // prüft, welche Blöcke momentan attached sind
-                HashSet<NextMapTile> visibleThings = agent.getAgentStatus().GetVisibleThings();
-                HashSet<Vector2D> attachedElements = agent.getAgentStatus().GetAttachedElementsVector2D();
+                HashSet<NextMapTile> visibleThings = agent.GetAgentStatus().GetVisibleThings();
+                HashSet<Vector2D> attachedElements = agent.GetAgentStatus().GetAttachedElementsVector2D();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
                 for (Vector2D attachedElement : attachedElements) {
                     for (NextMapTile visibleThing : visibleThings) {
@@ -207,9 +191,7 @@ public class NextPlanSolveTask extends NextPlan {
                     }
                 }
                 //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
-                if (attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()))
-                    subPlan.SetPlanIsFulfilled(true);
-                else subPlan.SetPlanIsFulfilled(false);
+                subPlan.SetPlanIsFulfilled(attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()));
             }
         }
     }

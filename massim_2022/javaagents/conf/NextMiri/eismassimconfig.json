@@ -1,5 +1,5 @@
 {
-  "scenario": "Tournier1",
+  "scenario": "MiriTest",
   "host": "localhost",
   "port": 12300,
   "scheduling": false,
@@ -24,6 +24,6 @@
   ],
 
   "status-entity": {
-    "name": "StatusEntity"
+    "name": "statusConnection"
   }
 }

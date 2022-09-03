@@ -11,14 +11,21 @@
     "logPath" : "logs",
     "replayPath" : "replays",
     "maxPacketLength" : 65536,
-    "waitBetweenSimulations" : 15000
+    "waitBetweenSimulations" : 5000
   },
+
+  "manual-mode" : [
+    ["A", "B"],
+    ["B", "C"],
+    ["A", "C"]
+  ],
 
   "match" : [
     "$(sim/simMiri2.json)",
-    "$(sim/simMiri.json)",
     "$(sim/simMiri1.json)",
-    "$(sim/simMiri2.json)"
+    "$(sim/simMiri2.json)",
+    "$(sim/simMiri1.json)",
+    "$(sim/simMiri2.json)",
   ],
 
   "teams" : {

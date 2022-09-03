@@ -10,7 +10,7 @@ public class NextPlanWrapper {
 
 	public static EAgentActivity GenerateNewPlan(NextAgent nextAgent)
 	{
-		NextAgentStatus nextAgentStatus = nextAgent.getAgentStatus();
+		NextAgentStatus nextAgentStatus = nextAgent.GetAgentStatus();
 		NextMap map = nextAgent.GetMap();
 
         if(nextAgentStatus.GetAttachedElementsAmount() > 0) // Block available
