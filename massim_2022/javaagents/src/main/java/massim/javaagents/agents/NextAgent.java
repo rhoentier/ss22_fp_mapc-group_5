@@ -473,7 +473,7 @@ public class NextAgent extends Agent {
         // definitive implementation needed
     }
 
-        /** 
+    /** 
      * Clears the occupied MapTiles in case of an error in movement 
      */
     public void clearAgentStepMemory() {
@@ -640,29 +640,35 @@ public class NextAgent extends Agent {
         int counter = 0;
         for (Action step : actionList) {
             counter += 1;
-            //System.out.println("step.getParameters()" + step.getParameters());
-            if (step.getParameters().get(0).toString().contains("n")) {
+            // Fix for different parameter values in tests and while simulation
+            String[] values = step.getParameters().get(0).toString().split("\"");
+            String direction;
+            if(values.length==1){
+               direction = values[0]; 
+            } else {
+               direction = values[1]; 
+            }
+            
+            //calculate the offset
+            if (direction.equals("n")) {
                 target.add(0, -1);
             }
-            if (step.getParameters().get(0).toString().contains("e")) {
+            if (direction.equals("e")) {
                 target.add(1, 0);
             }
-            if (step.getParameters().get(0).toString().contains("w")) {
+            if (direction.equals("w")) {
                 target.add(-1, 0);
             }
-            if (step.getParameters().get(0).toString().contains("s")) {
+            if (direction.equals("s")) {
                 target.add(0, 1);
             }
-            //System.out.println("Target: " + target);
-
+            
             // Free MapTile
             NextMap workMap = this.agentGroup.GetGroupMap();
             int xPosition = this.GetPosition().getAdded(target).x;
             int yPosition = this.GetPosition().getAdded(target).y;
-
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-                //System.out.print(" blocked :" + workMap.GetMapTile(this.GetPosition().getAdded(target)).CheckAtStep(this.simStatus.GetCurrentStep() + counter + 1));
-                workMap.GetMapTile(this.GetPosition().getAdded(target)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter + 1);
+                workMap.GetMapTile(new Vector2D(xPosition, yPosition)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter );
             }
 
         }
@@ -874,11 +880,20 @@ public class NextAgent extends Agent {
      * Creation of a new group while agent initialisation
      */
     private void createGroup() {
-        int groupId = globalGroupMap.size();
+        int groupId = CountAllGroups();
         this.agentGroup = new NextGroup(this, groupId);
 
         globalGroupMap.put(this.agentGroup.GetGroupID(), this.agentGroup);
 
+    }
+    
+    /**
+     * Counts all Groups greated by NextAgent
+     * @return int the amount of available groups
+     */
+    
+    public int CountAllGroups(){
+        return globalGroupMap.size();
     }
 
     /**

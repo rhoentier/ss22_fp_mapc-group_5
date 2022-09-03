@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMap;
+import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
 import massim.javaagents.plans.NextPlan;
@@ -324,41 +325,80 @@ public class NextAgentTest {
      * Test of HandleGroupMessage method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testHandleGroupMessage() {
-        System.out.println("HandleGroupMessage");
-        String message = "";
-        String agent = "";
-        NextAgent instance = null;
+        NextAgent instance = new NextAgent("1", null);
+        instance.GetAgentStatus().SetName("1");
+        String message = "JUNIT TEST";
+        String agent = "random_Agent";
+        assertEquals("1", instance.GetAgentStatus().GetName());
         instance.HandleGroupMessage(message, agent);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("JUNIT TEST", instance.GetAgentStatus().GetName());
     }
 
     /**
      * Test of clearAgentStepMemory method, of class NextAgent.
      */
     @Test
-    @Ignore
+    
     public void testClearAgentStepMemory() {
-        System.out.println("clearAgentStepMemory");
-        NextAgent instance = null;
+
+        NextAgent instance = new NextAgent("1", null);
+        NextGroup group = new NextGroup(instance, 0);
+        // grow map
+        group.SetAgentPosition(instance, new Vector2D(2,2));
+        group.SetAgentPosition(instance, new Vector2D(0,0));
+        // adjust simulation
+        instance.GetSimulationStatus().SetCurrentStep(1);
+        // create map
+        group.GetGroupMap().setMapTile(new NextMapTile(2,2,1, "free"));
+        group.GetGroupMap().setMapTile(new NextMapTile(2,1,1, "free"));        
+        group.GetGroupMap().setMapTile(new NextMapTile(2,0,1, "free"));
+        
+        group.GetGroupMap().setMapTile(new NextMapTile(1,2,1, "free"));
+        group.GetGroupMap().setMapTile(new NextMapTile(1,1,1, "free"));        
+        group.GetGroupMap().setMapTile(new NextMapTile(1,0,1, "free"));
+        
+        group.GetGroupMap().setMapTile(new NextMapTile(0,2,1, "free"));
+        group.GetGroupMap().setMapTile(new NextMapTile(0,1,1, "free"));        
+        group.GetGroupMap().setMapTile(new NextMapTile(0,0,1, "free"));
+        
+        //Calculate path and block tiles
+        instance.SetPathMemory(instance.CalculatePath(new Vector2D(2,2)));
+        instance.GetAgentStatus().SetLastActionParams("");
+        assertFalse(instance.GetPathMemory().isEmpty());
+        
+        System.out.println("pathmemory" + instance.GetPathMemory().toString());
+    
+        assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(0, 1)).CheckAtStep(2));
+        assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(0, 2)).CheckAtStep(3));
+        assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(1, 2)).CheckAtStep(4));
+        assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(2, 2)).CheckAtStep(5));
+    
         instance.clearAgentStepMemory();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(0, 1)).CheckAtStep(2));
+        assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(0, 2)).CheckAtStep(3));
+        assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(1, 2)).CheckAtStep(4));
+        assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(2, 2)).CheckAtStep(5));
     }
 
     /**
      * Test of RemoveEmptyGroup method, of class NextAgent.
      */
     @Test
-    @Ignore
     public void testRemoveEmptyGroup() {
-        System.out.println("RemoveEmptyGroup");
-        NextGroup groupToRemove = null;
-        NextAgent.RemoveEmptyGroup(groupToRemove);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        NextAgent instance = new NextAgent("1", null);
+        NextGroup group = new NextGroup(instance, 0);
+        
+        assertTrue(instance.GetGroup() == group);
+        assertTrue(instance.CountAllGroups() == 1);
+        
+        instance.SetAgentGroup(null);
+        group.RemoveAgent(instance);
+        
+        NextAgent.RemoveEmptyGroup(group);
+        
+        assertTrue(instance.CountAllGroups() == 0);
     }
 
 }
