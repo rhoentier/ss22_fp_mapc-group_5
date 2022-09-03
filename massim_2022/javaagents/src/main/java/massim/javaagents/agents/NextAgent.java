@@ -246,7 +246,7 @@ public class NextAgent extends Agent {
                             }
                             SetActiveTask(nextTask);
                         }
-                    }
+                    }                  	
                     SetAgentPlan(nextPlan);
                 }
             }

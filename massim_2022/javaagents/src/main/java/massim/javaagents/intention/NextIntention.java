@@ -16,6 +16,7 @@ import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextManhattanPath;
+import massim.javaagents.pathfinding.NextRandomPath;
 import massim.javaagents.plans.NextPlan;
 import massim.javaagents.plans.NextPlanConnect;
 import massim.javaagents.plans.NextPlanDispenser;
@@ -154,21 +155,37 @@ public class NextIntention {
                     && NextAgentUtil.HasFreeSlots(nextAgentStatus)
                     && NextAgentUtil.NextToUsingLocalView(position, nextAgent)
             ) {
+
+            	// keiner aus meiner Gruppe hat den Block attached
+                if (visibleThing.IsBlock() 
+                		&& !NextAgentUtil.IsThisBlockAttachedToOtherAgent(position, this.nextAgent.GetPosition(), this.nextAgent.GetAgentGroup().GetAgents())) {
+                    nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.attach,
+                            NextAgentUtil.ChangeVector2DToIdentifier(position));
+                    return true;
+                }
+                
             	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
                 if (nextMessage != null) {
-                	if(countWaitForDispenser < 2) // wait for 2 steps
+                	ECardinals oppositeDirection = ECardinals.n;
+                	if(countWaitForDispenser == 0) // Nur beim ersten mal berechnen
                 	{
-                		nextPossibleAction = generateDefaultAction();
+                		oppositeDirection = NextAgentUtil.GetOppositeDirection(NextAgentUtil.GetECardinalFromThing(position));
+                	}
+                	if(countWaitForDispenser < 3) // wait for 2 steps
+                	{
+                		// In Entgegengesetzte Richtung gehen
+                		nextPossibleAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(oppositeDirection.toString())); // generateDefaultAction();
                 		countWaitForDispenser++;
                 		return true;
                 	}
-                    // Nachricht betrifft mich ich setz eine Runde aus--
+                    // Nachricht betrifft mich ich setz zwei Runde aus--
                     NextMessageUtil.removeFromMessageStore(nextMessage);
                     countWaitForDispenser = 0;
                     return false;
                 } else {
-                    if (nextAgentStatus.GetAttachedElementsAmount() == 0 &&
-                            NextAgentUtil.IsAnotherAgentInNearOfBlock(position, this.nextAgentStatus.GetFullLocalView())) {
+                    if (nextAgentStatus.GetAttachedElementsAmount() == 0 
+                    		&& NextAgentUtil.IsAnotherAgentInNearOfBlock(position, this.nextAgentStatus.GetFullLocalView())
+                    		&& visibleThing.IsDispenser()) {
 
                     	nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
                     	if(nextMessage == null)
@@ -186,11 +203,6 @@ public class NextIntention {
 
                     if (visibleThing.IsDispenser() && !this.nextAgentStatus.GetLastAction().contains("request")) {
                         nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.request,
-                                NextAgentUtil.ChangeVector2DToIdentifier(position));
-                        return true;
-                    }
-                    if (visibleThing.IsBlock()) {
-                        nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.attach,
                                 NextAgentUtil.ChangeVector2DToIdentifier(position));
                         return true;
                     }
@@ -279,7 +291,18 @@ public class NextIntention {
                         return true;
                     } else {
                         // Warten
-                        nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+                    	if(!NextAgentUtil.IsBlockInPosition(requiredBlockPosition, this.nextAgentStatus.GetAttachedElementsVector2D()))
+                    	{
+                    		 if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "cw")) {
+                                 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
+                                 return true;
+                             } else if (NextAgentUtil.IsRotationPossible(this.nextAgent.GetAgentStatus(), "ccw")) {
+                            	 nextPossibleAction = NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+                            	 return true;
+                             }
+                    	}
+                    	
+                    	nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
                         return true;
                     }
                 }
@@ -413,6 +436,12 @@ public class NextIntention {
                     calcBestPosForMainAgent();
                 } else {
                     calcWayToConnectPosition();
+                }
+                return null;
+            case solveTask:
+                if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
+                    this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(
+                            NextAgentUtil.GetNearestZone(this.nextAgent.GetPosition(), map.GetGoalZones())));
                 }
                 return null;
             default:

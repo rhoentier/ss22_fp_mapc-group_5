@@ -429,6 +429,12 @@ public final class NextAgentUtil {
         return false;
     }
 
+    /**
+     * Correct Block position 
+     * @param blockPosition
+     * @param attachedElements
+     * @return
+     */
     public static Boolean IsBlockInPosition(Vector2D blockPosition, HashSet<Vector2D> attachedElements)
     {
     	for(Vector2D attachedElement : attachedElements)
@@ -447,7 +453,6 @@ public final class NextAgentUtil {
      * @return
      */
     public static Boolean IsBlockInCorrectPosition(NextAgent nextAgent) {
-        // TODO miri Vergleich aller Blöcke - derzeit nur mit 1
         if (nextAgent.GetActiveTask() != null) {
             HashSet<Vector2D> attachedElements = nextAgent.GetAgentStatus().GetAttachedElementsVector2D();
             HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
@@ -941,5 +946,42 @@ public final class NextAgentUtil {
 				agentsInFront.add(agent);
 		}
 		return agentsInFront;
+	}
+	
+    /**
+     * Gets the ECardinal from thing
+     *
+     * @param position - x-Value, y-Value of a Thing
+     * @param agent - the Agent to be compared to
+     * @return boolean
+     */
+    public static ECardinals GetECardinalFromThing(Vector2D thingPosition) {
+        if (thingPosition.equals(NextConstants.WestPoint)) {
+            return ECardinals.w;
+        }
+        if (thingPosition.equals(NextConstants.NorthPoint)) {
+            return ECardinals.n;
+        }
+        if (thingPosition.equals(NextConstants.EastPoint)) {
+            return ECardinals.e;
+        }
+        if (thingPosition.equals(NextConstants.SouthPoint)) {
+            return ECardinals.s;
+        }
+        return ECardinals.n;
+    }
+
+	public static boolean IsThisBlockAttachedToOtherAgent(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
+		for(NextAgent agent : agentSet)
+		{
+			NextAgentStatus agentStatus = agent.GetAgentStatus();
+			if(agentStatus.GetAttachedElementsAmount() > 0
+				&& !agentPosition.equals(position)
+				&& agentStatus.GetAttachedElementsNextMapTiles().iterator().next().getPosition().equals(position))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
