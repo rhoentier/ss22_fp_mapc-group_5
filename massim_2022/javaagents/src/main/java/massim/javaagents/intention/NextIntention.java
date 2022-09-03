@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class NextIntention {
 
     private final NextAgent nextAgent;
+    private boolean positionHasBeenCorrected = false;
     ArrayList<Action> possibleActions;
     Action nextPossibleAction;
     private final NextAgentStatus nextAgentStatus;
@@ -242,6 +243,7 @@ public class NextIntention {
             // -- ("Action - Submit");
             nextPossibleAction = NextActionWrapper.CreateAction(EActions.submit,
                     new Identifier(nextAgent.GetActiveTask().GetName()));
+            positionHasBeenCorrected = false;
             return true;
         }
         // Verbindung zweier Agenten
@@ -436,25 +438,18 @@ public class NextIntention {
 
     private void calcBestPosForMainAgent() {
         if (!nextAgent.GetPathMemory().isEmpty()) return;
-        // check if agent is in middle of goalZone
+
         //move agent to middle of goalZone
-        HashSet<Vector2D> goalPositions = nextAgent.GetAgentStatus().GetGoalZones().stream()
-                .map(NextMapTile::GetPosition).collect(Collectors.toCollection(HashSet::new));
-        if (!goalPositions.contains(new Vector2D(0, 3)) 
-        		|| !goalPositions.contains(new Vector2D(0, -3)) 
-        		|| !goalPositions.contains(new Vector2D(3, 0)) 
-        		|| !goalPositions.contains(new Vector2D(-3, 0))) 
-        {
-            for (NextMapTile mapTile : nextAgent.GetAgentStatus().GetGoalZones()) {
-                int pathLength = NextManhattanPath.CalculatePath(nextAgent.GetPosition(),
-                        nextAgent.GetPosition().getAdded(mapTile.GetPosition())).size();
-                if (pathLength >= 3 && pathLength <= 5) {
-                    nextAgent.SetCorrectPosition(true);
-                    nextAgent.SetPathMemory(
-                            nextAgent.CalculatePath(mapTile.getPosition().getAdded(this.nextAgent.GetPosition())));
-                    return;
-                }
-            }
+        if (positionHasBeenCorrected) {
+            positionHasBeenCorrected = true;
+            HashSet<Vector2D> goalPositions = nextAgent.GetAgentStatus().GetGoalZones().stream().map(NextMapTile::GetPosition).collect(Collectors.toCollection(HashSet::new));
+            Vector2D target = new Vector2D(0, 0);
+            if (!goalPositions.contains(new Vector2D(0, 2))) target.getAdded(0, -2);
+            if (!goalPositions.contains(new Vector2D(0, -2))) target.getAdded(0, 2);
+            if (!goalPositions.contains(new Vector2D(2, 0))) target.getAdded(-2, 0);
+            if (!goalPositions.contains(new Vector2D(-2, 0))) target.getAdded(2, 0);
+
+            nextAgent.SetPathMemory(nextAgent.CalculatePath(target.getAdded(this.nextAgent.GetPosition())));
         }
         // Position to secondAgent
         NextAgent involvedAgent = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents().iterator().next();
