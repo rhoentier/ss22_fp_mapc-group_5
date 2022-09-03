@@ -232,6 +232,7 @@ public class NextTaskPlanner {
     }
 
     public void SetMaxAttemptsAreReached(NextTask task) {
+        if(task == null) return;
         for (NextGroupPlan plan : activePlans) {
             if (plan.GetTask().GetName().equals(task.GetName())) plan.SetMaxAttemptsAreReached();
         }

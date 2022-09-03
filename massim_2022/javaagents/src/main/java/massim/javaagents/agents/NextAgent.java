@@ -87,7 +87,6 @@ public class NextAgent extends Agent {
     private EAgentActivity agentActivity;
     private NextPlan agentPlan;
 
-    private int failOffset = 2;
     private int failStatus = 0;
     // Counter for successful submits for a single task
     private int solvedTasks = 0;
@@ -1001,6 +1000,7 @@ public class NextAgent extends Agent {
             solvedTasks +=1;
         }
 
+        int failOffset = 2;
         if (failStatus == failOffset) agentGroup.SetMaxAttemptsAreReached(activeTask);
     }
 
