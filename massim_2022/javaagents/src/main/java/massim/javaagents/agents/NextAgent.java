@@ -21,6 +21,7 @@ import massim.javaagents.plans.NextTaskHandler;
 import massim.javaagents.timeMonitor.NextTimeMonitor;
 import massim.javaagents.pathfinding.NextManhattanPath;
 import massim.javaagents.pathfinding.NextRandomPath;
+import massim.javaagents.pathfinding.PathfindingConfig;
 import massim.javaagents.percept.NextTask;
 
 import java.util.HashSet;
@@ -29,17 +30,17 @@ import java.util.List;
 
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.pathfinding.NextAStarPath;
+import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextRole;
 
 /**
  * First iteration of an experimental agent.
  * <p>
- * Done:
+ * Done: 
  * - Handling of transition between simulations Basic action generation
  * based on random movement Processing of all percepts and storing in dataVaults
  * - Gruppenbildung
  * <p>
- *
  * @Author Alexander, Miriam
  */
 public class NextAgent extends Agent {
@@ -47,7 +48,7 @@ public class NextAgent extends Agent {
     public static HashMap<Integer, NextGroup> globalGroupMap = new HashMap<>();
     public static HashMap<String, HashSet<Vector2D>> GroupBuildingSkipMemory = new HashMap<>();
     public static int lastGroupJoinAtStep = -1;
-
+    
     /*
      * ########## region fields
      */
@@ -150,7 +151,7 @@ public class NextAgent extends Agent {
                         if (feld.getPositionX() == xToTest && feld.getPositionY() == yToTest) {
                             if (feld.getThingType().contains(this.agentStatus.GetTeamName())
                                     && feld.getThingType().contains(NextConstants.EVisibleThings.entity.toString())) {
-                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.getGroupID() + "," + xToTest + "," + yToTest + ", MapPosition," + this.GetPosition().x + "," + this.GetPosition().y), sender, this.getName());
+                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.GetGroupID() + "," + xToTest + "," + yToTest + ", MapPosition," + this.GetPosition().x + "," + this.GetPosition().y), sender, this.getName());
                             }
                         }
                     }
@@ -162,7 +163,7 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("GroupFinding-ResponseMessage")) {
             int mapOffsetX = Integer.parseInt(messageContainer[5]) - this.GetPosition().x;
             int mapOffsetY = Integer.parseInt(messageContainer[6]) - this.GetPosition().y;
-            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3] + "," + mapOffsetX + "," + mapOffsetY);
+            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.GetGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3] + "," + mapOffsetX + "," + mapOffsetY);
             messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[3]) + "," + (-1 * mapOffsetX) + "," + (-1 * mapOffsetY)));
         }
 
@@ -182,6 +183,10 @@ public class NextAgent extends Agent {
         // "MapSizeDiscoveryHasStarted"
         if (messageContainer[0].contains("MapSizeDiscoveryHasStarted")) {
             this.simStatus.ActivateMapSizeDiscovery();
+        }
+        // "MapSizeDiscoveryHasStarted"
+        if (messageContainer[0].contains("MapSizeDiscoveryAborted")) {
+            this.simStatus.RestartMapSizeDiscovery();
         }
         // "MapHeightFound"
         if (messageContainer[0].contains("MapHeightFound")) {
@@ -253,8 +258,16 @@ public class NextAgent extends Agent {
 
 
             //printActionsReport(); // live String output to console
+            printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
 
+			System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
+            
+            // Clears StepMemory if walking was interrupted.
+            if(!nextAction.getName().contains("move")) {
+                this.clearAgentStepMemory();
+            }
+            
             Action nextAction = generatePathMemory();
             if (nextAction == null) {
                 // Weg generiert - aktuelle Action auswählen
@@ -410,6 +423,18 @@ public class NextAgent extends Agent {
     public NextPlan GetAgentPlan() {
         return agentPlan;
     }
+    
+    /**
+     * CalculateDistance between two cells using Manhattan or A*JPS if applicable
+     * 
+     * @param startPosition Vector2D Start of calculation
+     * @param targetPosition Vector2D Targetof calculation
+     * @return int distance between the points using Manhattan or A*
+     */
+    
+    private int calculateDistance(Vector2D startPosition, Vector2D targetPosition){
+        return NextPathfindingUtil.calculateDistance(this.GetMap(), startPosition, targetPosition);
+    }
 
     /**
      * CalculatePath to the target cell. The function decides which algorithm to
@@ -448,8 +473,8 @@ public class NextAgent extends Agent {
     /**
      * Calculate Path to the Target, ending on a free Tile next to it
      *
-     * @param target
-     * @return
+     * @param target Vector2D position to walk to ( dispenser )
+     * @return List<Action> PathMemory to arrive at adjacent point
      */
     public List<Action> CalculatePathNextToTarget(Vector2D target) {
 
@@ -460,14 +485,14 @@ public class NextAgent extends Agent {
             if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
                 return CalculatePath(new Vector2D(target.x + 1, target.y));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x][target.y + 1].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x, target.y + 1));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x - 1][target.y].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x - 1, target.y));
             }
-            if (map.GetMapArray()[target.x + 1][target.y].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x + 1, target.y));
+            if (map.GetMapArray()[target.x ][target.y -1].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x , target.y -1));
             }
         } catch (Exception e) {
             this.say("CalculatePathNextToTarget:" + e);
@@ -500,10 +525,39 @@ public class NextAgent extends Agent {
      *
      * @param message - String based message
      */
-    public void HandleGroupMessage(String message, String senderAgent, String targetAgent) {
-        this.say("Message (" + message + ") from " + senderAgent + " to " + targetAgent);
-        //this.nextMessage.newMessage(message, senderAgent, targetAgent);
+    public void HandleGroupMessage(String message, String agent) {
+        
+        if(message.equals("JUNIT TEST")){
+            this.GetAgentStatus().SetName("JUNIT TEST");
+        }
+        
         // definitive implementation needed
+    }
+    
+        /** 
+     * Clears the occupied MapTiles in case of an error in movement 
+     */
+    public void clearAgentStepMemory() {
+        Vector2D startPoint = this.GetPosition();
+        int counter = 0;
+        char[] lastAction = this.agentStatus.GetLastActionParams().toCharArray();
+        
+        for (Character step : lastAction) {
+            if (step.equals('n')) {
+                startPoint.add(0, -1);
+            }
+            if (step.equals('e')) {
+                startPoint.add(1, 0);
+            }
+            if (step.equals('w')) {
+                startPoint.add(-1, 0);
+            }
+            if (step.equals('s')) {
+                startPoint.add(0, 1);
+            }
+        }
+        System.out.println("clearMapTiles At: " + startPoint );
+        clearMapTiles( startPoint, pathMemory);
     }
 
     public HashMap<NextMapTile, Integer> GetDispenserDistances(HashSet<NextMapTile> requiredBlocks) {
@@ -1031,6 +1085,18 @@ public class NextAgent extends Agent {
             this.say("Agent Position" + this.GetAgentGroup().GetAgentPosition(this).toString());
 
         }
+    }
+    
+    /**
+     * Debugging helper - live report - prints blocked steps for a tile
+     */
+    private void printBlockedStepsReport() {
+    
+            if( agentGroup != null) {
+            this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+            this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+            this.say("Current Step " + this.simStatus.GetCurrentStep());
+            }
     }
 
     private HashSet<NextMapTile> findFriendlyAgentsInLocalView() {

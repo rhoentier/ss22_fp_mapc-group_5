@@ -35,7 +35,8 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> roles;
     private HashSet<List<Parameter>> norms;
     private HashSet<List<Parameter>> attached;
-    private HashSet<List<Parameter>> things;
+    private HashSet<List<Parameter>> things;    
+    private HashSet<List<Parameter>> markers;
     private HashSet<List<Parameter>> obstacles;
     private HashSet<List<Parameter>> hits;
     private HashSet<String> violations;
@@ -111,11 +112,11 @@ public class NextPerceptReader {
                         // - AllSimulationsAreFinished Message
                         case bye:
                             // is called, when last Simulation is finished.
-                            agent.setFlagDisableAgent();
+                            // no action, should be handled in NextAgent
                             break;
                         // - Request Action Messages
                         case requestAction:
-                            agent.setFlagActionRequest();
+                            // no action, should be handled in NextAgent
                             break;
                         case actionID:
                             simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
@@ -145,9 +146,13 @@ public class NextPerceptReader {
                             break;
                         // The "Score" percept is handled together with @SimEnd messages above
                         case thing:
-                            // Dividing in two sublists obstacles and things 
+                            // Dividing in sublists obstacles, markers and things 
                             if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
                                 obstacles.add(percept.getParameters());
+                                continue;
+                            }
+                            if (percept.getParameters().get(2).toProlog().equals("markers")) {
+                                markers.add(percept.getParameters());
                                 continue;
                             }
                             things.add(percept.getParameters());
@@ -220,6 +225,7 @@ public class NextPerceptReader {
         norms = new HashSet<>();
         roles = new HashSet<>();
         things = new HashSet<>();
+        markers = new HashSet<>();
         obstacles = new HashSet<>();
         violations = new HashSet<>();
         goalZones = new HashSet<>();
@@ -231,20 +237,24 @@ public class NextPerceptReader {
         dispenser = new HashSet<>();
     }
     /**
-     *  Process all Datasets and transfer to Storage - NextAgentStatus
+     *  Process all Datasets and transfer to NextAgentStatus and NextSimStatus
      */
     private void convertGeneratedSets() {
 
-        //Process Things and Obstales and combine to fullLocalView
+        //Process Things, Markers and Obstales and combine to fullLocalView
         HashSet<NextMapTile> fullLocalView = new HashSet<>();
         HashSet<NextMapTile> processedObstacles = new HashSet<>();
         HashSet<NextMapTile> processedThings = new HashSet<>();
+        HashSet<NextMapTile> processedMarkers = new HashSet<>();
 
-        processedThings = processThingsSet();
+        processedThings = processThingsSet(things);
+        processedMarkers = processThingsSet(markers);
         processedObstacles = processObstaclesSet();
         fullLocalView.addAll(processedThings);
+        // fullLocalView.addAll(processedMarkers); 
         fullLocalView.addAll(processedObstacles);
-        agentStatus.SetVision(processedThings); //
+        agentStatus.SetVision(processedThings); 
+        agentStatus.SetMarkers(processedMarkers);
         agentStatus.SetObstacles(processedObstacles);
         agentStatus.SetFullLocalView(fullLocalView);
 
@@ -427,7 +437,7 @@ public class NextPerceptReader {
     
     private HashSet<NextMapTile> updateAttachedSetMapTile() {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
-        for(NextMapTile tile : processThingsSet())
+        for(NextMapTile tile : processThingsSet(things))
         {
         	if(tile.getThingType().contains("block") && 
         		(tile.getPosition().equals(NextConstants.WestPoint)
@@ -445,7 +455,7 @@ public class NextPerceptReader {
         return processedAttachedSet;
     }
 
-    private HashSet<NextMapTile> processThingsSet() {
+    private HashSet<NextMapTile> processThingsSet(HashSet<List<Parameter>> things) {
         // thing(x, y, type, details) - Percept Data Format
         HashSet<NextMapTile> processedThingsSet = new HashSet<>();
         // Converts Percept Data to NextMapTile Elements

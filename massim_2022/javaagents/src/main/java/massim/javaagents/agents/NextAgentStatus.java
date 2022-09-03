@@ -44,7 +44,8 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> attachedElementsNextMapTile;
 
     private HashSet<NextMapTile> fullLocalView;         // Unsorted list containing visible elements and obstacles as NextMapTile: contains - entity, block, dispenser, marker,...
-    private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser, marker,...
+    private HashSet<NextMapTile> visibleThings;         // Unsorted list of visible elements as NextMapTile: contains - entity, block, dispenser...
+    private HashSet<NextMapTile> markers;               // Unsorted list of visible Markers as NextMapTile
     private HashSet<NextMapTile> obstacles;             // Unsorted list of visible obstacles as NextMapTile
     private HashSet<NextMapTile> roleZones;             // Unsorted list of visible zones for rolechange
     private HashSet<NextMapTile> goalZones;             // Unsorted list of visible zones for submitting a task
@@ -216,6 +217,15 @@ public class NextAgentStatus {
         return this.visibleThings;
     }
 
+    public HashSet<NextMapTile> GetMarkers() {
+        return markers;
+    }
+
+    public void SetMarkers(HashSet<NextMapTile> markers) {
+        this.markers = markers;
+    }
+
+    
     public HashSet<NextMapTile> GetObstacles() {
         return obstacles;
     }
