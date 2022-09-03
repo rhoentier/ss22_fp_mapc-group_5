@@ -13,7 +13,6 @@ import massim.javaagents.map.NextMap;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
 import massim.javaagents.plans.NextPlan;
-import massim.javaagents.plans.NextTaskPlanner;
 import org.junit.Test;
 import org.junit.Ignore;
 import static org.junit.Assert.*;
@@ -104,9 +103,9 @@ public class NextAgentTest {
         NextGroup group1 = new NextGroup(instance, 0);
         NextGroup group2 = new NextGroup(instance2, 0);
 
-        assertEquals(group2, instance2.GetGroup());
+        assertEquals(group2, instance2.GetAgentGroup());
         instance2.SetAgentGroup(group1);
-        assertEquals(group1, instance2.GetGroup());
+        assertEquals(group1, instance2.GetAgentGroup());
     }
 
     /**
@@ -214,7 +213,7 @@ public class NextAgentTest {
         System.out.println("GetGroup");
         NextAgent instance = null;
         NextGroup expResult = null;
-        NextGroup result = instance.GetGroup();
+        NextGroup result = instance.GetAgentGroup();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -262,7 +261,7 @@ public class NextAgentTest {
         System.out.println("TellGroup");
         String message = "";
         NextAgent instance = null;
-        instance.TellGroup(message);
+        //instance.TellGroupAgent(message, instance.getName());
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -277,7 +276,7 @@ public class NextAgentTest {
         String message = "";
         String agentName = "";
         NextAgent instance = null;
-        instance.TellGroupAgent(message, agentName);
+        //instance.TellGroupAgent(message, agentName);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -292,7 +291,7 @@ public class NextAgentTest {
         String message = "";
         String agent = "";
         NextAgent instance = null;
-        instance.HandleGroupMessage(message, agent);
+        //instance.HandleGroupMessage(message, agent);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -305,7 +304,7 @@ public class NextAgentTest {
     public void testClearAgentStepMemory() {
         System.out.println("clearAgentStepMemory");
         NextAgent instance = null;
-        instance.clearAgentStepMemory();
+        //instance.clearAgentStepMemory();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

@@ -265,6 +265,10 @@ public class NextMapTile {
     public HashSet GetStepMemory(){
         return stepMemory;
     }
+
+    public void SetStepMemory(HashSet<Integer> stepMemory) {this.stepMemory = stepMemory;}
+
+    public void AddToStepMemory(HashSet<Integer> stepMemory) {this.stepMemory.addAll(stepMemory);}
     
     /*
     @Override

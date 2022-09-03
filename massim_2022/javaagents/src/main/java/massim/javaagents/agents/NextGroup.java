@@ -8,6 +8,7 @@ import massim.javaagents.groupPlans.NextTaskPlanner;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
+import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextTask;
 
 /**
@@ -242,26 +243,6 @@ public class NextGroup {
 
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).getAdded(offset));
-        }
-    }
-
-    public void ModAllAgents(Vector2D mod) {
-        for (NextAgent agent : agentPositionMap.keySet()) {
-            agentPositionMap.put(agent, agentPositionMap.get(agent).getMod(mod));
-        }
-    }
-
-    /**
-     * String-based communication with groupagents to be extended for further
-     * usecases. Is called from within the agent
-     *
-     * @param Message - String based message
-     */
-    public void TellGroup (String Message, NextAgent sourceAgent, NextAgent targetAgent) {
-        for (NextAgent agent : agentSet){
-            if(!agent.equals(sourceAgent)){
-                agent.HandleGroupMessage(Message, sourceAgent.getName(), targetAgent.getName());
-            }
         }
     }
 

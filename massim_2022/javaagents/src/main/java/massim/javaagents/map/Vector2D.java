@@ -293,6 +293,25 @@ public class Vector2D {
         return vectorHashSet;
     }
 
+    /**
+     * Get the normalized direction of travel
+     * 
+     * @param startPoint beginning point of the travel
+     * @param targetPoint end point of the travel
+     * @return Vector2D normalised direction 
+     * @author Alexander
+     */
+    
+    public static Vector2D calculateNormalisedDirection (Vector2D startPoint, Vector2D targetPoint) {
+        int tX = targetPoint.x;
+        int tY = targetPoint.y;
+        int sX = startPoint.x;
+        int sY = startPoint.y;
+        int directionX = (tX - sX)/Math.max(Math.abs(tX-sX), 1);
+        int directionY = (tY - sY)/Math.max(Math.abs(tY-sY), 1);;
+        return new Vector2D(directionX, directionY);
+    }
+
     @Override
     public Vector2D clone() {
         return new Vector2D(x, y);

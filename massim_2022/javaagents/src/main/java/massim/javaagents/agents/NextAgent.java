@@ -151,7 +151,7 @@ public class NextAgent extends Agent {
                         if (feld.getPositionX() == xToTest && feld.getPositionY() == yToTest) {
                             if (feld.getThingType().contains(this.agentStatus.GetTeamName())
                                     && feld.getThingType().contains(NextConstants.EVisibleThings.entity.toString())) {
-                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.GetGroupID() + "," + xToTest + "," + yToTest + ", MapPosition," + this.GetPosition().x + "," + this.GetPosition().y), sender, this.getName());
+                                this.sendMessage(new Percept("GroupFinding-ResponseMessage," + this.agentGroup.getGroupID() + "," + xToTest + "," + yToTest + ", MapPosition," + this.GetPosition().x + "," + this.GetPosition().y), sender, this.getName());
                             }
                         }
                     }
@@ -163,7 +163,7 @@ public class NextAgent extends Agent {
         if (messageContainer[0].contains("GroupFinding-ResponseMessage")) {
             int mapOffsetX = Integer.parseInt(messageContainer[5]) - this.GetPosition().x;
             int mapOffsetY = Integer.parseInt(messageContainer[6]) - this.GetPosition().y;
-            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.GetGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3] + "," + mapOffsetX + "," + mapOffsetY);
+            messageStore.add(new Percept("JoinGroup-Execution," + this.agentGroup.getGroupID()) + "," + sender + "," + this.getName() + "," + messageContainer[2] + "," + messageContainer[3] + "," + mapOffsetX + "," + mapOffsetY);
             messageStore.add(new Percept("JoinGroup-Execution," + messageContainer[1]) + "," + this.getName() + "," + this.getName() + "," + (-1 * Integer.parseInt(messageContainer[2])) + "," + (-1 * Integer.parseInt(messageContainer[3]) + "," + (-1 * mapOffsetX) + "," + (-1 * mapOffsetY)));
         }
 
@@ -263,15 +263,15 @@ public class NextAgent extends Agent {
 
 			System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             
-            // Clears StepMemory if walking was interrupted.
-            if(!nextAction.getName().contains("move")) {
-                this.clearAgentStepMemory();
-            }
-            
             Action nextAction = generatePathMemory();
             if (nextAction == null) {
                 // Weg generiert - aktuelle Action auswählen
                 nextAction = selectNextAction2();
+            }
+
+            // Clears StepMemory if walking was interrupted.
+            if(!nextAction.getName().contains("move")) {
+                this.clearAgentStepMemory();
             }
             
             System.out.println();
@@ -525,7 +525,7 @@ public class NextAgent extends Agent {
      *
      * @param message - String based message
      */
-    public void HandleGroupMessage(String message, String agent) {
+    public void HandleGroupMessage(String message, String sourceAgent, String targetAgent) {
         
         if(message.equals("JUNIT TEST")){
             this.GetAgentStatus().SetName("JUNIT TEST");
@@ -763,6 +763,7 @@ public class NextAgent extends Agent {
         // -- Mögliche Action holen, um auf lokale sicht zu reagieren.
         // -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
         Action possibleAction = intention.GeneratePossibleAction();
+        
         if (possibleAction == null) {
             return selectNextAction();
         }
