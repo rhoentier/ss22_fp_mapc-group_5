@@ -455,9 +455,9 @@ public class NextIntention {
                 return null;
             case cleanMap:
                 // Geht zur Goalzone
-                if (this.nextAgent.GetPathMemory()
-                        .isEmpty() && map.IsGoalZoneAvailable() && !NextAgentUtil.CheckIfAgentInZoneUsingLocalView(
-                        nextAgent.GetAgentStatus().GetGoalZones())) {
+                if (this.nextAgent.GetPathMemory().isEmpty() 
+                		&& map.IsGoalZoneAvailable() 
+                		&& !NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgent.GetAgentStatus().GetGoalZones())) {
                     this.nextAgent.SetPathMemory(nextAgent.CalculatePath(
                             NextAgentUtil.GetNearestZone(nextAgent.GetPosition(), map.GetGoalZones())));
                 }
@@ -503,10 +503,16 @@ public class NextIntention {
     private void calcWayToConnectPosition() {
         if (!nextAgent.GetPathMemory().isEmpty()) return;
         NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "position");
-        if (nextMessage != null && !nextMessage.getPosition().equals(this.nextAgent.GetPosition())) {
-            nextAgent.SetCorrectPosition(true);
-            this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(nextMessage.getPosition()));
-            NextMessageUtil.removeFromMessageStore(nextMessage);
+        if (nextMessage != null) {
+        	if(!nextMessage.getPosition().equals(this.nextAgent.GetPosition()))
+        	{
+	            nextAgent.SetCorrectPosition(true);
+	            this.nextAgent.SetPathMemory(this.nextAgent.CalculatePath(nextMessage.getPosition()));
+        	}
+        	else
+        	{        		
+        		NextMessageUtil.removeFromMessageStore(nextMessage);
+        	}
         }
     }
 
