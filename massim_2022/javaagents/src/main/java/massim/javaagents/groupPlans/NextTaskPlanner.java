@@ -5,10 +5,7 @@ import massim.javaagents.agents.NextGroup;
 import massim.javaagents.map.NextMapTile;
 import massim.javaagents.map.Vector2D;
 import massim.javaagents.percept.NextTask;
-import massim.javaagents.plans.NextPlan;
-import massim.javaagents.plans.NextPlanConnect;
-import massim.javaagents.plans.NextPlanDispenser;
-import massim.javaagents.plans.NextPlanGoalZone;
+import massim.javaagents.plans.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +86,8 @@ public class NextTaskPlanner {
                         createPlanForSingleAgent(plan, agents);
                         break;
                     }
+                    //Fallback, falls es auch keine 1er-Tasks gibt
+                    createCleanPlanForSingleAgent(agents);
                 }
                 break;
             case 2:
@@ -114,6 +113,13 @@ public class NextTaskPlanner {
         }
         subPlans.add(new NextPlanGoalZone());
         currentPlans.put(agent.get(0), new NextAgentPlan(plan.GetTask(), subPlans));
+    }
+
+    private void createCleanPlanForSingleAgent(ArrayList<NextAgent> agents){
+        ArrayList<NextPlan> subPlans = new ArrayList<>();
+        subPlans.add(new NextPlanCleanMap());
+        NextTask dummyTask = agents.get(0).GetSimulationStatus().GetTasksList().iterator().next();
+        currentPlans.put(agents.get(0), new NextAgentPlan(dummyTask, subPlans));
     }
 
     // TODO: Kann bestimmt verallgemeinert werden
