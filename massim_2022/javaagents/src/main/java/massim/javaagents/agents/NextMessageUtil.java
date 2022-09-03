@@ -34,13 +34,19 @@ public final class NextMessageUtil {
 	public static void addSpecificMessageToStore(String message, String senderAgent, String targetAgent)
 	{
 		NextMessage nextMessage = new NextMessage(message, senderAgent, targetAgent);
-		messageStore.add(nextMessage);
+		if(!isMessageInStoreWithoutPosition(nextMessage))
+		{
+			messageStore.add(nextMessage);
+		}
 	}
 	
 	public static void addSpecificMessageToStore(String message, String senderAgent, String targetAgent, Vector2D position)
 	{
 		NextMessage nextMessage = new NextMessage(message, senderAgent, targetAgent, position);
-		messageStore.add(nextMessage);
+		if(!isMessageInStoreWithoutPosition(nextMessage))
+		{			
+			messageStore.add(nextMessage);
+		}
 	}
 	
 	public static  NextMessage getMessageFromAgent(String agentName, String message)
@@ -56,11 +62,20 @@ public final class NextMessageUtil {
 		return null;
 	}
 	
-	private static Boolean isMessageInStore(NextMessage message)
+	private static Boolean isMessageInStoreWithoutPosition(NextMessage message)
 	{
 		for(NextMessage nextMessage : messageStore)
 		{
 			if(nextMessage.equals(message)) return true;
+		}
+		return false;
+	}
+	
+	private static Boolean isMessageInStoreWithPosition(NextMessage message)
+	{
+		for(NextMessage nextMessage : messageStore)
+		{
+			if(nextMessage.equalsWithPosition(message)) return true;
 		}
 		return false;
 	}
