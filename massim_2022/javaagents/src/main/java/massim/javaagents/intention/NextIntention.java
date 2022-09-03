@@ -415,6 +415,20 @@ public class NextIntention {
                     calcWayToConnectPosition();
                 }
                 return null;
+            case cleanMap:
+                // Geht zur Goalzone
+                if (this.nextAgent.GetPathMemory()
+                        .isEmpty() && map.IsGoalZoneAvailable() && !NextAgentUtil.CheckIfAgentInZoneUsingLocalView(
+                        nextAgent.GetAgentStatus().GetGoalZones())) {
+                    this.nextAgent.SetPathMemory(nextAgent.CalculatePath(
+                            NextAgentUtil.GetNearestZone(nextAgent.GetPosition(), map.GetGoalZones())));
+                }
+                if (nextAgent.GetPathMemory().isEmpty()) {
+                    nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
+                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision),
+                                    NextAgentUtil.GenerateRandomNumber(vision))));
+                }
+                return null;
             default:
                 return null;
         }
