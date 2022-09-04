@@ -802,8 +802,16 @@ public final class NextAgentUtil {
      * @return
      */
     public static Vector2D RandomPointInDirection(String direction, Vector2D agentPosition, int distance) {
-    	int offsetX = distance/4 + GenerateRandomNumber(distance/4);
-    	int offsetY = distance/4 + GenerateRandomNumber(distance/4);
+        
+        int baseMovementPercent = 25;
+        int baseMovement = distance/200*baseMovementPercent;
+        int randomNumber = GenerateRandomNumber(distance-2*baseMovement);
+    	//int offsetX = distance/4 + randomNumber;
+    	//int offsetY = distance/4 + (distance/2-randomNumber);
+        
+        int offsetX = baseMovement + randomNumber; 
+    	int offsetY = distance - baseMovement - randomNumber; // basemovement + ((distance - 2*baseMovement) - randomNumber)
+        
         
         switch (direction) {
             case "ne":

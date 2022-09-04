@@ -333,22 +333,6 @@ public class NextAgent extends Agent {
         return simStatus;
     }
 
-    /**
-     * Set flag to disable agent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Check if
-     * needed or ok to remove.
-     */
-    public void setFlagDisableAgent() {
-        this.disableAgentFlag = true;
-    }
-
-    /**
-     * Set flag - action request active !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     * Check if needed or ok to remove.
-     */
-    public void setFlagActionRequest() {
-        this.actionRequestActive = true;
-    }
-
     public NextTask GetActiveTask() {
         return this.activeTask;
     }
@@ -647,6 +631,7 @@ public class NextAgent extends Agent {
      * Agent behavior after finishing of the current simulation
      */
     private void finishTheSimulation() {
+        this.agentGroup = null;
         this.say("Finishing this Simulation!");
         this.say("Result: #" + simStatus.GetRanking());
 
@@ -741,7 +726,7 @@ public class NextAgent extends Agent {
 
     }
 
-private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
+    private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
         Vector2D target = new Vector2D();
         int counter = 0;
         for (Action step : actionList) {
@@ -1026,7 +1011,7 @@ private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
      * Creation of a new group while agent initialisation
      */
     private void createGroup() {
-        int groupId = globalGroupMap.size();
+        int groupId = CountAllGroups();;
         this.agentGroup = new NextGroup(this, groupId);
 
         globalGroupMap.put(this.agentGroup.GetGroupID(), this.agentGroup);
@@ -1072,7 +1057,7 @@ private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
     }
 
     /**
-     * Debugging helper - current task and selected activities
+     * Debugging helper - live report - current task and selected activities
      */
     private void printActionsReport() {
         if (this.agentActivity != null) {
@@ -1084,7 +1069,7 @@ private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
     }
 
     /**
-     * Debugging helper - Position, Groups, Last action
+     * Debugging helper - live report - Position, Groups, Last action
      */
     private void printFinalReport() {
         if (this.agentGroup != null) {
@@ -1098,7 +1083,7 @@ private Vector2D clearMapTiles(Vector2D startPoint, List<Action> actionList) {
     }
 
     /**
-     * Debugging helper - current beliefs
+     * Debugging helper - live report -current beliefs
      */
     private void printBeliefReport() {
 
