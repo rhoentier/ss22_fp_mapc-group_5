@@ -264,7 +264,8 @@ public class NextAgent extends Agent {
             //printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
             //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
-            Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
+            Action nextAction = NextAgentUtil.GenerateRandomMove(); 
+            		//NextActionWrapper.CreateAction(NextConstants.EActions.skip);
 
             // Auf Events reagieren
 //            HashSet<NextMapTile> markers = this.agentStatus.GetMarkers();
@@ -797,12 +798,7 @@ public class NextAgent extends Agent {
                 if (thing.IsObstacle()) {
                     return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
                 } else if (thing.IsEntity()) {
-                    Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
-                    if (NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector)) {
-                        return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));
-                    } else {
-                        return NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
-                    }
+                    pathMemory = generateAlternativePathMemory(pathMemory);
                 } else if (!thing.IsBlock()) {
                     // um Block herumlaufen
                     pathMemory = generateAlternativePathMemory(pathMemory);
@@ -847,6 +843,12 @@ public class NextAgent extends Agent {
                 return NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
             } else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) {
                 return NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
+            } else if(this.agentStatus.GetLastActionParams().contains("clear") && this.agentStatus.GetLastActionResult().contains("fail"))
+            {
+            	Vector2D dir = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
+            	return NextActionWrapper.CreateAction(EActions.clear, 
+            			new Identifier("" + dir.x), 
+            			new Identifier("" + dir.y));
             } else {
                 // Randomstep
                 return new NextRandomPath().GenerateNextMove();

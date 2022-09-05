@@ -1045,8 +1045,29 @@ public final class NextAgentUtil {
 		return thingNextMapTiles;
 	}
 	
-//	public static boolean IsNextToEvents(NextAgent nextAgent)
-//	{
-//		
-//	}
+	/**
+	 * Lock at Block or Obstacle arround me
+	 * @param getFullLocalView
+	 * @return
+	 */
+	public static Vector2D GetFirstBlockOrObstacleArroundMe(HashSet<NextMapTile> getFullLocalView) {
+		for(NextMapTile tile : getFullLocalView)
+		{
+			Vector2D position = tile.getPosition();
+	        if ( (position.equals(NextConstants.WestPoint) 
+	        		|| position.equals(NextConstants.NorthPoint)
+	        		|| position.equals(NextConstants.SouthPoint)
+	        		|| position.equals(NextConstants.EastPoint))
+	        	&& (
+	        			tile.getThingType().contains("block") 
+	        			|| tile.getThingType().contains("obstacle")
+	        		)
+	        )
+	        {
+	            return tile.getPosition();
+	        }
+		}
+		
+		return null;
+	}
 }

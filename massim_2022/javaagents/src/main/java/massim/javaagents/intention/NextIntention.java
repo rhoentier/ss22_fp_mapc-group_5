@@ -123,7 +123,6 @@ public class NextIntention {
         for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
             if (attachedElement.getThingType().contains(nextAgent.GetTaskHandler().GetRequiredBlockType())) {
             	blocksNeeded = true;
-                lastDetachPosition = attachedElement.GetPosition();
                 break;
             } else {
                 blocksNeeded = false;
@@ -131,10 +130,10 @@ public class NextIntention {
             }
         }
         
-
 		NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
 		if(nextMessage != null)
 		{
+            lastDetachPosition = nextMessage.getPosition();
     		blocksNeeded = false;                     
             NextMessageUtil.removeFromMessageStore(nextMessage);
 		}
@@ -156,7 +155,8 @@ public class NextIntention {
 	            	{
 						for(NextAgent agent : attachedAgents)
 						{					
-							NextMessageUtil.addSpecificMessageToStore("lassdenblockfallen", this.nextAgent.getName(), agent.getName());
+							NextMessageUtil.addSpecificMessageToStore("lassdenblockfallen", this.nextAgent.getName(), agent.getName(),
+									agent.GetAgentStatus().GetAttachedElementsVector2D().iterator().next());
 						}
 	            	}
 	        	}
@@ -166,13 +166,7 @@ public class NextIntention {
         if (!blocksNeeded) {
             nextPossibleAction = NextActionWrapper.CreateAction(EActions.detach, new Identifier(
                     NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString()));
-//            nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
-//        	if(nextMessage == null)
-//        	{                  
-//                NextMessageUtil.removeFromMessageStore(nextMessage);        		
-//        	}
             return true;
-            //this.nextAgent.ClearPathMemory();
         }
         return false;
     }
@@ -365,6 +359,15 @@ public class NextIntention {
                         return true;
                     } else {
                         // Warten
+                    	Vector2D thingArroundMe = NextAgentUtil.GetFirstBlockOrObstacleArroundMe(this.nextAgentStatus.GetFullLocalView());
+                    	if(thingArroundMe != null)
+                    	{                    		
+                    		nextPossibleAction = NextActionWrapper.CreateAction(EActions.clear,
+                                    new Identifier("" + thingArroundMe.x),
+                                    new Identifier("" + thingArroundMe.y));
+                    		return true;
+                    	}
+                    	
                     	//nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
                         return false;
                     }
