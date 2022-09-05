@@ -344,10 +344,6 @@ public class NextIntention {
                     // Say other agent to connect
                     // connect to Agent
 
-                	if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones()))
-                	{
-                		int i = 0;
-                	}
                     nextPossibleAction = NextActionWrapper.CreateAction(EActions.connect,
                             new Identifier(nextPlanConnect.GetInvolvedAgents().iterator().next().getName()),
                             new Identifier("" + nextAgentStatus.GetAttachedElementsVector2D().iterator().next().x),
@@ -529,11 +525,10 @@ public class NextIntention {
                 	Vector2D thingPosition = NextAgentUtil.GetFirstBlockOrObstacleInLocalView(this.nextAgentStatus.GetFullLocalView());
                     if(thingPosition != null)
                     {
-                    	nextAgent.SetPathMemory(nextAgent.CalculatePathNextToTarget(nextAgent.GetPosition().getAdded(thingPosition)));
+                    	nextAgent.SetPathMemory(NextManhattanPath.CalculatePath(this.nextAgent.GetPosition(), this.nextAgent.GetPosition().getAdded(thingPosition)));
                     }
                     else
                     {
-
                     	nextAgent.SetPathMemory(nextAgent.CalculatePath(this.nextAgent.GetPosition()
                                 .getAdded(vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2,
                                         vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2)));                	
@@ -638,7 +633,10 @@ public class NextIntention {
     public void ResetAfterTaskChange() {
         possibleActions.clear();
         lastSurveyedDistance = 0;
-        nextAgent.ClearPathMemory();
+        if(!this.nextAgent.GetAgentTask().equals(EAgentActivity.cleanMap))
+        {
+        	nextAgent.ClearPathMemory();
+        }
     }
 
 
