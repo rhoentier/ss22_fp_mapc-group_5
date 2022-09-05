@@ -37,7 +37,7 @@
   },
 
   "blockTypes" : [3, 3],
-  "dispensers" : [3, 5],
+  "dispensers" : [5, 10],
 
   "tasks" : {
     "size" : [1, 4],

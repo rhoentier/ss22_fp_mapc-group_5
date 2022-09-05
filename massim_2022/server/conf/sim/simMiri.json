@@ -23,7 +23,7 @@
     "width" : 40,      
     "instructions": [
       ["line-border", 0],
-      ["cave", 0.5, 4, 5, 4]
+      ["cave", 0.1, 4, 5, 4]
     ],
     "goals": {
       "number" : 2,
