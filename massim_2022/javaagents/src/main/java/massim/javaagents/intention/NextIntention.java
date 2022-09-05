@@ -91,7 +91,10 @@ public class NextIntention {
         if (clearDetachedBlockAction()) return nextPossibleAction;
 
         // ----- goToDispenser
-        if (nextAgent.IsAgentActivity(EAgentActivity.goToDispenser) && nextAgent.GetActiveTask() != null && goToDispenserAction())
+        if (nextAgent.IsAgentActivity(EAgentActivity.goToDispenser) 
+        		&& nextAgent.GetActiveTask() != null 
+        		&& !nextAgentStatus.GetLastActionResult().contains("failed_block")
+        		&& goToDispenserAction())
             return nextPossibleAction;
 
         // ----- goToGoalZone
@@ -127,6 +130,33 @@ public class NextIntention {
                 lastDetachPosition = attachedElement.GetPosition();
             }
         }
+        
+        // Mitteilen, wenn zwei Agenten den gleichen Block attached haben.
+        for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
+        	
+        	HashSet<NextAgent> attachedAgents = NextAgentUtil.GetAgentsWhoThisBlockIsAttached(
+        			attachedElement.GetPosition(),
+        			this.nextAgent.GetPosition(), this.nextAgent.GetAgentGroup().GetAgents()
+        	);
+			if(attachedAgents.size() > 0)        	
+			{
+				NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
+            	if(nextMessage == null)
+            	{
+					for(NextAgent agent : attachedAgents)
+					{					
+						NextMessageUtil.addSpecificMessageToStore("lassdenblockfallen", this.nextAgent.getName(), agent.getName());
+					}
+            	}
+            	else 
+            	{
+            		blocksNeeded = false;
+                    lastDetachPosition = attachedElement.GetPosition();                        
+                    NextMessageUtil.removeFromMessageStore(nextMessage);
+            	}
+        	}
+        }
+        
         if (!blocksNeeded) {
             nextPossibleAction = NextActionWrapper.CreateAction(EActions.detach, new Identifier(
                     NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString()));
@@ -147,8 +177,19 @@ public class NextIntention {
     }
 
     private boolean goToDispenserAction() {
-        // ----- Aktuelle Sicht des Agenten
-        for (NextMapTile visibleThing : nextAgentStatus.GetVisibleThings()) {
+    	// first Block Action
+    	if(getBlockAction()) return true;
+    	
+    	// second dispenser Action
+    	return getDispenserAction();   
+    }
+
+    private boolean getBlockAction()
+    {
+    	HashSet<NextMapTile> blockNextMapTiles = NextAgentUtil.GetThingFromVisibleThings(nextAgentStatus.GetVisibleThings(), "block");
+    	
+    	// ----- Blocks in local view
+        for (NextMapTile visibleThing : blockNextMapTiles) {
 
             Vector2D position = visibleThing.GetPosition();
 
@@ -156,7 +197,6 @@ public class NextIntention {
                     && NextAgentUtil.HasFreeSlots(nextAgentStatus)
                     && NextAgentUtil.NextToUsingLocalView(position, nextAgent)
             ) {
-
             	// keiner aus meiner Gruppe hat den Block attached
                 if (visibleThing.IsBlock()
                 		&& !NextAgentUtil.IsThisBlockAttachedToOtherAgent(position, this.nextAgent.GetPosition(), this.nextAgent.GetAgentGroup().GetAgents())) {
@@ -164,6 +204,75 @@ public class NextIntention {
                             NextAgentUtil.ChangeVector2DToIdentifier(position));
                     return true;
                 }
+//
+//            	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
+//                if (nextMessage != null) {
+//                	ECardinals oppositeDirection = ECardinals.n;
+//                	if(countWaitForDispenser == 0) // Nur beim ersten mal berechnen
+//                	{
+//                		oppositeDirection = NextAgentUtil.GetOppositeDirection(NextAgentUtil.GetECardinalFromThing(position));
+//                	}
+//                	if(countWaitForDispenser < 3) // wait for 2 steps
+//                	{
+//                		// In Entgegengesetzte Richtung gehen
+//                		nextPossibleAction = NextActionWrapper.CreateAction(EActions.move, new Identifier(oppositeDirection.toString())); // generateDefaultAction();
+//                		countWaitForDispenser++;
+//                		return true;
+//                	}
+//                    // Nachricht betrifft mich ich setz zwei Runde aus--
+//                    NextMessageUtil.removeFromMessageStore(nextMessage);
+//                    countWaitForDispenser = 0;
+//                    return false;
+//                } else {
+//                    if (nextAgentStatus.GetAttachedElementsAmount() == 0
+//                    		&& NextAgentUtil.IsAnotherAgentInNearOfBlock(position, this.nextAgentStatus.GetFullLocalView())
+//                    		&& visibleThing.IsDispenser()) {
+//
+//                    	nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
+//                    	if(nextMessage == null)
+//                    	{
+//	                    	HashSet<NextAgent> agentSet = NextAgentUtil.getAgentsInFrontOfBlock(nextAgent.GetPosition(), nextAgent.GetAgentGroup().GetAgents(), position);
+//	                        for (NextAgent agent : agentSet) {
+//	                        	NextMessageUtil.addSpecificMessageToStore("gehweg", this.nextAgent.getName(), agent.getName());
+//	                        }
+//                    	}
+//                    	else
+//                    	{
+//                    		return false;
+//                    	}
+//                    }
+//
+//                    if (visibleThing.IsDispenser() && !this.nextAgentStatus.GetLastAction().contains("request")) {
+//                        nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.request,
+//                                NextAgentUtil.ChangeVector2DToIdentifier(position));
+//                        return true;
+//                    }
+//                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean getDispenserAction()
+    {
+    	HashSet<NextMapTile> dispenserNextMapTiles = NextAgentUtil.GetThingFromVisibleThings(nextAgentStatus.GetVisibleThings(), "dispenser");
+    	
+    	// ----- Dispenser in local view
+        for (NextMapTile visibleThing : dispenserNextMapTiles) {
+
+            Vector2D position = visibleThing.GetPosition();
+
+            if (NextAgentUtil.IsCorrectBlockType(nextAgent.GetActiveTask().GetRequiredBlocks(), visibleThing.getThingType())
+                    && NextAgentUtil.HasFreeSlots(nextAgentStatus)
+                    && NextAgentUtil.NextToUsingLocalView(position, nextAgent)
+            ) {
+            	// keiner aus meiner Gruppe hat den Block attached
+//                if (visibleThing.IsBlock()
+//                		&& !NextAgentUtil.IsThisBlockAttachedToOtherAgent(position, this.nextAgent.GetPosition(), this.nextAgent.GetAgentGroup().GetAgents())) {
+//                    nextPossibleAction = NextActionWrapper.CreateAction(NextConstants.EActions.attach,
+//                            NextAgentUtil.ChangeVector2DToIdentifier(position));
+//                    return true;
+//                }
 
             	NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "gehweg");
                 if (nextMessage != null) {
@@ -210,9 +319,9 @@ public class NextIntention {
                 }
             }
         }
-        return false;
+    	return false;
     }
-
+    
     private boolean goToGoalZoneAction() {
         Vector2D requiredBlockPosition = new Vector2D(0, 0);
         if (NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones())) { // Stehe in der Goalzone
@@ -443,17 +552,32 @@ public class NextIntention {
                 }
                 return null;
             case cleanMap:
-                // Geht zur Goalzone
+                // Clean Map in der Goalzone
+            	// gehe zur Goalzone
                 if (this.nextAgent.GetPathMemory().isEmpty() 
                 		&& map.IsGoalZoneAvailable() 
                 		&& !NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgent.GetAgentStatus().GetGoalZones())) {
                     this.nextAgent.SetPathMemory(nextAgent.CalculatePath(
                             NextAgentUtil.GetNearestZone(nextAgent.GetPosition(), map.GetGoalZones())));
                 }
+                
+                // clear der Goalzone
                 if (nextAgent.GetPathMemory().isEmpty()) {
-                    nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
-                            .getAdded(NextAgentUtil.GenerateRandomNumber(vision * 2),
-                                    NextAgentUtil.GenerateRandomNumber(vision * 2))));
+                	Vector2D thingPosition = NextAgentUtil.GetFirstThingInLocalView(this.nextAgentStatus.GetFullLocalView(), "block");
+                    if(thingPosition != null)
+                    {
+                    	nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition().getAdded(thingPosition)));
+                    }
+                    else
+                    {
+
+                    	nextAgent.SetPathMemory(nextAgent.CalculatePath(this.nextAgent.GetPosition()
+                                .getAdded(vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2,
+                                        vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2)));   
+//                    	nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
+//                    			.getAdded(NextAgentUtil.GenerateRandomNumber(vision * 2),
+//                    					NextAgentUtil.GenerateRandomNumber(vision * 2))));                    	
+                    }
                 }
                 return null;
             default:

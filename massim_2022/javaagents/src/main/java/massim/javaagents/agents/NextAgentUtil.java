@@ -346,12 +346,15 @@ public final class NextAgentUtil {
         Vector2D result = new Vector2D();
 
         for(NextMapTile zoneMapTile : zone)
-        {        	
-        	int calcDistance = ManhattanDistance(agentPosition, zoneMapTile.GetPosition());
-            if (calcDistance < smallestDistance) {
-            	smallestDistance = calcDistance;
-                result = zoneMapTile.GetPosition();
-            }
+        {   
+        	if(zoneMapTile.IsWalkable())
+        	{
+	        	int calcDistance = ManhattanDistance(agentPosition, zoneMapTile.GetPosition());
+	            if (calcDistance < smallestDistance) {
+	            	smallestDistance = calcDistance;
+	                result = zoneMapTile.GetPosition();
+	            }
+        	}
         }
         return result;
     }
@@ -991,14 +994,57 @@ public final class NextAgentUtil {
 		for(NextAgent agent : agentSet)
 		{
 			NextAgentStatus agentStatus = agent.GetAgentStatus();
+			// agent has Element, the equals position and not the same Position of the Map
 			if(agentStatus.GetAttachedElementsAmount() > 0 
 					&& !agentPosition.equals(position)
-					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position))
+					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position)
+					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(
+							agent.GetPosition()).equals(agentPosition.getAdded(position)
+						)
+			)
 			{
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public static HashSet<NextAgent> GetAgentsWhoThisBlockIsAttached(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
+		HashSet<NextAgent> agents = new HashSet<NextAgent>();
+		for(NextAgent agent : agentSet)
+		{
+			NextAgentStatus agentStatus = agent.GetAgentStatus();
+			// agent has Element, the equals position and not the same Position of the Map
+			if(agentStatus.GetAttachedElementsAmount() > 0 
+					&& !agent.GetPosition().equals(agentPosition) // nicht ich selbst
+					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(agent.GetPosition()) // attachedElement + Agentenposition	
+							.equals(agentPosition.getAdded(position))
+			)
+			{
+				agents.add(agent);
+			}
+		}
+		return agents;
+	}
+
+	// look at thing in localview
+	public static Vector2D GetFirstThingInLocalView(HashSet<NextMapTile> getFullLocalView, String thing) {
+		for(NextMapTile tile : getFullLocalView)
+		{
+			if(tile.getThingType().contains(thing)) return tile.getPosition();
+		}
+		
+		return null;
+	}
+
+	// returns the MapTile from the specific visible thing
+	public static HashSet<NextMapTile> GetThingFromVisibleThings(HashSet<NextMapTile> getVisibleThings, String thing) {
+		HashSet<NextMapTile> thingNextMapTiles = new HashSet<NextMapTile>();
+		for(NextMapTile tile : getVisibleThings)
+		{
+			if(tile.getThingType().contains(thing)) thingNextMapTiles.add(tile);
+		}
+		return thingNextMapTiles;
 	}
 	
 //	public static boolean IsNextToEvents(NextAgent nextAgent)
