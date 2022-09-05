@@ -843,7 +843,7 @@ public class NextAgent extends Agent {
                 return NextActionWrapper.CreateAction(EActions.rotate, new Identifier("cw"));
             } else if (NextAgentUtil.IsRotationPossible(this.agentStatus, "ccw")) {
                 return NextActionWrapper.CreateAction(EActions.rotate, new Identifier("ccw"));
-            } else if(this.agentStatus.GetLastActionParams().contains("clear") && this.agentStatus.GetLastActionResult().contains("fail"))
+            } else if(this.agentStatus.GetLastActionParams().contains("clear") && !this.agentStatus.GetLastActionResult().contains("fail"))
             {
             	Vector2D dir = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
             	return NextActionWrapper.CreateAction(EActions.clear, 
