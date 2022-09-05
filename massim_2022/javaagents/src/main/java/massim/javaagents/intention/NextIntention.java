@@ -122,13 +122,22 @@ public class NextIntention {
         // Blöcke loswerden, die nicht zu meinem aktuellen Task passen
         for (NextMapTile attachedElement : nextAgentStatus.GetAttachedElementsNextMapTiles()) {
             if (attachedElement.getThingType().contains(nextAgent.GetTaskHandler().GetRequiredBlockType())) {
-                blocksNeeded = true;
+            	blocksNeeded = true;
+                lastDetachPosition = attachedElement.GetPosition();
                 break;
             } else {
                 blocksNeeded = false;
                 lastDetachPosition = attachedElement.GetPosition();
             }
         }
+        
+
+		NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
+		if(nextMessage != null)
+		{
+    		blocksNeeded = false;                     
+            NextMessageUtil.removeFromMessageStore(nextMessage);
+		}
         
         // Nur wenn ich den Block selbst brauche
         if(blocksNeeded)
@@ -143,19 +152,12 @@ public class NextIntention {
 	        	);
 				if(attachedAgents.size() > 0)        	
 				{
-					NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
 	            	if(nextMessage == null)
 	            	{
 						for(NextAgent agent : attachedAgents)
 						{					
 							NextMessageUtil.addSpecificMessageToStore("lassdenblockfallen", this.nextAgent.getName(), agent.getName());
 						}
-	            	}
-	            	else 
-	            	{
-	            		blocksNeeded = false;
-	                    lastDetachPosition = attachedElement.GetPosition();                        
-	                    NextMessageUtil.removeFromMessageStore(nextMessage);
 	            	}
 	        	}
 	        }
@@ -164,11 +166,11 @@ public class NextIntention {
         if (!blocksNeeded) {
             nextPossibleAction = NextActionWrapper.CreateAction(EActions.detach, new Identifier(
                     NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString()));
-            NextMessage nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
-        	if(nextMessage == null)
-        	{                  
-                NextMessageUtil.removeFromMessageStore(nextMessage);        		
-        	}
+//            nextMessage = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "lassdenblockfallen");
+//        	if(nextMessage == null)
+//        	{                  
+//                NextMessageUtil.removeFromMessageStore(nextMessage);        		
+//        	}
             return true;
             //this.nextAgent.ClearPathMemory();
         }
