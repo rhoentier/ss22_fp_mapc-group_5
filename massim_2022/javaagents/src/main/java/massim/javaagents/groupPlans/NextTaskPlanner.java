@@ -122,9 +122,7 @@ public class NextTaskPlanner {
         currentPlans.put(agents.get(0), new NextAgentPlan(dummyTask, subPlans));
     }
 
-    // TODO: Kann bestimmt verallgemeinert werden
     private void createPlanForTwoAgents(NextGroupPlan plan, ArrayList<NextAgent> agents) {
-        // TODO: Test, ob das hier klappt
         Vector2D topBlock = new Vector2D(0, 1);
 
         HashSet<NextMapTile> requiredBlocks = plan.GetTask().GetRequiredBlocks();

@@ -19,7 +19,7 @@ public class NextPlanRoleZone extends NextPlan {
      */
     public void CreateSubPlans() {
         if(agent.GetMap().GetRoleZones().isEmpty())
-            subPlans.add(new NextPlanSurveyRoleZone());
+            subPlans.add(new NextPlanSurveyRandom());
     }
 
     /**
