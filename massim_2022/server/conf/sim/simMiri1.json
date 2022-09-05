@@ -2,9 +2,9 @@
   "NOsetup" : "conf/setup/test.txt",
 
   "steps" : 750,
-  "randomSeed" : 97,
+  "randomSeed" : 79,
   "randomFail" : 0,
-  "entities" : {"standard" : 5},
+  "entities" : {"standard" : 10},
   "clusterBounds" : [1,2],
 
   "roles" : "$(roles/rolesMiri.json)",
@@ -19,11 +19,11 @@
   "attachLimit" : 10,
 
   "grid" : {
-    "height" : 40,
-    "width" : 40,      
+    "height" : 62,
+    "width" : 95,      
     "instructions": [
       ["line-border", 0],
-      ["cave", 0.1, 4, 5, 4]
+      ["cave", 0.5, 4, 5, 4]
     ],
     "goals": {
       "number" : 2,
@@ -31,17 +31,17 @@
       "moveProbability": 0.1
     },
     "roleZones" : {
-      "number" : 9,
+      "number" : 3,
       "size" : [4, 4]
     }
   },
 
   "blockTypes" : [3, 3],
-  "dispensers" : [5, 10],
+  "dispensers" : [3, 5],
 
   "tasks" : {
-    "size" : [1, 1],
-    "concurrent" : 4,
+    "size" : [1, 4],
+    "concurrent" : 5,
     "iterations" : [5, 10],
     "maxDuration" : [100, 200]
   },

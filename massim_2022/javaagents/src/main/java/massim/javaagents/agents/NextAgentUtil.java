@@ -997,10 +997,8 @@ public final class NextAgentUtil {
 			// agent has Element, the equals position and not the same Position of the Map
 			if(agentStatus.GetAttachedElementsAmount() > 0 
 					&& !agent.GetPosition().equals(agentPosition)
-					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position)
 					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(agent.GetPosition())
-						.equals(agentPosition.getAdded(position)
-						)
+						.equals(agentPosition.getAdded(position))
 			)
 			{
 				return true;
@@ -1028,10 +1026,10 @@ public final class NextAgentUtil {
 	}
 
 	// look at thing in localview
-	public static Vector2D GetFirstThingInLocalView(HashSet<NextMapTile> getFullLocalView, String thing) {
+	public static Vector2D GetFirstBlockOrObstacleInLocalView(HashSet<NextMapTile> getFullLocalView) {
 		for(NextMapTile tile : getFullLocalView)
 		{
-			if(tile.getThingType().contains(thing)) return tile.getPosition();
+			if(tile.getThingType().contains("block") || tile.getThingType().contains("obstacle")) return tile.getPosition();
 		}
 		
 		return null;

@@ -19,8 +19,8 @@
   "attachLimit" : 10,
 
   "grid" : {
-    "height" : 25,
-    "width" : 25,      
+    "height" : 40,
+    "width" : 40,      
     "instructions": [
       ["line-border", 0],
       ["cave", 0.5, 4, 5, 4]
@@ -40,8 +40,8 @@
   "dispensers" : [3, 5],
 
   "tasks" : {
-    "size" : [1, 2],
-    "concurrent" : 4,
+    "size" : [1, 4],
+    "concurrent" : 5,
     "iterations" : [5, 10],
     "maxDuration" : [100, 200]
   },
