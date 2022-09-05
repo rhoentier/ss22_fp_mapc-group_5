@@ -997,7 +997,6 @@ public final class NextAgentUtil {
 			// agent has Element, the equals position and not the same Position of the Map
 			if(agentStatus.GetAttachedElementsAmount() > 0 
 					&& !agent.GetPosition().equals(agentPosition)
-					&& agentStatus.GetAttachedElementsVector2D().iterator().next().equals(position)
 					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(agent.GetPosition())
 						.equals(agentPosition.getAdded(position))
 			)
