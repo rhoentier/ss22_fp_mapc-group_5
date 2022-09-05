@@ -343,6 +343,11 @@ public class NextIntention {
                 if (nextPlanConnect.IsAgentMain()) {
                     // Say other agent to connect
                     // connect to Agent
+
+                	if(NextAgentUtil.CheckIfAgentInZoneUsingLocalView(nextAgentStatus.GetGoalZones()))
+                	{
+                		int i = 0;
+                	}
                     nextPossibleAction = NextActionWrapper.CreateAction(EActions.connect,
                             new Identifier(nextPlanConnect.GetInvolvedAgents().iterator().next().getName()),
                             new Identifier("" + nextAgentStatus.GetAttachedElementsVector2D().iterator().next().x),
@@ -521,20 +526,17 @@ public class NextIntention {
                 
                 // clear der Goalzone
                 if (nextAgent.GetPathMemory().isEmpty()) {
-                	Vector2D thingPosition = NextAgentUtil.GetFirstThingInLocalView(this.nextAgentStatus.GetFullLocalView(), "block");
+                	Vector2D thingPosition = NextAgentUtil.GetFirstBlockOrObstacleInLocalView(this.nextAgentStatus.GetFullLocalView());
                     if(thingPosition != null)
                     {
-                    	nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition().getAdded(thingPosition)));
+                    	nextAgent.SetPathMemory(nextAgent.CalculatePathNextToTarget(nextAgent.GetPosition().getAdded(thingPosition)));
                     }
                     else
                     {
 
                     	nextAgent.SetPathMemory(nextAgent.CalculatePath(this.nextAgent.GetPosition()
                                 .getAdded(vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2,
-                                        vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2)));   
-//                    	nextAgent.SetPathMemory(nextAgent.CalculatePath(nextAgent.GetPosition()
-//                    			.getAdded(NextAgentUtil.GenerateRandomNumber(vision * 2),
-//                    					NextAgentUtil.GenerateRandomNumber(vision * 2))));                    	
+                                        vision * NextAgentUtil.GenerateRandomNumber(4) - vision * 2)));                	
                     }
                 }
                 return null;

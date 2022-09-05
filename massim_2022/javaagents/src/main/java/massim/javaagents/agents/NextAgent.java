@@ -271,14 +271,14 @@ public class NextAgent extends Agent {
             Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
             
             // Auf Events reagieren
-            HashSet<NextMapTile> markers = this.agentStatus.GetMarkers();
-            if(markers != null && markers.size() > 0)
-            {            	
-//	            for(NextMapTile marker : this.agentStatus.GetMarkers())
-//	            {
-//	            	//Vector2D position = marker.getPosition();
-//	            }
-            }
+//            HashSet<NextMapTile> markers = this.agentStatus.GetMarkers();
+//            if(markers != null && markers.size() > 0)
+//            {            	
+////	            for(NextMapTile marker : this.agentStatus.GetMarkers())
+////	            {
+////	            	//Vector2D position = marker.getPosition();
+////	            }
+//            }
             
             nextAction = generatePathMemory();
             if (nextAction == null) {

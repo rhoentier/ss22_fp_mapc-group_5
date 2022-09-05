@@ -1028,10 +1028,10 @@ public final class NextAgentUtil {
 	}
 
 	// look at thing in localview
-	public static Vector2D GetFirstThingInLocalView(HashSet<NextMapTile> getFullLocalView, String thing) {
+	public static Vector2D GetFirstBlockOrObstacleInLocalView(HashSet<NextMapTile> getFullLocalView) {
 		for(NextMapTile tile : getFullLocalView)
 		{
-			if(tile.getThingType().contains(thing)) return tile.getPosition();
+			if(tile.getThingType().contains("block") || tile.getThingType().contains("obstacle")) return tile.getPosition();
 		}
 		
 		return null;
