@@ -36,8 +36,7 @@ import massim.javaagents.percept.NextRole;
 /**
  * First iteration of an experimental agent.
  * <p>
- * Done: 
- * - Handling of transition between simulations Basic action generation
+ * Done: - Handling of transition between simulations Basic action generation
  * based on random movement Processing of all percepts and storing in dataVaults
  * - Gruppenbildung
  * <p>
@@ -48,7 +47,7 @@ public class NextAgent extends Agent {
     public static HashMap<Integer, NextGroup> globalGroupMap = new HashMap<>();
     public static HashMap<String, HashSet<Vector2D>> GroupBuildingSkipMemory = new HashMap<>();
     public static int lastGroupJoinAtStep = -1;
-    
+
     /*
      * ########## region fields
      */
@@ -99,11 +98,10 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion fields
      */
-
     /**
      * ########## region constructor.
      *
-     * @param name    the agent's name
+     * @param name the agent's name
      * @param mailbox the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
@@ -126,7 +124,7 @@ public class NextAgent extends Agent {
      * ##################### endregion constructor
      */
 
-    /*
+ /*
      * ########## region public methods
      */
     // Original Method
@@ -239,7 +237,7 @@ public class NextAgent extends Agent {
             // new path
             if (agentGroup != null) {
                 if (solvedTasks >= 1 || agentGroup.IsDeadlineReached(GetActiveTask())
-                        || agentActivity.equals(EAgentActivity.cleanMap)){
+                        || agentActivity.equals(EAgentActivity.cleanMap)) {
                     solvedTasks = 0;
                     failStatus = 0;
                     NextAgentPlan groupPlan = agentGroup.GetPlan(this);
@@ -257,19 +255,17 @@ public class NextAgent extends Agent {
                             }
                             SetActiveTask(nextTask);
                         }
-                    }                  	
+                    }
                     SetAgentPlan(nextPlan);
                 }
             }
 
-
             //printActionsReport(); // live String output to console
             //printBlockedStepsReport(); // live String output to console
             //printFinalReport(); // live String output to console
-
-			//System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
+            //System.out.println("Used time: " + (Instant.now().toEpochMilli() - startTime) + " ms"); // Calculation Time report
             Action nextAction = NextActionWrapper.CreateAction(NextConstants.EActions.skip);
-            
+
             // Auf Events reagieren
 //            HashSet<NextMapTile> markers = this.agentStatus.GetMarkers();
 //            if(markers != null && markers.size() > 0)
@@ -279,7 +275,6 @@ public class NextAgent extends Agent {
 ////	            	//Vector2D position = marker.getPosition();
 ////	            }
 //            }
-            
             nextAction = generatePathMemory();
             if (nextAction == null) {
                 // Weg generiert - aktuelle Action auswählen
@@ -287,22 +282,23 @@ public class NextAgent extends Agent {
             }
 
             // Clears StepMemory if walking was interrupted.
-            if(!nextAction.getName().contains("move")) {
+            if (!nextAction.getName().contains("move")) {
                 this.clearAgentStepMemory();
             }
-            
+
             System.out.println();
             System.out.println("NextPossibleAction .... " + nextAction.toString());
             System.out.println();
 
             /**
-             if( agentGroup != null) {
-             // this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
-             // this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
-             // this.say("Current Step " + this.simStatus.GetCurrentStep());
-             }
-             //**/
-
+             * if( agentGroup != null) { // this.say("Current tile was blocked:
+             * " +
+             * this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
+             * // this.say("Blocked Steps " +
+             * this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
+             * // this.say("Current Step " + this.simStatus.GetCurrentStep()); }
+             //*
+             */
             if (this.agentStatus.GetLastActionResult().contains("fail")) {
                 System.out.println("Letzte FailedAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
                 //this.connectedToAgent = false;
@@ -369,7 +365,6 @@ public class NextAgent extends Agent {
         this.pathMemory = pathMemory;
     }
 
-
     public void SetCorrectPosition(boolean correctPosition) {
         this.correctPosition = correctPosition;
     }
@@ -378,7 +373,9 @@ public class NextAgent extends Agent {
         return correctPosition;
     }
 
-    public boolean GetConnectedToAgent(){return connectedToAgent;}
+    public boolean GetConnectedToAgent() {
+        return connectedToAgent;
+    }
 
     public void ClearPathMemory() {
         this.pathMemory = new ArrayList<Action>();
@@ -424,16 +421,16 @@ public class NextAgent extends Agent {
     public NextPlan GetAgentPlan() {
         return agentPlan;
     }
-    
+
     /**
-     * CalculateDistance between two cells using Manhattan or A*JPS if applicable
-     * 
+     * CalculateDistance between two cells using Manhattan or A*JPS if
+     * applicable
+     *
      * @param startPosition Vector2D Start of calculation
      * @param targetPosition Vector2D Targetof calculation
      * @return int distance between the points using Manhattan or A*
      */
-    
-    private int calculateDistance(Vector2D startPosition, Vector2D targetPosition){
+    private int calculateDistance(Vector2D startPosition, Vector2D targetPosition) {
         return NextPathfindingUtil.calculateDistance(this.GetMap(), startPosition, targetPosition);
     }
 
@@ -448,7 +445,7 @@ public class NextAgent extends Agent {
         // System.out.println("iNPUT" + agentStatus.GetPosition() + " " + target);
 
         //NextMap map = GetMap();
-    	this.setGoToPosition(target);
+        this.setGoToPosition(target);
         NextMap map = this.agentGroup.GetGroupMap();
         Boolean targetIsOnMap = map.IsOnMap(target);
         try {
@@ -492,8 +489,8 @@ public class NextAgent extends Agent {
             if (map.GetMapArray()[target.x - 1][target.y].IsWalkableStrict()) {
                 return CalculatePath(new Vector2D(target.x - 1, target.y));
             }
-            if (map.GetMapArray()[target.x ][target.y -1].IsWalkableStrict()) {
-                return CalculatePath(new Vector2D(target.x , target.y -1));
+            if (map.GetMapArray()[target.x][target.y - 1].IsWalkableStrict()) {
+                return CalculatePath(new Vector2D(target.x, target.y - 1));
             }
         } catch (Exception e) {
             this.say("CalculatePathNextToTarget:" + e);
@@ -527,22 +524,22 @@ public class NextAgent extends Agent {
      * @param message - String based message
      */
     public void HandleGroupMessage(String message, String sourceAgent) {
-        
-        if(message.equals("JUNIT TEST")){
+
+        if (message.equals("JUNIT TEST")) {
             this.GetAgentStatus().SetName("JUNIT TEST");
         }
-        
+
         // definitive implementation needed
     }
-    
-    /** 
-     * Clears the occupied MapTiles in case of an error in movement 
+
+    /**
+     * Clears the occupied MapTiles in case of an error in movement
      */
     public void clearAgentStepMemory() {
         Vector2D startPoint = this.GetPosition();
         int counter = 0;
         char[] lastAction = this.agentStatus.GetLastActionParams().toCharArray();
-        
+
         for (Character step : lastAction) {
             if (step.equals('n')) {
                 startPoint.add(0, -1);
@@ -558,7 +555,7 @@ public class NextAgent extends Agent {
             }
         }
         //System.out.println("clearMapTiles At: " + startPoint );
-        clearMapTiles( startPoint, pathMemory);
+        clearMapTiles(startPoint, pathMemory);
     }
 
     public HashMap<NextMapTile, Integer> GetDispenserDistances(HashSet<NextMapTile> requiredBlocks) {
@@ -589,13 +586,13 @@ public class NextAgent extends Agent {
         return this.agentActivity.equals(activity);
     }
 
-	public Vector2D getGoToPosition() {
-		return goToPosition;
-	}
+    public Vector2D getGoToPosition() {
+        return goToPosition;
+    }
 
-	public void setGoToPosition(Vector2D goToPosition) {
-		this.goToPosition = goToPosition;
-	}
+    public void setGoToPosition(Vector2D goToPosition) {
+        this.goToPosition = goToPosition;
+    }
 
 
     /*
@@ -667,6 +664,7 @@ public class NextAgent extends Agent {
         System.out.println("Local " + localPath);
         System.out.println("Global " + pathRest);
         //*/
+        
         // Convert local Path to Target Cell and clear Path in between
         Vector2D target = clearMapTiles(this.GetPosition(), localPath);
 
@@ -711,13 +709,16 @@ public class NextAgent extends Agent {
         List<Action> newPath = new ArrayList<>();
         newPath = aStar.calculatePath(localMap, new Vector2D(vision, vision), target.getAdded(vision, vision), false, true, this.simStatus.GetCurrentStep());
 
-        //System.out.println("path" + newPath);
+        System.out.println("path" + newPath);
         // Join Path
-        //System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
+        System.out.println("\n \n \n PATH ADAPTATION TRIGGERED \n \n \n ");
 
         if (newPath.isEmpty()) {
-            newPath.add(NextAgentUtil.GenerateRandomMove());
             clearMapTiles(target, pathRest);
+            newPath = CalculatePath(goToPosition);
+            if (newPath.isEmpty()) {
+                newPath.add(NextAgentUtil.GenerateRandomMove());
+            }
             return newPath;
         }
 
@@ -734,12 +735,12 @@ public class NextAgent extends Agent {
             // Fix for different parameter values in tests and while simulation
             String[] values = step.getParameters().get(0).toString().split("\"");
             String direction;
-            if(values.length==1){
-               direction = values[0]; 
+            if (values.length == 1) {
+                direction = values[0];
             } else {
-               direction = values[1]; 
+                direction = values[1];
             }
-            
+
             //calculate the offset
             if (direction.equals("n")) {
                 target.add(0, -1);
@@ -753,32 +754,30 @@ public class NextAgent extends Agent {
             if (direction.equals("s")) {
                 target.add(0, 1);
             }
-            
+
             // Free MapTile
             NextMap workMap = this.agentGroup.GetGroupMap();
             int xPosition = this.GetPosition().getAdded(target).x;
             int yPosition = this.GetPosition().getAdded(target).y;
             if (xPosition > -1 && yPosition > -1 && xPosition < workMap.GetSizeOfMap().x && yPosition < workMap.GetSizeOfMap().y) {
-    
-            workMap.GetMapTile(new Vector2D(xPosition, yPosition)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter );
+
+                workMap.GetMapTile(new Vector2D(xPosition, yPosition)).ReleaseAtStep(this.simStatus.GetCurrentStep() + counter);
             }
 
         }
         return target;
     }
 
-
     private Action selectNextAction2() {
         // -- Mögliche Action holen, um auf lokale sicht zu reagieren.
         // -- Wenn in der lokalen Sicht nichts ist, dann den normalen weg gehen
         Action possibleAction = intention.GeneratePossibleAction();
-        
+
         if (possibleAction == null) {
             return selectNextAction();
         }
         return possibleAction;
     }
-
 
     /**
      * Selects the next Action with pathMemory
@@ -910,15 +909,13 @@ public class NextAgent extends Agent {
         // Update Tasks at taskPlanner
         updateTasks();
         taskHandler.SetInitialTask();
-        
+
         // handle connect status
         if (this.agentStatus.GetLastAction().contains("connect") && this.agentStatus.GetLastActionResult().contains("success")) {
-        	this.connectedToAgent = true;
+            this.connectedToAgent = true;
             //System.out.println("Letzte ConnectAction: " + this.agentStatus.GetLastAction() + " " + this.agentStatus.GetLastActionResult());
-        }
-        else
-        {
-        	this.connectedToAgent = false;
+        } else {
+            this.connectedToAgent = false;
         }
     }
 
@@ -961,7 +958,7 @@ public class NextAgent extends Agent {
             //Stop processing after last Simulation
             if (percept.getName().contains("bye")) {
                 //disableAgent(); //---- closing the window is disabled to keep the logdata visible.
-            }            
+            }
         }
     }
 
@@ -993,18 +990,21 @@ public class NextAgent extends Agent {
     }
 
     /**
-     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
+     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden
+     * kann
      */
     private void CheckIfMaxAttemptsAreReached() {
-        if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target"))
+        if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("failed_target")) {
             failStatus += 1;
-        else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success")) {
+        } else if (agentStatus.GetLastAction().contains("submit") && agentStatus.GetLastActionResult().contains("success")) {
             failStatus = 0;
-            solvedTasks +=1;
+            solvedTasks += 1;
         }
 
         int failOffset = 2;
-        if (failStatus == failOffset) agentGroup.SetMaxAttemptsAreReached(activeTask);
+        if (failStatus == failOffset) {
+            agentGroup.SetMaxAttemptsAreReached(activeTask);
+        }
     }
 
     /**
@@ -1017,13 +1017,13 @@ public class NextAgent extends Agent {
         globalGroupMap.put(this.agentGroup.GetGroupID(), this.agentGroup);
 
     }
-    
+
     /**
      * Counts all Groups created by NextAgent
+     *
      * @return int the amount of available groups
      */
-    
-    public int CountAllGroups(){
+    public int CountAllGroups() {
         return globalGroupMap.size();
     }
 
@@ -1042,8 +1042,8 @@ public class NextAgent extends Agent {
      * Joins the provided group and the group of the agent, if provided group
      * has a lower id. Has to be executed on both agents
      *
-     * @param newGroup  - new group to combine
-     * @param offset    - Vector2D manhattan distance between agents
+     * @param newGroup - new group to combine
+     * @param offset - Vector2D manhattan distance between agents
      * @param mapOffset - Vector2D manhattan distance between maps zero points
      */
     private void joinGroup(NextGroup newGroup, Vector2D offset, Vector2D mapOffset) {
@@ -1107,17 +1107,17 @@ public class NextAgent extends Agent {
 
         }
     }
-    
+
     /**
      * Debugging helper - live report - prints blocked steps for a tile
      */
     private void printBlockedStepsReport() {
-    
-            if( agentGroup != null) {
+
+        if (agentGroup != null) {
             this.say("Current tile was blocked: " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).CheckAtStep(this.simStatus.GetCurrentStep()));
             this.say("Blocked Steps " + this.agentGroup.GetGroupMap().GetMapTile(this.GetPosition()).ReportBlockedSteps());
             this.say("Current Step " + this.simStatus.GetCurrentStep());
-            }
+        }
     }
 
     private HashSet<NextMapTile> findFriendlyAgentsInLocalView() {

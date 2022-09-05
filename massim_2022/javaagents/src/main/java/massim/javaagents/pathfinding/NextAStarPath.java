@@ -353,7 +353,7 @@ public class NextAStarPath {
         }
 
         // no path found, return empty List
-//        System.out.println("No Path Found");
+        System.out.println("No Path Found");
         return new ArrayList<>();
 
     }
