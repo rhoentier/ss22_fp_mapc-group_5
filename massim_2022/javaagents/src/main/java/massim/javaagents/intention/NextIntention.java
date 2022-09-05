@@ -482,6 +482,7 @@ public class NextIntention {
                 }
                 return null;
             case goToGoalzone:
+                positionHasBeenCorrected = false;
                 NextMessage message = NextMessageUtil.getMessageFromAgent(this.nextAgent.getName(), "readyToConnect");
                 if (message != null) nextAgent.GetTaskHandler().SetReadyToConnect();
                 if (this.nextAgent.GetPathMemory().isEmpty() && map.IsGoalZoneAvailable()) {
