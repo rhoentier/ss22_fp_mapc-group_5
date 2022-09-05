@@ -557,7 +557,7 @@ public class NextAgent extends Agent {
                 startPoint.add(0, 1);
             }
         }
-        System.out.println("clearMapTiles At: " + startPoint );
+        //System.out.println("clearMapTiles At: " + startPoint );
         clearMapTiles( startPoint, pathMemory);
     }
 
