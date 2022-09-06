@@ -798,7 +798,13 @@ public class NextAgent extends Agent {
                 if (thing.IsObstacle()) {
                     return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + thing.getPositionX()), new Identifier("" + thing.getPositionY()));
                 } else if (thing.IsEntity()) {
-                    pathMemory = generateAlternativePathMemory(pathMemory);
+                    //pathMemory = generateAlternativePathMemory(pathMemory);
+                     Vector2D vector = NextAgentUtil.ConvertECardinalsToVector2D(ECardinals.valueOf(direction));
+                    if (NextAgentUtil.IsObstacleInPosition(this.agentStatus.GetFullLocalView(), vector)) {
+                        return NextActionWrapper.CreateAction(EActions.clear, new Identifier("" + vector.x), new Identifier("" + vector.y));
+                    } else {
+                        return NextActionWrapper.CreateAction(EActions.move, new Identifier(NextAgentUtil.NextDirection(ECardinals.valueOf(direction)).toString()));
+                    }
                 } else if (!thing.IsBlock()) {
                     // um Block herumlaufen
                     pathMemory = generateAlternativePathMemory(pathMemory);
