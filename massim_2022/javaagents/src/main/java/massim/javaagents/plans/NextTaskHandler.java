@@ -32,7 +32,12 @@ public class NextTaskHandler {
      * if no task is fulfillable returns the desire to explore the map
      */
     public NextPlan GetDeepestEAgentTask() {
-        return new NextPlanCleanMap();
+        NextPlan deepestPlan;
+        if (currentPlan != null) {
+            deepestPlan = currentPlan.GetDeepestPlan();
+            return deepestPlan;
+        }
+        return null;
     }
 
     /**

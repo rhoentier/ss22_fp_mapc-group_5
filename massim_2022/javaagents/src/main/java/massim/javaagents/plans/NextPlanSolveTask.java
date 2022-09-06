@@ -23,7 +23,8 @@ public class NextPlanSolveTask extends NextPlan {
         this.agent = agent;
         this.task = groupPlan.GetTask();
         this.agentTask = NextConstants.EAgentActivity.solveTask;
-        subPlans = groupPlan.GetSubPlans();
+
+        subPlans.add(new NextPlanCleanMap());
         UpdateInternalBelief();
     }
 
