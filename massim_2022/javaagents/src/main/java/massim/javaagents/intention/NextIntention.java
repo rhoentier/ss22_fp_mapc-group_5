@@ -163,7 +163,9 @@ public class NextIntention {
 	        }
         }
         
-        if (!blocksNeeded) {
+        if (!blocksNeeded 
+        		&& this.nextAgentStatus.GetAttachedElementsAmount() > 0
+        		&& this.nextAgentStatus.GetAttachedElementsVector2D().iterator().next().equals(lastDetachPosition)) {
             nextPossibleAction = NextActionWrapper.CreateAction(EActions.detach, new Identifier(
                     NextAgentUtil.ConvertVector2DToECardinals(lastDetachPosition).toString()));
             return true;

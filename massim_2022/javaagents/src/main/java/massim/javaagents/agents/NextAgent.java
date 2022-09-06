@@ -906,7 +906,9 @@ public class NextAgent extends Agent {
         updateCurrentRole();
 
         // Update the GroupMap
-        NextMap.UpdateMap(this);
+        if(this.agentGroup != null){
+            NextMap.UpdateMap(this);
+        }
 
         // Update Tasks at taskPlanner
         updateTasks();
