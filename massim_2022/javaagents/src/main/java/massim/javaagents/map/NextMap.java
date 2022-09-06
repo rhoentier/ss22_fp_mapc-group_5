@@ -550,44 +550,44 @@ public class NextMap {
 
             agent.MovePosition(lastStep);
 
-            Vector2D agentPosition = agent.GetPositionRef();
-
-            // 1. Add all maptiles of view as "free"
-            HashSet<NextMapTile> view = new HashSet<>();
-            int vision = agent.GetAgentStatus().GetCurrentRole().GetVision();
-            HashSet<Vector2D> vectorsInView = generateVectorsInView(vision, false);
-            for (Vector2D v : vectorsInView) {
-                view.add(new NextMapTile(v, agent.GetSimulationStatus().GetCurrentStep(), "free"));
-            }
-            map.AddPercept(agentPosition, view);
-
-            // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
-            HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
-            for (NextMapTile thing : agent.GetAgentStatus().GetVisibleThings()) {
-                if (!agent.GetAgentStatus().GetAttachedElementsVector2D().contains(thing.GetPosition())) {
-                    visibleNotAttachedThings.add(thing);
-                }
-            }
-            map.AddPercept(agentPosition, visibleNotAttachedThings);
-
-            // 3. Add obstacles, goalZones and roleZones within view (overwrites maptiles from steps 1 and 2)
-            map.AddPercept(agentPosition, agent.GetAgentStatus().GetObstacles());
-            map.AddPercept(agentPosition, agent.GetAgentStatus().GetGoalZones());
-            map.AddPercept(agentPosition, agent.GetAgentStatus().GetRoleZones());
-
-            // Shift map to zero (important before WriteToFile()!)
-            map.shiftToZero();
-
-            // Only for debugging
-
-            // map.WriteToFile("map_" + agent.GetGroup().GetGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
-
         } else if (agent.GetAgentStatus().GetLastAction().contains("move") && !agent.GetAgentStatus().GetLastActionResult().equals("success")) {
             agent.clearAgentStepMemory();
         } else if (agent.GetAgentStatus().GetLastAction().contains("clear")) {
             agent.clearAgentStepMemory();
         }
-        
+
+        Vector2D agentPosition = agent.GetPositionRef();
+
+        // 1. Add all maptiles of view as "free"
+        HashSet<NextMapTile> view = new HashSet<>();
+        int vision = agent.GetAgentStatus().GetCurrentRole().GetVision();
+        HashSet<Vector2D> vectorsInView = generateVectorsInView(vision, false);
+        for (Vector2D v : vectorsInView) {
+            view.add(new NextMapTile(v, agent.GetSimulationStatus().GetCurrentStep(), "free"));
+        }
+        map.AddPercept(agentPosition, view);
+
+        // 2. Add things, which are visible but not attached to the agent (overwrites maptiles from step 1)
+        HashSet<NextMapTile> visibleNotAttachedThings = new HashSet<>();
+        for (NextMapTile thing : agent.GetAgentStatus().GetVisibleThings()) {
+            if (!agent.GetAgentStatus().GetAttachedElementsVector2D().contains(thing.GetPosition())) {
+                visibleNotAttachedThings.add(thing);
+            }
+        }
+        map.AddPercept(agentPosition, visibleNotAttachedThings);
+
+        // 3. Add obstacles, goalZones and roleZones within view (overwrites maptiles from steps 1 and 2)
+        map.AddPercept(agentPosition, agent.GetAgentStatus().GetObstacles());
+        map.AddPercept(agentPosition, agent.GetAgentStatus().GetGoalZones());
+        map.AddPercept(agentPosition, agent.GetAgentStatus().GetRoleZones());
+
+        // Shift map to zero (important before WriteToFile()!)
+        map.shiftToZero();
+
+        // Only for debugging
+
+        //map.WriteToFile("map_" + agent.GetAgentStatus().GetTeamName() + "_" + agent.GetAgentGroup().GetGroupID() + ".txt", agent.GetSimulationStatus().GetCurrentStep());
+
     }
 
     /**
