@@ -4,7 +4,6 @@ import eis.iilang.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import massim.javaagents.map.NextMapTile;
@@ -27,15 +26,15 @@ import massim.javaagents.percept.NextTask;
  */
 public class NextPerceptReader {
 
-    private NextAgent agent;
-    private NextSimulationStatus simStatus;
-    private NextAgentStatus agentStatus;
+    private final NextAgent agent;
+    private final NextSimulationStatus simStatus;
+    private final NextAgentStatus agentStatus;
 
     private HashSet<List<Parameter>> tasks;
     private HashSet<List<Parameter>> roles;
     private HashSet<List<Parameter>> norms;
     private HashSet<List<Parameter>> attached;
-    private HashSet<List<Parameter>> things;    
+    private HashSet<List<Parameter>> things;
     private HashSet<List<Parameter>> markers;
     private HashSet<List<Parameter>> obstacles;
     private HashSet<List<Parameter>> hits;
@@ -47,8 +46,6 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> goalZones;
     private HashSet<List<Parameter>> roleZones;
 
-    private HashSet<Parameter> dispenser;
-
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
         this.simStatus = agent.GetSimulationStatus();
@@ -58,7 +55,7 @@ public class NextPerceptReader {
     }
 
     /**
-     * evaluate the percepts
+     * Evaluate the percepts and sort by Type
      *
      * @param percepts
      * @param agent
@@ -67,155 +64,152 @@ public class NextPerceptReader {
 
         clearSets(); //clearing of the containers before processing of percepts
 
-        //WARNING: ConcurrentModificationException workaround! based on FitBUT
-        synchronized (percepts) {
-            for (Percept percept : percepts) {
-                try {
+        for (Percept percept : percepts) {
+            try {
 
-                    switch (NextConstants.EPercepts.valueOf(percept.getName())) {
-                        // - SimulationStart Messages
-                        case simStart:
-                            simStatus.SetFlagSimulationIsStarted();
-                            break;
-                        case name:
-                            agentStatus.SetName(percept.getParameters().get(0).toProlog());
-                            break;
-                        case team:
-                            agentStatus.SetTeam(percept.getParameters().get(0).toProlog());
-                            break;
-                        case teamSize:
-                            simStatus.SetTeamSize(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case steps:
-                            simStatus.SetTotalSteps(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case role:
-                            // List of roles in simulation
-                            // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
-                            if (percept.getParameters().size() > 1) {
-                                roles.add(percept.getParameters());
-                            } else {
-                                // Actual role
-                                agentStatus.SetRole(percept.getParameters().get(0).toProlog());
-                            }
-                            break;
-                        // - SimulationEnd Messages
-                        case simEnd:
-                            simStatus.SetFlagSimulationIsFinished();
-                            break;
-                        case ranking:
-                            simStatus.SetRanking(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case score:
-                            simStatus.SetScore(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        // - AllSimulationsAreFinished Message
-                        case bye:
-                            // is called, when last Simulation is finished.
-                            // no action, should be handled in NextAgent
-                            break;
-                        // - Request Action Messages
-                        case requestAction:
-                            // no action, should be handled in NextAgent
-                            break;
-                        case actionID:
-                            simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case timestamp:
-                            simStatus.SetTimestamp(Long.parseLong(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case deadline:
-                            simStatus.SetDeadline(Long.parseLong(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case step:
-                            simStatus.SetCurrentStep(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case lastAction:
-                            agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
-                            /*
+                switch (NextConstants.EPercepts.valueOf(percept.getName())) {
+                    // - SimulationStart Messages
+                    case simStart:
+                        simStatus.SetFlagSimulationIsStarted();
+                        break;
+                    case name:
+                        agentStatus.SetName(percept.getParameters().get(0).toProlog());
+                        break;
+                    case team:
+                        agentStatus.SetTeam(percept.getParameters().get(0).toProlog());
+                        break;
+                    case teamSize:
+                        simStatus.SetTeamSize(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case steps:
+                        simStatus.SetTotalSteps(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case role:
+                        // List of roles in simulation
+                        // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+                        if (percept.getParameters().size() > 1) {
+                            roles.add(percept.getParameters());
+                        } else {
+                            // Actual role
+                            agentStatus.SetRole(percept.getParameters().get(0).toProlog());
+                        }
+                        break;
+                    // - SimulationEnd Messages
+                    case simEnd:
+                        simStatus.SetFlagSimulationIsFinished();
+                        break;
+                    case ranking:
+                        simStatus.SetRanking(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case score:
+                        simStatus.SetScore(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    // - AllSimulationsAreFinished Message
+                    case bye:
+                        // is called, when last Simulation is finished.
+                        // no action, should be handled in NextAgent
+                        break;
+                    // - Request Action Messages
+                    case requestAction:
+                        // no action, should be handled in NextAgent
+                        break;
+                    case actionID:
+                        simStatus.SetActionID(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case timestamp:
+                        simStatus.SetTimestamp(Long.parseLong(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case deadline:
+                        simStatus.SetDeadline(Long.parseLong(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case step:
+                        simStatus.SetCurrentStep(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case lastAction:
+                        agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
+                        /*
                             if (agentStatus.GetLastAction() != "") {
                                 agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
                             }*/
-                            break;
-                        case lastActionResult:
-                            agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
-                            break;
-                        case lastActionParams:
-                            // has to be adjusted to a List if used/needed
-                            agentStatus.SetLastActionParams(percept.getParameters().get(0).toProlog());
-                            break;
-                        // The "Score" percept is handled together with @SimEnd messages above
-                        case thing:
-                            // Dividing in sublists obstacles, markers and things 
-                            if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
-                                obstacles.add(percept.getParameters());
-                                continue;
-                            }
-                            if (percept.getParameters().get(2).toProlog().equals("marker")) {
-                                markers.add(percept.getParameters());
-                                continue;
-                            }
-                            things.add(percept.getParameters());
-                            break;
-                        case task:
-                            tasks.add(percept.getParameters());
-                            break;
-                        case attached:
-                            attached.add(percept.getParameters());
-                            break;
-                        case energy:
-                            agentStatus.SetEnergy(Integer.parseInt(percept.getParameters().get(0).toProlog()));
-                            break;
-                        case deactivated:
-                            agentStatus.SetDeactivatedFlag(percept.getParameters().get(0).toProlog().equals("true"));
-                            break;
-                        case roleZone:
-                            roleZones.add(percept.getParameters());
-                            break;
-                        case goalZone:
-                            goalZones.add(percept.getParameters());
-                            break;
-                        case violation:
-                            violations.add(percept.getParameters().get(0).toProlog());
-                            break;
-                        case norm:
-                            norms.add(percept.getParameters());
-                            break;
-                        case hit:
-                            hits.add(percept.getParameters());
-                            break;
-                        case surveyed:
-                            // Dividing in two sublists handling Surveyed Agents and Surveyed Things 
-                            // Surveyed Agent
-                            if (percept.getParameters().size() == 4) {
-                                surveyedAgents.add(percept.getParameters());
-                            }
-                            // Surveyed Thing
-                            if (percept.getParameters().size() == 2) {
-                                surveyedThings.add(percept.getParameters());
-                            }
-                            break;
-                        default: //All not processed perceipts are moved to the Overhang List
-                        {
-                            overhangNames.add(percept.getName());
+                        break;
+                    case lastActionResult:
+                        agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());
+                        break;
+                    case lastActionParams:
+                        // has to be adjusted to a List if used/needed
+                        agentStatus.SetLastActionParams(percept.getParameters().get(0).toProlog());
+                        break;
+                    // The "Score" percept is handled together with @SimEnd messages above
+                    case thing:
+                        // Dividing in sublists obstacles, markers and things 
+                        if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
+                            obstacles.add(percept.getParameters());
+                            continue;
+                        }
+                        if (percept.getParameters().get(2).toProlog().equals("marker")) {
+                            markers.add(percept.getParameters());
+                            continue;
+                        }
+                        things.add(percept.getParameters());
+                        break;
+                    case task:
+                        tasks.add(percept.getParameters());
+                        break;
+                    case attached:
+                        attached.add(percept.getParameters());
+                        break;
+                    case energy:
+                        agentStatus.SetEnergy(Integer.parseInt(percept.getParameters().get(0).toProlog()));
+                        break;
+                    case deactivated:
+                        agentStatus.SetDeactivatedFlag(percept.getParameters().get(0).toProlog().equals("true"));
+                        break;
+                    case roleZone:
+                        roleZones.add(percept.getParameters());
+                        break;
+                    case goalZone:
+                        goalZones.add(percept.getParameters());
+                        break;
+                    case violation:
+                        violations.add(percept.getParameters().get(0).toProlog());
+                        break;
+                    case norm:
+                        norms.add(percept.getParameters());
+                        break;
+                    case hit:
+                        hits.add(percept.getParameters());
+                        break;
+                    case surveyed:
+                        // Dividing in two sublists handling Surveyed Agents and Surveyed Things 
+                        // Surveyed Agent
+                        if (percept.getParameters().size() == 4) {
+                            surveyedAgents.add(percept.getParameters());
+                        }
+                        // Surveyed Thing
+                        if (percept.getParameters().size() == 2) {
+                            surveyedThings.add(percept.getParameters());
                         }
                         break;
+                    default: //All not processed perceipts are moved to the Overhang List
+                    {
+                        overhangNames.add(percept.getName());
                     }
-                } catch (Exception e) {
-                    agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
+                    break;
                 }
+            } catch (Exception e) {
+                agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
             }
-
-            // handling of unusual perception entries
-            if (!overhangNames.isEmpty()) {
-                agent.say("------------------------------------------------");
-                agent.say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
-                agent.say("------------------------------------------------");
-            }
-
-            //Second Step of Processing of Sets
-            convertGeneratedSets();
         }
+
+        // handling of unusual percept entries
+        if (!overhangNames.isEmpty()) {
+            agent.say("------------------------------------------------");
+            agent.say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
+            agent.say("------------------------------------------------");
+        }
+
+        //Second Step of Processing of Sets
+        convertGeneratedSets();
     }
 
     private void clearSets() {
@@ -234,18 +228,19 @@ public class NextPerceptReader {
         hits = new HashSet<>();
         surveyedAgents = new HashSet<>();
         surveyedThings = new HashSet<>();
-        dispenser = new HashSet<>();
     }
+
     /**
-     *  Process all Datasets and transfer to NextAgentStatus and NextSimStatus
+     * Process all Datasets and transfer to NextAgentStatus and NextSimStatus
      */
     private void convertGeneratedSets() {
 
         //Process Things, Markers and Obstales and combine to fullLocalView
+        //retaining the flexibility to combine the thing elements 
         HashSet<NextMapTile> fullLocalView = new HashSet<>();
-        HashSet<NextMapTile> processedObstacles = new HashSet<>();
-        HashSet<NextMapTile> processedThings = new HashSet<>();
-        HashSet<NextMapTile> processedMarkers = new HashSet<>();
+        HashSet<NextMapTile> processedObstacles;
+        HashSet<NextMapTile> processedThings;
+        HashSet<NextMapTile> processedMarkers;
 
         processedThings = processThingsSet(things);
         processedMarkers = processThingsSet(markers);
@@ -253,13 +248,12 @@ public class NextPerceptReader {
         fullLocalView.addAll(processedThings);
         //fullLocalView.addAll(processedMarkers); 
         fullLocalView.addAll(processedObstacles);
-        agentStatus.SetVision(processedThings); 
+        agentStatus.SetVision(processedThings);
         agentStatus.SetMarkers(processedMarkers);
         agentStatus.SetObstacles(processedObstacles);
         agentStatus.SetFullLocalView(fullLocalView);
 
         //Process remaining Datasets
-        
         simStatus.SetTasksList(processTasksSet());
         simStatus.SetNormsList(processNormsSet());
         simStatus.SetRolesList(processRolesSet());
@@ -279,7 +273,7 @@ public class NextPerceptReader {
     }
 
     private HashSet<NextMapTile> convertDispenserFromVision() {
-        HashSet<NextMapTile> collectionOfDispenser = new HashSet<NextMapTile>();
+        HashSet<NextMapTile> collectionOfDispenser = new HashSet<>();
         for (NextMapTile mapTile : agentStatus.GetVisibleThings()) {
             try {
                 if (mapTile.getThingType().contains("dispenser")) {
@@ -324,7 +318,7 @@ public class NextPerceptReader {
     }
 
     private HashSet<NextNorm> processNormsSet() {
-        /*  
+        /*  --- Recieved information
         
         norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
 
@@ -434,23 +428,21 @@ public class NextPerceptReader {
         //*/
         return processedAttachedSet;
     }
-    
+
     private HashSet<NextMapTile> updateAttachedSetMapTile() {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
-        for(NextMapTile tile : processThingsSet(things))
-        {
-        	if(tile.getThingType().contains("block") && 
-        		(tile.getPosition().equals(NextConstants.WestPoint)
+        for (NextMapTile tile : processThingsSet(things)) {
+            if (tile.getThingType().contains("block")
+                    && (tile.getPosition().equals(NextConstants.WestPoint)
                     || tile.getPosition().equals(NextConstants.NorthPoint)
                     || tile.getPosition().equals(NextConstants.EastPoint)
-                    || tile.getPosition().equals(NextConstants.SouthPoint))
-        	) 
-    		{
-        		for(Vector2D attachedSet : processAttachedSet())
-        		{
-        			if(attachedSet.equals(tile.GetPosition())) processedAttachedSet.add(tile);
-        		}        		
-    		}
+                    || tile.getPosition().equals(NextConstants.SouthPoint))) {
+                for (Vector2D attachedSet : processAttachedSet()) {
+                    if (attachedSet.equals(tile.GetPosition())) {
+                        processedAttachedSet.add(tile);
+                    }
+                }
+            }
         }
         return processedAttachedSet;
     }
@@ -609,10 +601,12 @@ public class NextPerceptReader {
     }
 
     private HashSet<NextSurveyedAgent> processSurveyedAgentSet() {
-        // surveyed("agent", name, role, energy)
-        // name : Identifier
-        // role : Identifier
-        // energy : Numeral
+        /*  --- Recieved information        
+          surveyed("agent", name, role, energy)
+          name : Identifier
+          role : Identifier
+          energy : Numeral
+        */
 
         HashSet<NextSurveyedAgent> processedSurveyedAgents = new HashSet<>();
         // Converts Percept Data to Target Data
@@ -678,7 +672,7 @@ public class NextPerceptReader {
     }
 
     private HashSet<NextNormRequirement> convertNormRequirements(HashSet<List<Parameter>> collectionOfRequirementElements) {
-        /*
+        /*  --- Recieved information
         norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
 
         id : Identifier - ID of the norm
