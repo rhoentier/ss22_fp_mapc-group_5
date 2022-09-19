@@ -38,7 +38,6 @@ public class NextAStarPath {
     private int[] localStartPoint;
     private Vector2D startpoint;
 
-    private Boolean centerTheMap;
     private Boolean strictWalkable;
     private Boolean aStarJps;
 
@@ -57,7 +56,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, false, false, currentStep);
@@ -73,7 +72,7 @@ public class NextAStarPath {
      * @param centerTheMap Boolean - true if map should be centered for optimal
      * distance calculation
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
@@ -91,7 +90,7 @@ public class NextAStarPath {
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
         return calculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
@@ -108,7 +107,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return calculatePath(aStarJps, originalMap, startpoint, target, false, false, currentStep);
@@ -126,7 +125,7 @@ public class NextAStarPath {
      * @param centerTheMap Boolean - true if map should be centered for optimal
      * distance calculation
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return calculatePath(aStarJps, originalMap, startpoint, target, centerTheMap, false, currentStep);
@@ -146,7 +145,7 @@ public class NextAStarPath {
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
-     * @return List<Action> Collection of actions to describe the path
+     * @return List Collection of actions to describe the path
      */
     public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
@@ -154,7 +153,6 @@ public class NextAStarPath {
         this.originalMap = originalMap;
         this.mapWidth = originalMap.length;
         this.mapHeight = originalMap[0].length;
-        this.centerTheMap = centerTheMap;
         this.strictWalkable = strictWalkable;
         this.currentStep = currentStep;
         this.startpoint = startpoint;
@@ -185,7 +183,7 @@ public class NextAStarPath {
 
         /* - Debugging helper for live view evaluation. Place "//" in front to activate.
         System.out.println("iNPUT" + startpoint + " " + target);
-        System.out.println("Map - " + mapWidth + " " + mapHeight);
+        System.out.println("Map - " + mapWidthLocal + " " + mapHeightLocal);
         System.out.println("\n \n \n" + NextMap.MapToStringBuilder(map) + "\n \n \n");
         System.out.println("Output Start - " + this.localStartPoint[0] + " - " + this.localStartPoint[1]);
         System.out.println("Output Target - " + this.targetPosition[0] + " - " + this.targetPosition[1]);
@@ -217,19 +215,14 @@ public class NextAStarPath {
     private List<Action> executeMainLogic() {
 
         // Queue of tiles to be visited. Sorted by score.
-        PriorityQueue<NextMapTile> queue = new PriorityQueue<>(new Comparator<NextMapTile>() {
-            @Override
-            public int compare(NextMapTile o1, NextMapTile o2) {
-                return o1.getScore() - o2.getScore();
-            }
-        });
+        PriorityQueue<NextMapTile> queue = new PriorityQueue<>((NextMapTile o1, NextMapTile o2) -> o1.getScore() - o2.getScore());
 
         // Initialise queue with start point
         queue.add(this.map[this.localStartPoint[0]][this.localStartPoint[1]]);
 
         boolean routeAvailable = false;
 
-        //System.out.println("Map Size" + mapWidth + " " + mapHeight + "\n" + "X " + queue.peek().getPositionX() + " Y " + queue.peek().getPositionY() + " TX " + targetPosition[0] + " TY " + targetPosition[1]);
+        //System.out.println("Map Size" + mapWidthLocal + " " + mapHeightLocal + "\n" + "X " + queue.peek().getPositionX() + " Y " + queue.peek().getPositionY() + " TX " + targetPosition[0] + " TY " + targetPosition[1]);
         // LogicGate - Check if Jump Point Search acceleraion is used.
         if (aStarJps) {
             // aStar JPS branch
@@ -254,7 +247,7 @@ public class NextAStarPath {
                     // at the end, return path
                     routeAvailable = true;
 
-//                    System.out.println("Path Found");
+                // System.out.println("Path Found");
                     break;
                 }
 
@@ -464,7 +457,7 @@ public class NextAStarPath {
     private List<Vector2D> convertToVector2D(List<NextMapTile> path) {
 
         List<Vector2D> processedList = new ArrayList<>();
-        if (path.size() > 0) {
+        if (!path.isEmpty()) {
             //Process all entries and reverse List
             for (int i = path.size() - 1; i > 0; i--) {
                 NextMapTile actualStep = path.get(i);
@@ -493,7 +486,7 @@ public class NextAStarPath {
         Vector2D position = new Vector2D(localStartPoint[0], localStartPoint[1]);
         // New list to return
         List<Vector2D> processedList = new ArrayList<>();
-        if (path.size() > 0) {
+        if (!path.isEmpty()) {
             //Process all entries and reverse List
             for (int i = path.size() - 1; i > 0; i--) {
                 NextMapTile actualStep = path.get(i);
@@ -503,9 +496,6 @@ public class NextAStarPath {
                 int xValue = previousStep.getPositionX() - actualStep.getPositionX();
                 int yValue = previousStep.getPositionY() - actualStep.getPositionY();
 
-                int offset_x = 0;
-                int offset_y = 0;
-
                 //Get Direction
                 Vector2D direction = Vector2D.calculateNormalisedDirection(actualStep.GetPosition(), previousStep.GetPosition());
                 // Get number of steps
@@ -513,14 +503,8 @@ public class NextAStarPath {
                 // Add direction to processedList x-Times
                 for (int j = 0; j < steps; j++) {
 
-                    offset_x += direction.x;
-                    offset_y += direction.y;
                     if (direction.x != 0 && direction.y != 0) {
                         //Diagonal movement
-
-                        int xSubValue = previousStep.GetPosition().x + offset_x;
-                        int ySubValue = previousStep.GetPosition().y + offset_y;
-
                         //Check if tile is acessible
                         if (validTile(position.x, position.y + direction.y)) {
                             processedList.add(new Vector2D(0, direction.y));
@@ -531,7 +515,7 @@ public class NextAStarPath {
                         }
 
                     } else {
-                        //orthogonal movement
+                        //Orthogonal movement
                         processedList.add(new Vector2D(direction.x, direction.y));
                     }
                     // Update the inbetween position
@@ -607,16 +591,15 @@ public class NextAStarPath {
 
         // retrieve all relevant neighbors
         Vector2D[] neighbors = getNeighborsPrune(baseTile);
-        Vector2D temporalPosition = new Vector2D();
+        Vector2D temporalPosition;
 
         //for each of these neighbors
-        for (int i = 0; i < neighbors.length; i++) {
-            if (neighbors[i] == null) {
+        for (Vector2D neighbor : neighbors) {
+            if (neighbor == null) {
                 continue;
             }
             // perform a jump, and retrieve potential successors
-            temporalPosition = jump(neighbors[i], baseTile.GetPosition());
-
+            temporalPosition = jump(neighbor, baseTile.GetPosition());
             // check if returned value is relevant 
             if (temporalPosition.x != -1) {
                 // Calculate the ng part of the score value
@@ -726,18 +709,19 @@ public class NextAStarPath {
      * The Jump method recursevly searches in the direction from parentTile to
      * currentTile. It returns its current position in three situations:
      *
-     *      1) The current node is the end node. (endX, endY) 
-     *      2) The current node is a forced neighbor. 
-     *      3) The current node is an intermediate step to a node that satisfies either 1) or 2)
+     * 1) The current node is the end node. (endX, endY) 2) The current node is
+     * a forced neighbor. 3) The current node is an intermediate step to a node
+     * that satisfies either 1) or 2)
      *
      * @param currentTile Vector2D tile to evaluate
      * @param parentTile Vector2D parent of the current tile
-     * @return Vector2D a tile, that satisfies the described conditions or Vector2D{-1,-1} to check if failed.
+     * @return Vector2D a tile, that satisfies the described conditions or
+     * Vector2D{-1,-1} to check if failed.
      */
     private Vector2D jump(Vector2D currentTile, Vector2D parentTile) {
         // default return vaules
-        Vector2D jumpPointXDirection = new Vector2D(-1, -1);
-        Vector2D jumpPointYDirection = new Vector2D(-1, -1);
+        Vector2D jumpPointXDirection;
+        Vector2D jumpPointYDirection;
         // Calculate the direction of movement.
         Vector2D direction = Vector2D.calculateNormalisedDirection(parentTile, currentTile);
 
@@ -751,7 +735,7 @@ public class NextAStarPath {
             return currentTile;
         }
 
-        if (direction.x != 0 && direction.y != 0) { 
+        if (direction.x != 0 && direction.y != 0) {
             // Diagonal movement, check for forced neighbors on diagonals
             // check the perpendicular diagonals, if we find a forced neighbor, we are on a jump point, return the current position
             if ((validTile(currentTile.x - direction.x, currentTile.y + direction.y)
@@ -760,7 +744,7 @@ public class NextAStarPath {
                     && !validTile(currentTile.x, currentTile.y - direction.y))) {
                 return currentTile;
             }
-        } else { 
+        } else {
             // horizontal/vertical movement
             if (direction.x != 0) {
                 // horizontal movement
@@ -770,7 +754,7 @@ public class NextAStarPath {
                         && !validTile(currentTile.x + direction.x, currentTile.y - 1))) {
                     return currentTile;
                 }
-            } else { 
+            } else {
                 // vertical movement
                 if ((validTile(currentTile.x + 1, currentTile.y + direction.y) // checking for forced neighbors
                         && !validTile(currentTile.x + 1, currentTile.y))
@@ -783,7 +767,7 @@ public class NextAStarPath {
         }
 
         // Additional Checking for horizontal/vertical jump points in case of diagonal movement
-        if (direction.x != 0 && direction.y != 0) { 
+        if (direction.x != 0 && direction.y != 0) {
             jumpPointXDirection = jump(new Vector2D(currentTile.x + direction.x, currentTile.y), currentTile);
             jumpPointYDirection = jump(new Vector2D(currentTile.x, currentTile.y + direction.y), currentTile);
             if (jumpPointXDirection.x != -1 || jumpPointYDirection.x != -1) {
@@ -793,25 +777,26 @@ public class NextAStarPath {
         }
 
         //moving diagonally, one of the vertical/horizontal neighbors must be open
-        if (validTile(currentTile.x + direction.x, currentTile.y) || validTile(currentTile.x, currentTile.y + direction.y)) {  
+        if (validTile(currentTile.x + direction.x, currentTile.y) || validTile(currentTile.x, currentTile.y + direction.y)) {
             return jump(new Vector2D(currentTile.x + direction.x, currentTile.y + direction.y), currentTile);
-        } else { 
+        } else {
             //moving diagonally but blocked by two touching corners of obstacles
             return new Vector2D(-1, -1);
         }
     }
 
     /**
-     * Retrieve all neighbors from a tile 
-     * @param basePoint Vector2D tile to be evaluated 
-     * @return Vector2D[] array of neighbor tiles 
+     * Retrieve all neighbors from a tile
+     *
+     * @param basePoint Vector2D tile to be evaluated
+     * @return Vector2D[] array of neighbor tiles
      */
     private Vector2D[] getAllNeighbors(Vector2D basePoint) {
         //Array to be returned
         Vector2D[] neighbors = new Vector2D[8];
-        
+
         // variables to check if diagonal tile is accessible
-        boolean diagonal0 = false; 
+        boolean diagonal0 = false;
         boolean diagonal1 = false;
         boolean diagonal2 = false;
         boolean diagonal3 = false;
@@ -836,7 +821,7 @@ public class NextAStarPath {
             diagonal2 = true;
             diagonal3 = true;
         }
-        
+
         //Check West
         if (validTile(basePoint.x - 1, basePoint.y)) {
             neighbors[3] = new Vector2D(basePoint.x - 1, basePoint.y);
@@ -848,17 +833,17 @@ public class NextAStarPath {
         if (diagonal0 && validTile(basePoint.x - 1, basePoint.y - 1)) {
             neighbors[4] = new Vector2D(basePoint.x - 1, basePoint.y - 1);
         }
-        
+
         //Check NorthEast
         if (diagonal1 && validTile(basePoint.x + 1, basePoint.y - 1)) {
             neighbors[5] = new Vector2D(basePoint.x + 1, basePoint.y - 1);
         }
-        
+
         //Check SouthEast
         if (diagonal2 && validTile(basePoint.x + 1, basePoint.y + 1)) {
             neighbors[6] = new Vector2D(basePoint.x + 1, basePoint.y + 1);
         }
-        
+
         //Check SouthWest
         if (diagonal3 && validTile(basePoint.x - 1, basePoint.y + 1)) {
             neighbors[7] = new Vector2D(basePoint.x - 1, basePoint.y + 1);
@@ -882,21 +867,21 @@ public class NextAStarPath {
         }
 
         // retrieve map dimensions
-        int mapWidth = mapOld.length;
-        int mapHeight = mapOld[0].length;
-        
+        int mapWidthLocal = mapOld.length;
+        int mapHeightLocal = mapOld[0].length;
+
         // Calculate map offset
-        int xOffset = (int) position.x - ((int) (mapWidth / 2));
-        int yOffset = (int) position.y - ((int) (mapHeight / 2));
-        
+        int xOffset = (int) position.x - ((int) (mapWidthLocal / 2));
+        int yOffset = (int) position.y - ((int) (mapHeightLocal / 2));
+
         // new Map to return
-        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
+        NextMapTile[][] tempMap = new NextMapTile[mapWidthLocal][mapHeightLocal];
 
         //Transfer all mapTiles to the new map
-        for (int y = 0; y < mapHeight; y++) {
-            for (int x = 0; x < mapWidth; x++) {
-                int newX = (x - xOffset) % mapWidth;
-                int newY = (y - yOffset) % mapHeight;
+        for (int y = 0; y < mapHeightLocal; y++) {
+            for (int x = 0; x < mapWidthLocal; x++) {
+                int newX = (x - xOffset) % mapWidthLocal;
+                int newY = (y - yOffset) % mapHeightLocal;
                 tempMap[newX][newY] = new NextMapTile(
                         newX,
                         newY,
@@ -905,7 +890,7 @@ public class NextAStarPath {
                         mapOld[x][y].GetStepMemory());
             }
         }
-        
+
         return tempMap;
     }
 
