@@ -6,6 +6,7 @@
 \pagenumbering {gobble}
 %
 \usepackage[T1]{fontenc}
+\usepackage{hyperref}
 % T1 fonts will be used to generate the final print and online PDFs,
 % so please use T1 fonts in your manuscript whenever possible.
 % Other font encondings may result in incorrect characters.
@@ -27,10 +28,10 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{Alexander \and
+\author{Alexander Lorenz \and
 Miriam Wolf \and
-Sebastian \and
-Steffen}
+Sebastian Loder \and
+Steffen Jan Jendrny}
 %
 \authorrunning{Alexander, Miriam, Sebastian, Steffen}
 % First names are abbreviated in the running head.
@@ -74,25 +75,6 @@ Steffen}
 % \bibliographystyle{splncs04}
 % \bibliography{mybibliography}
 %
-\begin{thebibliography}{8}
-\bibitem{ref_article1}
-Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
+\input{bib}
 
-\bibitem{ref_lncs1}
-Author, F., Author, S.: Title of a proceedings paper. In: Editor,
-F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
-Springer, Heidelberg (2016). \doi{10.10007/1234567890}
-
-\bibitem{ref_book1}
-Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
-Location (1999)
-
-\bibitem{ref_proc1}
-Author, A.-B.: Contribution title. In: 9th International Proceedings
-on Proceedings, pp. 1--2. Publisher, Location (2010)
-
-\bibitem{ref_url1}
-LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
-Oct 2017
-\end{thebibliography}
 \end{document}
