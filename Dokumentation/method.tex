@@ -20,21 +20,37 @@ Die Besonderheit ist, dass alle Rollen die Aktionen der default-Rolle erben. Die
 Die Rolle \textit{constructor} und \textit{digger} hat die Gruppe nicht weiter verfolgt, da diese für unsere Strategie nicht notwendig war. 
 
 \subsubsection{Aufgaben} ~\\
-NextTaskPlanner umgesetzt
+Um Punkte zu erzielen müssen Agenten verschiedene Aufgaben lösen. Der Server teilt den Agenten mit, wenn neue Aufgaben hinzukommen. Die Agenten müssen Blöcke bei den Dispensern abholen und in die Goalzones bringen. Damit eine Aufgabe abgegeben werden kann, müssen die Agenten die Blöcke in einer bestimmten Position angeordnet sein. Es gab Aufgaben mit einem, zwei, drei und vier Blöcken. Ab einem fixen Schritt im Spiel oder nach einer gewissen Anzahl an Abgaben, akzeptiert der Server eine Abgabe nicht mehr. Die Abgabefrist wird den Agenten bei der Bekanntmachung einer Aufgabe mitgeteilt. Über das Erreichen des Abgabelimits bekommen die Agenten allerdings keine Information.
 
-Liste der Pläne: 
-exploreMap,\\
-goToDispenser,\\
-goToGoalzone,\\
-goToRolezone,\\
-solveTask,\\
-surveyDispenser,\\
-surveyGoalZone,\\
-surveyRoleZone,\\
-surveyRandom,\\
-connectToAgent,\\
-discoverMapSize,\\
-cleanMap,\\
+Zu Beginn des Praktikums, wurde die Klasse \emph{NextTaskPlanner} implementiert. Da sich die Praktikumsgruppe dazu entschieden hat, dass in den ersten Turnieren nur Aufgaben mit einem Block auftreten, sollten unsere Agenten die Aufgabenplanung nicht absprechen, sondern die individuell beste Lösung finden. \emph{NextTaskPlanner} hat neue Aufgaben entgegen genommen und für alle Aufgaben Pläne erstellt.
+Die Pläne wurden als Baumstruktur angelegt. Die Wurzel des Baumes war die Klasse \emph{NextPlanSolveTask}. Die Zweige des Baumes waren dann jeweilige Unterpläne, repräsentiert durch verschiedene Klassen für verschiene Teilaufgaben. Die Blätter des Baumes repräsentieren die auszuführenden Teilaufgaben für einen Agenten. Durch eine \emph{pre-order}-Suche wird die aktuell zu erfüllende Teilaufgabe gesucht. Jeden Schritt wird durch die Wurzel des Baumes geprüft, welche Teilaufgaben bereits erledigt sin. Diese werden dann durch die Suche nicht mehr zurück gegeben.
+Jeder Plan berechnet, wie viele Schritte für die Erfüllung einer Aufgabe notwendig sind. \epmh{NextTaskPlanner} wählt dann den Plan aus, der die meisten Punkte in Relation zu den benötigten Schritten verspricht und lässt sich dann die jeweilige Teilaufgabe ausgeben um diese dem Agenten zu übergeben.
+Falls eine Aufgabe nicht erfüllt werden kann, weil entweder keine Goalzone bekannt ist, oder die benötigten Dispenser fehlen, erzeugt \emph{NextPlanSolveTask} die benötigten Unterpläne, um die jeweiligen Sachen auf der Karte zu finden und löscht diese Unterpläne wieder, wenn dem Agenten alle Orte bekannt sind.
+
+Bei späteren Turnieren wurden Aufgaben freigeschaltet, bei denen mehrere Blöcke abgegeben werden konnten. Da sich bei uns die Agenten zu einer Gruppe zusammenschließen, hat die Gruppe die weitere Planung der Aufgaben übernommen. Die Klasse \emph{NextTaskPlanner} wurde in die Gruppe ausgelagert. Der Agent war allerdings weiterhin für die Auswahl der Teilpläne zuständig. Die vorherigen Aufgaben des \emph{NextTaskPlanner} übernahm die Klasse \emph{NextTaskHandler}. 
+
+Wenn eine Aufgabe das Ziel hatte zwei Blöcke abzugeben, dann wurden zwei Agenten ausgewählt um diese Aufgabe zu erfüllen. Die Klasse \emph{NextTaskPlanner} in der Gruppe teilte die Agenten den Aufgaben zu. Dabei wurde die Anzahl der Schritte pro verdientem Punkt minimiert und gleichzeitig verhindert, dass zu oft die gleiche Aufgabe Agentenpaaren zugeordnet wurde, damit die Agenten sich auf verschiedene Dispensertypen verteilen. Die Klasse \emph{NextTaskPlanner} bestimmte auch, welcher Agent zu welchen Dispenser läuft. Dazu wurden die Agenten gefragt, wie viele Schritte benötigt werden um zu einem Dispenser zu laufen und die  effizienteste Aufteilung gewählt.
+
+Es kann ebenfalls vorkommen, dass Aufgaben mit einem Block effizienter waren oder es eine ungrade Anzahl an Agenten in einer Gruppe gab. In diesem Fall wurden den Agenten Aufgaben mit einem Block zugeordnet.
+
+Die Entscheidung, welche Teilaufgabe zum aktuellen Zeitpunkt erfüllt werden muss, wurde durch dann durch die Klasse \emph{NextTaskHandler} berechnet. Dies geschah wiederum durch die oben beschriebene Baumstruktur. \\
+
+\begin{tabular}{l | p{6cm}}\label{Liste der Pläne}
+Klasse & Teilaufgabne \\
+\hline
+NextPlanExploreMap & Erkundung der Karte\\
+NextPlanDispenser & Gang zu einem bestimmten Dispenser\\
+NextPlanGoalzone & Gang in die nächste Goalzone\\
+NextPlanRolezone & Gang in die nächste Rolezone\\
+NextPlanSolveTask & Wurzel des Baumes\\
+NextPlanSurveyDispenser & Suche nach nächstem bestimmten Dispenser\\
+NextPlanSurveyGoalZone & Suche nach nächster Goalzone\\
+NextPlanSurveyRoleZone & Suche nach nächster Rolezone\\
+NextPlanSurveyRandom & Zufällige Schritte um Karte zu Beginn zu erkunden\\
+NextPlanConnectToAgent & Verbindung zu einem anderen Agenten aufbauen\\
+NextPlanDiscoverMapSize & Kartengröße bestimmen\\
+NextPlanCleanMap & Goalzone und angrenzende Bereiche von Hindernissen befreien\\
+\end{tabular}
 
 \subsubsection{Wegfindung} \label{kap:wegfindung} ~\\
 Random \newline
