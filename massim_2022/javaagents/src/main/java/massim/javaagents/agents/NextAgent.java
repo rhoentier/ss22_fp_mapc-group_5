@@ -56,7 +56,8 @@ public class NextAgent extends Agent {
     //Agent related attributes
     private NextAgentStatus agentStatus;
     private NextGroup agentGroup;
-    private final HashSet<String> messageStore = new HashSet<>(); // message collector for group finding process
+    // message collector for group finding process
+    private final HashSet<String> messageStore; 
 
     //Simulation related attributes
     private NextSimulationStatus simStatus;
@@ -101,6 +102,7 @@ public class NextAgent extends Agent {
      */
     public NextAgent(String name, MailService mailbox) {
         super(name, mailbox);
+        this.messageStore = new HashSet<>();
 
         this.agentStatus = new NextAgentStatus(this);
         this.simStatus = new NextSimulationStatus();

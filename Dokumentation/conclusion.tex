@@ -2,4 +2,17 @@
 
 \subsection{Schwierigkeiten}
 
-\subsection{Ausblick und weiter Möglichkeiten}
+Bei der Karte setzten wir vom Beginn der Entwicklung auf eine randlose Karte. Dies führte zu einigen Problemen, die auch unsere Performance in den Turnieren stark beeinträchtigten. Z.B. trat ein Fehler im Verhalten zu einem bestimmten Zeitpunkt auf, welcher zuerst als gewolltes Feature fehlinterpretiert wurde. Die Agenten wanderten nach links oben, und haben dadurch die Größe der Karte massiv gestreckt, wie in Abbildung \ref{fig:kartenwiederholung} dargestellt. Dies führte zu sehr vielen redundanten Bewegungen, und kostete leider unnötig Zeit. \\
+
+\begin{figure}
+    \includegraphics[width=150px]{bilder/karte.png}
+    \centering
+    \caption{Beispiel für eine gestreckte Karte basierend auf einer 24x24 Welt }
+    \label{fig:kartenwiederholung}
+\end{figure}
+
+In unseren Versuchen setzten wir auf spezialisierte Umgebungen, um Teilbereiche zu optimieren. Hier trat das Verhalten nur selten auf, und wurde dadurch kaum beobachtet. In der Turnierumgebung wurde es jedoch sehr dominant, und spätestens im Turnier5 wurde dieses Verhalten als extrem kritisch eingestuft, und konnte beseitigt werden. Bis zum Turnier4 hatten wir noch Probleme mit der Synchronisierung der Karte, welche durch dieses Verhalten verschärft wurden. \\
+
+%Um die Fehler endgültig zu beseitigen, wurde zusätzlich ein Verfahren entwickelt, um die Karte zu vermessen. Dieses konnte leider nur teilweise umgesetzt werden. 
+
+\subsection{Ausblick und weitere Möglichkeiten}
