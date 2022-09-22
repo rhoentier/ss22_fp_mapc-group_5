@@ -98,7 +98,7 @@ A*
 
 \subsubsection{Gruppenbildung} \label{kap:Gruppenbildung} ~\\
 
-Der Ablauf der Gruppenbildung stützt sich auf den Ansatz, der von der Gruppe FitBut in "The Multi-Agent Programming Contest 2021" \cite{ref_book1} beschrieben wurde. \textit{ “If two agents see other agent at the same distance but in the opposite direction, and no other agent sees another agent at the same distance and direction, the two agents can be sure that they see each other.” } \\
+Der Ablauf der Gruppenbildung stützt sich auf den Ansatz, der von der Gruppe FitBut in "The Multi-Agent Programming Contest 2021" beschrieben wurde. \textit{ “If two agents see other agent at the same distance but in the opposite direction, and no other agent sees another agent at the same distance and direction, the two agents can be sure that they see each other.” } \cite{ref_book1}  \\
 
 Für die Umsetzung wurde die, durch \textit{BasicAgent}  bereitgestellte, Kommunikationsplattform verwendet. Vor der Verarbeitung der \textit{Percepts}, besitzt jeder Agent den Wissenstand der letzten Runde. Dieser Umstand wird genutzt, um auf den synchronen Datenstand zurückgreifen zu können. Befindet sich in der lokalen Sicht ein anderer Agent, wird eine allgemeine Nachricht mit den gesichteten Koordinaten an alle rausgeschickt. Jeder Agent prüft nun, ob sich lokal auf der gegenüber liegenden Koordinate ein Agent befindet. Diese Information wird an den ursprünglichen Sender zurück übermittelt.  \\
 
