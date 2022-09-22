@@ -51,11 +51,15 @@ Im Laufe der Implementierung wurden zwei verschiedene Koordinatensystem verwende
 \subsection{Entscheidungsverhalten der Agenten}
 
 \subsubsection{Rollen} ~\\
-Die Rollen werden in der Serverkonfiguration vorgegeben. In den Turnieren standen fünf Rollen bereit: default, worker, constructor, explorer und digger. \\
-Die Rollen haben verschiedene Aktionen, welche sie ausführen dürfen. Zu Beginn haben alle Agenten die \textit{default}-Rolle inne. Diese enthält alle Standardaktionen wie \textit{move, rotate, skip, adopt, detach und clear}. Um nach verschiedenen Dingen suchen zu können, benötigen die Agenten die Rolle \textit{explorer}. Mit diesen kann ein \textit{survey} nach einem Dispenser gemacht werden. Sobald die Agenten die Aufgabe bekommen einen Block abzuholen, müssen sie in die Rolle \textit{worker} wechseln. Damit können sie Blocke aufnehmen, sich mit anderen Agenten verbinden und auch die Aufgaben abgeben. 
-Die Besonderheit ist, dass alle Rollen die Aktionen der default-Rolle erben. Die Standardaktionen besitzen somit alle anderen Rollen ebenfalls.
+%Die Rollen werden in der Serverkonfiguration vorgegeben. In den Turnieren standen fünf Rollen bereit: default, worker, constructor, explorer und digger. \\
+%Die Rollen haben verschiedene Aktionen, welche sie ausführen dürfen. Zu Beginn haben alle Agenten die \textit{default}-Rolle inne. Diese enthält alle Standardaktionen wie \textit{move, rotate, skip, adopt, detach und clear}. Um nach verschiedenen Dingen suchen zu können, benötigen die Agenten die Rolle \textit{explorer}. Mit diesen kann ein \textit{survey} nach einem Dispenser gemacht werden. Sobald die Agenten die Aufgabe bekommen einen Block abzuholen, müssen sie in die Rolle \textit{worker} wechseln. Damit können sie Blocke aufnehmen, sich mit anderen Agenten verbinden und auch die Aufgaben abgeben. 
+%Die Besonderheit ist, dass alle Rollen die Aktionen der default-Rolle erben. Die Standardaktionen besitzen somit alle anderen Rollen ebenfalls.
 
-Die Rolle \textit{constructor} und \textit{digger} hat die Gruppe nicht weiter verfolgt, da diese für unsere Strategie nicht notwendig war. 
+Während der initialen Entwicklung des Agenten wurde mit einer modifizierten \textit{default} Rolle gearbeitet, bei der alle Fähigkeiten für die Verwendung freigeschaltet waren. Ab Turnier 4 wurde eine Möglichkeit eingebaut die Rollen dynamisch nach den geforderten Fähigkeiten auszuwählen, so dass der Agent auch auf neue, unbekannte Rollen reagieren könnte. Allgemein wurde die Nutzung der \textit{worker} priorisiert, die für den Agenten bis 2er \textit{task} ausreichend war. Weiterhin können die Rollen  \textit{explorer} und  \textit{digger} für die Kartenerkundung genutzt werden. Die Rolle \textit{constructor} wurde nicht eingesetzt. \\
+
+Wir verzichteten in den Turnieren auch auf die Möglichkeit 2er und 3er Schritte auszuführen, da nach einigen Rückschlägen die Komplexitätsreduktion und ein stabil laufender Agent angestrebt wurde.
+
+%Die Rolle \textit{constructor} und \textit{digger} hat die Gruppe nicht weiter verfolgt, da diese für unsere Strategie nicht notwendig war. 
 
 \subsubsection{Aufgaben} ~\\
 Um Punkte zu erzielen müssen Agenten verschiedene Aufgaben lösen. Der Server teilt den Agenten mit, wenn neue Aufgaben hinzukommen. Die Agenten müssen Blöcke bei den Dispensern abholen und in die Goalzones bringen. Damit eine Aufgabe abgegeben werden kann, müssen die Agenten die Blöcke in einer bestimmten Position angeordnet sein. Es gab Aufgaben mit einem, zwei, drei und vier Blöcken. Ab einem fixen Schritt im Spiel oder nach einer gewissen Anzahl an Abgaben, akzeptiert der Server eine Abgabe nicht mehr. Die Abgabefrist wird den Agenten bei der Bekanntmachung einer Aufgabe mitgeteilt. Über das Erreichen des Abgabelimits bekommen die Agenten allerdings keine Information.
