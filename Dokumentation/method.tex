@@ -55,7 +55,7 @@ Im Laufe der Implementierung wurden zwei verschiedene Koordinatensystem verwende
 %Die Rollen haben verschiedene Aktionen, welche sie ausführen dürfen. Zu Beginn haben alle Agenten die \textit{default}-Rolle inne. Diese enthält alle Standardaktionen wie \textit{move, rotate, skip, adopt, detach und clear}. Um nach verschiedenen Dingen suchen zu können, benötigen die Agenten die Rolle \textit{explorer}. Mit diesen kann ein \textit{survey} nach einem Dispenser gemacht werden. Sobald die Agenten die Aufgabe bekommen einen Block abzuholen, müssen sie in die Rolle \textit{worker} wechseln. Damit können sie Blocke aufnehmen, sich mit anderen Agenten verbinden und auch die Aufgaben abgeben. 
 %Die Besonderheit ist, dass alle Rollen die Aktionen der default-Rolle erben. Die Standardaktionen besitzen somit alle anderen Rollen ebenfalls.
 
-Während der initialen Entwicklung des Agenten wurde mit einer modifizierten \textit{default} Rolle gearbeitet, bei der alle Fähigkeiten für die Verwendung freigeschaltet waren. Ab Turnier 4 wurde eine Möglichkeit eingebaut die Rollen dynamisch nach den geforderten Fähigkeiten auszuwählen, so dass der Agent auch auf neue, unbekannte Rollen reagieren könnte. Allgemein wurde die Nutzung der \textit{worker} priorisiert, die für den Agenten bis 2er \textit{task} ausreichend war. Weiterhin können die Rollen  \textit{explorer} und  \textit{digger} für die Kartenerkundung genutzt werden. Die Rolle \textit{constructor} wurde nicht eingesetzt. \\
+Während der initialen Entwicklung des Agenten wurde mit einer modifizierten \textit{default} Rolle gearbeitet, bei der alle \textit{actions} für die Verwendung freigeschaltet waren. Ab Turnier 4 wurde eine Möglichkeit eingebaut die Rollen dynamisch nach den geforderten Fähigkeiten auszuwählen, so dass der Agent auch auf neue, unbekannte Rollen reagieren konnte. Allgemein wurde die Nutzung der \textit{worker} priorisiert, die für den Agenten bis 2er \textit{task} ausreichend war. Weiterhin können die Rollen  \textit{explorer} und  \textit{digger} für die Kartenerkundung genutzt werden. Die Rolle \textit{constructor} wurde nicht eingesetzt. \\
 
 Wir verzichteten in den Turnieren auch auf die Möglichkeit 2er und 3er Schritte auszuführen, da nach einigen Rückschlägen die Komplexitätsreduktion und ein stabil laufender Agent angestrebt wurde.
 
@@ -95,10 +95,21 @@ NextPlanCleanMap & Goalzone und angrenzende Bereiche von Hindernissen befreien\\
 \end{tabular}
 
 \subsubsection{Wegfindung} \label{kap:wegfindung} ~\\
-Random \newline
-Spirale \newline
-Manhattan \newline
-A*
+Das \textit{MASSim} Szenario hat ganz besondere Anforderungen an die Wegfindungsalorithmen. Es wird ein zweidimensionales Gitter mit 4 Nachbarn (oben, unten, links und rechts) genutzt, ohne die Diagonalen zu berücksichtigen. Die Bewegungskosten sind einheitlich, jedoch lassen sich manche Hindernisse (\textit{obstacle}, \textit{block} ) zerstören. Dies hat zur Folge, dass die Karte einem permanentem Wandel unterliegt, was Optimierungsalgorithmen, die auf Vorausberechnungen basieren, ausschließt. Es wurden ebenfalls keine klassischen Multi-Agenten-Pfadfindungsalgorithmen verwendet, da der Agent innerhalb der Simulation nur die Kontrolle über einen Teil der Einheiten verfügt, und somit immer reaktiv reagieren muss. \\
+
+Nach ersten Versuchen mit rein zufallsbasierten Bewegungsmustern, wurden das Konzept für die Planung der Bewegungen analog zur Berechnung der Manhattandistanz, sowie zur Erforschung der Karte anhand eines Spiralmusters konzipiert. Das letztere funktioniert sehr gut bei einem Agenten, erwies sich aber bei mehreren als ineffizient, da das bekannte Gebiet oft unnötig mehrmals durchlaufen wird.  \\
+
+In der finalen Version wird deswegen, falls sich ein Zielpunkt außerhalb des der Karte bekannten Gebiets befindet, immer das \glqq Manhattan \grqq Verfahren verwendet. Ansonsten nutzt der Agent für die Berechnung des Weges den A* Algorithmus. Hier wird jedoch zwischen der Planerstellung und Planausführung unterschieden. 
+
+Für die Berechnung der Optionen kann man annehmen, dass das Ziel immer im bekannten Gebiet der Karte liegt. Die momentane Position der anderen Agenten und Blöcke wird ignoriert, da davon ausgegangen wird, dass diese sich zum Ausfürungszeitpunkt nicht mehr an dieser Position befinden werden. Als Berechnungsoptimierung wird das \textit{A* Jump Point Search} Verfahren (A* JPS) \cite{ref_proc1} von Harabor und Grastien verwendet. Es nutzt das Konzept der Pfadsymmetrie, um die Menge der zu untersuchenden Punkte einzusparen. Dabei sind zwei Pfade dann symmetrisch, wenn sie den Start- und Endpunkt teilen und der eine aus dem anderen abgeleitet werden kann, wenn die Reihenfolge der sie bildenden Vektoren vertauscht wird. 
+
+Bei der Planausführung wird das klassische A* Verfahren erweitert, indem das Konzept des Wegspeichers eingeführt wird. Die Karte erfasst den geplanten Pfad, und blockiert den Weg, falls zu dem entsprechenden Zeitpunkt an dieser Position sich ein anderer Agent befindet.  Wird die Ausführung einer Bewegung durch ein Ereignis unterbrochen, wird der geplante Weg wieder freigegeben. Das Verfahren optimiert vor allem das Agieren der Agenten bei einer lokalen Anhäufung. 
+
+Das gleiche Problem wird auch über die lokale Neuanpassung des Pfades gelöst. Ist der nächste Schritt des Agenten blockiert, wird basierend auf den Informationen der lokalen Sicht \textit{*\ref**{lokaleSicht}*} ein Teilabschnitt neu berechnet, welcher neben \textit{obstacle}, auch \textit{block} und \textit{agent} berücksichtigt. Diese Neuberechnung wird jedoch aktiv während der Wahl der nächsten Aktion getriggert. 
+
+Als eine letzte Optimierung der Wegeberechnung wurde die Zentrierung der Karte umgesetzt. Diese erfordert zwar eine bekannte Kartengröße, durch die Möglichkeit des Agenten über den Rand zu gehen, wird aber automatisch die optimale Distanzheuristik im A* Algorithmus angewendet.
+
+
 
 \subsubsection{Gruppenbildung} \label{kap:Gruppenbildung} ~\\
 
@@ -109,7 +120,7 @@ Für die Umsetzung wurde die, durch \textit{BasicAgent}  bereitgestellte, Kommun
 Diese Nachrichten werden gesammelt, und im nächsten Schritt ausgewertet. Sehen sich genau zwei Agenten, wird der Gruppenbildungsprozess initialisiert. Bei mehr als 2 Agenten, werden diese für diese Koordinate während der Runde gesperrt. \\
 
 
-\subsection{Globale und lokale Sicht}
+\subsection{Globale und lokale Sicht} \label{kap:lokaleSicht}
 Die Sicht der Agenten können in eine globale und eine lokalen Sicht unterschieden werden. Die globale Sicht besteht aus einer gespeicherten Karte pro Agent, die sich durch die Bewegungen des Agenten auf der Karte erweitert. Hier werden die verschiedenen Dinge wie Dispenser, Blöcke oder Zonen gespeichert. Sobald sich die Agenten in Gruppen finden, werden die Karten synchronisiert. Eine genauere Erklärung zu den Karten befindet sich im Kapitel \textit{\ref{erkundungDerKarte}}.\\
 
 Die lokale Sicht des Agenten ist auf eine festgelegte Größe beschränkt. Die Sichtweite des Agenten wird in der Serverkonfiguration festgelegt. Bei einer Sichtweite von 5 sieht der Agent 5 Kästchen nach links, rechts, oben und unten, wie in Abbildung \ref{fig:agentensicht} dargestellt.
