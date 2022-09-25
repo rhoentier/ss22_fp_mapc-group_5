@@ -19,16 +19,27 @@ import massim.javaagents.percept.NextRole;
 import massim.javaagents.percept.NextTask;
 
 public final class NextAgentUtil {
-	
-	private static int ATTACHED_ELEMENTS = 1;
 
+    /*
+     * ########## region fields
+     */
+    private static int ATTACHED_ELEMENTS = 1;
+
+    /*
+     * ##################### endregion fields
+     */
+ /*
+     * ########## region public methods
+     */
     public static Action GenerateRandomMove() {
         String[] directions = new String[]{"n", "s", "w", "e"};
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(directions[GenerateRandomNumber(4)]));
     }
 
     public static int GenerateRandomNumber(int range) {
-    	if(range <= 0) range = 1;
+        if (range <= 0) {
+            range = 1;
+        }
         Random rn = new Random();
         return rn.nextInt(range);
     }
@@ -48,11 +59,11 @@ public final class NextAgentUtil {
     public static Action GenerateEastMove() {
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier("e"));
     }
-    
+
     public static Action GenerateMoveWithDirection(ECardinals direction) {
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(direction.toString()));
     }
-    
+
     public static Action GenerateMoveWithDirection(String direction) {
         return NextActionWrapper.CreateAction(NextConstants.EActions.move, new Identifier(direction));
     }
@@ -80,7 +91,7 @@ public final class NextAgentUtil {
         }
         return false;
     }
-    
+
     /**
      * Reports, if a Thing is next to the Agent using Absolute coordinates
      *
@@ -90,11 +101,11 @@ public final class NextAgentUtil {
     ///**
     public static boolean NextToUsingAbsoluteValues(Vector2D position, NextAgent agent) {
         Vector2D newPosition = position.clone();
-        newPosition.subtract(agent.GetPosition());
+        newPosition.Subtract(agent.GetPosition());
         return NextToUsingLocalView(position, agent);
     }
     //*/
-    
+
     /**
      * Change Vector Direction to Identifier for using Actions
      *
@@ -132,10 +143,10 @@ public final class NextAgentUtil {
         for (Vector2D attachedElement : attachedElements) {
 
             rotateTo = attachedElement.clone();
-            if (direction == "cw") {
-                rotateTo.rotateCW();
-            } else if (direction == "ccw") {
-                rotateTo.rotateCCW();
+            if ("cw".equals(direction)) {
+                rotateTo.RotateCW();
+            } else if ("ccw".equals(direction)) {
+                rotateTo.RotateCCW();
             }
 
             for (NextMapTile visibleThing : visibleThings) {
@@ -154,7 +165,7 @@ public final class NextAgentUtil {
     }
 
     /**
-     * Creates an action to localise the distance to the next target:
+     * Creates an action to localise the Distance to the next target:
      *
      * @param type of Target. "dispenser", "goal", "role"
      * @return Action
@@ -175,39 +186,6 @@ public final class NextAgentUtil {
     }
 
     /**
-     * @deprecated alte Taskverarbeitung
-     * @param taskList
-     * @param dispenserLst
-     * @param currentStep
-     * @return
-     */
-    @Deprecated
-    private static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int currentStep) {
-        ArrayList<NextTask> result = new ArrayList<NextTask>();
-        Iterator<NextTask> it = taskList.iterator();
-                
-        while (it.hasNext()) {
-            NextTask nextTask = it.next();
-            
-            if (nextTask.GetRequiredBlocks().size() == 1) { // Nur Tasks mit einem Block
-                Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
-                while (nextMapIt.hasNext()) {
-                    NextMapTile nextMapTile = nextMapIt.next();
-                    Iterator<NextMapTile> nextDispenserIt = dispenserLst.iterator();
-                    while (nextDispenserIt.hasNext()) {
-                        NextMapTile nextDispenserMapTile = nextDispenserIt.next();
-                        if (nextDispenserMapTile.getThingType().contains(nextMapTile.getThingType())
-                                && currentStep < nextTask.GetDeadline()) {
-                            result.add(nextTask);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-   
-    /**
      * Creates an action for the server to change a role:
      *
      * @param roleToChangeTo - a NextRole Element, to change to
@@ -225,7 +203,7 @@ public final class NextAgentUtil {
      */
     public static boolean CheckIfAgentInZoneUsingLocalView(HashSet<NextMapTile> zones) {
         for (NextMapTile tile : zones) {
-            if (tile.getPositionX() == 0 && tile.getPositionY() == 0) {
+            if (tile.GetPositionX() == 0 && tile.GetPositionY() == 0) {
                 return true;
             }
         }
@@ -233,12 +211,11 @@ public final class NextAgentUtil {
     }
 
     public static Vector2D GetDispenserFromType(HashSet<NextMapTile> dispenser, String type) {
-    	Vector2D result = new Vector2D();
-        for(NextMapTile tile : dispenser)
-        {
-        	if (tile.getThingType().contains(type)) {
+        Vector2D result = new Vector2D();
+        for (NextMapTile tile : dispenser) {
+            if (tile.GetThingType().contains(type)) {
                 result = tile.GetPosition();  // AVL - Trying a different approach
-                //result = new Vector2D(next.getPositionX(), next.getPositionY());
+                //result = new Vector2D(next.GetPositionX(), next.GetPositionY());
             }
         }
         return result;
@@ -247,11 +224,10 @@ public final class NextAgentUtil {
     public static NextMapTile GetNearestDispenserFromType(HashSet<NextMapTile> dispenser, String type, Vector2D position) {
         NextMapTile result = null;
         int nearestDistanz = 1000;
-        for(NextMapTile tile : dispenser)
-        {
-            if (tile.getThingType().contains(type)) {
+        for (NextMapTile tile : dispenser) {
+            if (tile.GetThingType().contains(type)) {
                 int distanz = ManhattanDistance(tile.GetPosition(), position);
-                if (distanz < nearestDistanz){
+                if (distanz < nearestDistanz) {
                     nearestDistanz = distanz;
                     result = tile;
                 }
@@ -259,10 +235,9 @@ public final class NextAgentUtil {
         }
         return result;
     }
-    
-    public static Boolean IsObstacleInPosition(HashSet<NextMapTile> list, Vector2D position)
-    {
-    	for (NextMapTile tile : list) {
+
+    public static Boolean IsObstacleInPosition(HashSet<NextMapTile> list, Vector2D position) {
+        for (NextMapTile tile : list) {
             if (tile.GetPosition().equals(position) && tile.IsObstacle()) {
                 return true;
             }
@@ -270,17 +245,9 @@ public final class NextAgentUtil {
         return false;
     }
 
-    private static HashSet<String> getBlockTypes(HashSet<NextMapTile> list) {
-        HashSet<String> blockTypes = new HashSet<String>();
-        for(NextMapTile tile : list)
-        {
-            blockTypes.add(tile.getThingType());
-        }
-        return blockTypes;
-    }
-
     /**
      * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     *
      * @param goalzones
      * @return
      */
@@ -293,11 +260,11 @@ public final class NextAgentUtil {
 
         if (it.hasNext()) {
             NextMapTile next = it.next();
-            list = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
+            list = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
 
             while (it.hasNext()) {
                 next = it.next();
-                ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
+                ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
                 if (calcList.size() < list.size()) {
                     list = calcList;
                     result = next.GetPosition();
@@ -310,6 +277,7 @@ public final class NextAgentUtil {
 
     /**
      * Unnötige Berechnung, daher bitte GetNearestZone() verwenden
+     *
      * @param roleZone
      * @return
      */
@@ -321,11 +289,11 @@ public final class NextAgentUtil {
         Vector2D result = new Vector2D();
 
         NextMapTile next = it.next();
-        list = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
+        list = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
 
         while (it.hasNext()) {
             next = it.next();
-            ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.getPositionX(), (int) next.getPositionY());
+            ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
             if (calcList.size() < list.size()) {
                 list = calcList;
                 result = next.GetPosition();
@@ -334,9 +302,10 @@ public final class NextAgentUtil {
         }
         return result;
     }
-    
+
     /**
      * Usefully for all Zones
+     *
      * @param zone
      * @return Vector2D Position of nearest Zone
      */
@@ -345,16 +314,14 @@ public final class NextAgentUtil {
         Iterator<NextMapTile> it = zone.iterator();
         Vector2D result = new Vector2D();
 
-        for(NextMapTile zoneMapTile : zone)
-        {   
-        	if(zoneMapTile.IsWalkable())
-        	{
-	        	int calcDistance = ManhattanDistance(agentPosition, zoneMapTile.GetPosition());
-	            if (calcDistance < smallestDistance) {
-	            	smallestDistance = calcDistance;
-	                result = zoneMapTile.GetPosition();
-	            }
-        	}
+        for (NextMapTile zoneMapTile : zone) {
+            if (zoneMapTile.IsWalkable()) {
+                int calcDistance = ManhattanDistance(agentPosition, zoneMapTile.GetPosition());
+                if (calcDistance < smallestDistance) {
+                    smallestDistance = calcDistance;
+                    result = zoneMapTile.GetPosition();
+                }
+            }
         }
         return result;
     }
@@ -433,25 +400,24 @@ public final class NextAgentUtil {
     }
 
     /**
-     * Correct Block position 
+     * Correct Block position
+     *
      * @param blockPosition
      * @param attachedElements
      * @return
      */
-    public static Boolean IsBlockInPosition(Vector2D blockPosition, HashSet<Vector2D> attachedElements)
-    {
-    	for(Vector2D attachedElement : attachedElements)
-        {
-    		if(attachedElement.equals(blockPosition))
-    		{
-    			return true;
-    		}
+    public static Boolean IsBlockInPosition(Vector2D blockPosition, HashSet<Vector2D> attachedElements) {
+        for (Vector2D attachedElement : attachedElements) {
+            if (attachedElement.equals(blockPosition)) {
+                return true;
+            }
         }
-    	return false;
+        return false;
     }
-    
+
     /**
      * Check if block in correct Position
+     *
      * @param nextAgent
      * @return
      */
@@ -460,15 +426,12 @@ public final class NextAgentUtil {
             HashSet<Vector2D> attachedElements = nextAgent.GetAgentStatus().GetAttachedElementsVector2D();
             HashSet<NextMapTile> activeTask = nextAgent.GetActiveTask().GetRequiredBlocks();
 
-            for(Vector2D attachedElement : attachedElements)
-            {
-            	for(NextMapTile tile : activeTask)
-            	{
-            		if(attachedElement.equals(tile.GetPosition()))
-            		{
-            			return true;
-            		}
-            	}
+            for (Vector2D attachedElement : attachedElements) {
+                for (NextMapTile tile : activeTask) {
+                    if (attachedElement.equals(tile.GetPosition())) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -477,70 +440,55 @@ public final class NextAgentUtil {
 
     /**
      * Check if a position is free
+     *
      * @param pos target position
      * @param localView the agent's local view
      * @return if the position is free true else false
      */
-    public static Boolean IsPositionFreeUsingLocalView(Vector2D pos, HashSet<NextMapTile> localView){
-        for (NextMapTile field : localView){
-            if (field.GetPosition().equals(pos)) return field.IsWalkable();
+    public static Boolean IsPositionFreeUsingLocalView(Vector2D pos, HashSet<NextMapTile> localView) {
+        for (NextMapTile field : localView) {
+            if (field.GetPosition().equals(pos)) {
+                return field.IsWalkable();
+            }
         }
         // pos is not in localView
         return false;
     }
 
     /**
-     * @deprecated Alte Taskverarbeitung, um Task auf aktivität zu checken
-     * @param nextAgent
-     * @param actualSteps
-     * @return
-     */
-    @Deprecated
-    private static Boolean IsTaskActive(NextAgent nextAgent, int actualSteps) {
-        NextTask activeTask = nextAgent.GetActiveTask();
-        Iterator<NextTask> taskListIt = nextAgent.GetSimulationStatus().GetTasksList().iterator();
-        Boolean isInTakslist = false;
-        while (taskListIt.hasNext()) {
-            NextTask next = taskListIt.next();
-            if (next.GetName().equals(activeTask.GetName()) && actualSteps <= activeTask.GetDeadline()) {
-                isInTakslist = true;
-                break;
-            }
-        }
-        return isInTakslist;
-    }
-
-    /**
      * Check correct block type
+     *
      * @param requiredBlocks
      * @param thingType
      * @return
      */
     public static Boolean IsCorrectBlockType(HashSet<NextMapTile> requiredBlocks, String thingType) {
-    	// TODO Mehrere Blöcke implementieren
-    	for(NextMapTile tile : requiredBlocks)
-    	{
-    		if (IsCorrentBlockType(tile, thingType)) {
+        // TODO Mehrere Blöcke implementieren
+        for (NextMapTile tile : requiredBlocks) {
+            if (IsCorrentBlockType(tile, thingType)) {
                 return true;
             }
-    	}    	
+        }
         return false;
     }
-    
+
     /**
-     * 
+     *
      * @param requiredBlock
      * @param thingType
      * @return
      */
-    public static Boolean IsCorrentBlockType(NextMapTile requiredBlock, String thingType)
-    {
-    	if(thingType.contains(requiredBlock.getThingType())) return true;
-    	else return false;
+    public static Boolean IsCorrentBlockType(NextMapTile requiredBlock, String thingType) {
+        if (thingType.contains(requiredBlock.GetThingType())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * check if things in next step
+     *
      * @param direction
      * @param visibleThings
      * @return
@@ -562,16 +510,15 @@ public final class NextAgentUtil {
                 break;
         }
 
-
         for (NextMapTile visibleThing : visibleThings) {
-        	Vector2D nextPosition = visibleThing.GetPosition();
+            Vector2D nextPosition = visibleThing.GetPosition();
             if (newAgentPosition.equals(nextPosition)) {
                 return visibleThing;
             }
         }
         return null;
     }
-    
+
     public static ECardinals NextDirection(ECardinals direction) {
         switch (direction) {
             case n:
@@ -583,10 +530,10 @@ public final class NextAgentUtil {
             case w:
                 return ECardinals.n;
             default:
-            	return direction;
+                return direction;
         }
     }
-    
+
     public static Boolean IsBlockBehindMe(ECardinals direction, Vector2D block) {
         Vector2D newBlockPosition = new Vector2D();
         switch (direction) { // In die Richtung, in die ich gehen mag
@@ -629,14 +576,15 @@ public final class NextAgentUtil {
 
     /**
      * Check if next Step is possible
+     *
      * @param direction from the opposide
      * @param attachedElements all attached Elements
      * @param localView all objects from the localView
      * @return
      */
     public static Boolean IsNextStepPossible(ECardinals direction, HashSet<Vector2D> attachedElements, HashSet<NextMapTile> localView) {
-        ArrayList<Vector2D> newAgentPositionLst = new ArrayList<Vector2D>();
-        ArrayList<NextMapTile> result = new ArrayList<NextMapTile>();
+        ArrayList<Vector2D> newAgentPositionLst = new ArrayList<>();
+        ArrayList<NextMapTile> result = new ArrayList<>();
         Vector2D newDirection = new Vector2D(0, 0);
         switch (direction) {
             case n:
@@ -697,21 +645,19 @@ public final class NextAgentUtil {
                 break;
         }
 
-        for(NextMapTile tile : localView)
-        {
-        	for(Vector2D position : newAgentPositionLst)
-        	{
-        		if(position.equals(tile.GetPosition()))
-        		{
-        			result.add(tile);
-        		}
-        	}
+        for (NextMapTile tile : localView) {
+            for (Vector2D position : newAgentPositionLst) {
+                if (position.equals(tile.GetPosition())) {
+                    result.add(tile);
+                }
+            }
         }
         return result.size() > 0 ? false : true;
     }
 
     /**
      * get opposite direction in Vector2D
+     *
      * @param direction
      * @return
      */
@@ -728,9 +674,10 @@ public final class NextAgentUtil {
         }
         return null;
     }
-    
+
     /**
      * get opposite Direction
+     *
      * @param direction
      * @return
      */
@@ -747,39 +694,52 @@ public final class NextAgentUtil {
         }
         return null;
     }
-    
+
     /**
      * get opposite Vector2D
+     *
      * @param vector
      * @return
      */
-    public static Vector2D GetOppositeVector(Vector2D vector)
-    {
-    	if(vector.equals(new Vector2D(0, -1))) return new Vector2D(0, 1);
-    	else if(vector.equals(new Vector2D(0, 1))) return new Vector2D(0, -1);
-    	else if(vector.equals(new Vector2D(-1, 0))) return new Vector2D(1, 0);
-    	else return new Vector2D(-1, 0);
+    public static Vector2D GetOppositeVector(Vector2D vector) {
+        if (vector.equals(new Vector2D(0, -1))) {
+            return new Vector2D(0, 1);
+        } else if (vector.equals(new Vector2D(0, 1))) {
+            return new Vector2D(0, -1);
+        } else if (vector.equals(new Vector2D(-1, 0))) {
+            return new Vector2D(1, 0);
+        } else {
+            return new Vector2D(-1, 0);
+        }
     }
-    
-    public static ECardinals ConvertVector2DToECardinals(Vector2D vector)
-    {
-    	if(vector.equals(new Vector2D(0, -1))) return ECardinals.n;
-    	else if(vector.equals(new Vector2D(0, 1))) return ECardinals.s;
-    	else if(vector.equals(new Vector2D(-1, 0))) return ECardinals.w;
-    	else return ECardinals.e;
+
+    public static ECardinals ConvertVector2DToECardinals(Vector2D vector) {
+        if (vector.equals(new Vector2D(0, -1))) {
+            return ECardinals.n;
+        } else if (vector.equals(new Vector2D(0, 1))) {
+            return ECardinals.s;
+        } else if (vector.equals(new Vector2D(-1, 0))) {
+            return ECardinals.w;
+        } else {
+            return ECardinals.e;
+        }
     }
-    
-    public static Vector2D ConvertECardinalsToVector2D(ECardinals direction)
-    {
-    	if(direction.equals(ECardinals.n)) return new Vector2D(0, -1); 
-    	else if(direction.equals(ECardinals.e)) return new Vector2D(1 ,0); 
-    	else if(direction.equals(ECardinals.s)) return new Vector2D(0, 1); 
-    	else return new Vector2D(-1, 0); 
+
+    public static Vector2D ConvertECardinalsToVector2D(ECardinals direction) {
+        if (direction.equals(ECardinals.n)) {
+            return new Vector2D(0, -1);
+        } else if (direction.equals(ECardinals.e)) {
+            return new Vector2D(1, 0);
+        } else if (direction.equals(ECardinals.s)) {
+            return new Vector2D(0, 1);
+        } else {
+            return new Vector2D(-1, 0);
+        }
     }
-    
+
     /**
-     * n/s -> e/w
-     * e/w -> n/s
+     * n/s -> e/w e/w -> n/s
+     *
      * @param direction
      * @return
      */
@@ -796,26 +756,26 @@ public final class NextAgentUtil {
         }
         return null;
     }
-    
+
     /**
      * Get Random Point in direction
+     *
      * @param direction
      * @param agentPosition
      * @param distance
      * @return
      */
     public static Vector2D RandomPointInDirection(String direction, Vector2D agentPosition, int distance) {
-        
+
         int baseMovementPercent = 25;
-        int baseMovement = distance/200*baseMovementPercent;
-        int randomNumber = GenerateRandomNumber(distance-2*baseMovement);
-    	//int offsetX = distance/4 + randomNumber;
-    	//int offsetY = distance/4 + (distance/2-randomNumber);
-        
-        int offsetX = baseMovement + randomNumber; 
-    	int offsetY = distance - baseMovement - randomNumber; // basemovement + ((distance - 2*baseMovement) - randomNumber)
-        
-        
+        int baseMovement = distance / 200 * baseMovementPercent;
+        int randomNumber = GenerateRandomNumber(distance - 2 * baseMovement);
+        //int offsetX = Distance/4 + randomNumber;
+        //int offsetY = Distance/4 + (Distance/2-randomNumber);
+
+        int offsetX = baseMovement + randomNumber;
+        int offsetY = distance - baseMovement - randomNumber; // basemovement + ((Distance - 2*baseMovement) - randomNumber)
+
         switch (direction) {
             case "ne":
                 offsetY *= -1;
@@ -830,143 +790,145 @@ public final class NextAgentUtil {
                 offsetX *= -1;
                 break;
         }
-        
+
         int x = agentPosition.x + offsetX;
-    	int y = agentPosition.y + offsetY;
-        
+        int y = agentPosition.y + offsetY;
+
         return new Vector2D(x, y);
     }
-    
+
     /**
-     * Calculate Manhattan distance
+     * Calculate Manhattan Distance
+     *
      * @param origin
      * @param target
      * @return
      */
     public static int ManhattanDistance(Vector2D origin, Vector2D target) {
-        return Math.abs(target.x-origin.x) + Math.abs(target.y-origin.y);
+        return Math.abs(target.x - origin.x) + Math.abs(target.y - origin.y);
     }
 
-	public static String RotateInWhichDirection(HashSet<Vector2D> attachedElements, HashSet<NextMapTile> requiredBlocks) {
-		String result = "cw";
-		if(attachedElements.size() == 1) {
-			Vector2D blockPosition = attachedElements.iterator().next(); 
-			if(requiredBlocks.size() == 1)
-			{
-				Vector2D requiredBlock = requiredBlocks.iterator().next().GetPosition();
-				if(blockPosition.getRotatedCCW().equals(requiredBlock)) result = "ccw";
-				else result = "cw";
-			}
-			else 
-			{
-				// TODO Mehere Blöcke
-			}
-		}
-		else {
-			// TODO Mehere attachedElements
+    public static String RotateInWhichDirection(HashSet<Vector2D> attachedElements, HashSet<NextMapTile> requiredBlocks) {
+        String result = "cw";
+        if (attachedElements.size() == 1) {
+            Vector2D blockPosition = attachedElements.iterator().next();
+            if (requiredBlocks.size() == 1) {
+                Vector2D requiredBlock = requiredBlocks.iterator().next().GetPosition();
+                if (blockPosition.GetRotatedCCW().equals(requiredBlock)) {
+                    result = "ccw";
+                } else {
+                    result = "cw";
+                }
+            } else {
+                // TODO Mehere Blöcke
+            }
+        } else {
+            // TODO Mehere attachedElements
 //			Iterator attachedElementsIt = attachedElements.iterator();
 //			while(attachedElementsIt.hasNext())
 //			{
 //				Vector2D next = attachedElementsIt.next();
 //			}
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 
-	/**
-	 * get the other rotationdirection
-	 * @param current
-	 * @return
-	 */
-    public static String GetOtherRotation(String current)
-    {
-    	return current.equals("cw") ? "ccw" : "cw";
+    /**
+     * get the other rotationdirection
+     *
+     * @param current
+     * @return
+     */
+    public static String GetOtherRotation(String current) {
+        return current.equals("cw") ? "ccw" : "cw";
     }
 
     /**
      * Check rotation direction
+     *
      * @param blockPosition
      * @param direction
      * @return
      */
-	public static Vector2D GetNextToRotateDirection(Vector2D blockPosition, String direction) {
-		Vector2D rotateTo = blockPosition.clone();
-		if(direction.equals("cw")) rotateTo.rotateCW(); 
-		else rotateTo.rotateCCW();
-		return rotateTo;
-	}
-	
-	/**
-	 * Check, if another Agent is in near from block
-	 * @param blockPosition
-	 * @param localView
-	 * @return
-	 */
-	public static Boolean IsAnotherAgentInNearOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView)
-	{
-		for(NextMapTile tile : localView)
-		{	
-			if(tile.getThingType().contains("entity")) {
-				Vector2D newBlockPosition = new Vector2D(blockPosition);
-				newBlockPosition.add(new Vector2D(0, -1)); //n
-				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
-				
-				newBlockPosition = new Vector2D(blockPosition);
-				newBlockPosition.add(new Vector2D(1, 0)); //e
-				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+    public static Vector2D GetNextToRotateDirection(Vector2D blockPosition, String direction) {
+        Vector2D rotateTo = blockPosition.clone();
+        if (direction.equals("cw")) {
+            rotateTo.RotateCW();
+        } else {
+            rotateTo.RotateCCW();
+        }
+        return rotateTo;
+    }
 
-				newBlockPosition = new Vector2D(blockPosition);
-				newBlockPosition.add(new Vector2D(0, 1)); //s
-				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+    /**
+     * Check, if another Agent is in near from block
+     *
+     * @param blockPosition
+     * @param localView
+     * @return
+     */
+    public static Boolean IsAnotherAgentInNearOfBlock(Vector2D blockPosition, HashSet<NextMapTile> localView) {
+        for (NextMapTile tile : localView) {
+            if (tile.GetThingType().contains("entity")) {
+                Vector2D newBlockPosition = new Vector2D(blockPosition);
+                newBlockPosition.Add(new Vector2D(0, -1)); //n
+                if (isAgentInNewBlockPosition(tile, newBlockPosition)) {
+                    return true;
+                }
 
-				newBlockPosition = new Vector2D(blockPosition);
-				newBlockPosition.add(new Vector2D(-1, 0)); //w
-				if(isAgentInNewBlockPosition(tile, newBlockPosition)) return true;
+                newBlockPosition = new Vector2D(blockPosition);
+                newBlockPosition.Add(new Vector2D(1, 0)); //e
+                if (isAgentInNewBlockPosition(tile, newBlockPosition)) {
+                    return true;
+                }
 
-			}
-		}	
-		return false;
-	}
-	
-	private static Boolean isAgentInNewBlockPosition(NextMapTile tile, Vector2D newBlockPosition)
-	{
-		if(!tile.GetPosition().equals(new Vector2D(0,0))
-				&& tile.GetPosition().equals(newBlockPosition) 
-				&& tile.getThingType().contains("entity"))
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	public static HashSet<NextAgent> getAgentsInFrontOfBlock(Vector2D agentPosition, HashSet<NextAgent> agentSet, Vector2D blockPosition)
-	{
-		HashSet<NextAgent> agentsInFront = new HashSet<NextAgent>();
-		for(NextAgent agent : agentSet)
-		{
-			Vector2D newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
-			newBlockPosition.add(new Vector2D(0, -1)); //n
-			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
-				agentsInFront.add(agent);
-			
-			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
-			newBlockPosition.add(new Vector2D(1, 0)); //e
-			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
-				agentsInFront.add(agent);
+                newBlockPosition = new Vector2D(blockPosition);
+                newBlockPosition.Add(new Vector2D(0, 1)); //s
+                if (isAgentInNewBlockPosition(tile, newBlockPosition)) {
+                    return true;
+                }
 
-			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
-			newBlockPosition.add(new Vector2D(0, 1)); //s
-			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
-				agentsInFront.add(agent);
+                newBlockPosition = new Vector2D(blockPosition);
+                newBlockPosition.Add(new Vector2D(-1, 0)); //w
+                if (isAgentInNewBlockPosition(tile, newBlockPosition)) {
+                    return true;
+                }
 
-			newBlockPosition = new Vector2D(blockPosition).getAdded(agentPosition);
-			newBlockPosition.add(new Vector2D(-1, 0)); //w
-			if(!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) 
-				agentsInFront.add(agent);
-		}
-		return agentsInFront;
-	}
-	
+            }
+        }
+        return false;
+    }
+
+    public static HashSet<NextAgent> GetAgentsInFrontOfBlock(Vector2D agentPosition, HashSet<NextAgent> agentSet, Vector2D blockPosition) {
+        HashSet<NextAgent> agentsInFront = new HashSet<NextAgent>();
+        for (NextAgent agent : agentSet) {
+            Vector2D newBlockPosition = new Vector2D(blockPosition).GetAdded(agentPosition);
+            newBlockPosition.Add(new Vector2D(0, -1)); //n
+            if (!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) {
+                agentsInFront.add(agent);
+            }
+
+            newBlockPosition = new Vector2D(blockPosition).GetAdded(agentPosition);
+            newBlockPosition.Add(new Vector2D(1, 0)); //e
+            if (!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) {
+                agentsInFront.add(agent);
+            }
+
+            newBlockPosition = new Vector2D(blockPosition).GetAdded(agentPosition);
+            newBlockPosition.Add(new Vector2D(0, 1)); //s
+            if (!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) {
+                agentsInFront.add(agent);
+            }
+
+            newBlockPosition = new Vector2D(blockPosition).GetAdded(agentPosition);
+            newBlockPosition.Add(new Vector2D(-1, 0)); //w
+            if (!newBlockPosition.equals(agentPosition) && agent.GetPosition().equals(newBlockPosition)) {
+                agentsInFront.add(agent);
+            }
+        }
+        return agentsInFront;
+    }
+
     /**
      * Gets the ECardinal from thing
      *
@@ -990,84 +952,158 @@ public final class NextAgentUtil {
         return ECardinals.n;
     }
 
-	public static boolean IsThisBlockAttachedToOtherAgent(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
-		for(NextAgent agent : agentSet)
-		{
-			NextAgentStatus agentStatus = agent.GetAgentStatus();
-			// agent has Element, the equals position and not the same Position of the Map
-			if(agentStatus.GetAttachedElementsAmount() > 0 
-					&& !agent.GetPosition().equals(agentPosition)
-					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(agent.GetPosition())
-						.equals(agentPosition.getAdded(position))
-			)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static HashSet<NextAgent> GetAgentsWhoThisBlockIsAttached(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
-		HashSet<NextAgent> agents = new HashSet<NextAgent>();
-		for(NextAgent agent : agentSet)
-		{
-			NextAgentStatus agentStatus = agent.GetAgentStatus();
-			// agent has Element, the equals position and not the same Position of the Map
-			if(agentStatus.GetAttachedElementsAmount() > 0 
-					&& !agent.GetPosition().equals(agentPosition) // nicht ich selbst
-					&& agentStatus.GetAttachedElementsVector2D().iterator().next().getAdded(agent.GetPosition()) // attachedElement + Agentenposition	
-							.equals(agentPosition.getAdded(position))
-			)
-			{
-				agents.add(agent);
-			}
-		}
-		return agents;
-	}
+    public static boolean IsThisBlockAttachedToOtherAgent(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
+        for (NextAgent agent : agentSet) {
+            NextAgentStatus agentStatus = agent.GetAgentStatus();
+            // agent has Element, the equals position and not the same Position of the Map
+            if (agentStatus.GetAttachedElementsAmount() > 0
+                    && !agent.GetPosition().equals(agentPosition)
+                    && agentStatus.GetAttachedElementsVector2D().iterator().next().GetAdded(agent.GetPosition())
+                            .equals(agentPosition.GetAdded(position))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	// look at thing in localview
-	public static Vector2D GetFirstBlockOrObstacleInLocalView(HashSet<NextMapTile> getFullLocalView) {
-		for(NextMapTile tile : getFullLocalView)
-		{
-			if(tile.getThingType().contains("block") || tile.getThingType().contains("obstacle")) return tile.getPosition();
-		}
-		
-		return null;
-	}
+    public static HashSet<NextAgent> GetAgentsWhoThisBlockIsAttached(Vector2D position, Vector2D agentPosition, HashSet<NextAgent> agentSet) {
+        HashSet<NextAgent> agents = new HashSet<NextAgent>();
+        for (NextAgent agent : agentSet) {
+            NextAgentStatus agentStatus = agent.GetAgentStatus();
+            // agent has Element, the equals position and not the same Position of the Map
+            if (agentStatus.GetAttachedElementsAmount() > 0
+                    && !agent.GetPosition().equals(agentPosition) // nicht ich selbst
+                    && agentStatus.GetAttachedElementsVector2D().iterator().next().GetAdded(agent.GetPosition()) // attachedElement + Agentenposition	
+                            .equals(agentPosition.GetAdded(position))) {
+                agents.add(agent);
+            }
+        }
+        return agents;
+    }
 
-	// returns the MapTile from the specific visible thing
-	public static HashSet<NextMapTile> GetThingFromVisibleThings(HashSet<NextMapTile> getVisibleThings, String thing) {
-		HashSet<NextMapTile> thingNextMapTiles = new HashSet<NextMapTile>();
-		for(NextMapTile tile : getVisibleThings)
-		{
-			if(tile.getThingType().contains(thing)) thingNextMapTiles.add(tile);
-		}
-		return thingNextMapTiles;
-	}
-	
-	/**
-	 * Lock at Block or Obstacle arround me
-	 * @param getFullLocalView
-	 * @return
-	 */
-	public static Vector2D GetFirstBlockOrObstacleArroundMe(HashSet<NextMapTile> getFullLocalView) {
-		for(NextMapTile tile : getFullLocalView)
-		{
-			Vector2D position = tile.getPosition();
-	        if ( (position.equals(NextConstants.WestPoint) 
-	        		|| position.equals(NextConstants.NorthPoint)
-	        		|| position.equals(NextConstants.SouthPoint)
-	        		|| position.equals(NextConstants.EastPoint))
-	        	&& (
-	        			tile.getThingType().contains("block") 
-	        			|| tile.getThingType().contains("obstacle")
-	        		)
-	        )
-	        {
-	            return tile.getPosition();
-	        }
-		}
-		
-		return null;
-	}
+    // look at thing in localview
+    public static Vector2D GetFirstBlockOrObstacleInLocalView(HashSet<NextMapTile> getFullLocalView) {
+        for (NextMapTile tile : getFullLocalView) {
+            if (tile.GetThingType().contains("block") || tile.GetThingType().contains("obstacle")) {
+                return tile.getPosition();
+            }
+        }
+
+        return null;
+    }
+
+    // returns the MapTile from the specific visible thing
+    public static HashSet<NextMapTile> GetThingFromVisibleThings(HashSet<NextMapTile> getVisibleThings, String thing) {
+        HashSet<NextMapTile> thingNextMapTiles = new HashSet<NextMapTile>();
+        for (NextMapTile tile : getVisibleThings) {
+            if (tile.GetThingType().contains(thing)) {
+                thingNextMapTiles.add(tile);
+            }
+        }
+        return thingNextMapTiles;
+    }
+
+    /**
+     * Lock at Block or Obstacle arround me
+     *
+     * @param getFullLocalView
+     * @return
+     */
+    public static Vector2D GetFirstBlockOrObstacleArroundMe(HashSet<NextMapTile> getFullLocalView) {
+        for (NextMapTile tile : getFullLocalView) {
+            Vector2D position = tile.getPosition();
+            if ((position.equals(NextConstants.WestPoint)
+                    || position.equals(NextConstants.NorthPoint)
+                    || position.equals(NextConstants.SouthPoint)
+                    || position.equals(NextConstants.EastPoint))
+                    && (tile.GetThingType().contains("block")
+                    || tile.GetThingType().contains("obstacle"))) {
+                return tile.getPosition();
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * ##################### endregion public methods
+     */
+
+ /*
+     * ########## region private methods
+     */
+    private static HashSet<String> getBlockTypes(HashSet<NextMapTile> list) {
+        HashSet<String> blockTypes = new HashSet<String>();
+        for (NextMapTile tile : list) {
+            blockTypes.add(tile.GetThingType());
+        }
+        return blockTypes;
+    }
+
+    /**
+     * @deprecated Alte Taskverarbeitung, um Task auf aktivität zu checken
+     * @param nextAgent
+     * @param actualSteps
+     * @return
+     */
+    @Deprecated
+    private static Boolean IsTaskActive(NextAgent nextAgent, int actualSteps) {
+        NextTask activeTask = nextAgent.GetActiveTask();
+        Iterator<NextTask> taskListIt = nextAgent.GetSimulationStatus().GetTasksList().iterator();
+        Boolean isInTakslist = false;
+        while (taskListIt.hasNext()) {
+            NextTask next = taskListIt.next();
+            if (next.GetName().equals(activeTask.GetName()) && actualSteps <= activeTask.GetDeadline()) {
+                isInTakslist = true;
+                break;
+            }
+        }
+        return isInTakslist;
+    }
+
+    /**
+     * @deprecated alte Taskverarbeitung
+     * @param taskList
+     * @param dispenserLst
+     * @param currentStep
+     * @return
+     */
+    @Deprecated
+    private static ArrayList<NextTask> EvaluatePossibleTask(HashSet<NextTask> taskList, HashSet<NextMapTile> dispenserLst, int currentStep) {
+        ArrayList<NextTask> result = new ArrayList<NextTask>();
+        Iterator<NextTask> it = taskList.iterator();
+
+        while (it.hasNext()) {
+            NextTask nextTask = it.next();
+
+            if (nextTask.GetRequiredBlocks().size() == 1) { // Nur Tasks mit einem Block
+                Iterator<NextMapTile> nextMapIt = nextTask.GetRequiredBlocks().iterator();
+                while (nextMapIt.hasNext()) {
+                    NextMapTile nextMapTile = nextMapIt.next();
+                    Iterator<NextMapTile> nextDispenserIt = dispenserLst.iterator();
+                    while (nextDispenserIt.hasNext()) {
+                        NextMapTile nextDispenserMapTile = nextDispenserIt.next();
+                        if (nextDispenserMapTile.GetThingType().contains(nextMapTile.GetThingType())
+                                && currentStep < nextTask.GetDeadline()) {
+                            result.add(nextTask);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static Boolean isAgentInNewBlockPosition(NextMapTile tile, Vector2D newBlockPosition) {
+        if (!tile.GetPosition().equals(new Vector2D(0, 0))
+                && tile.GetPosition().equals(newBlockPosition)
+                && tile.GetThingType().contains("entity")) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * ##################### endregion private methods
+     */
 }

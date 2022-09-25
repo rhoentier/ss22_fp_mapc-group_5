@@ -45,7 +45,7 @@ public class NextPlanSolveTask extends NextPlan {
                 subPlans.add(0, new NextPlanRoleZone(agent, "worker"));
         }
 
-        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType)
+        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::GetThingType)
                 .collect(Collectors.toCollection(HashSet::new));
         isPreconditionFulfilled = agent.GetMap().IsTaskExecutable(requiredBlocks);
         if (!isPreconditionFulfilled) fulfillPrecondition();
@@ -98,13 +98,13 @@ public class NextPlanSolveTask extends NextPlan {
                 HashSet<NextMapTile> attachedElements = agent.GetAgentStatus().GetAttachedElementsNextMapTiles();
                 ArrayList<String> attachedBlockTypes = new ArrayList<>();
                 for (NextMapTile attachedElement : attachedElements) {
-                    if (attachedElement.getThingType().contains("block")) {
+                    if (attachedElement.GetThingType().contains("block")) {
                         attachedBlockTypes.add(
-                                attachedElement.getThingType().substring(attachedElement.getThingType().length() - 2));
+                                attachedElement.GetThingType().substring(attachedElement.GetThingType().length() - 2));
                     }
                 }
                 //prüft, ob Blöcke momentan attached sind und stellt subPlans (goToDispenser) auf fertig
-                if (attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().getThingType()))
+                if (attachedBlockTypes.contains(((NextPlanDispenser) subPlan).GetDispenser().GetThingType()))
                     subPlan.SetPlanIsFulfilled(true);
                 continue;
             }

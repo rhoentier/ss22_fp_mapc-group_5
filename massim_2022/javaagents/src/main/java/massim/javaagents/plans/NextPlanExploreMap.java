@@ -25,8 +25,8 @@ public class NextPlanExploreMap extends NextPlan {
             subPlans.add(new NextPlanRoleZone(agent, "explorer"));
         if (agent.GetMap().GetGoalZones().isEmpty()) subPlans.add(new NextPlanSurveyGoalZone());
         for (NextMapTile wantedMapTile : wantedMapTiles) {
-            String blockType = wantedMapTile.getThingType();
-            HashSet<String> foundDispenser = agent.GetMap().GetDispensers().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
+            String blockType = wantedMapTile.GetThingType();
+            HashSet<String> foundDispenser = agent.GetMap().GetDispensers().stream().map(NextMapTile::GetThingType).collect(Collectors.toCollection(HashSet::new));
             if (!foundDispenser.contains(blockType)) subPlans.add(new NextPlanSurveyDispenser(wantedMapTile));
         }
     }
@@ -51,8 +51,8 @@ public class NextPlanExploreMap extends NextPlan {
                 continue;
             }
             if (subPlan instanceof NextPlanSurveyDispenser) {
-                String blockType = ((NextPlanSurveyDispenser) subPlan).GetWantedMapTile().getThingType();
-                HashSet<String> foundDispenser = agent.GetMap().GetDispensers().stream().map(NextMapTile::getThingType).collect(Collectors.toCollection(HashSet::new));
+                String blockType = ((NextPlanSurveyDispenser) subPlan).GetWantedMapTile().GetThingType();
+                HashSet<String> foundDispenser = agent.GetMap().GetDispensers().stream().map(NextMapTile::GetThingType).collect(Collectors.toCollection(HashSet::new));
                 if (foundDispenser.contains(blockType)) subPlanIterator.remove();
             }
         }

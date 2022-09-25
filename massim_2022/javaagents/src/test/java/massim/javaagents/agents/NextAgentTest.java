@@ -188,7 +188,7 @@ public class NextAgentTest {
         Vector2D expResult = new Vector2D(10, 10);
         Vector2D result = instance.GetPositionRef();
         assertEquals(expResult, result);
-        result.add(2, 2);
+        result.Add(2, 2);
         assertEquals(instance.GetPositionRef(), result);
     }
 
@@ -336,7 +336,7 @@ public class NextAgentTest {
     }
 
     /**
-     * Test of clearAgentStepMemory method, of class NextAgent.
+     * Test of ClearAgentStepMemory method, of class NextAgent.
      */
     @Test
     
@@ -350,17 +350,17 @@ public class NextAgentTest {
         // adjust simulation
         instance.GetSimulationStatus().SetCurrentStep(1);
         // create map
-        group.GetGroupMap().setMapTile(new NextMapTile(2,2,1, "free"));
-        group.GetGroupMap().setMapTile(new NextMapTile(2,1,1, "free"));        
-        group.GetGroupMap().setMapTile(new NextMapTile(2,0,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(2,2,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(2,1,1, "free"));        
+        group.GetGroupMap().SetMapTile(new NextMapTile(2,0,1, "free"));
         
-        group.GetGroupMap().setMapTile(new NextMapTile(1,2,1, "free"));
-        group.GetGroupMap().setMapTile(new NextMapTile(1,1,1, "free"));        
-        group.GetGroupMap().setMapTile(new NextMapTile(1,0,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(1,2,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(1,1,1, "free"));        
+        group.GetGroupMap().SetMapTile(new NextMapTile(1,0,1, "free"));
         
-        group.GetGroupMap().setMapTile(new NextMapTile(0,2,1, "free"));
-        group.GetGroupMap().setMapTile(new NextMapTile(0,1,1, "free"));        
-        group.GetGroupMap().setMapTile(new NextMapTile(0,0,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(0,2,1, "free"));
+        group.GetGroupMap().SetMapTile(new NextMapTile(0,1,1, "free"));        
+        group.GetGroupMap().SetMapTile(new NextMapTile(0,0,1, "free"));
         
         //Calculate path and block tiles
         instance.SetPathMemory(instance.CalculatePath(new Vector2D(2,2)));
@@ -374,7 +374,7 @@ public class NextAgentTest {
         assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(1, 2)).CheckAtStep(4));
         assertTrue(group.GetGroupMap().GetMapTile(new Vector2D(2, 2)).CheckAtStep(5));
     
-        instance.clearAgentStepMemory();
+        instance.ClearAgentStepMemory();
         
         assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(0, 1)).CheckAtStep(2));
         assertFalse(group.GetGroupMap().GetMapTile(new Vector2D(0, 2)).CheckAtStep(3));
