@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-
 public class NextGroupPlan {
 
     private final NextGroup group;
@@ -32,49 +31,8 @@ public class NextGroupPlan {
         this.task = task;
         createSubPlans();
     }
-
-    /**
-     * Berechnet die Mindestanzahl an Schritten, damit ein Agent seinen Teiltask erfüllen kann
-     */
-    private void estimateStepsToSolveTask() {
-        if (!isPreconditionFulfilled) return;
-
-        int longestWay = 0;
-        int shortestWayFromDispenserToGoalZone = 10000;
-        int offsetToConnect = 10;
-
-        HashSet<NextMapTile> goalZones = group.GetGroupMap().GetGoalZones();
-        HashSet<NextMapTile> dispensers = group.GetGroupMap().GetDispensers();
-
-        //calculate ways from dispensers to nearestGoalZone
-        for (NextMapTile block : task.GetRequiredBlocks()) {
-            for (NextMapTile dispenser : dispensers) {
-                // TODO: Noch Testen, ob dies wirklich den besten Task gibt
-                if (!dispenser.getThingType().substring(dispenser.getThingType().length() - 2)
-                        .equals(block.getThingType())) continue;
-                Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
-                // TODO: Hier muss der Pfad verbessert werden
-                int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(),
-                        nearestGoalZone).size();
-                shortestWayFromDispenserToGoalZone = Math.min(wayFromDispenserToGoalZone,
-                        shortestWayFromDispenserToGoalZone);
-            }
-            longestWay = Math.max(shortestWayFromDispenserToGoalZone, longestWay);
-        }
-        estimatedStepsToSolveTask = longestWay + offsetToConnect;
-        setUtilization(estimatedStepsToSolveTask);
-    }
-
-    /**
-     * Berechnet den Nutzen/Kosten-Quotienten, der durch diese Aufgabe erreicht wird
-     *
-     * @param estimatedStepsToSolveTask Summe der Wege von Dispensern zu den GoalZones
-     */
-    private void setUtilization(int estimatedStepsToSolveTask) {
-        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask / (float) task.GetRequiredBlocks()
-                .size();
-    }
-
+    
+    
     /**
      * @return Nutzen/Kosten-Quotient
      */
@@ -92,15 +50,6 @@ public class NextGroupPlan {
     }
 
     /**
-     * prüft, ob die Vorbedingung erfüllt ist
-     */
-    private void checkIfPreConditionIsFulfilled() {
-        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::getThingType)
-                .collect(Collectors.toCollection(HashSet::new));
-        isPreconditionFulfilled = group.GetGroupMap().IsTaskExecutable(requiredBlocks);
-    }
-
-    /**
      * Check if the task can be submitted within the deadline
      */
     public boolean IsDeadlineFulfillable() {
@@ -108,10 +57,13 @@ public class NextGroupPlan {
     }
 
     /**
-     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden kann
+     * prüft, ob Task noch in der zur Verfügung stehenden Zeit gelöst werden
+     * kann
      */
-    public void checkIfDeadlineIsReached() {
-        if (!isDeadlineFulfillable) return;
+    public void CheckIfDeadlineIsReached() {
+        if (!isDeadlineFulfillable) {
+            return;
+        }
         int stepsUntilTaskIsFinished = group.GetLastStep() + estimatedStepsToSolveTask;
         isDeadlineFulfillable = stepsUntilTaskIsFinished < (int) task.GetDeadline();
     }
@@ -119,9 +71,78 @@ public class NextGroupPlan {
     public NextTask GetTask() {
         return task;
     }
+    
+    public void UpdateInternalBelief() {
+        checkIfPreConditionIsFulfilled();
+        CheckIfDeadlineIsReached();
+        estimateStepsToSolveTask();
+    }
+
+    public void SetMaxAttemptsAreReached() {
+        isDeadlineFulfillable = false;
+    }
 
     /**
-     * Erzeugt eine Liste mit subPlans - hier werden zuerst alle Dispenser abgegangen und dann zur Zielzone
+     * Berechnet die Mindestanzahl an Schritten, damit ein Agent seinen Teiltask
+     * erfüllen kann
+     */
+    private void estimateStepsToSolveTask() {
+        if (!isPreconditionFulfilled) {
+            return;
+        }
+
+        int longestWay = 0;
+        int shortestWayFromDispenserToGoalZone = 10000;
+        int offsetToConnect = 10;
+
+        HashSet<NextMapTile> goalZones = group.GetGroupMap().GetGoalZones();
+        HashSet<NextMapTile> dispensers = group.GetGroupMap().GetDispensers();
+
+        //calculate ways from dispensers to nearestGoalZone
+        for (NextMapTile block : task.GetRequiredBlocks()) {
+            for (NextMapTile dispenser : dispensers) {
+                // TODO: Noch Testen, ob dies wirklich den besten Task gibt
+                if (!dispenser.GetThingType().substring(dispenser.GetThingType().length() - 2)
+                        .equals(block.GetThingType())) {
+                    continue;
+                }
+                Vector2D nearestGoalZone = NextAgentUtil.GetNearestZone(dispenser.GetPosition(), goalZones);
+                // TODO: Hier muss der Pfad verbessert werden
+                int wayFromDispenserToGoalZone = NextManhattanPath.CalculatePath(dispenser.GetPosition(),
+                        nearestGoalZone).size();
+                shortestWayFromDispenserToGoalZone = Math.min(wayFromDispenserToGoalZone,
+                        shortestWayFromDispenserToGoalZone);
+            }
+            longestWay = Math.max(shortestWayFromDispenserToGoalZone, longestWay);
+        }
+        estimatedStepsToSolveTask = longestWay + offsetToConnect;
+        setUtilization(estimatedStepsToSolveTask);
+    }
+
+    /**
+     * Berechnet den Nutzen/Kosten-Quotienten, der durch diese Aufgabe erreicht
+     * wird
+     *
+     * @param estimatedStepsToSolveTask Summe der Wege von Dispensern zu den
+     * GoalZones
+     */
+    private void setUtilization(int estimatedStepsToSolveTask) {
+        utilization = (float) task.GetReward() / (float) estimatedStepsToSolveTask / (float) task.GetRequiredBlocks()
+                .size();
+    }
+
+    
+    /**
+     * prüft, ob die Vorbedingung erfüllt ist
+     */
+    private void checkIfPreConditionIsFulfilled() {
+        HashSet<String> requiredBlocks = task.GetRequiredBlocks().stream().map(NextMapTile::GetThingType)
+                .collect(Collectors.toCollection(HashSet::new));
+        isPreconditionFulfilled = group.GetGroupMap().IsTaskExecutable(requiredBlocks);
+    }
+    /**
+     * Erzeugt eine Liste mit subPlans - hier werden zuerst alle Dispenser
+     * abgegangen und dann zur Zielzone
      */
     private void createSubPlans() {
         HashSet<NextMapTile> requiredBlocks = task.GetRequiredBlocks();
@@ -129,15 +150,5 @@ public class NextGroupPlan {
             subPlans.add(new NextPlanDispenser(block));
         }
         subPlans.add(new NextPlanGoalZone());
-    }
-
-    public void UpdateInternalBelief() {
-        checkIfPreConditionIsFulfilled();
-        checkIfDeadlineIsReached();
-        estimateStepsToSolveTask();
-    }
-
-    public void SetMaxAttemptsAreReached() {
-        isDeadlineFulfillable = false;
     }
 }

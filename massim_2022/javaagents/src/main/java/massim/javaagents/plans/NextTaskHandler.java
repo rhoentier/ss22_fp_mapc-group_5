@@ -49,7 +49,7 @@ public class NextTaskHandler {
         if (currentPlan != null) {
             for (NextPlan subPlan : currentPlan.subPlans) {
                 if (subPlan instanceof NextPlanDispenser)
-                    return ((NextPlanDispenser) subPlan).GetDispenser().getThingType();
+                    return ((NextPlanDispenser) subPlan).GetDispenser().GetThingType();
             }
         }
         return "Empty";

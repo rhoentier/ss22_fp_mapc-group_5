@@ -52,7 +52,7 @@ public class NextAgentStatus {
     private HashSet<NextMapTile> hits;                  // Unsorted list of hit origin - the position where the damage came from (might be off if the agent moved during the previous step)
     
     private HashSet<NextSurveyedAgent> surveyedAgents;  // Unsorted list of NextSurveyedAgent Instances containing information about the last surveyed action
-    private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing distance to the targeted elements.
+    private HashSet<NextSurveyedThing> surveyedThings;  // Unsorted list of NextSurveyedThing Instances, storing Distance to the targeted elements.
 
     private HashSet<NextMapTile> dispenser;
     
@@ -76,12 +76,12 @@ public class NextAgentStatus {
         deactivated = false;
         role = null;
         attachedElements = new HashSet<>();
-        attachedElementsNextMapTile = new HashSet<NextMapTile>();
-        dispenser = new HashSet<NextMapTile>();
+        attachedElementsNextMapTile = new HashSet<>();
+        dispenser = new HashSet<>();
         currentRole = new NextRole("dummy", 0, null, null, 0, 0);
     }
     
-     /*
+    /*
      * ##################### endregion constructor
      */
     
@@ -258,7 +258,7 @@ public class NextAgentStatus {
         this.hits = hits;
     }
 
-    public HashSet<NextSurveyedAgent> getSurveyedAgents() {
+    public HashSet<NextSurveyedAgent> GetSurveyedAgents() {
         return surveyedAgents;
     }
 
@@ -300,15 +300,16 @@ public class NextAgentStatus {
                 + "goalZones: \n" + this.goalZones + " \n"
                 + "roleZones: \n" + this.roleZones + " \n"
                 + "--------------------------------- \n";
-
     }
     
     /**
+     * Check for sucessfull execution of last action
      * 
      * @param lastActionParams e.g. dispenser, goal, role
      * @param lastAction e.g. survey, clear, move
-     * @return
+     * @return boolean true if successful
      */
+    
     public boolean IsLastSpecificActionSuccess(String lastActionParams, String lastAction)
     {
     	return this.lastActionResult.contains("success") 

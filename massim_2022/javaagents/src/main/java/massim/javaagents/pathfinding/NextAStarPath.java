@@ -70,7 +70,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
-     * distance calculation
+ Distance calculation
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
@@ -86,7 +86,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
-     * distance calculation
+ Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
@@ -123,7 +123,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
-     * distance calculation
+ Distance calculation
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
@@ -141,7 +141,7 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
-     * distance calculation
+ Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
@@ -215,14 +215,14 @@ public class NextAStarPath {
     private List<Action> executeMainLogic() {
 
         // Queue of tiles to be visited. Sorted by score.
-        PriorityQueue<NextMapTile> queue = new PriorityQueue<>((NextMapTile o1, NextMapTile o2) -> o1.getScore() - o2.getScore());
+        PriorityQueue<NextMapTile> queue = new PriorityQueue<>((NextMapTile o1, NextMapTile o2) -> o1.GetScore() - o2.GetScore());
 
         // Initialise queue with start point
         queue.add(this.map[this.localStartPoint[0]][this.localStartPoint[1]]);
 
         boolean routeAvailable = false;
 
-        //System.out.println("Map Size" + mapWidthLocal + " " + mapHeightLocal + "\n" + "X " + queue.peek().getPositionX() + " Y " + queue.peek().getPositionY() + " TX " + targetPosition[0] + " TY " + targetPosition[1]);
+        //System.out.println("Map Size" + mapWidthLocal + " " + mapHeightLocal + "\n" + "X " + queue.peek().GetPositionX() + " Y " + queue.peek().GetPositionY() + " TX " + targetPosition[0] + " TY " + targetPosition[1]);
         // LogicGate - Check if Jump Point Search acceleraion is used.
         if (aStarJps) {
             // aStar JPS branch
@@ -235,15 +235,15 @@ public class NextAStarPath {
                         break;
                     }
                     currentTile = queue.remove();
-                    System.out.println("JPS Current Tile: " + currentTile.getPositionX() + " - " + currentTile.getPositionY());
+                    System.out.println("JPS Current Tile: " + currentTile.GetPositionX() + " - " + currentTile.GetPositionY());
 
-                } while (!currentTile.isOpen());
+                } while (!currentTile.IsOpen());
 
-                // set the tile to checked
-                currentTile.setOpen(false);
+                // Set the tile to checked
+                currentTile.SetOpen(false);
 
                 //GuardCase - target was found
-                if (currentTile.getPositionX() == targetPosition[0] && currentTile.getPositionY() == targetPosition[1]) {
+                if (currentTile.GetPositionX() == targetPosition[0] && currentTile.GetPositionY() == targetPosition[1]) {
                     // at the end, return path
                     routeAvailable = true;
 
@@ -266,17 +266,17 @@ public class NextAStarPath {
                         break;
                     }
                     currentTile = queue.remove();
-                } while (!currentTile.isOpen());
+                } while (!currentTile.IsOpen());
 
-                // set the tile to checked
-                currentTile.setOpen(false);
+                // Set the tile to checked
+                currentTile.SetOpen(false);
 
-                int currentX = currentTile.getPositionX();
-                int currentY = currentTile.getPositionY();
-                int currentScore = currentTile.getScore();
+                int currentX = currentTile.GetPositionX();
+                int currentY = currentTile.GetPositionY();
+                int currentScore = currentTile.GetScore();
 
                 // GuardCase - target was found
-                if (currentTile.getPositionX() == targetPosition[0] && currentTile.getPositionY() == targetPosition[1]) {
+                if (currentTile.GetPositionX() == targetPosition[0] && currentTile.GetPositionY() == targetPosition[1]) {
                     // at the end, return path
                     routeAvailable = true;
 
@@ -284,7 +284,7 @@ public class NextAStarPath {
                     break;
                 }
 
-                // loop through neighbours and get scores. add these onto open tiles queue
+                // loop through neighbours and get scores. Add these onto open tiles queue
                 int smallestScore = 9999999;
                 //Check left and right tile
                 for (int x = -1; x <= 1; x += 2) {
@@ -297,11 +297,11 @@ public class NextAStarPath {
                         if (score < smallestScore) {
                             smallestScore = score;
                         }
-                        // place to queue, set parent and score
+                        // place to queue, Set parent and score
                         NextMapTile thisTile = map[nextX][currentY];
-                        thisTile.setScore(score);
+                        thisTile.SetScore(score);
                         queue.add(thisTile);
-                        thisTile.setParent(currentTile);
+                        thisTile.SetParent(currentTile);
                     }
                 }
 
@@ -316,11 +316,11 @@ public class NextAStarPath {
                         if (score < smallestScore) {
                             smallestScore = score;
                         }
-                        // place to queue, set parent and score
+                        // place to queue, Set parent and score
                         NextMapTile thisTile = map[currentX][nextY];
-                        thisTile.setScore(score);
+                        thisTile.SetScore(score);
                         queue.add(thisTile);
-                        thisTile.setParent(currentTile);
+                        thisTile.SetParent(currentTile);
                     }
                 }
             }
@@ -359,9 +359,9 @@ public class NextAStarPath {
         for (NextMapTile[] tile : map) {
             for (int col = 0; col < map[0].length; col++) {
                 if (tile[col] != null) {
-                    tile[col].setOpen(true);
-                    tile[col].setParent(null);
-                    tile[col].setScore(0);
+                    tile[col].SetOpen(true);
+                    tile[col].SetParent(null);
+                    tile[col].SetScore(0);
                 }
             }
         }
@@ -378,9 +378,9 @@ public class NextAStarPath {
         if (nextX >= 0 && nextX < mapWidth) {
             if (nextY >= 0 && nextY < mapHeight) {
                 if (this.strictWalkable) {
-                    return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkableStrict() && map[nextX][nextY] != null;
+                    return map[nextX][nextY].IsOpen() && map[nextX][nextY].IsWalkableStrict() && map[nextX][nextY] != null;
                 } else {
-                    return map[nextX][nextY].isOpen() && map[nextX][nextY].IsWalkable() && map[nextX][nextY] != null;
+                    return map[nextX][nextY].IsOpen() && map[nextX][nextY].IsWalkable() && map[nextX][nextY] != null;
                 }
             }
         }
@@ -395,7 +395,7 @@ public class NextAStarPath {
      * @return int Score to arrive the tile
      */
     private int getScoreOfTile(NextMapTile tile, int currentScore) {
-        // distance to target
+        // Distance to target
         int guessScoreLeft = distanceScoreAway(tile);
         // evaluation of Score for current tile
         int extraMovementCost = 0;
@@ -421,13 +421,13 @@ public class NextAStarPath {
     }
 
     /**
-     * Calculate the Manhattan distance from a tile to target
+     * Calculate the Manhattan Distance from a tile to target
      *
      * @param currentTile NextMapTile tile to calculate from
-     * @return int distance
+     * @return int Distance
      */
     private int distanceScoreAway(NextMapTile currentTile) {
-        return Math.abs(targetPosition[0] - currentTile.getPositionX()) + Math.abs(targetPosition[1] - currentTile.getPositionY());
+        return Math.abs(targetPosition[0] - currentTile.GetPositionX()) + Math.abs(targetPosition[1] - currentTile.GetPositionY());
     }
 
     /**
@@ -442,7 +442,7 @@ public class NextAStarPath {
         while (currentTile != null) {
             path.add(currentTile);
             //recursive call
-            currentTile = currentTile.getParent();
+            currentTile = currentTile.GetParent();
         }
         return path;
     }
@@ -458,16 +458,16 @@ public class NextAStarPath {
 
         List<Vector2D> processedList = new ArrayList<>();
         if (!path.isEmpty()) {
-            //Process all entries and reverse List
+            //Process all entries and Reverse List
             for (int i = path.size() - 1; i > 0; i--) {
                 NextMapTile actualStep = path.get(i);
                 NextMapTile previousStep = path.get(i - 1);
 
                 // find the delta between current and previous tile
-                int xValue = previousStep.getPositionX() - actualStep.getPositionX();
-                int yValue = previousStep.getPositionY() - actualStep.getPositionY();
+                int xValue = previousStep.GetPositionX() - actualStep.GetPositionX();
+                int yValue = previousStep.GetPositionY() - actualStep.GetPositionY();
 
-                // add the entry to the processedList
+                // Add the entry to the processedList
                 processedList.add(new Vector2D(xValue, yValue));
             }
         }
@@ -487,17 +487,17 @@ public class NextAStarPath {
         // New list to return
         List<Vector2D> processedList = new ArrayList<>();
         if (!path.isEmpty()) {
-            //Process all entries and reverse List
+            //Process all entries and Reverse List
             for (int i = path.size() - 1; i > 0; i--) {
                 NextMapTile actualStep = path.get(i);
                 NextMapTile previousStep = path.get(i - 1);
 
                 // find the delta between current and previous tile
-                int xValue = previousStep.getPositionX() - actualStep.getPositionX();
-                int yValue = previousStep.getPositionY() - actualStep.getPositionY();
+                int xValue = previousStep.GetPositionX() - actualStep.GetPositionX();
+                int yValue = previousStep.GetPositionY() - actualStep.GetPositionY();
 
                 //Get Direction
-                Vector2D direction = Vector2D.calculateNormalisedDirection(actualStep.GetPosition(), previousStep.GetPosition());
+                Vector2D direction = Vector2D.CalculateNormalisedDirection(actualStep.GetPosition(), previousStep.GetPosition());
                 // Get number of steps
                 int steps = Math.max(Math.abs(xValue), Math.abs(yValue)); // The values are equal or one is zero
                 // Add direction to processedList x-Times
@@ -519,7 +519,7 @@ public class NextAStarPath {
                         processedList.add(new Vector2D(direction.x, direction.y));
                     }
                     // Update the inbetween position
-                    position.add(direction);
+                    position.Add(direction);
                 }
 
             }
@@ -563,7 +563,7 @@ public class NextAStarPath {
     private void blockUsedTiles(List<Vector2D> vectorPath) {
         int offset_x = 0;
         int offset_y = 0;
-        if (currentStep != -1) { // -1 is used for distance calculation
+        if (currentStep != -1) { // -1 is used for Distance calculation
             for (int i = 0; i < vectorPath.size(); i++) {
                 // Update position
                 offset_x += vectorPath.get(i).x;
@@ -583,7 +583,7 @@ public class NextAStarPath {
      * Identify successor tiles by performing jumps.
      *
      * @param baseTile NextMapTile tile to be evaluated
-     * @return ArrayList<NextMapTile> List of tiles to add to queue
+     * @return ArrayList<NextMapTile> List of tiles to Add to queue
      */
     private ArrayList<NextMapTile> identifySuccessors(NextMapTile baseTile) {
         // empty sucessors List to be returned
@@ -603,12 +603,12 @@ public class NextAStarPath {
             // check if returned value is relevant 
             if (temporalPosition.x != -1) {
                 // Calculate the ng part of the score value
-                int ng = (int) temporalPosition.distance(startpoint) + baseTile.getScore();
+                int ng = (int) temporalPosition.Distance(startpoint) + baseTile.GetScore();
                 NextMapTile temporalTile = map[temporalPosition.x][temporalPosition.y];
-                if (temporalTile.isOpen() || temporalTile.getScore() > ng) {
-                    temporalTile.setParent(baseTile);
-                    temporalTile.setScore(ng);
-                    // add to List
+                if (temporalTile.IsOpen() || temporalTile.GetScore() > ng) {
+                    temporalTile.SetParent(baseTile);
+                    temporalTile.SetScore(ng);
+                    // Add to List
                     successors.add(temporalTile);
                 }
             }
@@ -628,11 +628,11 @@ public class NextAStarPath {
         Vector2D[] neighbors = new Vector2D[5];
         Vector2D position = baseTile.GetPosition();
         // Parent position
-        NextMapTile parent = baseTile.getParent();
+        NextMapTile parent = baseTile.GetParent();
         //directed pruning: can ignore most neighbors, unless forced
         if (parent != null) {
             // retrieve the normalized direction of travel
-            Vector2D direction = Vector2D.calculateNormalisedDirection(parent.GetPosition(), position);
+            Vector2D direction = Vector2D.CalculateNormalisedDirection(parent.GetPosition(), position);
 
             if (direction.x != 0 && direction.y != 0) {
                 // search in diagonal direction
@@ -723,7 +723,7 @@ public class NextAStarPath {
         Vector2D jumpPointXDirection;
         Vector2D jumpPointYDirection;
         // Calculate the direction of movement.
-        Vector2D direction = Vector2D.calculateNormalisedDirection(parentTile, currentTile);
+        Vector2D direction = Vector2D.CalculateNormalisedDirection(parentTile, currentTile);
 
         // GuardCase - Check if tile is Walkable
         if (!validTile(currentTile.x, currentTile.y)) {
@@ -885,8 +885,8 @@ public class NextAStarPath {
                 tempMap[newX][newY] = new NextMapTile(
                         newX,
                         newY,
-                        mapOld[x][y].getLastVisionStep(),
-                        mapOld[x][y].getThingType(),
+                        mapOld[x][y].GetLastVisionStep(),
+                        mapOld[x][y].GetThingType(),
                         mapOld[x][y].GetStepMemory());
             }
         }
