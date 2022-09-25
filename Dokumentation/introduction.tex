@@ -1,18 +1,15 @@
 \section{Einleitung}
 
 \subsection{Auswahl technischer Rahmenbedingungen}
-Für die Auswahl der technischen Rahmenbedingungen hat sich die Gruppe an der Serverprogrammierung orientiert. Der Server ist in Java implementiert und deswegen sind die Agenten ebenfalls in Java entwickelt worden. Ein weiterer Grund dafür war, dass die Schnittstelle der Programmierkenntnisse aller Gruppenmitglieder auf Java fiel. Zum Einsatz kamen verschiedene Editoren wie Eclipse\cite{eclipse}, IntelliJ\cite{intellij} oder NetBeans\cite{netbeans}. \\
+%Für die Auswahl der technischen Rahmenbedingungen hat sich die Gruppe an der Serverprogrammierung orientiert. Der Server ist in Java implementiert und deswegen sind die Agenten ebenfalls in Java entwickelt worden. Ein weiterer Grund dafür war, dass die Schnittstelle der Programmierkenntnisse aller Gruppenmitglieder auf Java fiel. Zum Einsatz kamen verschiedene Editoren wie Eclipse\cite{eclipse}, IntelliJ\cite{intellij} oder NetBeans\cite{netbeans}. \\
 
-Unsere Agentenvariante lief unter der Bezeichnung \textit{NextAgent}. 
-Alle Klassendateien beginnen mit dem Präfix \textit{Next-}, um die Zuordnung zu erleichtern. \\
+Da die Schnittstelle der Programmierkenntnisse aller Gruppenmitglieder auf Java fiel, und dies auch mit der MASSim Umgebung, sowie der Agentvorlage korellierte, wurde weiter in dieser Sprache entwickelt. Unsere Agentenvariante lief unter der Bezeichnung \textit{NextAgent}.  Alle Klassendateien beginnen mit dem Präfix \textit{Next-}, um die Zuordnung zu erleichtern. Debugging erfolgte je nach Präferenz des Teilnehmers sowohl über Printausgabe in Echtzeit, als auch über Logfiles und Debugger. In kritischen Bereichen wurden Unittests umgesetzt. \\
 
-Innerhalb des Quellcodes wurde auf den Wunsch eines Teammitglieds eine spezielle Formatierung eingeführt. Dabei wurden die \textit{public} Methoden groß geschrieben, während \textit{private} Methoden weiterhin klein geschrieben wurden.
+Innerhalb des Quellcodes wurde auf Wunsch eines Teammitglieds eine spezielle Formatierung eingeführt. Dabei wurden die \textit{public} Methoden groß geschrieben, während \textit{private} Methoden weiterhin klein geschrieben wurden.
 
 \subsection{Aufteilung Gruppenmitglieder - Arbeit}
 
-Als Kompromiss innerhalb der Gruppe hat man sich auf ein konstantes Treffen 1x jede Woche geeinigt, mit dem Ziel, den erarbeiteten Stand zu besprechen. Dieses konnten wir sehr konsequent umsetzen. \\
-
-Initial wurde es innerhalb der Gruppe versucht in agiler Form mit Hilfe von \textit{issues} in GitHub zu arbeiten. Aufgrund der Komplexität des Themas, und mangelnder Vorerfahrung der Teammitglieder im Kontext der Multiagentensysteme, haben wir mehr Zeit für das tiefere Einarbeiten benötigt. Deswegen haben wir die Aufgabe in 4 Bereiche aufgeteilt und wie folgt zugewiesen: \\
+Innerhalb der Gruppe hat man sich auf ein konstantes Treffen 1x jede Woche geeinigt, mit dem Ziel, den erarbeiteten Stand zu besprechen. Dieses konnten wir sehr konsequent umsetzen. Initial wurde innerhalb der Gruppe versucht in agiler Form mit Hilfe von \textit{issues} in GitHub zu arbeiten. Aufgrund der Komplexität des Themas, und mangelnder Vorerfahrung der Teammitglieder insbesondere im Kontext der Multiagentensysteme, haben wir mehr Zeit für das tiefere Einarbeiten benötigt. Deswegen haben wir die Aufgabe in 4 Bereiche aufgeteilt und wie folgt zugewiesen:
 
 \begin{itemize}
     \item Herr Jendrny: Festlegen der Aufgaben für den Agenten, basierend auf \textit{Tasks}, Normen und dem aktuellen Zustand der Welt.  
@@ -21,16 +18,14 @@ Initial wurde es innerhalb der Gruppe versucht in agiler Form mit Hilfe von \tex
     \item Herr Loder: Verarbeitung der Karte und das Zusammenführen der Karten für die Gruppe.
 \end{itemize}
 
-Zusätzlich gab es spontan koordinierte Treffen in kleinen Teams, um Schnittstellen zu diskutieren und Lösungen für Teilbereiche zu erarbeiten. \\
-
-Debugging erfolgte je nach Präferenz des Teilnehmers sowohl über Printausgabe in Echtzeit, als auch über Logfiles und Debugger. In kritischen Bereichen wurden Unittests umgesetzt. 
+Zusätzlich gab es spontan koordinierte Treffen in kleinen Teams, um Schnittstellen zu diskutieren und Lösungen für Teilbereiche zu erarbeiten. 
 
 \subsubsection{Alexander Lorenz} ~\\
 Herr Lorenz setzte die Grundvariante des Agenten um, welche die Basis für weitere Entwicklung bildete. Der Schwerpunkt lag auf der sauberen Verarbeitung der Serverdaten, der Möglichkeit zwischen den Simulationen zu wechseln, und der Fähigkeit die ersten \textit{actions} abzugeben. Dabei reagierte der Agent noch rein reaktiv, und wählte die nächste Aktion basierend auf einer vorgegebenen Priorisierung. \\
 
 Im Verlauf des Fachpraktikums setzte Herr Lorenz die Logik der Gruppenbildung um, sowie eine Variante der Kommunikation innerhalb der Gruppe. Des Weiteren beschäftigte er sich mit den Möglichkeiten der Optimierung der Wegfindungsalgorithmen, und erweiterte die initiale A* Variante um weitere Modifikationen, die in in Kapitel \textit{\ref{kap:wegfindung}} genauer beschrieben werden. Als Schnittstelle zwischen Percepts, Karte und Entscheidungsfindung wurde viel Zeit in das Bugfixing, Fehlersuche, sowie die Interpretation des Agentenverhaltens investiert. \\
 
-Bei Herrn Lorenz lag ein Fehler in der Konfiguration der IDE, so dass Github Commits nicht sauber zugeordnet waren. Dies wurde Anfang Juni gemerkt, und behoben.  
+Bei Herrn Lorenz lag ein Fehler in der Konfiguration der IDE, so dass Github Commits nicht sauber zugeordnet waren. Dies wurde Anfang Juni bemerkt, und behoben.  
 
 \subsubsection{Miriam Wolf} ~\\
 Um einen Schritt nach vorn zu gehen oder einen Block zu zerstören, müssen die Agenten eine Aktion an den Server schicken. Um einen optimalen Weg durch die Blöcke zu finden und sich zur Endzone durchzukämpfen, muss die nächstmögliche Aktion herausgefunden werden. Frau Wolf hat sich um die Möglichkeit gekümmert, welche Aktion die nächstmögliche ist. Sie hatte die Aufgabe, das Verhalten der Agenten in der lokalen Sicht zu bearbeiten. Die Erklärung, was die lokale Sicht des Agenten ist wird später genauer erläutert. \\
