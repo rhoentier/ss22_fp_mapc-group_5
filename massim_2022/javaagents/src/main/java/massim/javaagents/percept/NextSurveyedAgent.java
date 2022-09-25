@@ -1,15 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package massim.javaagents.percept;
 
 /**
- * Container class for describing surveyed Agents.  
- * @author AVL
+ * Container class for describing surveyed Agents.
+ *
+ * @author Alexander Lorenz
  */
 public class NextSurveyedAgent {
-    
+
     private String name;
     private String role;
     private int energy;
@@ -43,8 +40,4 @@ public class NextSurveyedAgent {
     public void SetEnergy(int energy) {
         this.energy = energy;
     }
-    
-    
-    
-    
 }

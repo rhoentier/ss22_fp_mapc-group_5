@@ -1,17 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package massim.javaagents.percept;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextRole {
-    
+
     /*
         role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
 
@@ -22,8 +19,7 @@ public class NextRole {
     clearChance : Numeral (0-1)
     clearMaxDistance : Numeral
 
-    */
-    
+     */
     private String name;
     private int vision;
     private HashSet<String> action;
@@ -92,9 +88,5 @@ public class NextRole {
     public String toString() {
         return "NextRole{" + "name=" + name + ", vision=" + vision + ", action=" + action + ", speed=" + speed + ", clearChance=" + clearChance + ", clearMaxDistance=" + clearMaxDistance + '}';
     }
-    
-    
-    
-    
-    
+
 }

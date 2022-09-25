@@ -44,9 +44,11 @@ public class NextAStarPath {
     /*
      * ##################### endregion fields
      */
- /*
+    
+    /*
      * ########## region constructor.
      */
+    
     /**
      * Shortcut for Pathfinding Processor. A*JPS, centerTheMap, strictWalkable -
      * disabled
@@ -58,8 +60,8 @@ public class NextAStarPath {
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
-        return calculatePath(false, originalMap, startpoint, target, false, false, currentStep);
+    public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
+        return CalculatePath(false, originalMap, startpoint, target, false, false, currentStep);
     }
 
     /**
@@ -69,13 +71,13 @@ public class NextAStarPath {
      * Environent
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
-     * @param centerTheMap Boolean - true if map should be centered for optimal
- Distance calculation
+     * @param centerTheMap Boolean - true if map should be centered for optimal 
+     * Distance calculation
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
-        return calculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
+    public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
+        return CalculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
     }
 
     /**
@@ -85,15 +87,15 @@ public class NextAStarPath {
      * Environent
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
-     * @param centerTheMap Boolean - true if map should be centered for optimal
- Distance calculation
+     * @param centerTheMap Boolean - true if map should be centered for optimal 
+     * Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
-        return calculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
+    public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
+        return CalculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
     }
 
     /**
@@ -109,8 +111,8 @@ public class NextAStarPath {
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
-        return calculatePath(aStarJps, originalMap, startpoint, target, false, false, currentStep);
+    public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
+        return CalculatePath(aStarJps, originalMap, startpoint, target, false, false, currentStep);
     }
 
     /**
@@ -123,12 +125,12 @@ public class NextAStarPath {
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
- Distance calculation
+     * Distance calculation
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
-        return calculatePath(aStarJps, originalMap, startpoint, target, centerTheMap, false, currentStep);
+    public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
+        return CalculatePath(aStarJps, originalMap, startpoint, target, centerTheMap, false, currentStep);
     }
 
     /**
@@ -140,14 +142,14 @@ public class NextAStarPath {
      * Environent
      * @param startpoint Vector2D - Position of Pathstart
      * @param target Vector2D - Position of targetpoint
-     * @param centerTheMap Boolean - true if map should be centered for optimal
- Distance calculation
+     * @param centerTheMap Boolean - true if map should be centered for optimal 
+     * Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
      * @return List Collection of actions to describe the path
      */
-    public List<Action> calculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
+    public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
         this.aStarJps = aStarJps;
         this.originalMap = originalMap;
@@ -204,14 +206,17 @@ public class NextAStarPath {
     /*
      * ##################### endregion constructor
      */
- /*
+    
+    /*
      * ########## region private methods
      */
+    
     /**
      * Main Part of AStar calculation
      *
      * return List<Action> Collection of actions to describe the path
      */
+    
     private List<Action> executeMainLogic() {
 
         // Queue of tiles to be visited. Sorted by score.
@@ -280,7 +285,7 @@ public class NextAStarPath {
                     // at the end, return path
                     routeAvailable = true;
 
-//                    System.out.println("Path Found");
+                // System.out.println("Path Found");
                     break;
                 }
 

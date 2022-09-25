@@ -18,8 +18,9 @@ public class NextPlanRoleZone extends NextPlan {
      * Erzeugt keine weiteren SubPlans
      */
     public void CreateSubPlans() {
-        if(agent.GetMap().GetRoleZones().isEmpty())
+        if (agent.GetMap().GetRoleZones().isEmpty()) {
             subPlans.add(new NextPlanSurveyRandom());
+        }
     }
 
     /**
@@ -32,7 +33,8 @@ public class NextPlanRoleZone extends NextPlan {
     }
 
     /**
-     * Gibt zurück, ob noch eine RoleZone gefunden werden muss, oder ob direkt dorthin gegangen werden kann
+     * Gibt zurück, ob noch eine RoleZone gefunden werden muss, oder ob direkt
+     * dorthin gegangen werden kann
      *
      * @return NextPlan um Rolle zu wechseln
      */
@@ -40,6 +42,8 @@ public class NextPlanRoleZone extends NextPlan {
     public NextPlan GetDeepestPlan() {
         if (!agent.GetMap().GetRoleZones().isEmpty()) {
             return this;
-        } else return subPlans.get(0);
+        } else {
+            return subPlans.get(0);
+        }
     }
 }

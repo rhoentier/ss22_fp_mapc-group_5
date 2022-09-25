@@ -5,6 +5,7 @@ import massim.javaagents.general.NextConstants;
 import massim.javaagents.map.NextMapTile;
 
 public class NextPlanDispenser extends NextPlan {
+
     private NextMapTile dispenser;
 
     public NextPlanDispenser(NextMapTile dispenser) {

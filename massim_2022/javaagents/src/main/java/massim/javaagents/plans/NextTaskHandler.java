@@ -12,7 +12,6 @@ public class NextTaskHandler {
     private final NextAgent agent;
     private boolean initialTask = false;
 
-
     public NextTaskHandler(NextAgent agent) {
         this.agent = agent;
     }
@@ -28,8 +27,9 @@ public class NextTaskHandler {
     }
 
     /**
-     * Check if a Task is fulfillable and returns the deepest desire of the task with the max benefit
-     * if no task is fulfillable returns the desire to explore the map
+     * Check if a Task is fulfillable and returns the deepest desire of the task
+     * with the max benefit if no task is fulfillable returns the desire to
+     * explore the map
      */
     public NextPlan GetDeepestEAgentTask() {
         NextPlan deepestPlan;
@@ -48,35 +48,43 @@ public class NextTaskHandler {
     public String GetRequiredBlockType() {
         if (currentPlan != null) {
             for (NextPlan subPlan : currentPlan.subPlans) {
-                if (subPlan instanceof NextPlanDispenser)
+                if (subPlan instanceof NextPlanDispenser) {
                     return ((NextPlanDispenser) subPlan).GetDispenser().GetThingType();
+                }
             }
         }
         return "Empty";
     }
 
     public NextTask GetCurrentTask() {
-        if (currentPlan != null) return currentPlan.GetTask();
+        if (currentPlan != null) {
+            return currentPlan.GetTask();
+        }
         return null;
     }
 
     public void SetAgentPlan(NextAgentPlan groupPlan) {
-        if (groupPlan == null) return;
+        if (groupPlan == null) {
+            return;
+        }
         if (currentPlan == null) {
             currentPlan = new NextPlanSolveTask(agent, groupPlan);
             return;
         }
-        if (!groupPlan.GetTask().GetName().equals(currentPlan.GetTask().GetName()))
+        if (!groupPlan.GetTask().GetName().equals(currentPlan.GetTask().GetName())) {
             currentPlan = new NextPlanSolveTask(agent, groupPlan);
+        }
     }
 
-    public void SetReadyToConnect(){
-        if (currentPlan != null){
+    public void SetReadyToConnect() {
+        if (currentPlan != null) {
             currentPlan.SetReadyToConnect();
         }
     }
 
     public void UpdateTasks() {
-        if (currentPlan != null) currentPlan.UpdateInternalBelief();
+        if (currentPlan != null) {
+            currentPlan.UpdateInternalBelief();
+        }
     }
 }

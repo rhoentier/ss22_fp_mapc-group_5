@@ -10,19 +10,20 @@ import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.map.Vector2D;
 
 /**
- * Basic Pathcalculation based on Manhattan Distance
- Ignores map values
+ * Basic path calculation based on manhattan distance ignores map values
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextManhattanPath {
 
     /**
-     * @param X X position to Walk to
-     * @param Y Y Position to Wals to
+     * Calculate path based on local view.
+     *
+     * @param X Integer - X position to Walk to
+     * @param Y Integer - Y position to Walk to
      * @return ArrayList of "walk" Actions
      */
-    public ArrayList<Action> calculatePath(int X, int Y) {
+    public ArrayList<Action> CalculatePath(int X, int Y) {
         ArrayList<Action> steps = new ArrayList<>();
         for (int i = 0; i < abs(X); i++) {
             if (X > 0) {
@@ -42,8 +43,10 @@ public class NextManhattanPath {
     }
 
     /**
-     * @param startPosition position where the walk should start
-     * @param endPosition   position where the walk should end
+     * Calculate path based on global view, providing start and end point.
+     *
+     * @param startPosition Vector2D - position where the path should start
+     * @param endPosition Vector2D - position where the path should end
      * @return ArrayList of "walk" Actions
      */
     public static ArrayList<Action> CalculatePath(Vector2D startPosition, Vector2D endPosition) {

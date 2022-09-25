@@ -260,11 +260,11 @@ public final class NextAgentUtil {
 
         if (it.hasNext()) {
             NextMapTile next = it.next();
-            list = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
+            list = manhattanPath.CalculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
 
             while (it.hasNext()) {
                 next = it.next();
-                ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
+                ArrayList<Action> calcList = manhattanPath.CalculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
                 if (calcList.size() < list.size()) {
                     list = calcList;
                     result = next.GetPosition();
@@ -289,11 +289,11 @@ public final class NextAgentUtil {
         Vector2D result = new Vector2D();
 
         NextMapTile next = it.next();
-        list = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
+        list = manhattanPath.CalculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
 
         while (it.hasNext()) {
             next = it.next();
-            ArrayList<Action> calcList = manhattanPath.calculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
+            ArrayList<Action> calcList = manhattanPath.CalculatePath((int) next.GetPositionX(), (int) next.GetPositionY());
             if (calcList.size() < list.size()) {
                 list = calcList;
                 result = next.GetPosition();

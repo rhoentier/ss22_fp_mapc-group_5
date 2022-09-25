@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package massim.javaagents.percept;
 
 import java.util.HashSet;
@@ -11,16 +7,18 @@ import massim.javaagents.map.NextMapTile;
 
 /**
  * Task(name, deadline, reward, [req(x,y,type),...])
- * @author AVL
+ *
+ * @author Alexander Lorenz
  */
 public class NextTask {
+
     private String name;
     private long deadline;
 
     private long reward;
     private HashSet<NextMapTile> requiredBlocks;
-    
-    public NextTask (String name, int deadline, int reward, HashSet<NextMapTile> requiredBlocks) {
+
+    public NextTask(String name, int deadline, int reward, HashSet<NextMapTile> requiredBlocks) {
         this.name = name;
         this.deadline = deadline;
         this.reward = reward;
@@ -58,11 +56,10 @@ public class NextTask {
     public void SetRequiredBlocks(HashSet<NextMapTile> requiredBlocks) {
         this.requiredBlocks = requiredBlocks;
     }
-    
+
     @Override
     public String toString() {
         return "NextTask{" + "name=" + name + ", deadline=" + deadline + ", reward=" + reward + ", requiredBlocks=" + requiredBlocks + '}';
     }
 
-    
 }

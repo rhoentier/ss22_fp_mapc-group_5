@@ -362,7 +362,7 @@ public class NextGroup {
      * @return int Distance between the points using Manhattan or A*
      */
     private int calculateDistance(Vector2D startPosition, Vector2D targetPosition) {
-        return NextPathfindingUtil.calculateDistance(this.groupMap, startPosition, targetPosition);
+        return NextPathfindingUtil.CalculateDistance(this.groupMap, startPosition, targetPosition);
     }
     
     /*

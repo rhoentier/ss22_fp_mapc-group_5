@@ -4,11 +4,12 @@ import eis.iilang.Action;
 import massim.javaagents.general.NextConstants;
 
 /**
- * Interface fuer Pathfinding
- * @author miwo
+ * Interface for pathfinding
+ *
+ * @author Miriam Wolf
  *
  */
 public interface INextPath {
 
-	public Action GenerateNextMove();
+    public Action GenerateNextMove();
 }

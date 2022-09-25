@@ -437,7 +437,7 @@ public class NextAgent extends Agent {
         try {
             if (targetIsOnMap && !map.GetMapArray()[target.x][target.y].GetThingType().equals("unknown")) {
                 List<Action> pathMemoryA;
-                pathMemoryA = aStar.calculatePath(map.GetMapArray(), GetPosition(), target, this.simStatus.GetCurrentStep());
+                pathMemoryA = aStar.CalculatePath(map.GetMapArray(), GetPosition(), target, this.simStatus.GetCurrentStep());
                 //this.say("A* path:" + pathMemoryA);
                 if (pathMemoryA.isEmpty()) {
                     // Fuer den Fall, dass der Weg versperrt ist und es fuer den A* unmoeglich ist, hinzukommen
@@ -563,7 +563,7 @@ public class NextAgent extends Agent {
                 distances.put(requiredBlock, 1000);
                 continue;
             }
-            distances.put(requiredBlock, aStar.calculatePath(GetMap().GetMapArray(), GetPosition(), nearestDispenser.GetPosition(), simStatus.GetCurrentStep()).size());
+            distances.put(requiredBlock, aStar.CalculatePath(GetMap().GetMapArray(), GetPosition(), nearestDispenser.GetPosition(), simStatus.GetCurrentStep()).size());
         }
         return distances;
     }
@@ -617,7 +617,7 @@ public class NextAgent extends Agent {
      * @return int Distance between the points using Manhattan or A*
      */
     private int calculateDistance(Vector2D startPosition, Vector2D targetPosition) {
-        return NextPathfindingUtil.calculateDistance(this.GetMap(), startPosition, targetPosition);
+        return NextPathfindingUtil.CalculateDistance(this.GetMap(), startPosition, targetPosition);
     }
 
     private void resetAfterInactiveTask() {
@@ -724,7 +724,7 @@ public class NextAgent extends Agent {
         //System.out.println(NextMap.MapToStringBuilder(localMap));
 
         // Calculate Path
-        List<Action> newPath = aStar.calculatePath(localMap, new Vector2D(vision, vision), target.GetAdded(vision, vision), false, true, this.simStatus.GetCurrentStep());
+        List<Action> newPath = aStar.CalculatePath(localMap, new Vector2D(vision, vision), target.GetAdded(vision, vision), false, true, this.simStatus.GetCurrentStep());
         //System.out.println("path" + newPath);
 
         // Join Path
@@ -920,7 +920,7 @@ public class NextAgent extends Agent {
         int targetX = target.x - GetPosition().x;
         int targetY = target.y - GetPosition().y;
         // this.say("Values path: " + targetX +" "+ targetY);
-        pathMemoryB = manhattanPath.calculatePath(targetX, targetY);
+        pathMemoryB = manhattanPath.CalculatePath(targetX, targetY);
         //this.say("Direct path: " + pathMemoryB.size() + " " + pathMemoryB);
         return pathMemoryB;
     }

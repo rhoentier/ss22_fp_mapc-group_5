@@ -4,7 +4,7 @@ import massim.javaagents.general.NextConstants;
 
 public class NextPlanSurveyRoleZone extends NextPlan {
 
-    public NextPlanSurveyRoleZone(){
+    public NextPlanSurveyRoleZone() {
         this.agentTask = NextConstants.EAgentActivity.surveyRoleZone;
     }
 }
