@@ -1,0 +1,56 @@
+\section{FAQ Gruppe 5}
+
+\subsection{Teilnehmer*innen und ihr Hintergrund}
+\subsubsection{Was war die Motivation an dem Praktikum teilzunehmen?}
+\subsubsection{Wurden die Agents von Grund auf neu implementiert oder auf einer bestehenden Lösung aufgebaut?}
+Die Agents basieren auf der Klasse \textit{Agent} der MASSim 2022-Implementierung, wurde ansonsten komplett selbst entwickelt.
+\subsubsection{Wie viel Zeit wurde in die Entwicklung und Organisation des Praktikums gesteckt?}
+Die meiste Zeit wurde in die Entwicklung der Agenten gesteckt. Circa 6 Stunden pro Person pro Woche (April - September) sind in die Entwicklung und Organisation geflossen. Insgesamt schätzen wir den Umfang auf über 600 Stunden.
+\subsubsection{Wie war die reingesteckte Zeit im Verlauf des Praktikums verteilt?}
+Zu Beginn der Praktikums wurde viel Zeit in die Organisation und die Theorie gesteckt. Bereits nach wenigen Wochen startete die Entwicklung, die sich bis zum Ende des Praktikums gleichmäßig fortgesetzt hat. Wöchentlich gab es ein Treffen, um den aktuellen Stand zu besprechen.
+\subsubsection{Wie viele Zeilen Code wurden ungefähr geschrieben?}
+\subsubsection{Welche Programmiersprache und Entwicklungsumgebung wurde verwendet?}
+Es wurde in Java 17 entwickelt und es kamen verschiedene Entwicklungsumgebungen zum Einsatz (IntelliJ IDEA, Netbeans, Eclipse)
+\subsubsection{Wurden externe Werkzeuge/Bibliotheken verwendet?}
+Nein, außer der Entwicklungsumgebung und der MASSim 2022 implementierung gab es keine Werkzeuge.
+\subsection{Agenten-System Details}
+\subsubsection{Wie entscheiden die Agenten, was sie machen sollen?}
+Die Agenten schließen sich in Gruppen zusammen, die die Aufgaben an die Agenten verteilt. Welche Teilaufgaben die Agenten momentan erfüllen müssen, entscheidet jeder Agent selbstständig.
+\subsubsection{Wie entscheiden die Agenten, wie sie etwas machen sollen?}
+Die Agenten berechnen den Weg zu einem Ziel anhand einer gruppenweit geteilten Karte. Anhand der Sicht eines Agenten, entscheidet sich der Agent für den nächsten Schritt.
+\subsubsection{Wie arbeiten die Agenten zusammen und wie dezentralisiert ist der Ansatz?}
+Alle Agenten befinden sich in einer Gruppe. Wenn sich zwei Agenten treffen, werden diese Gruppen fusioniert. Im optimalen Fall, befinden sich nach einer Weile alle Agenten in der selben Gruppe. Dort werden die Agenten zu paaren zusammengestellt und können so gemeinsam Aufgaben lösen. Das konkrete Verhalten wird jedoch dezentral vom Agenten gelöst.
+\subsubsection{Kann ein Agent das generelle Verhalten zur Laufzeit ändern?}
+Ja, der Agent kann das Verhalten zur Laufzeit ändern. Dies kommt zum Beispiel vor, wenn Goalzones die Position auf der Karte verändern.
+\subsubsection{Wurden Änderungen (z.B kritische Fehler) während eines Turniers vorgenommen?}
+Während eines Turniers wurden keine Fehler behoben. Bei einem Turnier gab es zwar Probleme, die lagen jedoch an einem Hintergrundprozess, der die Kommunikation mit dem Server behinderte.
+Auf programmatischer Seite, gab es lediglich einen spontanen Versuch im letzten Turnier das gegnerische Team zu stören, das während einer Spielpause kurz implementiert wurde.
+\subsubsection{Wurde Zeit investiert um die Agenten fehlertoleranter zu machen? Wenn ja, wie genau?}
+Es wurde viel Zeit genutzt, damit die Agenten fehlertolerant Agieren. Eine Person hat sich hauptsächlich mit diesem Thema beschäftigt. Es wurden sehr viele Fallunterscheidungen implementiert.
+\subsection{Szenario und Strategie}
+\subsubsection{Was ist die Hauptstrategie der Agenten?}
+Die Agenten versuchen mit möglichst wenig Schritten möglichst viele Punkte zu erzielen. Dazu berechnen sie die optimale Aufgabe und versuchen diese zu lösen. Wenn Aufgaben mit zwei oder mehr Blöcken die optimale ist, dann werden die Agenten zu festen Gruppen zusammengefügt.
+\subsubsection{Haben die Agenten selbstständig eine Strategie entwickelt oder wurde diese bereits in die Implementierung eingebaut?}
+Die Strategie ist fest implementiert.
+\subsubsection{Wurde eine Strategie implementiert, die Agenten anderer Teams mit einbezieht?}
+Nein, die Agenten anderer Teams wurden nicht in die Strategie mit aufgenommen.
+\subsubsection{Wie entscheiden Agenten, welche Aufgabe sie als nächstes übernehmen?}
+Die Gruppe berechnet die optimale Aufgabe und teilt diese den Agenten mit.
+\subsubsection{Wie koordinieren die Agenten die Arbeit für eine Aufgabe untereinander?}
+Die Gruppe übernimmt die Koordination. Sie fragt, wo die Agenten stehen und bestimmt dann die beste Verteilung. Die Agenten holen dann selbstständig die Blöcke ab, bringen sie zur Goalzone, warten auf den Partner, verbinden sich mit diesem und geben die Aufgabe ab.
+\subsubsection{Welche Aspekte des Szenarios waren am Herausforderndsten?}
+Die Aufgaben mit mehreren Blöcken haben in der Entwicklung sehr große Probleme hervorgerufen.
+\subsection{Und die Moral von der Geschichte}
+\subsubsection{Was wurde durch das Praktikum vermittelt?}
+Die Multiagentenprogrammierung und viele Hindernisse in diesem Themenfeld konnten vermittelt werden. Es wurde diskutiert, welche Strategie und Architektur sinnvoll sind und es wurde geforscht, wie die Kommunikation, Fehlertoleranz und die Strategie am besten funktioniert.
+\subsubsection{Welchen Ratschlag wäre für zukünftige Gruppen sinnvoll?}
+Sehr früh damit beginnen die Agenten flexibel und Fehlertolerant zu gestalten.
+\subsubsection{Was waren Stärken und Schwächen der Gruppe?}
+Zu Beginn haben wir Probleme in der Gruppenorganisation gehabt, die die Absprache schwierig gemacht haben. Eine große stärke der Gruppe war allerdings, dass wir mit einer enormen Konstanz, Spontanität Offenheit an diesem Praktikum gearbeitet haben. Dadurch konnten Probleme schnell gelöst werden und das Klima lange positiv gehalten werden.
+\subsubsection{Was waren Vorteile und Nachteile der gewählten Programmiersprache und weiterer Werkzeuge?}
+Java hatte den sehr großen Vorteil, dass die MASSim 2022 Implementierung bereits in Java geschrieben war und uns dadurch viel Arbeit erspart geblieben ist.
+\subsubsection{Welche weiteren Probleme und Herausforderungen kamen im Laufe des Praktikums auf?}
+\subsubsection{Was könnte beim nächsten Praktikum verbessert werden?}
+Es könnte ein festes Ziel geben, auf das Hingearbeitet werden kann, dadurch kann der Arbeitsaufwand reduziert werden und eine genauere Planung der Arbeitsschritte wäre möglich.
+\subsubsection{Welcher Aspekt der Gruppenarbeit hat am meisten Zeit in Anspruch genommen?}
+Die meiste Zeit wurde in die Absprachen der Aufgaben investiert.
