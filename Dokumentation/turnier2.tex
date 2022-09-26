@@ -1,0 +1,57 @@
+\section{Turniere}
+In diesem Kapitel wird auf die Turniere eingegangen, zudem werden die Schwierigkeiten im Turnierverlauf beschrieben.
+
+\begin{itemize}
+    \item \textbf{Turnier 1 -} 
+	Das erste Turnier wurde nach einer ziemlich kurzen Entwicklungszeit abgehalten. Zu diesem Zeitpunkt waren die Agenten gerade in der Lage, die Karte zu erkunden. Der Fokus der ersten Entwicklungszeit lag auf der Kommunikation mit dem Server und sich mit den Aufgaben und den Gegebenheiten des Turniers vertraut zu machen. \newline
+	
+%	Das Ziel für das nächste Turnier war es, die Blöcke zu zerstören und zu den verschiedenen Zonen und Dispensern zu gehen. Eine bessere Wegfindung war ebenfalls notwendig.
+	
+	\item \textbf{Turnier 2 -} Beim zweiten Turnier ist der Agent die Karte mit einem spiralförmigen Weg abgelaufen und hat die Karte erkundet. Sobald er einen Dispenser in seinem Sichtfeld hatte, ging er hin und die Blöcke wurden aufgenommen. \newline
+
+%	Für das nächste Turnier sollten die Agenten eine performante Wegfindung erhalten, die unnötigen Blöcke fallen lassen und Aufgaben klüger auswählen.
+	
+	\item \textbf{Turnier 3 -} Der Agent konnte Aufgaben nach Rentabilität auswählen. Das Herausfinden von Dispensern und Zonen wurde mittels der Aktion \emph{survey} umgesetzt. Der Agent konnte sich den Weg durch die \Obstacles freiräumen und den Block in die korrekte Position drehen. In das Abgeben von Tasks wurde vorher viel Zeit investiert. Durch technische Probleme mit der Verbindung zum Server am Turniertag wurden leider keine Punkte gemacht. \newline
+	
+	\item \textbf{Turnier 4 -} Der Agent konnte verschiedene Rollen annehmen und erfolgreich die ersten Aufgaben abgeben. Die Wegfindung erfolgte effizient und die rentabelsten Aufgaben wurden ausgewählt. Allerdings gab es noch Probleme bei einer lokalen Anhäufung von Agenten. Dies wurde vor allem deutlich, wenn sich auch die Agenten des anderen Teams um einen Dispenser oder in einer Goalzone bewegten.\newline
+	
+	\item \textbf{Turnier 5 -} Der Agent konnte im Ansatz 2er Tasks abgeben. Da die Turniere vorher jedoch so schlecht liefen, hat sich die Gruppe entschieden, den Agenten mit 1er Tasks zu starten. Durch die veränderte Konfiguration sind wenige 1er Tasks entstanden und die Agenten haben leider wenige Punkte gemacht. \newline
+%	Es wurde ein Problem bei der Kartierung beobachtet.
+	
+	\item \textbf{Turnier 6 -} 	Die Umsetzung der 2er Tasks war stabil, die Agenten konnten miteinander kommunizieren und sich miteinander verbinden. Die Umschaltung zwischen 1er und 2er Tasks hat sehr gut funktioniert und die Agenten haben sich auch nur selten gegenseitig blockiert, so dass das Team einige Punkte holen konnte. \newline
+
+\end{itemize}
+
+\subsection{Schwierigkeiten im Turnierverlauf}
+Bei der Karte setzten wir vom Beginn der Entwicklung auf eine randlose Karte. Dies führte zu einigen Problemen, die auch unsere Performance in den Turnieren stark beeinträchtigten. Die \Agents wanderten nach links oben und haben dadurch die Größe der Karte massiv gestreckt, wie in Abbildung \ref{fig:kartenwiederholung} dargestellt. Dies führte zu sehr vielen redundanten Bewegungen und kostete leider unnötig Zeit.  \newline
+
+In unseren Versuchen setzten wir auf spezialisierte Umgebungen, um Teilbereiche zu optimieren. Hier trat das Verhalten nur selten auf und wurde dadurch kaum beobachtet. In der Turnierumgebung wurde es jedoch sehr dominant, und spätestens im fünften Turnier wurde dieses Verhalten als extrem kritisch eingestuft und konnte beseitigt werden. Bis zum vierten Turnier hatten wir zusätzlich Probleme mit der Synchronisierung der Karte, welche durch dieses Verhalten verschärft wurden. \newline
+
+%Durch die Organisationsrolle von Frau Wolf konnte die Gruppe leider nicht auf das volle Potential eines erfahrenen Entwicklers zuruckgreifen.
+
+%Das nächste Problem, welches das Team zu bewältigen hatte war die Auswahl der Tasks nach Profitabilität und die Gruppenbildung, damit die \Agents im Team die Aufgaben lösen können. 
+
+
+\begin{figure}
+	\includegraphics[width=180px]{bilder/karte3.png}
+	\centering
+	\caption{Beispiel für eine gestreckte Karte basierend auf einer 24x24 Welt }
+	\label{fig:kartenwiederholung}
+\end{figure}
+
+
+%\subsection{Lösungsstrategien}
+%Die Lösungsstrategien werden zu den Themenbereichen aufgeteilt und kurz erläutert:
+
+%\begin{itemize}
+
+%	\item \textbf{Wegfindung -} 	Zu Beginn sind die \Agents zufällig über die Karte gelaufen. Als einfachen Wegfindung wurde dann ein Spiralförmiger Weg gewählt, um die Karte zu erkunden und zufällig passende \Dispenser zu finden. Die Entwicklung des A* begann ziemlich früh und wurde die meiste Zeit des Praktikums optimiert und weiterentwickelt. 	\newline
+	
+%	\item \textbf{Kommunikation -} Die Kommunikation unter den \Agents wurde bei uns nur in der Gruppe umgesetzt. Da die Agenten meistens in der Mitte des Spiels zu einer Gruppe gefunden haben, hat es uns nicht eingeschränkt. Hierfür wurde eine Art Nachrichtenbox erstellt, aus der die \Agents Nachrichten auslesen oder hineinlegen konnten. Auch das Problem mit dem gegenseitigen Blockieren konnte mittels der Kommunikation gelöst werden 	\newline
+
+%	\item \textbf{Karte -} Während des Suchens der verschiedenen Ziele wurde unsere Karte immer nach links oben erweitert. Dies war ein simpler Fehler, der die Gruppe einige Wochen gekostet hat. Dabei hat sich beim zufälligen Suchen ein Fehler eingeschlichen, der die Agenten immer in eine Richtung hat gehen lassen. Nachdem der Fehler behoben war, blieb die Karte kleiner und der Wegfindealgorithmus hat noch besser funktioniert.
+
+%\end{itemize}
+
+%\subsection{Interaktion mit/gegen andere Agenten}
+%Die anderen Agenten wurden primär als Fremdkörper interpretiert, denen ausgewichen werden konnte, jedoch wurde keine aktive Interaktion mit diesen angestrebt. Ein Ansatz, statt den Agenten die Blöcke anzugreifen, wurde durch das MASSim Regelwerk verhindert. 
