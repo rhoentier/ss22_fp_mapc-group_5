@@ -1,74 +1,43 @@
 \section{Turniere}
+In diesem Kapitel wird auf die Turniere eingegangen. Zunächst werden die Schwierigkeiten im Turnierverlauf erklärt und anschließend passende Lösungsstrategien. Im letzten Kapitel wird kurz auf die Interaktion mit und gegen andere Agenten beschrieben.
 
-\subsubsection{Turnier 1}
-Das erste Turnier wurde nach einer ziemlich kurzen Entwicklungszeit abgehalten. Um die Erfahrung eines Turniers aber nicht zu verlieren, nahm das Team dennoch teil. Zu diesem Zeitpunkt waren die Agenten gerade in der Lage, die Karte zu erkunden. Der Fokus der ersten Entwicklungszeit lag auf der Erkundung der Karte, der Kommunikation mit dem Server und sich mit den Aufgaben und den Gegebenheiten des Turniers vertraut zu machen. Aufgaben konnten zu dem Zeitpunkt nicht abgegeben werden.\\
-Das Ziel für das nächste Turnier war es, die Blöcke zu zerstören und zu den verschiedenen Zonen und Dispensern zu gehen. Eine bessere Wegfindung war ebenfalls notwendig.
+\subsection{Schwierigkeiten im Turnierverlauf}
+Zu Beginn der Turniersaison steckten die \Agents noch in den Kinderschuhen. Sie mussten sich zunächst auf der Karte orientieren und das gesehene Verarbeiten. Die Kartierung war zu Beginn noch ein zufälliger Weg, der in weiterer Folge der Turniere auf einen Spiralförmigen Weg bis hin zu dem richtigen Wegfindungsalgorithmus A* ausgearbeitet wurde. Die Kommunikation mit dem Server musste erst umgesetzt und verstanden werden ebenso wie die abzugebenden Aufgaben. Die Probleme zu Beginn lagen darin, nicht unnötig gegen Wände zu laufen oder sogar die Blöcke zu zerstören. \\
 
-%%Tasks mit Blöcken = 1 \newline
-%Erster Task der liste \newline
-%Agenten liefen mittels Random-Weg durch die Gegend. \newline
-%Beim Entdecken vom Dispenser sind sie hingelaufen und haben sich einen Block genommen \newline
-%Weiter random durch die Gegend bis zur Endzone \newline
-%
-%Probleme hier: Der Agent hat sich den Weg noch nicht freigehauen, somit hatten wir keine gute Methode zur Endzone zu kommen \newline
-%Verbesserung: Bessere Wegfindung und wege freihauen
+In weiterer Folge der Turniere wurden die Hindernisse zerstört und die \Agents sind gezielt zu den Dispensern gelaufen, sobald sie welche gesehen haben. Die ersten Versuche mit dem A* waren weniger erfolgreich und stellte das Team vor eine größere Herausforderung, die es zu Lösen gab. Ein weiteres Problem bestand darin, dass die Agenten zu lange gebraucht haben, um die \Dispenser oder die \GoalZones / \RoleZones zu finden. \\
 
-\subsubsection{Turnier 2}
-Beim zweiten Turnier wurde die Kartierung verändert, waren allerdings immernoch simpel. Der Agent ist die Karte mit einem spiralförmigen Weg abgelaufen und hat somit verschiedene Dinge entdeckt. Sobald er einen Dispenser in seinem Sichtfeld hatte, ging er hin und die Blöcke wurden aufgenommen. Die ersten Entwicklungsschritte des A* waren ebenfalls weniger erfolgreich. Die Bewegung des Agenten war das größte Problem. \\
-Für das nächste Turnier sollten die Agenten eine performante Wegfindung erhalten, die unnötigen Blöcke fallen lassen und Aufgaben klüger auswählen.
+Bei Halbzeit des Praktikums haben die \Agents einen großen Schritt nach vorn machen können. Sie konnten sich den Weg durch die \Obstacles schlagen und die benötigten Blöcke in die korrekte Position drehen. Sie konnten mittels einer Aktion \textit{survey} schneller zu dem gesuchten Ziel gehen, was das Team vor ein weiteres Problem gestellt hat. \\
 
-%Agent läuft mittels Spiralweg durch die Gegend \newline
-%Beim erkennen eines Dispensers geht er hin \newline
-%Taskverarbeitung immernoch erster Task \newline
-%A* haben wir entwickelt, nur war dieser noch nicht so zuverlässig \newline
-%Freischlagen des Agenten wurde eingebaut
-%
-%Problem: Immernoch sehr inperformante Bewegung \newline
-%Hatten noch Blöcke übrig von alten Tasks \newline
-%
-%Verbesserung: Clevere Wegfindung \newline
-%Taskverarbeitung entwickeln, damit wir besser die Tasks auswählen können \newline
-%Blöcke fallen lassen, wenn wir den Block nicht brauchen \newline
+\begin{figure}
+	\begin{minipage}{0.5\textwidth}
+	Bei der Karte setzten wir vom Beginn der Entwicklung auf eine randlose Karte. Dies führte zu einigen Problemen, die auch unsere Performance in den Turnieren stark beeinträchtigten. Z.B. trat ein Fehler im Verhalten zu einem bestimmten Zeitpunkt auf, welcher zuerst als gewolltes Feature fehlinterpretiert wurde. Die \Agents wanderten nach links oben und haben dadurch die Größe der Karte massiv gestreckt, wie in Abbildung \ref{fig:kartenwiederholung} dargestellt. Dies führte zu sehr vielen redundanten Bewegungen und kostete leider unnötig Zeit.
+	\end{minipage}
+	\begin{minipage}{0.4\textwidth}
+	\includegraphics[width=170px]{bilder/karte.png}
+	\caption{Beispiel für eine gestreckte Karte basierend auf einer 24x24 Welt }
+	\label{fig:kartenwiederholung}
+	\end{minipage}
+\end{figure}
 
-\subsubsection{Turnier 3}
-Im Turnier 3 konnte der Agent Aufgaben nach Rentabilität auswählen. Das herausfinden von Dispensern und Zonen wurde mittels der Aktion \emph{survey} umgesetzt. Der Agent konnte sich den Weg durch die \Obstacles schlagen und den Block in die korrekte Position drehen. In das Abgeben von Tasks wurde vorher viel Zeit investiert. Durch technische Probleme am Turniertag wurden leider wieder keine Punkte gemacht. 
+In unseren Versuchen setzten wir auf spezialisierte Umgebungen, um Teilbereiche zu optimieren. Hier trat das Verhalten nur selten auf und wurde dadurch kaum beobachtet. In der Turnierumgebung wurde es jedoch sehr dominant, und spätestens im fünften Turnier wurde dieses Verhalten als extrem kritisch eingestuft und konnte nach einiger Zeit beseitigt werden. Bis zum vierten Turnier hatten wir noch Probleme mit der Synchronisierung der Karte, welche durch dieses Verhalten verschärft wurden.
+Das nächste Problem, welches das Team zu bewältigen hatte war die Auswahl der Tasks nach Profitabilität und die Gruppenbildung, damit die \Agents im Team die Aufgaben lösen können. 
 
-%Es war ziemlich enttäuschend für die Gruppe.\\
-%Fürs vierte Turnier soll es endlich Punkte regnen.
+Im letzten Drittel des Praktikums konnten die \Agents Aufgaben auswählen und in einer Gruppe zusammenarbeiten. Hierbei ist aufgefallen, dass sich die \Agents gegenseitig im Weg standen und somit sich selbst blockiert haben. Dieses Problem hat eines der Gruppenmitglieder extrem lange aufgehalten. \newline
 
-%Taskverarbeitung für Block = 1 umgesetzt \newline
-%Wegfindung mit survey cleverer gelöst \newline
-%NextTaskPlanner implementiert, der uns den besten Plan für den besten Task hergibt \newline
-%Agent kann sich durch die Gegend boxen, macht Blöcke kaputt und rotiert die Blöcke vernünftig \newline
-%
-%Probleme: 
-%- Vorher viel dafür gesetzt, dass der Agent die Tasks abgeben kann \newline
-%- Am Turniertag dann leider technische Probleme \newline
-%- Sehr Enttäuschend \newline
-%
-%Verbesserung: WIR WOLLEN ENDLICH PUNKTEN
-
-\subsubsection{Turnier 4}
-Im vierten Turnier wurde kurz vor dem Turnier ein Fehler entdeckt, der durch die Testkonfiguration nicht aufgefallen ist. Deswegen wurde das Rollenkonzept noch kurzfristig geändert. In dem Turnier konnten dann erfolgreich die ersten Aufgaben abgegeben werden und verschiedene Rollen wurden angenommen. Die Wegfindung erfolgte effizient und die rentabelsten Aufgaben wurden ausgewählt. Allerdings gab es noch Probleme bei einer lokalen Anhäufung von Agenten. Dies wurde vor allem deutlich, wenn sich auch die Agenten des anderen Teams um einen Dispenser oder in einer Goalzone bewegten.
-
-\subsubsection{Turnier 5}
-Beim Vorletzten Turnier hat die Gruppe schon an der Entwicklung der 2er Tasks gearbeitet. Da die Turniere vorher jedoch so schlecht liefen, hat sich die Gruppe entschieden, den Agenten mit 1er Tasks zu starten. Durch die veränderte Konfiguration sind wenige 1er Tasks entstanden und die Agenten haben leider wenige Punkte gemacht. \\
-Fürs letzte Turnier sollten die 2er Tasks unbedingt funktionierten und die Verbindung von zwei Agenten.
-
-\subsubsection{Turnier 6}
-%Um beim Abschlussturnier nicht letzter zu werden, wurden vorher noch einige Stunden investiert und es hat sich gelohnt. 
-Die Entwicklung der 2er Tasks war erfolgreich, die Agenten konnten miteinander kommunizieren und sich miteinander verbinden. Die Umschaltung zwischen 1er und 2er Tasks hat sehr gut funktioniert und die Agenten haben sich auch nur noch selten gegenseitig blockiert, so dass das Team einige Punkte holen konnte. 
-%Alles in allem war es das beste Turnier des Teams und zur großen Erleichterung der Teammitglieder haben die Agenten einiges an Punkten geholt.
-%Außerdem wurde noch eine Strategie gegen Team 1 ausgetestet. Es wurde probiert die Blöcke der Agenten des anderen Teams gezielt zu zerstören. Leider hat sich das Turnier so entwickelt, dass die Teams sich in unterschiedlichen Goalzones aufgehalten haben und unsere Teststrategie deswegen nicht aufgegangen ist.
-
-\subsection{Problemerkennung}
-Im laufe der Turniere sind uns verschiedene Probleme begegnet. Die Aufgaben, die im Hintergrund ablaufen und weniger Reaktion auf spontane Ereignisse erfordern konnten erfolgreich umgesetzt werden. Vor allem der Umgang nicht sich verändernden Bedingungen war schwierig zu implementieren. Unter anderem konnten wir im letzten Turnier feststellen, dass unsere Strategie feste Kleingruppen zu bilden, um Aufgaben mit zwei Blöcken abzugeben, nicht die effizienteste Strategie war, da wir teilweise lange Wartezeiten in Kauf nehmen mussten.
-
-\subsection{Verbesserungsmöglichkeiten}
-Eine Änderung der Strategie hätte die Wartezeiten verringern können. Die Gruppe hätte die wichtigsten Blöcke berechnen und Agenten zuteilen können, die Entscheidung, welche Agenten sich dann miteinander verbinden und eine Aufgabe abzugeben, hätten die Agenten dann unter sich treffen können.
+Beim Abschlussturnier haben die \Agents Aufgaben profitabel ausgewählt, in Gruppen zusammengearbeitet, die benötigten \Dispenser oder Zonen erfolgreich gesucht und sind mit einem performanten Weg zu den Zielen gelaufen. Die gegenseitige Blockierung konnte mittels Kommunikation gelöst werden, sodass am Ende viele Punkte erzielt werden konnten. \newline
 
 \subsection{Lösungsstrategien}
-Optimierung der Lösungsstrategien
+Die Lösungsstrategien werden zu den Themenbereichen aufgeteilt und kurz erläutert:
+
+\subsubsection{Wegfindung}
+Zu Beginn sind die \Agents zufällig über die Karte gelaufen. Als einfachen Wegfindung wurde dann ein Spiralförmiger Weg gewählt, um die Karte zu erkunden und zufällig passende \Dispenser zu finden. Die Entwicklung des A* begann ziemlich früh und wurde die meiste Zeit des Praktikums optimiert und weiterentwickelt. 
+
+\subsubsection{Kommunikation}
+Die Kommunikation unter den \Agents wurde bei uns nur in der Gruppe umgesetzt. Da die Agenten meistens in der Mitte des Spiels zu einer Gruppe gefunden haben, hat es uns nicht eingeschränkt. Hierfür wurde eine Art Nachrichtenbox erstellt, aus der die \Agents Nachrichten auslesen oder hineinlegen konnten. Auch das Problem mit dem gegenseitigen Blockieren konnte mittels der Kommunikation gelöst werden
+
+\subsubsection{Karte}
+Während des Suchens der verschiedenen Ziele wurde unsere Karte immer nach links oben erweitert. Dies war ein simpler Fehler, der die Gruppe einige Wochen gekostet hat. Dabei hat sich beim zufälligen Suchen ein Fehler eingeschlichen, der die Agenten immer in eine Richtung hat gehen lassen. Nachdem der Fehler behoben war, blieb die Karte kleiner und der Wegfindealgorithmus hat noch besser funktioniert.
+
 
 \subsection{Interaktion mit/gegen andere Agenten}
 Die anderen Agenten wurden primär als Fremdkörper interpretiert, denen ausgewichen werden konnte, jedoch wurde keine aktive Interaktion mit diesen angestrebt. Ein Ansatz, statt den Agenten die Blöcke anzugreifen, wurde durch das MASSim Regelwerk verhindert. 

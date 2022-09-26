@@ -1,18 +1,10 @@
-\section{Fazit}
+\section{Fazit und Ausblick}
 
-\subsection{Schwierigkeiten}
+Die Gruppe wurde während des ganzen Praktikums und auch der Turniere vor immer neue Herausforderungen gestellt, die es gemeinsam zu Lösen gab. Die Einarbeitung in ein neues, unbekanntes Thema, die Programmiersprache und das Zusammenarbeiten im Team über eine größere Distanz bzw. nur Online war zu Beginn für alle neu. Durch eine offene Kommunikation hat jeder etwas betragen können, jeder der Gruppenmitglieder konnte seine Erfahrungen aus dem eigenen Bereich einbringen können und somit konnte erfolgreich an den Turnieren teilgenommen werden.
 
-Bei der Karte setzten wir vom Beginn der Entwicklung auf eine randlose Karte. Dies führte zu einigen Problemen, die auch unsere Performance in den Turnieren stark beeinträchtigten. Z.B. trat ein Fehler im Verhalten zu einem bestimmten Zeitpunkt auf, welcher zuerst als gewolltes Feature fehlinterpretiert wurde. Die Agenten wanderten nach links oben, und haben dadurch die Größe der Karte massiv gestreckt, wie in Abbildung \ref{fig:kartenwiederholung} dargestellt. Dies führte zu sehr vielen redundanten Bewegungen, und kostete leider unnötig Zeit. \\
+Während der ganzen Zeit sind verschiedene Probleme aufgetreten, diese wurden dann diskutiert, bewertet und bearbeitet. Manche Probleme empfanden wir als kritischer und andere weniger kritisch. Die wöchentlichen Treffen hat zu einem guten Austausch geführt und hat jeden einzelnen in der Entwicklung weitergebracht. Es waren auch nicht so erfolgreiche Turniere dabei und das Team musste lernen, auch mit einer Niederlage oder Enttäuschung umzugehen.
 
-\begin{figure}
-    \includegraphics[width=200px]{bilder/karte.png}
-    \centering
-    \caption{Beispiel für eine gestreckte Karte basierend auf einer 24x24 Welt }
-    \label{fig:kartenwiederholung}
-\end{figure}
+Was die \Agents betrifft haben wir auch noch einiges an potential, was Zeitlich nicht mehr möglich gewesen wäre. Das Ausmessen der Karte, um ein schnelleres und besseres Ergebnis bei der Karte zu erzielen, war zwar in der Implementierung vorgesehen, aber aufgrund der Zeit nicht mehr umsetzbar. Ebenfalls haben wir auf Ereignisse, die vom Server kamen, keine Reaktion implementiert. 
 
-In unseren Versuchen setzten wir auf spezialisierte Umgebungen, um Teilbereiche zu optimieren. Hier trat das Verhalten nur selten auf, und wurde dadurch kaum beobachtet. In der Turnierumgebung wurde es jedoch sehr dominant, und spätestens im Turnier5 wurde dieses Verhalten als extrem kritisch eingestuft, und konnte beseitigt werden. Bis zum Turnier4 hatten wir noch Probleme mit der Synchronisierung der Karte, welche durch dieses Verhalten verschärft wurden. \\
+Das Bilden von Kleingruppen mit den ersten beiden Agenten, die sich über den Weg laufen, ist ausbaufähig. Die \Agents haben zu oft aufeinander gewartet. Hierfür wäre eine dynamische Zusammenarbeit der \Agents lohnenswerter gewesen. 
 
-%Um die Fehler endgültig zu beseitigen, wurde zusätzlich ein Verfahren entwickelt, um die Karte zu vermessen. Dieses konnte leider nur teilweise umgesetzt werden. 
-
-\subsection{Ausblick und weitere Möglichkeiten}
