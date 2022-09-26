@@ -11,53 +11,60 @@ public class NextActionWrapper {
 
     /**
      * Create an Action with three Paramters
+     *
      * @param action
      * @param parameter1
      * @param parameter2
      * @param parameter3
-     * @return An Action with parameter or null if a required parameter is missing
+     * @return An Action with parameter or null if a required parameter is
+     * missing
      */
     public static Action CreateAction(EActions action, Identifier parameter1, Identifier parameter2, Identifier parameter3) {
         switch (action) {
             case connect: {
-            	// connect(agent2,0,2) 
-                if (parameter1 != null && parameter2 != null && parameter3 != null)
+                // connect(agent2,0,2) 
+                if (parameter1 != null && parameter2 != null && parameter3 != null) {
                     return new Action(EActions.connect.toString(), parameter1, parameter2, parameter3);
+                }
             }
             default:
                 return null;
         }
     }
-    
+
     /**
      * Create an Action with two parameters.
      *
      * @param action
      * @param parameter1
      * @param parameter2
-     * @return An Action with parameter or null if a required parameter is missing
+     * @return An Action with parameter or null if a required parameter is
+     * missing
      */
     public static Action CreateAction(EActions action, Identifier parameter1, Identifier parameter2) {
         switch (action) {
             case disconnect: {
-                if (parameter1 != null && parameter2 != null)
+                if (parameter1 != null && parameter2 != null) {
                     return new Action(EActions.disconnect.toString(), parameter1, parameter2);
+                }
             }
             case clear: {
-                if (parameter1 != null && parameter2 != null)
+                if (parameter1 != null && parameter2 != null) {
                     return new Action(EActions.clear.toString(), parameter1, parameter2);
+                }
             }
             default:
                 return null;
         }
     }
-    
+
     /**
      * Create an Action with one parameter.
      *
      * @param action
      * @param parameter
-     * @return An Action with parameter or null if a required parameter is missing
+     * @return An Action with parameter or null if a required parameter is
+     * missing
      */
     public static Action CreateAction(EActions action, Identifier parameter) {
         switch (action) {
@@ -100,19 +107,23 @@ public class NextActionWrapper {
                 return null;
             }
             case adopt: {
-                if (parameter != null)
+                if (parameter != null) {
                     return new Action(EActions.adopt.toString(), parameter);
+                }
 
                 return null;
             }
             case survey: {
-                if (parameter != null)
+                if (parameter != null) {
                     return new Action(EActions.survey.toString(), parameter);
+                }
 
                 return null;
             }
             default:
-                if (parameter == null) return CreateAction(action);
+                if (parameter == null) {
+                    return CreateAction(action);
+                }
                 return null;
         }
 
@@ -134,4 +145,3 @@ public class NextActionWrapper {
         }
     }
 }
-

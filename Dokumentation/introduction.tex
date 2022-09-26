@@ -1,16 +1,42 @@
 \section{Einleitung}
 
+In diesem Kapitel wird die Auswahl der technischen Rahmenbedingungen, mit denen die Gruppe gearbeitet hat, genauer erläutert. Ebenfalls ist eine kurze Beschreibung über die Aufgabe, die von den Teammitgliedern bearbeitet wurden, erläutert.
+
 \subsection{Auswahl technischer Rahmenbedingungen}
-Für die Auswahl der technischen Rahmenbedingungen hat sich die Gruppe an der Serverprogrammierung orientiert. Der Server ist in Java implementiert und deswegen sind die Agenten ebenfalls in Java entwickelt worden. Ein weiterer Grund dafür war, dass die Schnittstelle der Programmierkenntnisse aller Gruppenmitglieder auf Java fiel. Zum Einsatz kamen verschiedene Editoren wie Eclipse\cite{eclipse}, IntelliJ\cite{intellij} oder NetBeans\cite{netbeans}.
+Da die Schnittstelle der Programmierkenntnisse aller Gruppenmitglieder auf Java fiel und dies auch mit der MASSim Umgebung sowie der Agentvorlage korrelierte, wurde in dieser Sprache entwickelt. Unsere Agentenvariante lief unter der Bezeichnung \textit{NextAgent}.  Alle Klassendateien beginnen mit dem Präfix \textit{Next-}, um die Zuordnung im Sourcecode zu erleichtern. Debugging erfolgte je nach Präferenz des Teilnehmers sowohl über Printausgabe in Echtzeit, als auch über Logfiles und Debugger. In kritischen Bereichen wurden Unittests umgesetzt. \\
+
+Innerhalb des Quellcodes wurde auf Wunsch eines Teammitglieds eine spezielle Formatierung eingeführt. Dabei wurden die \textit{public} Methoden großgeschrieben, während \textit{private} Methoden weiterhin klein geschrieben wurden. Somit können öffentliche Methoden schneller erkannt und verwendet werden.
 
 \subsection{Aufteilung Gruppenmitglieder - Arbeit}
+
+Mit dem Ziel, den erarbeiteten Stand und weiteres Vorgehen zu besprechen, wurden wöchentliche Treffen abgehalten. Dieses konnten sehr konsequent umgesetzt werden. Initial wurde innerhalb der Gruppe versucht, in agiler Form mit Hilfe von \textit{issues} in GitHub zu arbeiten. Aufgrund der Komplexität des Themas und mangelnder Vorerfahrung der Teammitglieder, insbesondere im Kontext der Multiagentensysteme, haben wir mehr Zeit für die Einarbeitung des tieferen Verständnisses benötigt. 
+\newpage
+Aus diesem Grund wurden unser Konzept in vier Themenbereiche aufgeteilt, die wie folgt zugewiesen wurden:
+
+\begin{itemize}
+    \item Herr Jendrny: Festlegen der Aufgaben für den Agenten, basierend auf \textit{Tasks}, Normen und dem aktuellen Zustand der Welt.  
+    \item Frau Wolf: Reaktion des Agenten auf die Umgebung und Wahl der auszuführenden \textit{Action}, mit Umsetzung der reaktiven Anteile.
+    \item Herr Lorenz: Verarbeitung der \Percepts und Interaktion mit dem Server, optimale Wegfindung und Gruppenbildung, sowie Kommunikation.
+    \item Herr Loder: Verarbeitung der Karte und das Zusammenführen der Karten für die Gruppe.
+\end{itemize}
+
+Zusätzlich gab es spontan koordinierte Treffen in kleinen Teams, um Schnittstellen zu diskutieren und Lösungen für Teilbereiche zu erarbeiten. 
+
 \subsubsection{Alexander Lorenz} ~\\
+Herr Lorenz setzte die Grundvariante des Agenten um, welche die Basis für weitere Entwicklung bildete. Der Schwerpunkt lag auf der sauberen Verarbeitung der Serverdaten, der Möglichkeit zwischen den Simulationen zu wechseln und der Fähigkeit, die ersten \textit{actions} an den Server zu senden. Dabei reagierte der Agent noch rein reaktiv und wählte die nächste Aktion basierend auf einer vorgegebenen Priorisierung. \newline
+
+Im Verlauf des Fachpraktikums setzte Herr Lorenz die Logik der Gruppenbildung um, sowie eine Variante der Kommunikation innerhalb der Gruppe. Des Weiteren beschäftigte er sich mit den Möglichkeiten zur Optimierung der Wegfindungsalgorithmen und erweiterte die initiale A* Variante, um weitere Modifikationen, die in Kapitel \textit{\ref{kap:wegfindung}} genauer beschrieben werden. Als Schnittstelle zwischen Percepts, Karte und Entscheidungsfindung wurde viel Zeit in das Bugfixing, Fehlersuche, sowie die Interpretation des Agentenverhaltens investiert. \\
+
+Bei Herrn Lorenz lag ein Fehler in der Konfiguration der IDE, so dass Github Commits nicht sauber zugeordnet waren. Dies wurde Anfang Juni bemerkt, und behoben.  
+
 \subsubsection{Miriam Wolf} ~\\
-Um einen Schritt nach vorn zu gehen oder einen Block zu zerstören, müssen die Agenten eine Aktion an den Server schicken. Um einen optimalen Weg durch die Blöcke zu finden und sich zur Endzone durchzukämpfen, muss die nächstmögliche Aktion herausgefunden werden. Frau Wolf hat sich um die Möglichkeit gekümmert, welche Aktion die nächstmögliche ist. Sie hatte die Aufgabe, das Verhalten der Agenten in der lokalen Sicht zu bearbeiten. Die Erklärung, was die lokale Sicht des Agenten ist wird später genauer erläutert. \\
+Um einen Schritt nach vorn zu gehen oder einen Block zu zerstören, müssen die Agenten eine \textit{Action} an den Server schicken. Um einen optimalen Weg durch die Blöcke zu finden und sich zur Endzone durchzukämpfen, muss die nächstmögliche Aktion herausgefunden werden. Frau Wolf hat sich um die Möglichkeit gekümmert, welche Aktion die nächstmögliche ist. Sie hatte die Aufgabe, das Verhalten der Agenten in der lokalen Sicht zu bearbeiten. Die Erklärung der lokalen Sicht des Agenten wird später in Kapitel \ref{kap:lokaleSicht} genauer erläutert. \\
 
 Weiter hatte sie die Aufgabe der Praktikumsorganisatorin inne. Hierfür musste sie die Treffen der Gruppenleiter koordinieren, die Turnierplanung übernehmen und auch die Turniere begleiten. Dazu gehörten unter anderem das Erstellen der Turnierkonfiguration oder das Starten des Servers selbst beim Turnier. Abschließend kam noch die Planung des Präsentationsnachmittags dazu und das Ausarbeiten des allgemeinen Dokumentationsteils.
 
 \subsubsection{Sebastian Loder} ~\\
+Kommt noch :)
+
 \subsubsection{Steffen Jendrny} ~\\
-Herr Jendrny hat sich um die Aufgabenplanung und -verteilung unter den Agenten gekümmert. Zu Beginn der Entwicklung hat jeder Agent selbstständig entschieden, welche Aufgabe ausgewählt wird und welche Teilaufgabe momentan erfüllt werden muss. Mit der Einführung von Agentengruppen, wurde die Aufgabenauswahl auf die Gruppe ausgelagert und ein Agent hat lediglich entschieden, welche Teilaufgabe momentan erfüllt werden muss. Außerdem hat Herr Jendrny zusammen mit Frau Wolf die Abgabe von Aufgaben mit mehreren Blöcken implementiert. \\
-Zusammen mit Frau Wolf war Herr Jendrny bei den Lead-Treffen, um Gruppe 5 zu vertreten.
+Herr Jendrny hat sich um die Aufgabenplanung und -verteilung unter den Agenten gekümmert. Zu Beginn der Entwicklung hat jeder Agent selbstständig entschieden, welche Aufgabe ausgewählt wird und welche Teilaufgabe momentan erfüllt werden muss. Mit der Einführung von Agentengruppen wurde die Aufgabenauswahl auf die Gruppe ausgelagert und ein Agent hat lediglich entschieden, welche Teilaufgabe momentan erfüllt werden muss. Außerdem hat Herr Jendrny zusammen mit Frau Wolf die Abgabe von Aufgaben mit mehreren Blöcken implementiert. \\
+Zusammen mit Frau Wolf war Herr Jendrny bei den Lead-Treffen dabei, um Gruppe 5 zu vertreten.

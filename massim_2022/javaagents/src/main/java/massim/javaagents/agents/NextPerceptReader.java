@@ -60,7 +60,7 @@ public class NextPerceptReader {
      * @param percepts
      * @param agent
      */
-    public void evaluate(List<Percept> percepts, NextAgent agent) {
+    public void Evaluate(List<Percept> percepts, NextAgent agent) {
 
         clearSets(); //clearing of the containers before processing of percepts
 
@@ -276,7 +276,7 @@ public class NextPerceptReader {
         HashSet<NextMapTile> collectionOfDispenser = new HashSet<>();
         for (NextMapTile mapTile : agentStatus.GetVisibleThings()) {
             try {
-                if (mapTile.getThingType().contains("dispenser")) {
+                if (mapTile.GetThingType().contains("dispenser")) {
                     collectionOfDispenser.add(mapTile);
                 }
             } catch (Exception e) {
@@ -432,7 +432,7 @@ public class NextPerceptReader {
     private HashSet<NextMapTile> updateAttachedSetMapTile() {
         HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
         for (NextMapTile tile : processThingsSet(things)) {
-            if (tile.getThingType().contains("block")
+            if (tile.GetThingType().contains("block")
                     && (tile.getPosition().equals(NextConstants.WestPoint)
                     || tile.getPosition().equals(NextConstants.NorthPoint)
                     || tile.getPosition().equals(NextConstants.EastPoint)
@@ -633,7 +633,7 @@ public class NextPerceptReader {
 
     private HashSet<NextSurveyedThing> processSurveyedThingSet() {
 
-        // surveyed("dispenser"/"goal"/"role", distance)
+        // surveyed("dispenser"/"goal"/"role", Distance)
         HashSet<NextSurveyedThing> processedSurveyedThings = new HashSet<>();
         // Converts Percept Data to Target Data
         for (List<Parameter> SurveyedAgent : surveyedThings) {

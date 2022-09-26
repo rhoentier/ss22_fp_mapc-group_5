@@ -23,27 +23,83 @@ public class NextTaskPlanner {
     public NextTaskPlanner(NextGroup group) {
         this.group = group;
     }
+    
+    /**
+     * Prüft, ob für einen Task noch ein Plan erzeugt werden muss und speichert
+     * die neue Taskliste
+     */
+    public void UpdateTasksAndAgents(HashSet<NextTask> newTasks) {
+        for (NextTask newTask : newTasks) {
+            HashSet<String> actualTasks = activePlans.stream().map(activeTask -> activeTask.GetTask().GetName())
+                    .collect(toCollection(HashSet::new));
+            if (!actualTasks.contains(newTask.GetName())) {
+                activePlans.add(new NextGroupPlan(group, newTask));
+            }
+        }
+        activePlans.forEach(NextGroupPlan::UpdateInternalBelief);
+
+        for (NextAgent agent : group.GetAgents()) {
+            if (!agents.contains(agent)) {
+                agents.add(agent);
+            }
+        }
+        planAgentTasks();
+    }
+
+    /**
+     * Get the plan for one specific agent
+     */
+    public NextAgentPlan GetPlan(NextAgent agent) {
+        return currentPlans.get(agent);
+    }
+
+    public void SetMaxAttemptsAreReached(NextTask task) {
+        if (task == null) {
+            return;
+        }
+        for (NextGroupPlan plan : activePlans) {
+            if (plan.GetTask().GetName().equals(task.GetName())) {
+                plan.SetMaxAttemptsAreReached();
+            }
+        }
+    }
+
+    public boolean IsDeadlineReached(NextTask activeTask) {
+        if (activeTask == null) {
+            return true;
+        }
+        for (NextGroupPlan plan : activePlans) {
+            if (plan.GetTask().GetName().equals(activeTask.GetName())) {
+                return !plan.IsDeadlineFulfillable();
+            }
+        }
+        return true;
+    }
 
     /**
      * Erzeugt für alle Agents der Gruppe den passenden Task
      */
     private void planAgentTasks() {
         int size = agents.size();
-        if (size < 4) getBestPlanForAgents(agents);
-        else {
+        if (size < 4) {
+            getBestPlanForAgents(agents);
+        } else {
             int groupsOfFour = size / 4;
             for (int i = 0; i < groupsOfFour; i++) {
                 getBestPlanForAgents(new ArrayList<>(agents.subList((4 * i), 4 + (4 * i))));
             }
             int mod = size % 4;
-//            System.out.println("mod " + mod + " -- groups of four " + groupsOfFour);
+//            System.out.println("Mod " + Mod + " -- groups of four " + groupsOfFour);
             switch (mod) {
-                case 1 -> getBestPlanForAgents(
-                        new ArrayList<>(agents.subList((4 * groupsOfFour), 1 + (4 * groupsOfFour))));
-                case 2 -> getBestPlanForAgents(
-                        new ArrayList<>(agents.subList((4 * groupsOfFour), 2 + (4 * groupsOfFour))));
-                case 3 -> getBestPlanForAgents(
-                        new ArrayList<>(agents.subList((4 * groupsOfFour), 3 + (4 * groupsOfFour))));
+                case 1 ->
+                    getBestPlanForAgents(
+                            new ArrayList<>(agents.subList((4 * groupsOfFour), 1 + (4 * groupsOfFour))));
+                case 2 ->
+                    getBestPlanForAgents(
+                            new ArrayList<>(agents.subList((4 * groupsOfFour), 2 + (4 * groupsOfFour))));
+                case 3 ->
+                    getBestPlanForAgents(
+                            new ArrayList<>(agents.subList((4 * groupsOfFour), 3 + (4 * groupsOfFour))));
             }
         }
     }
@@ -69,10 +125,14 @@ public class NextTaskPlanner {
         // Es wurde ein Task mit der richtigen Anzahl an Blöcken gefunden
         if (foundPlanForAll) {
             switch (agents.size()) {
-                case 1 -> createPlanForSingleAgent(bestPlan, agents);
-                case 2 -> createPlanForTwoAgents(bestPlan, agents);
-                case 3 -> createPlanForThreeAgents(bestPlan, agents);
-                case 4 -> createPlanForFourAgents(bestPlan, agents);
+                case 1 ->
+                    createPlanForSingleAgent(bestPlan, agents);
+                case 2 ->
+                    createPlanForTwoAgents(bestPlan, agents);
+                case 3 ->
+                    createPlanForThreeAgents(bestPlan, agents);
+                case 4 ->
+                    createPlanForFourAgents(bestPlan, agents);
             }
             return;
         }
@@ -115,7 +175,7 @@ public class NextTaskPlanner {
         currentPlans.put(agent.get(0), new NextAgentPlan(plan.GetTask(), subPlans));
     }
 
-    private void createCleanPlanForSingleAgent(ArrayList<NextAgent> agents){
+    private void createCleanPlanForSingleAgent(ArrayList<NextAgent> agents) {
         ArrayList<NextPlan> subPlans = new ArrayList<>();
         subPlans.add(new NextPlanCleanMap());
         NextTask dummyTask = agents.get(0).GetSimulationStatus().GetTasksList().iterator().next();
@@ -201,50 +261,5 @@ public class NextTaskPlanner {
     private void createPlanForFourAgents(NextGroupPlan plan, ArrayList<NextAgent> agents) {
         getBestPlanForAgents(new ArrayList<>(agents.subList(0, 2)));
         getBestPlanForAgents(new ArrayList<>(agents.subList(2, 4)));
-    }
-
-    /**
-     * Prüft, ob für einen Task noch ein Plan erzeugt werden muss und speichert die neue Taskliste
-     */
-    public void UpdateTasksAndAgents(HashSet<NextTask> newTasks) {
-        for (NextTask newTask : newTasks) {
-            HashSet<String> actualTasks = activePlans.stream().map(activeTask -> activeTask.GetTask().GetName())
-                    .collect(toCollection(HashSet::new));
-            if (!actualTasks.contains(newTask.GetName())) {
-                activePlans.add(new NextGroupPlan(group, newTask));
-            }
-        }
-        activePlans.forEach(NextGroupPlan::UpdateInternalBelief);
-
-        for (NextAgent agent : group.GetAgents()) {
-            if (!agents.contains(agent)) agents.add(agent);
-        }
-        planAgentTasks();
-    }
-
-    /**
-     * Get the plan for one specific agent
-     */
-    public NextAgentPlan GetPlan(NextAgent agent) {
-        return currentPlans.get(agent);
-    }
-
-    public void SetMaxAttemptsAreReached(NextTask task) {
-        if(task == null) return;
-        for (NextGroupPlan plan : activePlans) {
-            if (plan.GetTask().GetName().equals(task.GetName())) plan.SetMaxAttemptsAreReached();
-        }
-    }
-
-    public boolean IsDeadlineReached(NextTask activeTask) {
-        if (activeTask == null){
-            return true;
-        }
-        for (NextGroupPlan plan : activePlans){
-            if(plan.GetTask().GetName().equals(activeTask.GetName())){
-                return !plan.IsDeadlineFulfillable();
-            }
-        }
-        return true;
     }
 }

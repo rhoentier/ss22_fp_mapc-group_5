@@ -1,17 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package massim.javaagents.percept;
 
 /**
- * Container class for describing surveyed Agents.  
- * @author AVL
+ * Container class for describing surveyed Things.
+ *
+ * @author Alexander Lorenz
  */
 public class NextSurveyedThing {
+
     // surveyed("dispenser"/"goal"/"role", distance)
-        private String type;
-        private int distance;
+    private String type;
+    private int distance;
 
     public NextSurveyedThing(String type, int distance) {
         this.type = type;
@@ -33,5 +31,5 @@ public class NextSurveyedThing {
     public void SetDistance(int distance) {
         this.distance = distance;
     }
-    
+
 }

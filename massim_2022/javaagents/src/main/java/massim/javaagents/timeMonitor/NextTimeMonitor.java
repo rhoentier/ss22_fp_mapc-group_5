@@ -3,11 +3,12 @@ package massim.javaagents.timeMonitor;
 import java.time.Instant;
 
 public class NextTimeMonitor {
+
     private long simulationStartTime;
     private long roundStartTime;
     private long roundDeadline;
     /**
-     * Offeset, damit genügend Zeit zur Kommunikation mit dem Server bleibt
+     * Offset, damit genügend Zeit zur Kommunikation mit dem Server bleibt
      */
     private long secureOffset = 100;
 
@@ -16,10 +17,10 @@ public class NextTimeMonitor {
     }
 
     /**
-     * Setzt zu beginn die Start und Deadline-Werte. Ermittelt außerdem ein SecureOffset,
-     * das sich aus der Zeit der Kommunikation ermittelt
-    */
-    public void SetRoundTime(long roundStartTime, long roundDeadline){
+     * Setzt zu beginn die Start und Deadline-Werte. Ermittelt außerdem ein
+     * SecureOffset, das sich aus der Zeit der Kommunikation ermittelt
+     */
+    public void SetRoundTime(long roundStartTime, long roundDeadline) {
         long currentTime = Instant.now().toEpochMilli();
         this.roundStartTime = roundStartTime;
         this.roundDeadline = roundDeadline;
@@ -28,6 +29,7 @@ public class NextTimeMonitor {
 
     /**
      * SecureOffset kann bei Kommunikationsproblemen individuell gesetzt werden
+     *
      * @param secureOffset
      */
     public void SetSecureOffset(long secureOffset) {
@@ -36,9 +38,10 @@ public class NextTimeMonitor {
 
     /**
      * Gibt zurück, ob noch Zeit bis zur Deadline verfügbar ist
+     *
      * @return
      */
-    public boolean IsTimeRemaining(){
+    public boolean IsTimeRemaining() {
         long currentTime = Instant.now().toEpochMilli();
         if ((currentTime + secureOffset) < roundDeadline) {
             return true;
@@ -48,10 +51,13 @@ public class NextTimeMonitor {
 
     /**
      * Gibt die restliche Zeit, abzüglich des SecureOffset an
+     *
      * @return restliche Zeit im Millisekunden
      */
-    public long GetRemainingTime(){
-        if(!IsTimeRemaining()) return 0;
+    public long GetRemainingTime() {
+        if (!IsTimeRemaining()) {
+            return 0;
+        }
         long currentTime = Instant.now().toEpochMilli();
         return roundDeadline - (currentTime + secureOffset);
     }

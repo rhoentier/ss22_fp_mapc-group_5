@@ -7,7 +7,6 @@ import massim.javaagents.plans.NextPlan;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-
 public class NextAgentPlan {
 
     private final NextTask task;
@@ -17,6 +16,7 @@ public class NextAgentPlan {
         this.task = task;
         this.subPlans = subPlans;
     }
+
     public NextTask GetTask() {
         return task;
     }

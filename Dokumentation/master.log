@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.11)  19 SEP 2022 11:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.11)  26 SEP 2022 12:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -310,34 +310,60 @@ File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen165
 \Gin@req@width=\dimen166
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2022/02/26 3.73 The Babel package
+\babel@savecnt=\count299
+\U@D=\dimen167
+\l@unhyphenated=\language79
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count300
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
 )
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngerman.ldf
+Language: ngerman 2021/02/27 v2.13 German support for babel (post-1996 orthogra
+phy)
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngermanb.ld
+f
+Language: ngermanb 2021/02/27 v2.13 German support for babel (post-1996 orthogr
+aphy)
+Package babel Info: Making " an active character on input line 122.
+)))
 (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
 ex.def
 File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count299
+\l__color_backend_stack_int=\count301
 \l__pdf_internal_box=\box97
 ) (master.aux)
 \openout1 = `master.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-Package hyperref Info: Link coloring OFF on input line 23.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 48.
+LaTeX Font Info:    ... okay on input line 48.
+Package hyperref Info: Link coloring OFF on input line 48.
 
 (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -349,11 +375,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 estring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count300
+\c@section@level=\count302
 )
-LaTeX Info: Redefining \ref on input line 23.
-LaTeX Info: Redefining \pageref on input line 23.
-LaTeX Info: Redefining \nameref on input line 23.
+LaTeX Info: Redefining \ref on input line 48.
+LaTeX Info: Redefining \pageref on input line 48.
+LaTeX Info: Redefining \nameref on input line 48.
  (master.out) (master.out)
 \@outlinefile=\write3
 \openout3 = `master.out'.
@@ -362,16 +388,16 @@ LaTeX Info: Redefining \nameref on input line 23.
 (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mki
 i
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count301
-\scratchdimen=\dimen167
+\scratchcounter=\count303
+\scratchdimen=\dimen168
 \scratchbox=\box98
-\nofMPsegments=\count302
-\nofMParguments=\count303
+\nofMPsegments=\count304
+\nofMParguments=\count305
 \everyMPshowfont=\toks21
-\MPscratchCnt=\count304
-\MPscratchDim=\dimen168
-\MPnumerator=\count305
-\makeMPintoPDFobject=\count306
+\MPscratchCnt=\count306
+\MPscratchDim=\dimen169
+\MPnumerator=\count307
+\makeMPintoPDFobject=\count308
 \everyMPtoPDFconversion=\toks22
 )
 (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-ba
@@ -385,54 +411,38 @@ g
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 54.
+(Font)              <7> on input line 79.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 54.
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 5
-4.
+(Font)              <5> on input line 79.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 7
+9.
  (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 54.
+(Font)              <9> on input line 79.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 54.
+(Font)              <6> on input line 79.
 
 (introduction.tex
-Underfull \hbox (badness 10000) in paragraph at lines 7--8
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 8--10
-
- []
-
-
-Overfull \hbox (3.96106pt too wide) in paragraph at lines 11--12
-[]\T1/cmr/m/n/10 Weiter hatte sie die Auf-gabe der Prak-tikum-sor-gan-isatorin 
-inne. Hi-er-für musste
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 13--14
-
- []
-
-)
-Underfull \hbox (badness 10000) in paragraph at lines 14--57
-
- []
-
-(method.tex
-Underfull \hbox (badness 10000) in paragraph at lines 8--9
+Underfull \hbox (badness 10000) in paragraph at lines 6--7
 
  []
 
 [1
 
 {C:/Users/miwo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 25--38
+Underfull \hbox (badness 10000) in paragraph at lines 25--27
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--29
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 32--34
 
  []
 
@@ -441,88 +451,231 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.39 \subsubsection
-                   {Wegfindung} \label{kap:wegfindung} ~\\ [2]
-Underfull \hbox (badness 10000) in paragraph at lines 45--46
+l.36 
+      [2]) (method.tex
+Underfull \hbox (badness 10000) in paragraph at lines 11--12
+
+ []
+
+<./Abbildungen/map.png, id=38, 773.89125pt x 414.79968pt>
+File: ./Abbildungen/map.png Graphic file (type png)
+<use ./Abbildungen/map.png>
+Package pdftex.def Info: ./Abbildungen/map.png  used on input line 14.
+(pdftex.def)             Requested size: 277.69987pt x 148.84674pt.
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.17 \end{figure}
+                  [3]
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.32 	\item \textit
+                   {\NextGroup}: Gruppierung von 1â€¦n \Agents, welche diese...
+[4 <./Abbildungen/map.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 44--46
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 50--51
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
 
  []
 
-<bilder/agentensicht.png, id=50, 287.57437pt x 292.84406pt>
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.48 
+      [5]
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.63 
+      [6]
+Underfull \hbox (badness 10000) in paragraph at lines 64--66
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 67--72
+
+ []
+
+
+Underfull \vbox (badness 1466) has occurred while \output is active []
+
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.78 
+      [7]
+Underfull \hbox (badness 10000) in paragraph at lines 81--83
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--86
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 89--90
+
+ []
+
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.90 
+      [8]
+Underfull \hbox (badness 10000) in paragraph at lines 99--101
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 102--103
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 104--105
+
+ []
+
+
+Underfull \vbox (badness 2469) has occurred while \output is active []
+
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.109 
+       [9]
+<bilder/agentensicht.png, id=93, 287.57437pt x 292.84406pt>
 File: bilder/agentensicht.png Graphic file (type png)
 <use bilder/agentensicht.png>
-Package pdftex.def Info: bilder/agentensicht.png  used on input line 55.
-(pdftex.def)             Requested size: 150.56305pt x 153.3254pt.
+Package pdftex.def Info: bilder/agentensicht.png  used on input line 116.
+(pdftex.def)             Requested size: 120.45044pt x 122.65852pt.
+
+Overfull \hbox (2.05504pt too wide) in paragraph at lines 111--120
+[]$[]$ $[]$ 
+ []
+
+)
+Underfull \vbox (badness 2237) has occurred while \output is active []
+
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.61 
-      [3 <./bilder/agentensicht.png>])
-Overfull \hbox (3.81577pt too wide) in paragraph at lines 65--60
-\T1/cmr/m/n/10 befinden. Die Syn-chro-ni-sa-tion der Grup-pen ist in Kapi-tel [
-]\T1/cmr/m/it/10 2.3[] \T1/cmr/m/n/10 genauer beschrieben.
+l.85 
+      [10 <./bilder/agentensicht.png>] (turnier.tex
+Overfull \hbox (2.73547pt too wide) in paragraph at lines 2--3
+\T1/cmr/m/n/10 In die-sem Ka-pi-tel wird auf die Tur-nie-re ein-ge-gan-gen. Zu-
+nächst wer-den die Schwie-
  []
 
 
-Overfull \hbox (1.40247pt too wide) in paragraph at lines 65--60
-\T1/cmr/m/n/10 Für die Kom-mu-nika-tion wurde eine Schnittstelle en-twick-elt, 
-welche die Nachricht,
- []
+Underfull \hbox (badness 10000) in paragraph at lines 5--6
 
-(turnier.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.17 \subsubsection
-                   {Turnier 2} [4]
-Overfull \hbox (18.315pt too wide) in paragraph at lines 54--56
-\T1/cmr/m/n/10 Fürs let-zte Turnier soll-ten die 2er Tasks unbe-d-ingt funk-tio
-n-ierten und die Verbindung
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 7--8
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--10
+
+ []
+
+<bilder/karte.png, id=102, 9043.7875pt x 10208.1375pt>
+File: bilder/karte.png Graphic file (type png)
+<use bilder/karte.png>
+Package pdftex.def Info: bilder/karte.png  used on input line 16.
+(pdftex.def)             Requested size: 170.63812pt x 192.5236pt.
+
+Overfull \hbox (31.79083pt too wide) in paragraph at lines 16--17
+[][] 
+ []
+
+
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.67 \subsection
-                {LÃ¶sungsstrategien} [5]) (conclusion.tex) (FAQ.tex) (bib.tex)
+l.24 
+      [11]
+Underfull \hbox (badness 10000) in paragraph at lines 25--26
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 27--28
+
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.80 \end{document}
-                    [6] (master.aux)
+l.32 \subsubsection
+                   {Wegfindung} [12 <./bilder/karte.png (PNG copy)>])
+(conclusion.tex
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 W
+     as die \Agents betrifft haben wir auch noch einiges an potential, was Z...
+[13]) (bib.tex)
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.105 \end{document}
+                     [14] (master.aux)
 Package rerunfilecheck Info: File `master.out' has not changed.
 (rerunfilecheck)             Checksum: B1DE93BB8870BF51BEB60F78F679B6CA;375.
  ) 
 Here is how much of TeX's memory you used:
- 8861 strings out of 478582
- 139831 string characters out of 2844816
- 435239 words of memory out of 3000000
- 26893 multiletter control sequences out of 15000+600000
- 478244 words of font info for 44 fonts, out of 8000000 for 9000
+ 9881 strings out of 478582
+ 157578 string characters out of 2844816
+ 467433 words of memory out of 3000000
+ 27890 multiletter control sequences out of 15000+600000
+ 478930 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 60i,7n,63p,1402b,380s stack positions out of 10000i,1000n,20000p,200000b,80000s
- <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx0
+ 60i,8n,63p,1488b,398s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti0
 900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\
-ecti1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
-i600\ecbx1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
-ec/dpi600\ecbx1200.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jkna
-ppen/ec/dpi600\ectt0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour
-/jknappen/ec/dpi600\ecrm0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/l
-jfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts
-/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk>
-Output written on master.pdf (6 pages, 120241 bytes).
+ecbx0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
+i600\ecti1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
+ec/dpi600\ecbx1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jkna
+ppen/ec/dpi600\ecbx1200.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour
+/jknappen/ec/dpi600\ectt0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/l
+jfour/jknappen/ec/dpi600\ecrm0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts
+/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\
+fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk>
+Output written on master.pdf (14 pages, 663877 bytes).
 PDF statistics:
- 394 PDF objects out of 1000 (max. 8388607)
- 43 named destinations out of 1000 (max. 500000)
- 14 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 505 PDF objects out of 1000 (max. 8388607)
+ 46 named destinations out of 1000 (max. 500000)
+ 24 words of extra memory for PDF output out of 10000 (max. 10000000)
 

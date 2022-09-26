@@ -1,16 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package massim.javaagents.percept;
 
 import java.util.HashSet;
 
 /**
  *
- * @author AVL
+ * @author Alexander Lorenz
  */
 public class NextNorm {
+
     /*        
     
     norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
@@ -25,8 +22,8 @@ public class NextNorm {
             details : possibly additional details
     fine : Numeral - the energy cost of violating the norm (per step)
 
-    */
-    
+     */
+
     private String id;
     private int start;
     private int end;
@@ -85,6 +82,5 @@ public class NextNorm {
     public String toString() {
         return "NextNorm{" + "id=" + id + ", start=" + start + ", end=" + end + ", requirement=" + requirement + ", fine=" + fine + '}';
     }
-    
-    
+
 }
