@@ -4,47 +4,47 @@ Im ersten Unterkapitel \ref{erkundungDerKarte} wird zunächst einen Einblick in 
 
 \subsection{Erkundung und Speicherung der Karte} \label{erkundungDerKarte}
 
-In jedem Schritt eines Spiels kann über die \Percepts abgerufen werden, welche Objekte für einen \Agent aktuell sichtbar sind. Wie weit ein \Agent sehen kann, hängt von der Rolle ab. Die von einem \Agent wahrgenommenen \Things werden hierbei mit relativer Distanz zur Position des \Agents angegeben. Wenn sich beispielsweise ein \Obstacle zwei Felder rechts neben dem \Agent befindet, wird dieses im \Percept mit den Koordinaten [2, 0] angegeben. Bewegt sich der \Agent um ein Feld nach rechts, wird das \Obstacle dann im Abstand [1, 0] gesehen. 
+In jedem Schritt eines Spiels kann über die \Percepts abgerufen werden, welche Objekte für einen \Agent aktuell sichtbar sind. Wie weit ein \Agent sehen kann, hängt von der Rolle ab. Die von einem \Agent wahrgenommenen \Things werden hierbei mit relativer Distanz zur Position des \Agents angegeben. Wenn sich beispielsweise ein \Obstacle zwei Felder rechts neben dem \Agent befindet, wird dieses im \Percept mit den Koordinaten [2, 0] angegeben. Bewegt sich der \Agent anschließend um ein Feld nach rechts, wird das \Obstacle im Abstand [1, 0] gesehen. 
 
 Informationen vergangener \Percepts sind nicht verfügbar, d.h. ein \Agent besitzt zunächst einmal kein „Gedächtnis“. Um eine zielgerichtete Planung der \Agents umzusetzen, ist es daher erforderlich, die in jedem \Step wahrgenommenen Sichten zu speichern und so Schritt-für-Schritt eine Karte aufzubauen. \\
 
 \begin{figure}[h]
 	\includegraphics[width=0.8\textwidth]{./Abbildungen/map.png}
 	\centering
+	\label{fig:interneKarte}
 	\caption{Links: Screenshot der Karte, Rechts: \NextMap-Objekt einer Gruppe mit 2 Agents als Output in eine .txt-Datei. \newline Legende: \underline{a}gent, \underline{d}ispenser, \underline{f}ree, \underline{g}oal zones, \underline{o}bstacles, \underline{r}ole zones, \underline{u}nknown}
 \end{figure} 
 
 Es ergeben sich folgende Anforderungen:
 \begin{enumerate}
-	\item Jeder \Agent soll die in den einzelnen \Steps wahrgenommenen Dinge speichern und auf diese zu einem späteren Zeitpunkt zugreifen können. 
-	\item Da manche Informationen der Karte dynamisch sind (z.B. können \Obstacles per \textit{clear()} entfernt werden), ist auch eine Aktualisierung bereits gespeicherter Positionen erforderlich. 
+	\item Jeder \Agent soll die in den einzelnen \Steps wahrgenommenen \Things speichern und auf diese zu einem späteren Zeitpunkt zugreifen können. 
+	\item Da manche Informationen der Karte dynamisch sind (z.B. können \Obstacles per \textit{clear()}-Befehl entfernt werden), ist auch eine Aktualisierung bereits gespeicherter Positionen erforderlich. 
 	\item \Agents sollten bestenfalls dieselbe Karte verwenden, sodass jeder \Agent aus der Erkundung / aus dem Wissen der anderen \Agents schöpfen kann.
 	\item Die Spiele werden mit einer sich wiederholenden Karte mit unbekannter Kartengröße gespielt. Um eine effiziente Planung zu ermöglichen, soll die Kartengröße ermittelt und die Wiederholungen bei Speicherung der Karte berücksichtigt werden.
 \end{enumerate}
 
 \subsubsection{Implementierung} ~\\
-Es wurden im Wesentlichen folgende Klassen zur Umsetzung implementiert:
+Es wurden im Wesentlichen folgende Klassen zur Erkundung und Speicherung der Karte implementiert:
 \begin{itemize}
-	\item \textit{NextMapTile}: Beschreibung eines einzelnen Feldes mit den Eigenschaften Position, Typ und \Step (Schritt, wann die Position zuletzt gesehen wurde).   
+	\item \textit{NextMapTile}: Beschreibung eines einzelnen Feldes mit den Eigenschaften Position, Typ und \Step (Zeitschritt, zu welchem die Position zuletzt aktualisiert wurde).   
 	\item \textit{NextMap}: Beschreibung der Karte als Ganzes durch Speicherung der wahrgenommenen \Things je \Step als \NextMapTiles. \\ Um eine Mehrfach-Belegung einer Position zu ermöglichen (z.B. \GoalZone und \Obstacle auf derselben Position), werden die verschiedenen Typen in jeweils eigenen Datenstrukturen gespeichert (Karte der \Obstacles, Karte der \GoalZones, etc.).
 	\item \textit{\NextGroup}: Gruppierung von 1…n \Agents, welche dieselbe Karte nutzen. Jede Gruppe enthält genau ein \NextMap-Objekt. 
 \end{itemize}
 
 \subsubsection{Aktualisierung} ~\\
-Je \Agent wird geprüft, ob im letzten \Step ein erfolgreicher \move-Befehl ausgeführt wurde. Falls ja, wird die Position des \textit{Agents} aktualisiert und es werden die im \Percept übermittelten \Things zur Karte hinzugefügt bzw. bereits vorhandene Daten aktualisiert. Hierbei werden \Dispenser, \GoalZones, \RoleZones und \Obstacles gespeichert. Andere \Agents und Blöcke werden in der Karte nicht gespeichert, da sich diese meist sehr dynamisch ändern und daher in der langfristigen Wegeplanung nicht relevant sind.
+Je \Agent wird geprüft, ob im letzten \Step ein erfolgreicher \move-Befehl ausgeführt wurde. Falls ja, wird die Position des \textit{Agents} aktualisiert und es werden die im \Percept übermittelten \Things zur Karte hinzugefügt bzw. bereits vorhandene Daten aktualisiert. Hierbei werden \Dispenser, \GoalZones, \RoleZones und \Obstacles gespeichert. Andere \Agents und Blöcke werden in der Karte nicht gespeichert, da sich diese meist sehr dynamisch ändern und daher in der langfristigen Wegeplanung weniger relevant sind. Abbildung \ref{fig:interneKarte} zeigt einen Vergleich der Karte des Servers mit der intern aufgebauten Karte (Export als .txt-Datei).
 
 \subsubsection{Gruppen} ~\\
-Bei Start des Spiels wird für jeden \Agent eine eigene Gruppe erzeugt, welche genau eine Karte enthält. Alle wahrgenommenen Dinge werden in dieser Karte gespeichert und sind zunächst nur für diesen \Agent sichtbar. 
-Wenn sich zwei \Agents während des Spiels in entgegengesetzter Richtung wahrnehmen und sie das einzige Paar sind, welches sich in dieser Richtung und Entfernung sieht (Eindeutigkeit), wird die Gruppe des einen \Agent mit der Gruppe des anderen \Agent zusammengeführt. Hierbei werden alle \Agents sowie alle Daten der Karte übertragen. Sofern in beiden Karten Informationen für dieselben Positionen vorhanden sind, bleibt nur das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Aktualisierungen der Karte aller \Agents sind anschließend für alle anderen \Agents der Gruppe sichtbar.
+Bei Start des Spiels wird für jeden \Agent eine eigene Gruppe erzeugt, welche genau eine Karte enthält. Alle wahrgenommenen Dinge werden in dieser Karte gespeichert und sind zunächst nur für diesen \Agent sichtbar. Wenn sich zwei \Agents während des Spiels treffen, wird die Gruppe des einen Agenten mit der Gruppe des anderen Agenten zusammengeführt, siehe auch Kapitel \textit{\ref{kap:Gruppenbildung}}. In Bezug auf die Karte bedeutet dies, dass sowohl alle Agenten als auch die Kartendaten der Gruppe übertragen werden. Sofern in beiden Karten Informationen für dieselben Positionen vorhanden sind, bleibt nur das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Aktualisierungen der Karte aller \Agents sind anschließend für alle anderen \Agents derselben Gruppe sichtbar. \newline
 
 Bei den im Fachpraktikum gespielten Turnieren erfolgte die erste Zusammenführung von Gruppen meist nach nur wenigen Schritten. Innerhalb des ersten Drittel des Spiels haben die Agents i.d.R. in nur noch einer Gruppe agiert, sodass die gemeinsame Datenbasis der Karte über einen Großteil des Spiels genutzt werden konnte. 
 
 \subsubsection{Wiederholende Karte} ~\\
 Typischerweise werden die Spiele des \textit{Multi Agent Programming Contest 2022} mit einer randlosen Karte gespielt. Die Größe der Karte ist zu Beginn nicht bekannt und die Grenzen sind für die \Agents bei der Erkundung der Karte nicht erkennbar, sodass sie sich auf einer scheinbar „unendlichen“ Karte bewegen.\newline
 
-Die Kartengröße kann herausgefunden werden, indem sich zwei \Agents treffen und anschließend in entgegengesetzte x- und y-Richtung laufen, um so die Karte „auszumessen“. Sobald sich die \Agents erneut treffen, kann durch die Anzahl der zurückgelegten Schritte die Kartengröße bestimmt werden. \\ Die Bestimmung der Kartengröße konnte leider bis zum letzten Turnier nicht mehr implementiert werden, jedoch wurde die Funktionalität der Karte bereits entsprechend vorgesehen: \newline
+Die Kartengröße kann herausgefunden werden, indem sich zwei \Agents treffen und anschließend in entgegengesetzte x- und y-Richtung laufen, um so die Karte „auszumessen“. Sobald sich die \Agents erneut treffen, kann durch die Anzahl der zurückgelegten Schritte die Kartengröße ermittelt werden. \\ Die Bestimmung der Kartengröße konnte leider bis zum letzten Turnier nicht mehr implementiert werden, jedoch wurde die Funktionalität der Karte bereits entsprechend vorgesehen: \newline
 
-Bei Bekanntwerden der Kartengröße kann diese über die Gruppenkommunikation an alle Gruppen bzw. deren Karten mitgeteilt werden. Anschließend werden die Positionen der \NextMapTiles und der \Agents, welche größer als die Kartengröße sind, per modulo auf die tatsächliche Kartengröße angepasst. Sofern Informationen für dieselbe Position vorhanden sind, bleibt das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Weitere Aktualisierungen der Karte passieren nur noch auf der tatsächlichen Kartengröße. Da deutlich weniger Positionen gespeichert werden, ergibt sich ab „Bekanntgabe“ der Kartengröße eine deutliche Effizienzsteigerung. Zudem können Optimierungen bei der Wegfindung vorgenommen werden. Tests haben gezeigt, dass deutliche Effizienzsteigerungen v.a. bei der Speicherung erzielt werden können, da die Karte nur noch ein mal in ihrer tatsächlichen Größe (und nicht mehrfach) gespeichert wird.  
+Bei Bekanntwerden der Kartengröße kann diese über die Gruppenkommunikation an alle Gruppen bzw. deren Karten mitgeteilt werden. Anschließend werden die Positionen der \NextMapTiles und der \Agents, welche größer als die Kartengröße sind, per modulo auf die tatsächliche Kartengröße angepasst. Sofern Informationen für dieselbe Position vorhanden sind, bleibt das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Weitere Aktualisierungen der Karte passieren nur noch auf der tatsächlichen Kartengröße, sodass ab dem Zeitpunkt der Bekanntgabe der Kartengröße mit einer deutlichen Effizienzsteigerung zu rechnen ist. Zudem können Optimierungen bei der Wegfindung vorgenommen werden.  
 
 \subsubsection{Koordinatensystem} ~\\
 Im Laufe der Implementierung wurden zwei verschiedene Koordinatensysteme verwendet, welche hier näher beleuchtet werden sollen: 
