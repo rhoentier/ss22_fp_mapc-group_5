@@ -4,12 +4,13 @@ Im ersten Unterkapitel \ref{erkundungDerKarte} wird zunächst einen Einblick in 
 
 \subsection{Erkundung und Speicherung der Karte} \label{erkundungDerKarte}
 
-In jedem Schritt eines Spiels kann über die \Percepts abgerufen werden, welche Objekte für einen \Agent aktuell sichtbar sind. Wie weit ein \Agent sehen kann, hängt von der Rolle ab. Die von einem \Agent wahrgenommenen \Things werden hierbei mit relativer Distanz zur Position des \Agents angegeben. Wenn sich beispielsweise ein \Obstacle zwei Felder rechts neben dem \Agent befindet, wird dieses im \Percept mit den Koordinaten [2, 0] angegeben. Bewegt sich der \Agent anschließend um ein Feld nach rechts, wird das \Obstacle im Abstand [1, 0] gesehen. 
+In jedem Schritt eines Spiels kann über die \Percepts abgerufen werden, welche Objekte für einen \Agent aktuell sichtbar sind. Wie weit ein \Agent sehen kann, hängt von der Rolle ab.
+% Die von einem \Agent wahrgenommenen \Things werden hierbei mit relativer Distanz zur Position des \Agents angegeben. Wenn sich beispielsweise ein \Obstacle zwei Felder rechts neben dem \Agent befindet, wird dieses im \Percept mit den Koordinaten [2, 0] angegeben. Bewegt sich der \Agent anschließend um ein Feld nach rechts, wird das \Obstacle im Abstand [1, 0] gesehen. 
 
 Informationen vergangener \Percepts sind nicht verfügbar, d.h. ein \Agent besitzt zunächst einmal kein „Gedächtnis“. Um eine zielgerichtete Planung der \Agents umzusetzen, ist es daher erforderlich, die in jedem \Step wahrgenommenen Sichten zu speichern und so Schritt-für-Schritt eine Karte aufzubauen. \\
 
 \begin{figure}[h]
-	\includegraphics[width=0.8\textwidth]{./Abbildungen/map.png}
+	\includegraphics[width=0.7\textwidth]{./Abbildungen/map.png}
 	\centering
 	\label{fig:interneKarte}
 	\caption{Links: Screenshot der Karte, Rechts: \NextMap-Objekt einer Gruppe mit 2 Agents als Output in eine .txt-Datei. \newline Legende: \underline{a}gent, \underline{d}ispenser, \underline{f}ree, \underline{g}oal zones, \underline{o}bstacles, \underline{r}ole zones, \underline{u}nknown}
@@ -23,13 +24,13 @@ Es ergeben sich folgende Anforderungen:
 	\item Die Spiele werden mit einer sich wiederholenden Karte mit unbekannter Kartengröße gespielt. Um eine effiziente Planung zu ermöglichen, soll die Kartengröße ermittelt und die Wiederholungen bei Speicherung der Karte berücksichtigt werden.
 \end{enumerate}
 
-\subsubsection{Implementierung} ~\\
-Es wurden im Wesentlichen folgende Klassen zur Erkundung und Speicherung der Karte implementiert:
-\begin{itemize}
-	\item \textit{NextMapTile}: Beschreibung eines einzelnen Feldes mit den Eigenschaften Position, Typ und \Step (Zeitschritt, zu welchem die Position zuletzt aktualisiert wurde).   
-	\item \textit{NextMap}: Beschreibung der Karte als Ganzes durch Speicherung der wahrgenommenen \Things je \Step als \NextMapTiles. \\ Um eine Mehrfach-Belegung einer Position zu ermöglichen (z.B. \GoalZone und \Obstacle auf derselben Position), werden die verschiedenen Typen in jeweils eigenen Datenstrukturen gespeichert (Karte der \Obstacles, Karte der \GoalZones, etc.).
-	\item \textit{\NextGroup}: Gruppierung von 1…n \Agents, welche dieselbe Karte nutzen. Jede Gruppe enthält genau ein \NextMap-Objekt. 
-\end{itemize}
+%\subsubsection{Implementierung} ~\\
+%Es wurden im Wesentlichen folgende Klassen zur Erkundung und Speicherung der Karte implementiert:
+%\begin{itemize}
+%	\item \textit{NextMapTile}: Beschreibung eines einzelnen Feldes mit den Eigenschaften Position, Typ und \Step (Zeitschritt, zu welchem die Position zuletzt aktualisiert wurde).   
+%	\item \textit{NextMap}: Beschreibung der Karte als Ganzes durch Speicherung der wahrgenommenen \Things je \Step als \NextMapTiles. \\ Um eine Mehrfach-Belegung einer Position zu ermöglichen (z.B. \GoalZone und \Obstacle auf derselben Position), werden die verschiedenen Typen in jeweils eigenen Datenstrukturen gespeichert (Karte der \Obstacles, Karte der \GoalZones, etc.).
+%	\item \textit{\NextGroup}: Gruppierung von 1…n \Agents, welche dieselbe Karte nutzen. Jede Gruppe enthält genau ein \NextMap-Objekt. 
+%\end{itemize}
 
 \subsubsection{Aktualisierung} ~\\
 Je \Agent wird geprüft, ob im letzten \Step ein erfolgreicher \move-Befehl ausgeführt wurde. Falls ja, wird die Position des \textit{Agents} aktualisiert und es werden die im \Percept übermittelten \Things zur Karte hinzugefügt bzw. bereits vorhandene Daten aktualisiert. Hierbei werden \Dispenser, \GoalZones, \RoleZones und \Obstacles gespeichert. Andere \Agents und Blöcke werden in der Karte nicht gespeichert, da sich diese meist sehr dynamisch ändern und daher in der langfristigen Wegeplanung weniger relevant sind. Abbildung \ref{fig:interneKarte} zeigt einen Vergleich der Karte des Servers mit der intern aufgebauten Karte (Export als .txt-Datei).
@@ -46,12 +47,12 @@ Die Kartengröße kann herausgefunden werden, indem sich zwei \Agents treffen un
 
 Bei Bekanntwerden der Kartengröße kann diese über die allgemeine Kommunikationsschnittstelle an alle Agenten mitgeteilt werden. Anschließend werden die Positionen der \NextMapTiles und der \Agents, welche größer als die Kartengröße sind, per modulo auf die tatsächliche Kartengröße angepasst. Sofern Informationen für dieselbe Position vorhanden sind, bleibt das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Weitere Aktualisierungen der Karte passieren nur noch auf der tatsächlichen Kartengröße, sodass ab dem Zeitpunkt der Bekanntgabe der Kartengröße mit einer deutlichen Effizienzsteigerung zu rechnen ist. Zudem können Optimierungen bei der Wegfindung vorgenommen werden.  
 
-\subsubsection{Koordinatensystem} ~\\
-Im Laufe der Implementierung wurden zwei verschiedene Koordinatensysteme verwendet, welche hier näher beleuchtet werden sollen: 
-\begin{itemize}
-	\item \textit{Erste Implementierung}: Startpunkt des Agents wird als 0/0 definiert. \newline Vorteile dieser Definition sind, dass sich die aktuelle Position eines \Agents durch Aufsummierung der einzelnen \move-Befehle ergibt. Die Aktualisierung der Karte erfolgt durch Addition der Position des Agents mit der relativen Postitionsangabe in den \Percepts. Nachteile dieser Implementierung sind, dass die Datenstrukturen negative Koordinaten unterstützen müssen und v.a. das Debugging deutlich erschwert wird, da eine bestimmte Position auf der Karte verschiedene Koordinaten besitzen kann - je nachdem von welchem \Agent die Position \glqq{}gesehen\grqq{} werden. 
-	\item \textit{Finale Implementierung}: Die Ecke oben/links wird als 0/0 definiert.\newline Die zuvor genannten Nachteile sind mit dieser Lösung nicht mehr vorhanden, was v.a. das Debugging deutlich erleichtert. Bei \glqq{}Wachsen\grqq{} der Karte in negativer Richtung (d.h. nach links oder oben), müssen lediglich alle bereits vorhandenen Positionen aktualisiert werden, was mit vergleichsweise geringem Aufwand möglich ist. Eine Unterstützung von negativen Koordinaten ist mit dieser Lösung nicht mehr erforderlich. 
-\end{itemize}
+%\subsubsection{Koordinatensystem} ~\\
+%Im Laufe der Implementierung wurden zwei verschiedene Koordinatensysteme verwendet, welche hier näher beleuchtet werden sollen: 
+%\begin{itemize}
+%	\item \textit{Erste Implementierung}: Startpunkt des Agents wird als 0/0 definiert. \newline Vorteile dieser Definition sind, dass sich die aktuelle Position eines \Agents durch Aufsummierung der einzelnen \move-Befehle ergibt. Die Aktualisierung der Karte erfolgt durch Addition der Position des Agents mit der relativen Postitionsangabe in den \Percepts. Nachteile dieser Implementierung sind, dass die Datenstrukturen negative Koordinaten unterstützen müssen und v.a. das Debugging deutlich erschwert wird, da eine bestimmte Position auf der Karte verschiedene Koordinaten besitzen kann - je nachdem von welchem \Agent die Position \glqq{}gesehen\grqq{} werden. 
+%	\item \textit{Finale Implementierung}: Die Ecke oben/links wird als 0/0 definiert.\newline Die zuvor genannten Nachteile sind mit dieser Lösung nicht mehr vorhanden, was v.a. das Debugging deutlich erleichtert. Bei \glqq{}Wachsen\grqq{} der Karte in negativer Richtung (d.h. nach links oder oben), müssen lediglich alle bereits vorhandenen Positionen aktualisiert werden, was mit vergleichsweise geringem Aufwand möglich ist. Eine Unterstützung von negativen Koordinaten ist mit dieser Lösung nicht mehr erforderlich. 
+%\end{itemize}
 
 \subsection{Entscheidungsverhalten der Agenten} \label{kap:entscheidungAgenten}
 
@@ -106,7 +107,7 @@ Bei der Sicht der \textit{Agents} kann zwischen einee globalen und lokalen Sicht
 	\end{minipage}
 	\begin{minipage}{0.4\textwidth}
 		\centering
-		\includegraphics[width=120px]{bilder/agentensicht}
+		\includegraphics[width=100px]{bilder/agentensicht}
 		\caption{Sicht des \textit{Agents}}
 		\label{fig:agentensicht}
 	\end{minipage}
