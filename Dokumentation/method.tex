@@ -10,7 +10,7 @@ In jedem Schritt eines Spiels kann über die \Percepts abgerufen werden, welche 
 Informationen vergangener \Percepts sind nicht verfügbar, d.h. ein \Agent besitzt zunächst einmal kein „Gedächtnis“. Um eine zielgerichtete Planung der \Agents umzusetzen, ist es daher erforderlich, die in jedem \Step wahrgenommenen Sichten zu speichern und so Schritt-für-Schritt eine Karte aufzubauen. \\
 
 \begin{figure}[h]
-	\includegraphics[width=0.8\textwidth]{./Abbildungen/map.png}
+	\includegraphics[width=0.7\textwidth]{./Abbildungen/map.png}
 	\centering
 	\label{fig:interneKarte}
 	\caption{Links: Screenshot der Karte, Rechts: \NextMap-Objekt einer Gruppe mit 2 Agents als Output in eine .txt-Datei. \newline Legende: \underline{a}gent, \underline{d}ispenser, \underline{f}ree, \underline{g}oal zones, \underline{o}bstacles, \underline{r}ole zones, \underline{u}nknown}
@@ -45,7 +45,7 @@ Typischerweise werden die Spiele des \textit{Multi Agent Programming Contest 202
 
 Die Kartengröße kann herausgefunden werden, indem sich zwei \Agents treffen und anschließend in entgegengesetzte x- und y-Richtung laufen, um so die Karte „auszumessen“. Sobald sich die \Agents erneut treffen, kann durch die Anzahl der zurückgelegten Schritte die Kartengröße ermittelt werden. \\ Die Bestimmung der Kartengröße konnte leider bis zum letzten Turnier nicht mehr implementiert werden, jedoch wurde die Funktionalität der Karte bereits entsprechend vorgesehen: \newline
 
-Bei Bekanntwerden der Kartengröße kann diese über die allgemeine Kommunikation an alle Agenten mitgeteilt werden. Anschließend werden die Positionen der \NextMapTiles und der \Agents, welche größer als die Kartengröße sind, per modulo auf die tatsächliche Kartengröße angepasst. Sofern Informationen für dieselbe Position vorhanden sind, bleibt das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Weitere Aktualisierungen der Karte passieren nur noch auf der tatsächlichen Kartengröße, sodass ab dem Zeitpunkt der Bekanntgabe der Kartengröße mit einer deutlichen Effizienzsteigerung zu rechnen ist. Zudem können Optimierungen bei der Wegfindung vorgenommen werden.  
+Bei Bekanntwerden der Kartengröße kann diese über die allgemeine Kommunikationsschnittstelle an alle Agenten mitgeteilt werden. Anschließend werden die Positionen der \NextMapTiles und der \Agents, welche größer als die Kartengröße sind, per modulo auf die tatsächliche Kartengröße angepasst. Sofern Informationen für dieselbe Position vorhanden sind, bleibt das aktuellere \NextMapTile erhalten und das ältere wird verworfen. Weitere Aktualisierungen der Karte passieren nur noch auf der tatsächlichen Kartengröße, sodass ab dem Zeitpunkt der Bekanntgabe der Kartengröße mit einer deutlichen Effizienzsteigerung zu rechnen ist. Zudem können Optimierungen bei der Wegfindung vorgenommen werden.  
 
 %\subsubsection{Koordinatensystem} ~\\
 %Im Laufe der Implementierung wurden zwei verschiedene Koordinatensysteme verwendet, welche hier näher beleuchtet werden sollen: 
