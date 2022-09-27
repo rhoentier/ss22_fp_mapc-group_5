@@ -1,16 +1,16 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.8) (preloaded format=pdflatex 2022.8.14)  26 SEP 2022 22:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.7.11)  27 SEP 2022 19:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **./master.tex
 (master.tex
-LaTeX2e <2022-06-01> patch level 5
-L3 programming layer <2022-08-05> (llncs.cls
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-02-24> (llncs.cls
 Document Class: llncs 2022/01/12 v2.21 
  LaTeX document class for Lecture Notes in Computer Science
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\size10.clo
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\size10.clo
 File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
 )
 \c@part=\count185
@@ -25,10 +25,10 @@ File: size10.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip48
 \bibindent=\dimen138
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
 Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \c@tracingmulticols=\count193
-\mult@box=\box51
+\mult@box=\box50
 \multicol@leftmargin=\dimen139
 \c@unbalance=\count194
 \c@collectmore=\count195
@@ -41,13 +41,14 @@ Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \postmulticols=\dimen143
 \multicolsep=\skip49
 \multicolbaselineskip=\skip50
-\partial@page=\box52
-\last@line=\box53
+\partial@page=\box51
+\last@line=\box52
 \maxbalancingoverflow=\dimen144
-\mult@rightbox=\box54
-\mult@grightbox=\box55
-\mult@firstbox=\box56
-\mult@gfirstbox=\box57
+\mult@rightbox=\box53
+\mult@grightbox=\box54
+\mult@firstbox=\box55
+\mult@gfirstbox=\box56
+\@tempa=\box57
 \@tempa=\box58
 \@tempa=\box59
 \@tempa=\box60
@@ -83,19 +84,17 @@ Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \@tempa=\box90
 \@tempa=\box91
 \@tempa=\box92
-\@tempa=\box93
 \c@minrows=\count199
 \c@columnbadness=\count266
 \c@finalcolumnbadness=\count267
 \last@try=\dimen145
 \multicolovershoot=\dimen146
 \multicolundershoot=\dimen147
-\mult@nat@firstbox=\box94
-\colbreak@box=\box95
+\mult@nat@firstbox=\box93
+\colbreak@box=\box94
 \mc@col@check@num=\count268
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/oberdiek\aliascnt.s
-ty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/oberdiek\aliascnt.sty
 Package: aliascnt 2018/09/07 v1.5 Alias counters (HO)
 )
 \c@chapter=\count269
@@ -126,10 +125,10 @@ LaTeX Font Info:    Redeclaring math symbol \Omega on input line 372.
 \c@@auth=\count272
 \c@auco=\count273
 \instindent=\dimen159
-\authrun=\box96
+\authrun=\box95
 \authorrunning=\toks16
 \tocauthor=\toks17
-\titrun=\box97
+\titrun=\box96
 \titlerunning=\toks18
 \toctitle=\toks19
 \c@theorem=\count274
@@ -149,165 +148,141 @@ LaTeX Font Info:    Redeclaring math symbol \Omega on input line 372.
 \c@remark=\count288
 \headlineindent=\dimen160
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.s
-ty
-Package: hyperref 2022-06-20 v7.00s Hypertext links for LaTeX
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+Package: hyperref 2022-02-21 v7.00n Hypertext links for LaTeX
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.s
-ty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
 Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2022/02/03 v1.0f TeX engine tests
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftex
-cmds.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.
+sty
 Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
 )
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infware
-rr.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.st
+y
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode found.
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
-Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks20
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/kvsetkeys\kvsetke
-ys.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/kvsetkeys\kvsetkeys.st
+y
 Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvde
-finekeys.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinek
+eys.sty
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfesca
-pe.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.st
+y
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/letltxmacro\letltxm
-acro.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/letltxmacro\letltxmacro.
+sty
 Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/auxhook\auxhook.sty
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/auxhook\auxhook.sty
 Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.st
-y
-Package: nameref 2022-05-17 v2.50 Cross-referencing by name of section
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.s
-ty
-Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\ge
-ttitlestring.sty
-Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions
-.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
-))
-\c@section@level=\count289
 )
 \@linkdim=\dimen161
-\Hy@linkcounter=\count290
-\Hy@pagecounter=\count291
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
-File: pd1enc.def 2022-06-20 v7.00s Hyperref: PDFDocEncoding definition (HO)
+\Hy@linkcounter=\count289
+\Hy@pagecounter=\count290
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
+File: pd1enc.def 2022-02-21 v7.00n Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.s
-ty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds
-.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count292
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
-File: puenc.def 2022-06-20 v7.00s Hyperref: PDF Unicode definition (HO)
+\Hy@SavedSpaceFactor=\count291
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
+File: puenc.def 2022-02-21 v7.00n Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
 ... no UTF-8 mapping file for font encoding PU
 )
-Package hyperref Info: Hyper figures OFF on input line 4162.
-Package hyperref Info: Link nesting OFF on input line 4167.
-Package hyperref Info: Hyper index ON on input line 4170.
-Package hyperref Info: Plain pages OFF on input line 4177.
-Package hyperref Info: Backreferencing OFF on input line 4182.
+Package hyperref Info: Hyper figures OFF on input line 4137.
+Package hyperref Info: Link nesting OFF on input line 4142.
+Package hyperref Info: Hyper index ON on input line 4145.
+Package hyperref Info: Plain pages OFF on input line 4152.
+Package hyperref Info: Backreferencing OFF on input line 4157.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4408.
-\c@Hy@tempcnt=\count293
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+Package hyperref Info: Bookmarks ON on input line 4390.
+\c@Hy@tempcnt=\count292
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip16
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 4746.
+LaTeX Info: Redefining \url on input line 4749.
 \XeTeXLinkMargin=\dimen162
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigint
-calc.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.
+sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count294
+\Fld@menulength=\count293
 \Field@Width=\dimen163
 \Fld@charsize=\dimen164
-Package hyperref Info: Hyper figures OFF on input line 6024.
-Package hyperref Info: Link nesting OFF on input line 6029.
-Package hyperref Info: Hyper index ON on input line 6032.
-Package hyperref Info: backreferencing OFF on input line 6039.
-Package hyperref Info: Link coloring OFF on input line 6044.
-Package hyperref Info: Link coloring with OCG OFF on input line 6049.
-Package hyperref Info: PDF/A mode OFF on input line 6054.
+Package hyperref Info: Hyper figures OFF on input line 6027.
+Package hyperref Info: Link nesting OFF on input line 6032.
+Package hyperref Info: Hyper index ON on input line 6035.
+Package hyperref Info: backreferencing OFF on input line 6042.
+Package hyperref Info: Link coloring OFF on input line 6047.
+Package hyperref Info: Link coloring with OCG OFF on input line 6052.
+Package hyperref Info: PDF/A mode OFF on input line 6057.
+LaTeX Info: Redefining \ref on input line 6097.
+LaTeX Info: Redefining \pageref on input line 6101.
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\atbegshi-ltx.s
-ty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\atbegshi-ltx.sty
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count295
-\c@Item=\count296
-\c@Hfootnote=\count297
+\Hy@abspage=\count294
+\c@Item=\count295
+\c@Hfootnote=\count296
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.de
-f
-File: hpdftex.def 2022-06-20 v7.00s Hyperref driver for pdfTeX
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+File: hpdftex.def 2022-02-21 v7.00n Hyperref driver for pdfTeX
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\atveryend-ltx.
-sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\atveryend-ltx.sty
 Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
 kage
 with kernel methods
 )
-\Fld@listcount=\count298
-\c@bookmark@seq@number=\count299
+\Fld@listcount=\count297
+\c@bookmark@seq@number=\count298
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\reru
-nfilecheck.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfile
+check.sty
 Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uni
-quecounter.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniqueco
+unter.sty
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
@@ -315,69 +290,58 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip51
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.s
-ty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.s
-ty
-Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
 Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphi
-cs.cfg
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cf
+g
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 107.
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex
-.def
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen165
 \Gin@req@width=\dimen166
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
-Package: babel 2022/07/20 3.78 The Babel package
-\babel@savecnt=\count300
+) (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2022/02/26 3.73 The Babel package
+\babel@savecnt=\count299
 \U@D=\dimen167
 \l@unhyphenated=\language79
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.de
-f)
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
 \bbl@readstream=\read2
-\bbl@dirlevel=\count301
+\bbl@dirlevel=\count300
 
 *************************************
 * Local config file bblopts.cfg used
 *
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
 File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
  babel
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngerma
-n.ldf
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngerman.ldf
 Language: ngerman 2021/02/27 v2.13 German support for babel (post-1996 orthogra
 phy)
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngerma
-nb.ldf
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/babel-german\ngermanb.ld
+f
 Language: ngermanb 2021/02/27 v2.13 German support for babel (post-1996 orthogr
 aphy)
 Package babel Info: Making " an active character on input line 122.
 )))
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/de\b
-abel-ngerman.tex
-Package babel Info: Importing font and identification data for ngerman
-(babel)             from babel-de.ini. Reported on input line 11.
-)
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend
--pdftex.def
-File: l3backend-pdftex.def 2022-08-05 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count302
-\l__pdf_internal_box=\box98
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
+ex.def
+File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count301
+\l__pdf_internal_box=\box97
 ) (master.aux)
 \openout1 = `master.aux'.
 
@@ -400,17 +364,33 @@ LaTeX Font Info:    ... okay on input line 50.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 50.
 LaTeX Font Info:    ... okay on input line 50.
 Package hyperref Info: Link coloring OFF on input line 50.
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettitl
+estring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count302
+)
+LaTeX Info: Redefining \ref on input line 50.
+LaTeX Info: Redefining \pageref on input line 50.
+LaTeX Info: Redefining \nameref on input line 50.
  (master.out) (master.out)
 \@outlinefile=\write3
 \openout3 = `master.out'.
 
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pd
-f.mkii
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mki
+i
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count303
 \scratchdimen=\dimen168
-\scratchbox=\box99
+\scratchbox=\box98
 \nofMPsegments=\count304
 \nofMParguments=\count305
 \everyMPshowfont=\toks21
@@ -420,22 +400,14 @@ f.mkii
 \makeMPintoPDFobject=\count308
 \everyMPtoPDFconversion=\toks22
 )
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstop
-df-base.sty
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-ba
+se.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/grfext\grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
 
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-s
-ys.cfg
+(C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cf
+g
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -444,8 +416,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 81.
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 8
 1.
-
-(C:\Users\Sebastian\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
+ (C:\Users\miwo\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -460,7 +431,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 6--7
 
 [1
 
-{C:/Users/Sebastian/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+{C:/Users/miwo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
 Underfull \hbox (badness 10000) in paragraph at lines 25--27
 
  []
@@ -480,41 +451,42 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.36 
-      [2]) (method.tex
+l.37 \subsubsection
+                   {Sebastian Loder} ~\\ [2]) (method.tex
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.8 
-     [3]
-Underfull \hbox (badness 10000) in paragraph at lines 9--10
+l.10 I
+      nformationen vergangener \Percepts sind nicht verfügbar, d.h. ein \Ag...
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 10--11
 
  []
 
 <./Abbildungen/map.png, id=51, 773.89125pt x 414.79968pt>
 File: ./Abbildungen/map.png Graphic file (type png)
 <use ./Abbildungen/map.png>
-Package pdftex.def Info: ./Abbildungen/map.png  used on input line 12.
-(pdftex.def)             Requested size: 277.69987pt x 148.84674pt.
+Package pdftex.def Info: ./Abbildungen/map.png  used on input line 13.
+(pdftex.def)             Requested size: 242.98541pt x 130.23853pt.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.24 \end{enumerate}
-                     [4 <./Abbildungen/map.png>]
-
-LaTeX Warning: Reference `fig:interneKarte' on page  undefined on input line 35
-.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 37--39
+l.37 
+      [4 <./Abbildungen/map.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 42--44
+Underfull \hbox (badness 10000) in paragraph at lines 43--45
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--47
 
  []
 
@@ -523,9 +495,14 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.44 
+l.49 
       [5]
-Underfull \hbox (badness 10000) in paragraph at lines 45--46
+Underfull \hbox (badness 10000) in paragraph at lines 63--65
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--71
 
  []
 
@@ -534,35 +511,14 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.61 
+l.71 
       [6]
-Underfull \hbox (badness 10000) in paragraph at lines 62--64
+Underfull \hbox (badness 10000) in paragraph at lines 80--82
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--70
-
- []
-
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.73 
-      [7]
-Underfull \hbox (badness 10000) in paragraph at lines 79--81
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 82--83
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 84--85
+Underfull \hbox (badness 10000) in paragraph at lines 83--84
 
  []
 
@@ -571,24 +527,25 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.85 
-      [8]
-Underfull \hbox (badness 10000) in paragraph at lines 86--87
+l.85 F
+      ür die Berechnung der Optionen kann man annehmen, dass das Ziel immer...
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 85--86
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 92--94
+Underfull \hbox (badness 10000) in paragraph at lines 87--88
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 95--96
+Underfull \hbox (badness 10000) in paragraph at lines 93--95
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 97--98
+Underfull \hbox (badness 10000) in paragraph at lines 96--97
 
  []
 
@@ -597,15 +554,20 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.100 \subsection
-                 {Globale und lokale Sicht} \label{kap:lokaleSicht} [9]
-<bilder/agentensicht.png, id=100, 287.57437pt x 292.84406pt>
+l.98 D
+      iese Nachrichten werden gesammelt, und im nächsten Schritt ausgewerte...
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 98--99
+
+ []
+
+<bilder/agentensicht.png, id=96, 287.57437pt x 292.84406pt>
 File: bilder/agentensicht.png Graphic file (type png)
 <use bilder/agentensicht.png>
-Package pdftex.def Info: bilder/agentensicht.png  used on input line 109.
-(pdftex.def)             Requested size: 120.45044pt x 122.65852pt.
+Package pdftex.def Info: bilder/agentensicht.png  used on input line 110.
+(pdftex.def)             Requested size: 100.37537pt x 102.21544pt.
 
-Overfull \hbox (2.05504pt too wide) in paragraph at lines 104--113
+Overfull \hbox (2.05504pt too wide) in paragraph at lines 105--114
 []$[]$ $[]$ 
  []
 
@@ -614,9 +576,9 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.119 \subsection
-                 {Synchronisation und Kommunikation} \label{kap:kommunikation}
-[10 <./bilder/agentensicht.png>]) (turnier2.tex
+l.118 Z
+       usammengefasst muss der \textit{Agent} in jedem Schritt entscheiden, ...
+[9 <./bilder/agentensicht.png>]) (turnier2.tex
 Underfull \hbox (badness 10000) in paragraph at lines 5--7
 
  []
@@ -641,9 +603,8 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.18 	\item \textbf
-                   {Turnier 5 -} Der Agent konnte im Ansatz 2er Tasks abgebe...
-[11]
+l.17 	
+       [10]
 Underfull \hbox (badness 10000) in paragraph at lines 18--20
 
  []
@@ -663,11 +624,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 28--29
 
  []
 
-<bilder/karte3.png, id=113, 1806.75pt x 1541.76pt>
+<bilder/karte3.png, id=109, 1806.75pt x 1541.76pt>
 File: bilder/karte3.png Graphic file (type png)
 <use bilder/karte3.png>
 Package pdftex.def Info: bilder/karte3.png  used on input line 36.
-(pdftex.def)             Requested size: 180.67566pt x 154.1615pt.
+(pdftex.def)             Requested size: 140.52551pt x 119.90862pt.
 ) (conclusion.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
@@ -684,50 +645,37 @@ een already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.6 
-     [12]) (bib.tex
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.30 \end{thebibliography}
-                           [13 <./bilder/karte3.png (PNG copy)>])
+     [11]) (bib.tex)
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.107 \end{document}
-                     [14] (master.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
+                     [12 <./bilder/karte3.png (PNG copy)>] (master.aux)
 Package rerunfilecheck Info: File `master.out' has not changed.
 (rerunfilecheck)             Checksum: B1DE93BB8870BF51BEB60F78F679B6CA;375.
  ) 
 Here is how much of TeX's memory you used:
- 10011 strings out of 477992
- 162138 string characters out of 2825578
- 480674 words of memory out of 3000000
- 28604 multiletter control sequences out of 15000+600000
+ 9877 strings out of 478582
+ 157534 string characters out of 2844816
+ 466556 words of memory out of 3000000
+ 27892 multiletter control sequences out of 15000+600000
  478930 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,8n,77p,1488b,594s stack positions out of 10000i,1000n,20000p,200000b,80000s
- <C:\Users\Sebastian\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\
-ecti0900.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
-ec/dpi600\ecbx0900.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\fonts/pk/ljfour
-/jknappen/ec/dpi600\ecti1000.pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\fonts
-/pk/ljfour/jknappen/ec/dpi600\ecbx1000.pk> <C:\Users\Sebastian\AppData\Local\Mi
-KTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\Sebastian\AppDat
-a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt0900.pk> <C:\Users\Sebast
-ian\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0900.pk> <C:\Us
-ers\Sebastian\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.
-pk> <C:\Users\Sebastian\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600
-\ecbx1440.pk>
-Output written on master.pdf (14 pages, 347693 bytes).
+ 60i,8n,63p,1488b,398s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti0
+900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\
+ecbx0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
+i600\ecti1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
+ec/dpi600\ecbx1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour/jkna
+ppen/ec/dpi600\ecbx1200.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/ljfour
+/jknappen/ec/dpi600\ectt0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts/pk/l
+jfour/jknappen/ec/dpi600\ecrm0900.pk> <C:\Users\miwo\AppData\Local\MiKTeX\fonts
+/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\miwo\AppData\Local\MiKTeX\
+fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk>
+Output written on master.pdf (12 pages, 343259 bytes).
 PDF statistics:
- 524 PDF objects out of 1000 (max. 8388607)
- 42 named destinations out of 1000 (max. 500000)
+ 513 PDF objects out of 1000 (max. 8388607)
+ 40 named destinations out of 1000 (max. 500000)
  24 words of extra memory for PDF output out of 10000 (max. 10000000)
 
