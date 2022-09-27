@@ -328,6 +328,10 @@ public class NextGroup {
         return taskPlanner.IsDeadlineReached(activeTask);
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "NextGroup{" + "groupID=" + groupID + ", agentCount=" + agentSet.size() + '}';

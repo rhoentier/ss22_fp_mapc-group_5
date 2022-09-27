@@ -13,8 +13,8 @@ import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.map.Vector2D;
 
 /**
- * Extended A* pathfinding algorithm for path generation. Optional StepMemory
- * feature: monitors, when tiles are going to be occupied
+ * Extended A* pathfinding algorithm for agent path generation and distance measurement. 
+ * Optional StepMemory feature: monitors occupied tiles in future steps
  *
  * @referenced Java version of basic A* - https://github.com/Qualia91/AStarAlg
  * @referenced Java version of JPS by Clint Mullins -
@@ -22,24 +22,25 @@ import massim.javaagents.map.Vector2D;
  *
  * @author Alexander Lorenz
  */
+
 public class NextAStarPath {
 
     /*
      * ########## region fields
      */
-    private NextMapTile[][] map;
-    private NextMapTile[][] originalMap;
-    private int mapWidth;
-    private int mapHeight;
+    private NextMapTile[][] map;                // map used for calculation
+    private NextMapTile[][] originalMap;        // original map used for path memory 
+    private int mapWidth;                       // calculated width of the map
+    private int mapHeight;                      // calculated height of the map
 
-    private NextMapTile currentTile;
-    private int currentStep;
-    private int[] targetPosition;
-    private int[] localStartPoint;
-    private Vector2D startpoint;
+    private NextMapTile currentTile;            // current tile to be evaluated
+    private int currentStep;                    // simulation step for path memory
+    private int[] targetPosition;               // [X,Y] position to calculate the path to 
+    private int[] localStartPoint;              // [X,Y] position to start the calculation, on adjusted map
+    private Vector2D startpoint;                // startpoint on the original map
 
-    private Boolean strictWalkable;
-    private Boolean aStarJps;
+    private Boolean strictWalkable;             // boolean true to consider blocks and agents as obstacles
+    private Boolean aStarJps;                   // boolean true to use Jump Point Search optimisation
 
     /*
      * ##################### endregion fields
@@ -53,12 +54,11 @@ public class NextAStarPath {
      * Shortcut for Pathfinding Processor. A*JPS, centerTheMap, strictWalkable -
      * disabled
      *
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return CalculatePath(false, originalMap, startpoint, target, false, false, currentStep);
@@ -67,14 +67,13 @@ public class NextAStarPath {
     /**
      * Shortcut for Pathfinding Processor. A*JPS, strictWalkable - disabled
      *
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal 
      * Distance calculation
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return CalculatePath(false, originalMap, startpoint, target, centerTheMap, false, currentStep);
@@ -83,16 +82,15 @@ public class NextAStarPath {
     /**
      * Shortcut for Pathfinding Processor. A*JPS - disabled
      *
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal 
      * Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
         return CalculatePath(false, originalMap, startpoint, target, centerTheMap, strictWalkable, currentStep);
@@ -104,12 +102,11 @@ public class NextAStarPath {
      *
      * @param aStarJps Boolean - True to use A*JPS for faster calculation. Not
      * compatible with StepMemory
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, int currentStep) {
         return CalculatePath(aStarJps, originalMap, startpoint, target, false, false, currentStep);
@@ -120,14 +117,13 @@ public class NextAStarPath {
      *
      * @param aStarJps Boolean - True to use A*JPS for faster calculation. Not
      * compatible with StepMemory
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal
      * Distance calculation
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, int currentStep) {
         return CalculatePath(aStarJps, originalMap, startpoint, target, centerTheMap, false, currentStep);
@@ -138,16 +134,15 @@ public class NextAStarPath {
      *
      * @param aStarJps Boolean - True to use A*JPS for faster calculation. Not
      * compatible with StepMemory
-     * @param originalMap NextMapTile[][] - Array of Tiles to describe the
-     * Environent
-     * @param startpoint Vector2D - Position of Pathstart
-     * @param target Vector2D - Position of targetpoint
+     * @param originalMap NextMapTile Array of tiles to describe the environent
+     * @param startpoint Vector2D - Position of path start
+     * @param target Vector2D - Position of the targetpoint
      * @param centerTheMap Boolean - true if map should be centered for optimal 
      * Distance calculation
      * @param strictWalkable Boolean - True if other agents and Blocks should be
      * considered as not Walkable (Used in local view)
      * @param currentStep int - current simulation step for StepMemory
-     * @return List Collection of actions to describe the path
+     * @return Action List describing the path
      */
     public List<Action> CalculatePath(Boolean aStarJps, NextMapTile[][] originalMap, Vector2D startpoint, Vector2D target, Boolean centerTheMap, Boolean strictWalkable, int currentStep) {
 
@@ -190,6 +185,7 @@ public class NextAStarPath {
         System.out.println("Output Start - " + this.localStartPoint[0] + " - " + this.localStartPoint[1]);
         System.out.println("Output Target - " + this.targetPosition[0] + " - " + this.targetPosition[1]);
         //*/
+        
         // Guardcase - Checks if target is a viable tile.
         if (!this.map[targetPosition[0]][targetPosition[1]].IsWalkable()) {
             System.out.println("Target is NOT WALKABLE");
@@ -214,7 +210,7 @@ public class NextAStarPath {
     /**
      * Main Part of AStar calculation
      *
-     * return List<Action> Collection of actions to describe the path
+     * @return Action List to describe the path
      */
     
     private List<Action> executeMainLogic() {
@@ -357,8 +353,8 @@ public class NextAStarPath {
     }
 
     /**
-     * Prepare all mapTiles for calculation Set to open, score = 0 and parent =
-     * 0
+     * Prepare all mapTiles for calculation 
+     * Set to open, score = 0 and parent = 0
      */
     private void resetAllTiles() {
         for (NextMapTile[] tile : map) {
@@ -377,7 +373,7 @@ public class NextAStarPath {
      *
      * @param nextX int - x position of a tile
      * @param nextY int - y position of a tile
-     * @return boolean True if valid
+     * @return boolean true if valid
      */
     private boolean validTile(int nextX, int nextY) {
         if (nextX >= 0 && nextX < mapWidth) {
@@ -393,11 +389,11 @@ public class NextAStarPath {
     }
 
     /**
-     * Calculate the score for the tile
+     * Calculate the distance score for the tile
      *
      * @param tile NextMapTile to calculace the score for
      * @param currentScore from ParentTile
-     * @return int Score to arrive the tile
+     * @return int distance score for the tile
      */
     private int getScoreOfTile(NextMapTile tile, int currentScore) {
         // Distance to target
@@ -429,17 +425,17 @@ public class NextAStarPath {
      * Calculate the Manhattan Distance from a tile to target
      *
      * @param currentTile NextMapTile tile to calculate from
-     * @return int Distance
+     * @return int distance value
      */
     private int distanceScoreAway(NextMapTile currentTile) {
         return Math.abs(targetPosition[0] - currentTile.GetPositionX()) + Math.abs(targetPosition[1] - currentTile.GetPositionY());
     }
 
     /**
-     * Recursive call to Retrieve the reversed Path to target
+     * Recursive call to retrieve the reversed path to target
      *
      * @param currentTile NextMapTile the targetTile to calculate the path to.
-     * @return List<NextMapTile> List of NextMapTiles
+     * @return NextMapTile List describing the path
      */
     private List<NextMapTile> getPath(NextMapTile currentTile) {
 
@@ -455,9 +451,8 @@ public class NextAStarPath {
     /**
      * Convert a List of NextMapTiles to a List of Vector2D entries
      *
-     * @param path List<NextMapTile> Source list of a path to convert
-     * @return List<Vector2D> Path to target represented as a List of Vector2D
-     * entries
+     * @param path NextMapTile List containing a path to convert
+     * @return Vector2D List representing Path to target
      */
     private List<Vector2D> convertToVector2D(List<NextMapTile> path) {
 
@@ -483,8 +478,8 @@ public class NextAStarPath {
     /**
      * Convert the multistep Vector2D entries to multiple steps with length of 1
      *
-     * @param path List<Vector2D> Entries to Process
-     * @return List<Vector2D> List of Vector2D entries with length of 1
+     * @param path Vector2D List containing multistep entries
+     * @return Vector2D List containing entries with length of 1
      */
     private List<Vector2D> convertMultiStepsToVector2D(List<NextMapTile> path) {
         // Reference Point to check for valid tile
@@ -534,11 +529,10 @@ public class NextAStarPath {
     }
 
     /**
-     * convert List of Vector2D entries to a List of Actions
+     * Converts List of Vector2D entries to a List of Actions
      *
-     * @param vectorList List<Vector2D> Path to target as a List of Vector2D
-     * entries with length of 1
-     * @return List<Action> Path to target as a List of Actions
+     * @param vectorList Vector2D List containing path to target with length = 1
+     * @return Action List Path to target as a List of Actions
      */
     private List<Action> convertVectorToAction(List<Vector2D> vectorList) {
         List<Action> processedActions = new ArrayList<>();
@@ -560,10 +554,10 @@ public class NextAStarPath {
     }
 
     /**
-     * StepMemory feature: Block the tiles at a given time StepMemory
-     * represents, when tiles are going to be occupied
+     * Blocks the tiles at a given time for the StepMemory feature
+     * Blocked tiles represents occupied status in the future
      *
-     * @param vectorPath List<Vector2D> Path to block the tiles for
+     * @param vectorPath Vector2D List containing a path to block the tiles
      */
     private void blockUsedTiles(List<Vector2D> vectorPath) {
         int offset_x = 0;
@@ -584,11 +578,12 @@ public class NextAStarPath {
     }
 
     // JPS Methods -------------------
+    
     /**
      * Identify successor tiles by performing jumps.
      *
      * @param baseTile NextMapTile tile to be evaluated
-     * @return ArrayList<NextMapTile> List of tiles to Add to queue
+     * @return NextMapTile ArrayList of tiles to Add to the queue
      */
     private ArrayList<NextMapTile> identifySuccessors(NextMapTile baseTile) {
         // empty sucessors List to be returned
@@ -626,7 +621,7 @@ public class NextAStarPath {
      * in relation to the given node.
      *
      * @param baseTile NextMapTile tile to be evaluated, which has a parent
-     * @return Vector2D[] list of tile that will be jumped
+     * @return Vector2D array of tiles that will be jumped
      */
     private Vector2D[] getNeighborsPrune(NextMapTile baseTile) {
         // empty List of possible Neigbors
@@ -794,7 +789,7 @@ public class NextAStarPath {
      * Retrieve all neighbors from a tile
      *
      * @param basePoint Vector2D tile to be evaluated
-     * @return Vector2D[] array of neighbor tiles
+     * @return Vector2D array containing neighbor tiles
      */
     private Vector2D[] getAllNeighbors(Vector2D basePoint) {
         //Array to be returned
@@ -861,9 +856,9 @@ public class NextAStarPath {
     /**
      * Centers the map around the startpoint
      *
-     * @param mapOld NextMapTile[][] original map array
+     * @param mapOld NextMapTile array with original map 
      * @param position Vector2D position to center around
-     * @return NextMapTile[][] centered map array
+     * @return NextMapTile array with centered map
      */
     private NextMapTile[][] centerMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
         // GuardCase - Check if MapSize is sufficient

@@ -23,6 +23,13 @@ public class NextNormRequirement {
     private int quantity;
     private String details;
 
+    /**
+     *
+     * @param type
+     * @param name
+     * @param quantity
+     * @param details
+     */
     public NextNormRequirement(String type, String name, int quantity, String details) {
         this.type = type;
         this.name = name;
@@ -30,42 +37,84 @@ public class NextNormRequirement {
         this.details = details;
     }
 
+    /**
+     *
+     * @param type
+     * @param name
+     * @param quantity
+     */
     public NextNormRequirement(String type, String name, int quantity) {
         this(type, name, quantity, "");
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetType() {
         return type;
     }
 
+    /**
+     *
+     * @param type
+     */
     public void SetType(String type) {
         this.type = type;
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void SetName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetQuantity() {
         return quantity;
     }
 
+    /**
+     *
+     * @param quantity
+     */
     public void SetQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetDetails() {
         return details;
     }
 
+    /**
+     *
+     * @param details
+     */
     public void SetDetails(String details) {
         this.details = details;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "NextNormRequirement{" + "type=" + type + ", name=" + name + ", quantity=" + quantity + ", details=" + details + '}';

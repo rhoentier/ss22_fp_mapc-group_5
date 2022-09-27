@@ -15,6 +15,7 @@ public class NextRandomPath implements INextPath {
 
     /**
      * generates the next random Move
+     * @return Action with the movement direction
      */
     @Override
     public Action GenerateNextMove() {
