@@ -182,7 +182,7 @@ public class NextAgent extends Agent {
         }
         // "MapSizeDiscoveryHasStarted"
         if (messageContainer[0].contains("MapSizeDiscoveryAborted")) {
-            this.simStatus.RestartMapSizeDiscovery();
+            this.simStatus.ResetMapSizeDiscovery();
         }
         // "MapHeightFound"
         if (messageContainer[0].contains("MapHeightFound")) {

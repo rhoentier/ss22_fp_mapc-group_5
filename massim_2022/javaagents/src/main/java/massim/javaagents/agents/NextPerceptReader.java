@@ -46,6 +46,10 @@ public class NextPerceptReader {
     private HashSet<List<Parameter>> goalZones;
     private HashSet<List<Parameter>> roleZones;
 
+    /**
+     *
+     * @param agent
+     */
     public NextPerceptReader(NextAgent agent) {
         this.agent = agent;
         this.simStatus = agent.GetSimulationStatus();

@@ -30,6 +30,14 @@ public class NextNorm {
     private HashSet<NextNormRequirement> requirement;
     private int fine;
 
+    /**
+     *
+     * @param id
+     * @param start
+     * @param end
+     * @param requirement
+     * @param fine
+     */
     public NextNorm(String id, int start, int end, HashSet<NextNormRequirement> requirement, int fine) {
         this.id = id;
         this.start = start;
@@ -38,46 +46,90 @@ public class NextNorm {
         this.fine = fine;
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void SetId(String id) {
         this.id = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetStart() {
         return start;
     }
 
+    /**
+     *
+     * @param start
+     */
     public void SetStart(int start) {
         this.start = start;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetEnd() {
         return end;
     }
 
+    /**
+     *
+     * @param end
+     */
     public void SetEnd(int end) {
         this.end = end;
     }
 
+    /**
+     *
+     * @return
+     */
     public HashSet<NextNormRequirement> GetRequirement() {
         return requirement;
     }
 
+    /**
+     *
+     * @param requirement
+     */
     public void SetRequirement(HashSet<NextNormRequirement> requirement) {
         this.requirement = requirement;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetFine() {
         return fine;
     }
 
+    /**
+     *
+     * @param fine
+     */
     public void SetFine(int fine) {
         this.fine = fine;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "NextNorm{" + "id=" + id + ", start=" + start + ", end=" + end + ", requirement=" + requirement + ", fine=" + fine + '}';

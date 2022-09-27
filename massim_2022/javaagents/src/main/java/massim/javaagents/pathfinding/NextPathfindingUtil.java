@@ -4,27 +4,24 @@ import java.util.ArrayList;
 
 import eis.iilang.Action;
 import java.util.List;
-import massim.javaagents.agents.NextAgentUtil;
 import massim.javaagents.map.NextMap;
 import massim.javaagents.map.Vector2D;
 
+/**
+ * Support methods for path finding
+ *
+ * @author Alexander Lorenz
+ */
+
 public class NextPathfindingUtil {
 
-    public static ArrayList<Action> GenerateExploreActions() {
-        ArrayList<Action> steps;
-
-        // detect randomPoint to go
-        NextManhattanPath manhattanPath = new NextManhattanPath();
-        steps = manhattanPath.CalculatePath(NextAgentUtil.GenerateRandomNumber(21) - 10, NextAgentUtil.GenerateRandomNumber(21) - 10);
-
-        return steps;
-    }
 
     /**
      * Calculate Distance using Manhattan or A*JPS if available
      *
-     * @param startPosition Vector2D start position of the pathfindung
-     * @param targetPosition Vector2D target position of the pathfinding
+     * @param groupMap NextMap containing the environmental information
+     * @param startPosition Vector2D pathfinding start position 
+     * @param targetPosition Vector2D pathfinding target position
      * @return int calculated distance
      */
     public static int CalculateDistance(NextMap groupMap, Vector2D startPosition, Vector2D targetPosition) {

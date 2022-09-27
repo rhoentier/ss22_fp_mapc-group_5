@@ -5,7 +5,7 @@ import java.util.Objects;
 import massim.javaagents.general.NextConstants.ECardinals;
 
 /**
- * The Atomic element of a Massim Map
+ * The Atomic element of a MASSim Map
  *
  * @author Alexander Lorenz, Sebastian Loder
  */
@@ -24,11 +24,22 @@ public class NextMapTile {
 
     private HashSet<Integer> stepMemory = new HashSet<>();
 
+    /**
+     *
+     */
     public NextMapTile() {
         this.lastVisionStep = -2;
         this.thingType = "unknown";
     }
 
+    /**
+     *
+     * @param positionX
+     * @param positionY
+     * @param lastStepObserved
+     * @param thingType
+     * @param stepMemory
+     */
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType, HashSet<Integer> stepMemory) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -39,6 +50,13 @@ public class NextMapTile {
 
     }
 
+    /**
+     *
+     * @param positionX
+     * @param positionY
+     * @param lastStepObserved
+     * @param thingType
+     */
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved, String thingType) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -48,6 +66,12 @@ public class NextMapTile {
 
     }
 
+    /**
+     *
+     * @param positionX
+     * @param positionY
+     * @param lastStepObserved
+     */
     public NextMapTile(Integer positionX, Integer positionY, Integer lastStepObserved) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -56,6 +80,12 @@ public class NextMapTile {
         this.thingType = "";
     }
 
+    /**
+     *
+     * @param position
+     * @param lastStepObserved
+     * @param thingType
+     */
     public NextMapTile(Vector2D position, Integer lastStepObserved, String thingType) {
         this.positionX = position.x;
         this.positionY = position.y;
@@ -65,41 +95,77 @@ public class NextMapTile {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean GetIsAThing() {
         return isAThing;
     }
 
+    /**
+     *
+     * @return
+     */
     public Vector2D getPosition() {
         return new Vector2D(positionX, positionY);
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer GetPositionX() {
         return positionX;
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer GetPositionY() {
         return positionY;
     }
 
+    /**
+     *
+     * @return
+     */
     public Vector2D GetPosition() {
         return new Vector2D(positionX, positionY);
     }
 
+    /**
+     *
+     * @param pos
+     */
     public void SetPosition(Vector2D pos) {
         this.positionX = pos.x;
         this.positionY = pos.y;
     }
 
+    /**
+     *
+     * @param moveBy
+     */
     public void MovePosition(Vector2D moveBy) {
         this.positionX += moveBy.x;
         this.positionY += moveBy.y;
     }
 
+    /**
+     *
+     * @param v
+     */
     public void Subtract(Vector2D v) {
         this.positionX -= v.x;
         this.positionY -= v.y;
     }
 
+    /**
+     *
+     * @param mod
+     */
     public void ModPosition(Vector2D mod) {
         Vector2D pos = new Vector2D(this.positionX, this.positionY);
         pos.Mod(mod);
@@ -107,6 +173,10 @@ public class NextMapTile {
         this.positionY = pos.y;
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetThingType() {
         if (isAThing) {
             return thingType;
@@ -114,15 +184,27 @@ public class NextMapTile {
         return "Empty";
     }
 
+    /**
+     *
+     * @param thing
+     */
     public void SetThingType(String thing) {
         this.thingType = thing;
         this.isAThing = true;
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer GetLastVisionStep() {
         return lastVisionStep;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         if (isAThing) {
@@ -139,7 +221,7 @@ public class NextMapTile {
      * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked
      * contain one of the following things: obstacle, unknown
      *
-     * @return
+     * @return Boolean true if not obstructed
      */
     public Boolean IsWalkable() {
         //return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
@@ -148,20 +230,20 @@ public class NextMapTile {
 
     /**
      * Returns, if a map tile is "walkable" by an agent at a specific step.
-     * Tiles which are blocked contain one of the following things: obstacle,
-     * unknown
+     * Tiles which are blocked contain one of the following things: obstacle, unknown
      *
-     * @return
+     * @param step int value to check at
+     * @return Boolean true if not obstructed
      */
     public Boolean IsWalkable(Integer step) {
         return IsWalkable() && !this.stepMemory.contains(step);
     }
 
     /**
-     * Returns, if a map tile is "walkable" by an agent. Tiles which are blocked
-     * contain one of the following things: entity, block, obstacle, unknown
+     * Returns, if a map tile is "walkable" by an agent. 
+     * Tiles which are blocked contain one of the following things: entity, block, obstacle, unknown
      *
-     * @return Boolean
+     * @return Boolean true if not obstructed
      */
     public Boolean IsWalkableStrict() {
         return !thingType.contains("obstacle") && !thingType.contains("entity") && !thingType.contains("unknown") && !thingType.contains("block");
@@ -169,88 +251,165 @@ public class NextMapTile {
 
     /**
      * Returns, if a map tile is "walkable" by an agent at a specific step.
-     * Tiles which are blocked contain one of the following things: obstacle,
-     * unknown
+     * Tiles which are blocked contain one of the following things: entity, block, obstacle, unknown
      *
-     * @return Boolean
+     * @param step int value to check at
+     * @return Boolean true if not obstructed
      */
     public Boolean IsWalkableStrict(Integer step) {
         return IsWalkableStrict() && !this.stepMemory.contains(step);
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean IsObstacle() {
         return thingType.contains("obstacle");
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean IsDispenser() {
         return thingType.contains("dispenser");
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean IsBlock() {
         return thingType.contains("block");
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean IsEntity() {
         return thingType.contains("entity");
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean IsOpen() {
         return open;
     }
 
+    /**
+     *
+     * @param open
+     */
     public void SetOpen(boolean open) {
         this.open = open;
     }
 
+    /**
+     *
+     * @return
+     */
     public NextMapTile GetParent() {
         return parent;
     }
 
+    /**
+     *
+     * @param parent
+     */
     public void SetParent(NextMapTile parent) {
         this.parent = parent;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetScore() {
         return score;
     }
 
+    /**
+     *
+     * @param score
+     */
     public void SetScore(int score) {
         this.score = score;
     }
 
+    /**
+     *
+     * @param positionX
+     */
     public void SetPositionX(Integer positionX) {
         this.positionX = positionX;
     }
 
+    /**
+     *
+     * @param positionY
+     */
     public void SetPositionY(Integer positionY) {
         this.positionY = positionY;
     }
 
+    /**
+     *
+     * @return
+     */
     public NextMapTile Clone() {
         return new NextMapTile(this.positionX, this.positionY, this.lastVisionStep, this.thingType, this.stepMemory);
     }
 
+    /**
+     *
+     * @param lastVisionStep
+     */
     public void SetLastVisionStep(Integer lastVisionStep) {
         this.lastVisionStep = lastVisionStep;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public NextMapTile clone() {
         return new NextMapTile(positionX, positionY, lastVisionStep, thingType, stepMemory);
     }
 
+    /**
+     *
+     * @param step
+     */
     public void BlockAtStep(int step) {
         this.stepMemory.add(step);
     }
 
+    /**
+     *
+     * @param step
+     */
     public void ReleaseAtStep(int step) {
         this.stepMemory.remove(step);
     }
 
+    /**
+     *
+     * @param step
+     * @return
+     */
     public boolean CheckAtStep(int step) {
         return this.stepMemory.contains(step);
     }
 
+    /**
+     *
+     * @return
+     */
     public String ReportBlockedSteps() {
         StringBuilder intListe = new StringBuilder();
         for (int value : stepMemory) {
@@ -259,14 +418,26 @@ public class NextMapTile {
         return intListe.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     public HashSet GetStepMemory() {
         return stepMemory;
     }
 
+    /**
+     *
+     * @param stepMemory
+     */
     public void SetStepMemory(HashSet<Integer> stepMemory) {
         this.stepMemory = stepMemory;
     }
 
+    /**
+     *
+     * @param stepMemory
+     */
     public void AddToStepMemory(HashSet<Integer> stepMemory) {
         this.stepMemory.addAll(stepMemory);
     }
@@ -296,6 +467,12 @@ public class NextMapTile {
         return Objects.equals(this.isAThing, other.isAThing);
     }
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -306,6 +483,11 @@ public class NextMapTile {
         return hash;
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

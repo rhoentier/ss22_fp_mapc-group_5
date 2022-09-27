@@ -27,6 +27,15 @@ public class NextRole {
     private float clearChance;
     private int clearMaxDistance;
 
+    /**
+     *
+     * @param name
+     * @param vision
+     * @param action
+     * @param speed
+     * @param clearChance
+     * @param clearMaxDistance
+     */
     public NextRole(String name, int vision, HashSet<String> action, ArrayList<Integer> speed, float clearChance, int clearMaxDistance) {
         this.name = name;
         this.vision = vision;
@@ -36,54 +45,106 @@ public class NextRole {
         this.clearMaxDistance = clearMaxDistance;
     }
 
+    /**
+     *
+     * @return
+     */
     public String GetName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void SetName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetVision() {
         return vision;
     }
 
+    /**
+     *
+     * @param vision
+     */
     public void SetVision(int vision) {
         this.vision = vision;
     }
 
+    /**
+     *
+     * @return
+     */
     public HashSet<String> GetAction() {
         return action;
     }
 
+    /**
+     *
+     * @param action
+     */
     public void SetAction(HashSet<String> action) {
         this.action = action;
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<Integer> GetSpeed() {
         return speed;
     }
 
+    /**
+     *
+     * @param speed
+     */
     public void SetSpeed(ArrayList<Integer> speed) {
         this.speed = speed;
     }
 
+    /**
+     *
+     * @return
+     */
     public float GetClearChance() {
         return clearChance;
     }
 
+    /**
+     *
+     * @param clearChance
+     */
     public void SetClearChance(float clearChance) {
         this.clearChance = clearChance;
     }
 
+    /**
+     *
+     * @return
+     */
     public int GetClearMaxDistance() {
         return clearMaxDistance;
     }
 
+    /**
+     *
+     * @param clearMaxDistance
+     */
     public void SetClearMaxDistance(int clearMaxDistance) {
         this.clearMaxDistance = clearMaxDistance;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "NextRole{" + "name=" + name + ", vision=" + vision + ", action=" + action + ", speed=" + speed + ", clearChance=" + clearChance + ", clearMaxDistance=" + clearMaxDistance + '}';
