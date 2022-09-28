@@ -59,7 +59,7 @@ public class NextMap {
      */
     public void AddPercept(Vector2D agentPosition, HashSet<NextMapTile> percept) {
         for (NextMapTile maptile : percept) {
-            NextMapTile clonedMaptile = maptile.clone();
+            NextMapTile clonedMaptile = maptile.Clone();
             clonedMaptile.MovePosition(agentPosition);
             SetMapTile(clonedMaptile);
         }
@@ -223,7 +223,7 @@ public class NextMap {
                 return maptile;
             }
         }
-        return new NextMapTile(position, 0, "unknown");
+        return new NextMapTile(position.x,position.y,0, "unknown");
     }
 
     /**
@@ -308,37 +308,10 @@ public class NextMap {
 
         // Fill with tiles from maplist
         for (NextMapTile maptile : maplist) {
-            mapArray[maptile.GetPositionX()][maptile.GetPositionY()] = maptile.clone();
+            mapArray[maptile.GetPositionX()][maptile.GetPositionY()] = maptile.Clone();
         }
 
         return mapArray;
-    }
-
-    // ToDo: Wird das noch benötigt?
-    public static NextMapTile[][] CenterMapAroundPosition(NextMapTile[][] mapOld, Vector2D position) {
-        if (mapOld.length == 1 && mapOld[0].length == 1) {
-            return mapOld;
-        }
-
-        int mapWidth = mapOld.length;
-        int mapHeight = mapOld[0].length;
-        int xOffset = (int) position.x - ((int) (mapWidth / 2));
-        int yOffset = (int) position.y - ((int) (mapHeight / 2));
-        NextMapTile[][] tempMap = new NextMapTile[mapWidth][mapHeight];
-
-        for (int y = 0; y < mapHeight; y++) {
-            for (int x = 0; x < mapWidth; x++) {
-                int oldX = (x - xOffset + mapWidth) % (mapWidth - 1);
-                int oldY = (y - yOffset + mapHeight) % (mapHeight - 1);
-                tempMap[x][y] = new NextMapTile(
-                        x,
-                        y,
-                        mapOld[oldX][oldY].GetLastVisionStep(),
-                        mapOld[oldX][oldY].GetThingType(),
-                        mapOld[oldX][oldY].GetStepMemory());
-            }
-        }
-        return tempMap;
     }
 
     /**
@@ -397,26 +370,41 @@ public class NextMap {
         return Vector2D.ExtractPositionsFromMapTiles(roleZones);
     }
 
-    public String MapToStringBuilder() {
-        return MapToStringBuilder(GetMapArray());
-    }
 
+    /**
+     * Helper funciton to create a string representation of a map. Shortcut without agents and dispensers.
+     * 
+     * @param map NextMapTile Array to concert to a string representation
+     * @return String representation of the map
+     * 
+     * @author Alexander Lorenz
+     */
     public static String MapToStringBuilder(NextMapTile[][] map) {
         return MapToStringBuilder(map, new HashSet<>(), new HashSet<>());
     }
 
+    /**
+     * Helper funciton to create a string representation of a map, together with the position of agents and dispenser
+     * 
+     * @param map NextMapTile Array to concert to a string representation
+     * @param agents Vector2D HashSet with the agent´s positions
+     * @param dispenser Vector2D HashSet with the positions of the dispensers
+     * @return String representation of the map
+     * 
+     * @author Alexander Lorenz
+     */
     public static String MapToStringBuilder(NextMapTile[][] map, HashSet<Vector2D> agents, HashSet<Vector2D> dispenser) {
-        StringBuilder stringForReturn = new StringBuilder();
+        StringBuilder stringForReturn = new StringBuilder();    //Create Stringbuilder
 
-        for (int y = 0; y < map[0].length; y++) {
+        for (int y = 0; y < map[0].length; y++) {               //Iterate Y
             StringBuilder subString = new StringBuilder();
 
-            for (int x = 0; x < map.length; x++) {
+            for (int x = 0; x < map.length; x++) {              //Iterate X
                 if (dispenser.contains(new Vector2D(x, y))) {
-                    subString.append("D");
+                    subString.append("D");                      //Dispenser
                     continue;
                 }
-                if (agents.contains(new Vector2D(x, y))) {
+                if (agents.contains(new Vector2D(x, y))) {      // Agent
                     subString.append("A");
                     continue;
                 }
@@ -424,13 +412,13 @@ public class NextMap {
                 if (map[x][y] != null) {
                     if (map[x][y].IsWalkable() != null) {
                         if (map[x][y].IsWalkable()) {
-                            subString.append("_");
+                            subString.append(".");              // Free
                         } else {
-                            subString.append("X");
+                            subString.append("X");              // Obstacle
                         }
                     }
                 } else {
-                    subString.append("#");
+                    subString.append("#");                      // Unknown area
                 }
             }
 
@@ -511,7 +499,7 @@ public class NextMap {
         int vision = agent.GetAgentStatus().GetCurrentRole().GetVision();
         HashSet<Vector2D> vectorsInView = generateVectorsInView(vision, false);
         for (Vector2D v : vectorsInView) {
-            view.add(new NextMapTile(v, agent.GetSimulationStatus().GetCurrentStep(), "free"));
+            view.add(new NextMapTile(v.x,v.y, agent.GetSimulationStatus().GetCurrentStep(), "free"));
         }
         map.AddPercept(agentPosition, view);
 
@@ -727,7 +715,7 @@ public class NextMap {
             if (mergedHashMap.containsKey(pos)) {
                 // If already there, compare maptile and merge
                 NextMapTile existingMapTile = mergedHashMap.get(pos);
-                NextMapTile newMapTile = maptile.clone();
+                NextMapTile newMapTile = maptile.Clone();
 
                 // If maptile from hashSet2 is newer, replace the existing one from hashSet1
                 if (maptile.GetLastVisionStep() > existingMapTile.GetLastVisionStep()) {

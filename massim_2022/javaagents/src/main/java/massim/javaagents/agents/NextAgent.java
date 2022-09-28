@@ -34,13 +34,9 @@ import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextRole;
 
 /**
- * First iteration of an experimental agent.
- * <p>
- * Done: - Handling of transition between simulations Basic action generation
- * based on random movement Processing of all percepts and storing in dataVaults
- * - Gruppenbildung
- * <p>
- * @Author Alexander, Miriam
+ * NextAgent - an agent implementation for the MASSim Scenario
+ *  
+ * @Author Alexander Lorenz, Miriam Wolf, Jan Steffen Jendrny
  */
 public class NextAgent extends Agent {
 
@@ -56,6 +52,7 @@ public class NextAgent extends Agent {
     //Agent related attributes
     private NextAgentStatus agentStatus;
     private NextGroup agentGroup;
+    
     // message collector for group finding process
     private final HashSet<String> messageStore;
 
@@ -94,11 +91,12 @@ public class NextAgent extends Agent {
     /*
      * ##################### endregion fields
      */
+    
     /**
      * ########## region constructor.
      *
-     * @param name the agent's name
-     * @param mailbox the mail facility
+     * @param name      the agent's name
+     * @param mailbox   the mail facility
      */
     public NextAgent(String name, MailService mailbox) {
         super(name, mailbox);
@@ -140,7 +138,7 @@ public class NextAgent extends Agent {
         // Message Type: AgentObserved,Step,6,X,0,Y,3
         if (messageContainer[0].contains("AgentObserved")) {
             if (!(this.simStatus.GetCurrentStep() == null) && (Integer.parseInt(messageContainer[2]) > 2)) {
-                if (this.simStatus.GetCurrentStep() == Integer.parseInt(messageContainer[2])) {
+                if (this.simStatus.GetCurrentStep() == Integer.parseInt(messageContainer[2])) {     // prevents agents with future set of data to be involved 
                     int xToTest = -1 * Integer.parseInt(messageContainer[4]);
                     int yToTest = -1 * Integer.parseInt(messageContainer[6]);
                     for (NextMapTile feld : this.agentStatus.GetVisibleThings()) {

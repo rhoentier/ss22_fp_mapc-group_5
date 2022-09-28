@@ -1,29 +1,40 @@
 package massim.javaagents.percept;
 
 import java.util.HashSet;
-import java.util.Iterator;
 
 import massim.javaagents.map.NextMapTile;
 
 /**
- * Task(name, deadline, reward, [req(x,y,type),...])
+ * Description of a task recieved from the server
+ * 
+ * example:
+ * task(name, deadline, reward, [req(x,y,type),...])
  *
  * @author Alexander Lorenz
  */
+
 public class NextTask {
+    
+    /*
+     * ########## region fields
+     */
 
-    private String name;
-    private long deadline;
-
-    private long reward;
-    private HashSet<NextMapTile> requiredBlocks;
+    private String name;                            // identification of the task
+    private int deadline;                          // last step for the task to be submitted
+    private int reward;                            // possible reward after completing the task            
+    private HashSet<NextMapTile> requiredBlocks;    // description of blocks and orientation required for completion
+     
+    /*
+     * ##################### endregion fields
+     */
 
     /**
+     * ########## region constructor.
      *
-     * @param name
-     * @param deadline
-     * @param reward
-     * @param requiredBlocks
+     * @param name String identification of the task
+     * @param deadline int last step for the task to be submitted
+     * @param reward int possible reward after completing the task
+     * @param requiredBlocks NextMapTile HashSet description of required blocks
      */
     public NextTask(String name, int deadline, int reward, HashSet<NextMapTile> requiredBlocks) {
         this.name = name;
@@ -31,78 +42,63 @@ public class NextTask {
         this.reward = reward;
         this.requiredBlocks = requiredBlocks;
     }
+    
+    /*
+     * ##################### endregion constructor
+     */
+    
+    /*
+     * ########## region public methods
+     */
 
     /**
+     * Retrieves the identification of the task
      *
-     * @return
+     * @return String name of te task
      */
     public String GetName() {
         return name;
     }
 
     /**
-     *
-     * @param name
+     * Retrieves the last step for the task to be successfully submitted
+     * 
+     * @return int deadline as a step
      */
-    public void SetName(String name) {
-        this.name = name;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public long GetDeadline() {
+    public int GetDeadline() {
         return deadline;
     }
 
     /**
-     *
-     * @param deadline
+     * Retrieves the possible reward for the successfull submission
+     * 
+     * @return int achieveable points
      */
-    public void SetDeadline(long deadline) {
-        this.deadline = deadline;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public long GetReward() {
+    public int GetReward() {
         return reward;
     }
 
     /**
+     * Returns collection of blocks in correct orientation for submussion
      *
-     * @param reward
-     */
-    public void SetReward(long reward) {
-        this.reward = reward;
-    }
-
-    /**
-     *
-     * @return
+     * @return NextMapTile HashSet description of blocks to submit
      */
     public HashSet<NextMapTile> GetRequiredBlocks() {
         return requiredBlocks;
     }
 
     /**
-     *
-     * @param requiredBlocks
-     */
-    public void SetRequiredBlocks(HashSet<NextMapTile> requiredBlocks) {
-        this.requiredBlocks = requiredBlocks;
-    }
-
-    /**
-     *
-     * @return
+     * This implementation returns a small part of the stored values as string
+     * 
+     * @return String formatted for representation
      */
     @Override
     public String toString() {
-        return "NextTask{" + "name=" + name + ", deadline=" + deadline + ", reward=" + reward + ", requiredBlocks=" + requiredBlocks + '}';
+        return "NextTask{" + "name=" + name + ", deadline=" + deadline + ", reward=" + reward + '}';
     }
+    
+    /*
+     * ##################### endregion public methods
+     */
 
 }

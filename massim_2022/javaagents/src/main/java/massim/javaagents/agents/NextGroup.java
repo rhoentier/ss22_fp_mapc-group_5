@@ -12,27 +12,27 @@ import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextTask;
 
 /**
- * Functions: Grouping of Agents, handling of a common map and higher level
- * reasoning.
+ * Grouping of Agents, handling of a common map and higher level reasoning.
  *
- * Done: registering of agents, joining maps, Group Based Communication
- *
- * @author Alexander Lorenz, Sebastian Loder
+ * @author Alexander Lorenz, Sebastian Loder, Jan Steffen Jendrny
  */
 public class NextGroup {
 
     /*
      * ########## region fields
      */
-    private final int groupID;
-    private int lastStep;
+    
+    private final int groupID;                              //
+    private int lastStep;                                   // 
 
-    private final HashSet<NextAgent> agentSet = new HashSet<>();  // a collection of agents having joined the group
-    private final HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>(); // maping of current position for each agent
+    // a collection of agents having joined the group
+    private final HashSet<NextAgent> agentSet = new HashSet<>();            
 
-    private NextMap groupMap = new NextMap(this); // environment map shared by all agents
+    // maping of current position for each agent
+    private final HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>(); 
 
-    private final NextTaskPlanner taskPlanner;
+    private NextMap groupMap = new NextMap(this);           // environment map shared by all agents
+    private final NextTaskPlanner taskPlanner;              //
 
     /*
      * ##################### endregion fields
@@ -234,6 +234,11 @@ public class NextGroup {
         agentPositionMap.put(agent, agentPositionMap.get(agent).GetAdded(offset));
     }
 
+    /**
+     * Performs a modulus operation on the position of an agent. 
+     * 
+     * @param agent NextAgent to perform the mod operation on
+     */
     public void ModSingleAgent(NextAgent agent) {
         Vector2D pos = new Vector2D(agentPositionMap.get(agent).GetMod(groupMap.GetSimulationMapSize()));
         agentPositionMap.put(agent, pos);
@@ -251,6 +256,12 @@ public class NextGroup {
         }
     }
 
+    
+    /**
+     * Performs a modulus operation on the position of all agents. 
+     * 
+     * @param mod Vector2D input value
+     */
     public void ModAllAgents(Vector2D mod) {
         for (NextAgent agent : agentPositionMap.keySet()) {
             agentPositionMap.put(agent, agentPositionMap.get(agent).GetMod(mod));

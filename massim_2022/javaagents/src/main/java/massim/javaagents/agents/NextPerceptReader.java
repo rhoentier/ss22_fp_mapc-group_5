@@ -17,45 +17,45 @@ import massim.javaagents.percept.NextSurveyedThing;
 import massim.javaagents.percept.NextTask;
 
 /**
- * The basic Interpreter of Server Communication Protocoll
- * <p>
- * Handling of all documented Percepts, The conversion of sets into the target
- * format + saving in external Data Storage
+ * The basic interpreter of the MASSim server communication protocoll
+ * 
+ * Handling of all documented Percepts. 
+ * The conversion of sets into the target format + saving in external Data Storage
  *
  * @author Alexander Lorenz
  */
 public class NextPerceptReader {
 
-    private final NextAgent agent;
-    private final NextSimulationStatus simStatus;
-    private final NextAgentStatus agentStatus;
+    private final NextAgent             agent;
+    private final NextSimulationStatus  simStatus;
+    private final NextAgentStatus       agentStatus;
 
-    private HashSet<List<Parameter>> tasks;
-    private HashSet<List<Parameter>> roles;
-    private HashSet<List<Parameter>> norms;
-    private HashSet<List<Parameter>> attached;
-    private HashSet<List<Parameter>> things;
-    private HashSet<List<Parameter>> markers;
-    private HashSet<List<Parameter>> obstacles;
-    private HashSet<List<Parameter>> hits;
-    private HashSet<String> violations;
-    private HashSet<List<Parameter>> surveyedAgents;
-    private HashSet<List<Parameter>> surveyedThings;
+    private HashSet<List<Parameter>>    tasks;
+    private HashSet<List<Parameter>>    roles;
+    private HashSet<List<Parameter>>    norms;
+    private HashSet<List<Parameter>>    attached;
+    private HashSet<List<Parameter>>    things;
+    private HashSet<List<Parameter>>    markers;
+    private HashSet<List<Parameter>>    obstacles;
+    private HashSet<List<Parameter>>    hits;
+    private HashSet<String>             violations;
+    private HashSet<List<Parameter>>    surveyedAgents;
+    private HashSet<List<Parameter>>    surveyedThings;
 
-    private HashSet<String> overhangNames = new HashSet<>();
-    private HashSet<List<Parameter>> goalZones;
-    private HashSet<List<Parameter>> roleZones;
+    private HashSet<String>             overhangNames;
+    private HashSet<List<Parameter>>    goalZones;
+    private HashSet<List<Parameter>>    roleZones;
 
     /**
      *
      * @param agent
      */
     public NextPerceptReader(NextAgent agent) {
-        this.agent = agent;
-        this.simStatus = agent.GetSimulationStatus();
-        this.agentStatus = agent.GetAgentStatus();
-
-        clearSets();
+        this.agent = agent;                                 //                    
+        this.simStatus = agent.GetSimulationStatus();       //
+        this.agentStatus = agent.GetAgentStatus();          //
+        
+        clearSets();                                        // initialise and clear all sets
     }
 
     /**
@@ -111,7 +111,7 @@ public class NextPerceptReader {
                     // - AllSimulationsAreFinished Message
                     case bye:
                         // is called, when last Simulation is finished.
-                        // no action, should be handled in NextAgent
+                        // no action in NextPerceptReader required. Should be handled in NextAgent
                         break;
                     // - Request Action Messages
                     case requestAction:
@@ -131,10 +131,6 @@ public class NextPerceptReader {
                         break;
                     case lastAction:
                         agentStatus.SetLastAction(percept.getParameters().get(0).toProlog());
-                        /*
-                            if (agentStatus.GetLastAction() != "") {
-                                agent.say("LastAction: " + agentStatus.GetLastActionResult() + " " + agentStatus.GetLastAction() + " " + agentStatus.GetLastActionParams());
-                            }*/
                         break;
                     case lastActionResult:
                         agentStatus.SetLastActionResult(percept.getParameters().get(0).toProlog());

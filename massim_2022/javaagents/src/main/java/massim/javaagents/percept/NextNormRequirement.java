@@ -1,34 +1,40 @@
 package massim.javaagents.percept;
 
 /**
- *
+ * Description of a norm provided by the server.
+ * 
+ *  Examples:
+ *   subject(role, default, 2, )
+ *   subject(block, any, 1, )
+ *   subject(role, explorer, 0, )
+ * 
  * @author Alexander Lorenz
  */
 public class NextNormRequirement {
 
-    /*        
-    requirement:
-            type : the subject of the norm
-            name : the precise name the subject refers to, e.g., the role constructor
-            quantity : the maximum quantity that can be carried/adopted
-            details : possibly additional details
-    Examples:
-    Created norm(name=n3,announcedat=231,start=250,until=389,level=team,req=[subject(role, default, 2, ),],pun=19)
-    Created norm(name=n2,announcedat=66,start=82,until=230,level=individual,req=[subject(block, any, 1, ),],pun=13)
-    Created norm(name=n1,announcedat=10,start=20,until=62,level=team,req=[subject(role, explorer, 0, ),],pun=10)
+
+    /*
+     * ########## region fields
      */
 
-    private String type;
-    private String name;
-    private int quantity;
-    private String details;
+    private String type;        // the subject of the norm
+    private String name;        // the precise name the subject refers to, e.g., the role constructor
+    private int quantity;       // the maximum quantity that can be carried/adopted
+    private String details;     // possible additional details
+
+    /*
+     * ##################### endregion fields
+     */
 
     /**
+     * ########## region constructor.
      *
-     * @param type
-     * @param name
-     * @param quantity
-     * @param details
+     * Data is provided by the server
+     * 
+     * @param type String type of requirement, e.g. role, block
+     * @param name String precise specification of subject
+     * @param quantity int allowed quantity
+     * @param details String possible details
      */
     public NextNormRequirement(String type, String name, int quantity, String details) {
         this.type = type;
@@ -38,86 +44,74 @@ public class NextNormRequirement {
     }
 
     /**
-     *
-     * @param type
-     * @param name
-     * @param quantity
+     * Simplified constructor
+     * 
+     * Data is provided by the server
+     * 
+     * @param type String type of requirement, e.g. role, block
+     * @param name String precise specification of subject
+     * @param quantity int allowed quantity
      */
     public NextNormRequirement(String type, String name, int quantity) {
         this(type, name, quantity, "");
     }
 
+    /*
+     * ##################### endregion constructor
+     */
+    
+    /*
+     * ########## region public methods
+     */
+    
     /**
-     *
-     * @return
+     * Retrieves the type of the requirement
+     * 
+     * @return String type of requirement, e.g. role, block
      */
     public String GetType() {
         return type;
     }
 
     /**
-     *
-     * @param type
-     */
-    public void SetType(String type) {
-        this.type = type;
-    }
-
-    /**
-     *
-     * @return
+     * Retrieves the the precise name the subject of the norm
+     * refers to e.g., the role constructor
+     * 
+     * @return String precise specification of subject
      */
     public String GetName() {
         return name;
     }
-
     /**
+     * Retrieves the allowed amount of specified subject
      *
-     * @param name
-     */
-    public void SetName(String name) {
-        this.name = name;
-    }
-
-    /**
-     *
-     * @return
+     * @return int permitted quantity
      */
     public int GetQuantity() {
         return quantity;
     }
 
     /**
-     *
-     * @param quantity
-     */
-    public void SetQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    /**
-     *
-     * @return
+     * Retrieves additional possible details
+     * 
+     * @return String possible further details
      */
     public String GetDetails() {
         return details;
     }
 
     /**
-     *
-     * @param details
+     * This implementation rformats the stored values to a string
+     * 
+     * @return String formatted for representation
      */
-    public void SetDetails(String details) {
-        this.details = details;
-    }
-
-    /**
-     *
-     * @return
-     */
+    
     @Override
     public String toString() {
         return "NextNormRequirement{" + "type=" + type + ", name=" + name + ", quantity=" + quantity + ", details=" + details + '}';
     }
-
+    
+    /*
+     * ##################### endregion public methods
+     */
 }

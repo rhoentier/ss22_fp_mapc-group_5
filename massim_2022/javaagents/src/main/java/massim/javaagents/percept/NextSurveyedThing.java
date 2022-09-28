@@ -1,56 +1,66 @@
 package massim.javaagents.percept;
 
 /**
- * Container class for describing surveyed Things.
+ * Container class for describing surveyed things.
+ * Available after a survey action.
+ * 
+ * Example:
+ * surveyed("dispenser"/"goal"/"role", distance)
  *
  * @author Alexander Lorenz
  */
 public class NextSurveyedThing {
 
-    // surveyed("dispenser"/"goal"/"role", distance)
-    private String type;
-    private int distance;
+    /*
+     * ########## region fields
+     */
+
+    private String type;        // Type of suveyed element
+    private int distance;       // distance to the next instance of the specified type 
+
+    /*
+     * ##################### endregion fields
+     */
 
     /**
+     * ########## region constructor.
      *
-     * @param type
-     * @param distance
+     * @param type String type of the suveyed element
+     * @param distance int distance to the next instance of the specified type 
      */
+    
     public NextSurveyedThing(String type, int distance) {
         this.type = type;
         this.distance = distance;
     }
+    
+    /*
+     * ##################### endregion constructor
+     */
+    
+    /*
+     * ########## region public methods
+     */
 
     /**
+     * Retrieves the type of the surveyed element
      *
-     * @return
+     * @return String type
      */
     public String GetType() {
         return type;
     }
 
     /**
-     *
-     * @param type
-     */
-    public void SetType(String type) {
-        this.type = type;
-    }
-
-    /**
-     *
-     * @return
+     * Retrieves the distance to the next instance of the specified type 
+     * 
+     * @return int manhattan distance
      */
     public int GetDistance() {
         return distance;
     }
-
-    /**
-     *
-     * @param distance
+    
+    /*
+     * ##################### endregion public methods
      */
-    public void SetDistance(int distance) {
-        this.distance = distance;
-    }
-
 }
