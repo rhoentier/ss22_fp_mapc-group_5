@@ -90,25 +90,6 @@ public class NextAgentStatus {
      * ########## region public methods
      */
 
-   
-    /**
-     * SetAttachedElements
-     * compare attached elements to NextConstants directions and save in local HashSet
-     * 
-     * @param attachedElements visibly by the agent
-     */
-    public void SetAttachedElements(HashSet<Vector2D> attachedElements) {
-            this.attachedElements = new HashSet();
-            for (Vector2D attached : attachedElements) {
-                if (attached.equals(NextConstants.WestPoint)
-                        || attached.equals(NextConstants.NorthPoint)
-                        || attached.equals(NextConstants.EastPoint)
-                        || attached.equals(NextConstants.SouthPoint)) {
-                    this.attachedElements.add(attached);
-                }
-            }
-    }
-
     /**
      * Retrieve the current role defined by server
      * @return NextRole element
@@ -326,17 +307,6 @@ public class NextAgentStatus {
      */
     public Integer GetAttachedElementsAmount() {
         return this.attachedElements.size();
-    }
-    
-    /**
-     * Attached elements as NextMapTile
-     * 
-     * value is provided by NextPerceptReader, not to be adjusted manually
-     * @param attachedElementsNextMapTile
-     */
-    public void SetAttachedElementsNextMapTile(HashSet<NextMapTile> attachedElementsNextMapTile)
-    {
-    	this.attachedElementsNextMapTile = attachedElementsNextMapTile;
     }
     
     /**
@@ -575,7 +545,44 @@ public class NextAgentStatus {
      * ########## region private methods
      */
 
-
+    /**
+     * Convert attachedElements to NextMapTile
+     * 
+     * @param attachedElements Vector2D HashSet 
+     */
+    private void SetAttachedElementsNextMapTile(HashSet<Vector2D> attachedElements)
+    {
+        HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
+        
+        for(Vector2D position : attachedElements){
+            for(NextMapTile tile : visibleThings){
+                if(tile.GetPosition().equals(position)){
+                    processedAttachedSet.add(tile);
+                }
+            }
+        }
+    	this.attachedElementsNextMapTile = processedAttachedSet;
+    }
+    
+    /**
+     * SetAttachedElements
+     * compare attached elements to NextConstants directions and save in local HashSet
+     * 
+     * @param attachedElements visibly by the agent
+     */
+    private void SetAttachedElements(HashSet<Vector2D> attachedElements) {
+            this.attachedElements = new HashSet();
+            for (Vector2D attached : attachedElements) {
+                if (attached.equals(NextConstants.WestPoint)
+                        || attached.equals(NextConstants.NorthPoint)
+                        || attached.equals(NextConstants.EastPoint)
+                        || attached.equals(NextConstants.SouthPoint)) {
+                    this.attachedElements.add(attached);
+                }
+            }
+            SetAttachedElementsNextMapTile(attachedElements);
+    }
+    
     /*
      * ##################### endregion private methods
      */

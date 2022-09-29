@@ -12,7 +12,7 @@ import massim.javaagents.pathfinding.NextPathfindingUtil;
 import massim.javaagents.percept.NextTask;
 
 /**
- * Grouping of Agents, handling of a common map and higher level reasoning.
+ * Grouping of Agents and managing of a common map.
  *
  * @author Alexander Lorenz, Sebastian Loder, Jan Steffen Jendrny
  */
@@ -22,17 +22,17 @@ public class NextGroup {
      * ########## region fields
      */
     
-    private final int groupID;                              //
-    private int lastStep;                                   // 
+    private final int groupID;                              // Group identification ID
+    private int lastStep;                                   // last simulation step processed inside the Group
 
     // a collection of agents having joined the group
     private final HashSet<NextAgent> agentSet = new HashSet<>();            
 
-    // maping of current position for each agent
+    // mapping of current position for each agent
     private final HashMap<NextAgent, Vector2D> agentPositionMap = new HashMap<>(); 
 
     private NextMap groupMap = new NextMap(this);           // environment map shared by all agents
-    private final NextTaskPlanner taskPlanner;              //
+    private final NextTaskPlanner taskPlanner;              // task developing class
 
     /*
      * ##################### endregion fields
@@ -43,17 +43,17 @@ public class NextGroup {
      */
     
     /**
-     * General constructor - supposed to be called within the Nextagent
+     * General constructor -  to be called inside the NextAgent
      *
      * @param agent NextAgent - the initial agent to populate the group
-     * @param id int - groupname
+     * @param id int - group name
      */
     public NextGroup(NextAgent agent, int id) {
         this.groupID = id;
         this.AddAgent(agent);
         this.SetAgentPosition(agent, new Vector2D(0, 0));
-        this.lastStep = -1;
 
+        this.lastStep = -1;
         this.taskPlanner = new NextTaskPlanner(this);
     }
 
@@ -134,7 +134,7 @@ public class NextGroup {
     }
 
     /**
-     * Retrieve position of an agent
+     * Retrieve the position of an agent
      *
      * @param agent NextAgent agent to retrieve position from
      * @return Vector2D agent's position
@@ -174,28 +174,6 @@ public class NextGroup {
      */
     public void AddGroup(NextGroup newGroup, Vector2D offset) {
 
-        /**
-         * System.out.println("MAP to Keep
-         * ______________________________________ \n" +
-         * NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(),
-         * GetAgentPositions(), GetGroupMap().GetDispenserPositions()));
-         *
-         * for (NextAgent agent : this.agentSet) {
-         * agent.say(agent.GetPosition().toString()); }
-         *
-         * System.out.println("Dispenser: " + this.groupMap.GetDispensers());
-         *
-         * System.out.println("MAP to Join______________________________________
-         * \n" +
-         * NextMap.MapToStringBuilder(newGroup.GetGroupMap().GetMapArray(),
-         * newGroup.GetAgentPositions(),
-         * newGroup.GetGroupMap().GetDispenserPositions()));
-         *
-         *
-         * for (NextAgent agent : newGroup.agentSet) {
-         * agent.say(agent.GetPosition().toString()); }
-         *
-         */
         for (NextAgent agentToAdd : newGroup.agentSet) {
             System.out.println(" " + agentToAdd + " " + agentToAdd.GetPosition().GetSubtracted(offset));
             this.agentPositionMap.put(agentToAdd, agentToAdd.GetPosition().GetSubtracted(offset));
@@ -210,17 +188,6 @@ public class NextGroup {
 
         NextAgent.RemoveEmptyGroup(newGroup);
 
-        /*
-        System.out.println("----------------------------------------- joined ----------------------");
-        System.out.println("MAP ______________________________________ \n"
-                + NextMap.MapToStringBuilder(GetGroupMap().GetMapArray(), GetAgentPositions(), GetGroupMap().GetDispenserPositions()));
-		
-        for (NextAgent agent : this.agentSet) {
-            agent.say(agent.GetPosition().toString());
-        }
-
-        System.out.println("Dispenser: " + this.groupMap.GetDispensers());
-         */
     }
 
     /**
@@ -229,8 +196,8 @@ public class NextGroup {
      * @param agent Agent to be moved
      * @param offset move by offset
      */
+    
     public void MoveSingleAgent(NextAgent agent, Vector2D offset) {
-        //agentPositionMap.get(agent).Add(offset);
         agentPositionMap.put(agent, agentPositionMap.get(agent).GetAdded(offset));
     }
 
@@ -312,9 +279,10 @@ public class NextGroup {
     }
 
     /**
-     * updates all tasks and plans for the group
-     * @param newTasks 
-     * @param currentStep
+     * Updates all tasks and plans for the group.
+     * 
+     * @param newTasks NextTask HashSet to update
+     * @param currentStep int timestamp
      */
     public void UpdateTasks(HashSet<NextTask> newTasks, int currentStep) {
         if (currentStep > lastStep) {
@@ -323,25 +291,48 @@ public class NextGroup {
         }
     }
 
+    /**
+     * Retrieves a plan for an agent.
+     * 
+     * @param agent NextAgent to retrieve a plan for
+     * @return NextAgentPlan
+     */
     public NextAgentPlan GetPlan(NextAgent agent) {
         return taskPlanner.GetPlan(agent);
     }
 
+    /**
+     * Retrieves the last step stored in the group.
+     * 
+     * @return int timestamp of the last newest percept
+     */
     public int GetLastStep() {
         return lastStep;
     }
 
+    /**
+     * Sets the maximal attemps to reached.
+     * 
+     * @param task NextTask to assign the value to. 
+     */
     public void SetMaxAttemptsAreReached(NextTask task) {
         taskPlanner.SetMaxAttemptsAreReached(task);
     }
 
+    /**
+     * Checks if the deadline for a task is reached 
+     * 
+     * @param activeTask NextTask to be checked
+     * @return boolean true if reached
+     */
     public boolean IsDeadlineReached(NextTask activeTask) {
         return taskPlanner.IsDeadlineReached(activeTask);
     }
     
     /**
-     *
-     * @return
+     * This implementation returns the GroupID and number of agents as a string
+     * 
+     * @return String formatted for representation
      */
     @Override
     public String toString() {

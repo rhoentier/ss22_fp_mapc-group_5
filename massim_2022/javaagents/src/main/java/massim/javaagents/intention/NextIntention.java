@@ -125,10 +125,10 @@ public class NextIntention {
         }
 
         // Wechsel des Plans
-        if (!nextAgent.GetAgentTask().equals(plan.GetAgentTask())) {
+        if (!nextAgent.GetAgentActivity().equals(plan.GetAgentTask())) {
             nextAgent.ClearPathMemory();
         }
-        nextAgent.SetAgentTask(plan.GetAgentTask());
+        nextAgent.SetAgentActivity(plan.GetAgentTask());
 
         // Survey failed 2 times -> RandomStep
         if (surveyOutOfSteps == 2) {
@@ -235,7 +235,7 @@ public class NextIntention {
     public void ResetAfterTaskChange() {
         possibleActions.clear();
         lastSurveyedDistance = 0;
-        if (!this.nextAgent.GetAgentTask().equals(EAgentActivity.cleanMap)) {
+        if (!this.nextAgent.GetAgentActivity().equals(EAgentActivity.cleanMap)) {
             nextAgent.ClearPathMemory();
         }
     }
@@ -596,7 +596,7 @@ public class NextIntention {
         // Position to secondAgent
         NextAgent involvedAgent = ((NextPlanConnect) nextAgent.GetAgentPlan()).GetInvolvedAgents().iterator().next();
         NextMessageUtil.AddSpecificMessageToStore("readyToConnect", this.nextAgent.getName(), involvedAgent.getName());
-        if (involvedAgent.GetAgentTask().equals(EAgentActivity.connectToAgent)) {
+        if (involvedAgent.GetAgentActivity().equals(EAgentActivity.connectToAgent)) {
             Vector2D blockPos = ((NextPlanConnect) involvedAgent.GetAgentPlan()).GetTargetBlockPosition();
             Vector2D targetPos = this.nextAgent.GetPosition().GetAdded(blockPos).GetAdded(new Vector2D(0, 1));
 

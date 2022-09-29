@@ -26,12 +26,18 @@ import massim.javaagents.percept.NextTask;
  */
 public class NextPerceptReader {
 
-    private final NextAgent             agent;
-    private final NextSimulationStatus  simStatus;
-    private final NextAgentStatus       agentStatus;
+    /*
+     * ########## region fields
+     */
+    
+    private final NextAgent             agent;              // the instance of the parent agent
+    private final NextSimulationStatus  simStatus;          // target containter for simulation related status values
+    private final NextAgentStatus       agentStatus;        // target containter for agent related status values
 
-    private HashSet<List<Parameter>>    tasks;
-    private HashSet<List<Parameter>>    roles;
+    // all perceptions are received in no particular order and have to be sorted in order to be processed
+    
+    private HashSet<List<Parameter>>    tasks;              
+    private HashSet<List<Parameter>>    roles;              
     private HashSet<List<Parameter>>    norms;
     private HashSet<List<Parameter>>    attached;
     private HashSet<List<Parameter>>    things;
@@ -41,30 +47,43 @@ public class NextPerceptReader {
     private HashSet<String>             violations;
     private HashSet<List<Parameter>>    surveyedAgents;
     private HashSet<List<Parameter>>    surveyedThings;
-
-    private HashSet<String>             overhangNames;
     private HashSet<List<Parameter>>    goalZones;
     private HashSet<List<Parameter>>    roleZones;
+    
+    private HashSet<String>             overhangNames;      // percepts without known target
+
+    /*
+     * ##################### endregion fields
+     */
 
     /**
+     * ########## region constructor.
      *
-     * @param agent
+     * @param agent NextAgent instance of the parent agent
      */
     public NextPerceptReader(NextAgent agent) {
-        this.agent = agent;                                 //                    
-        this.simStatus = agent.GetSimulationStatus();       //
-        this.agentStatus = agent.GetAgentStatus();          //
+        this.agent = agent;                                 // the instance of the parent agent                   
+        this.simStatus = agent.GetSimulationStatus();       // target containter for simulation values
+        this.agentStatus = agent.GetAgentStatus();          // target containter for agent values
         
         clearSets();                                        // initialise and clear all sets
     }
 
-    /**
-     * Evaluate the percepts and sort by Type
-     *
-     * @param percepts
-     * @param agent
+    /*
+     * ##################### endregion constructor
      */
-    public void Evaluate(List<Percept> percepts, NextAgent agent) {
+    
+    /*
+     * ########## region public methods
+     */
+    
+    /**
+     * Evaluate the percepts and sort by type
+     *
+     * @param percepts Percept List recieved from server 
+     */
+    
+    public void Evaluate(List<Percept> percepts) {
 
         clearSets(); //clearing of the containers before processing of percepts
 
@@ -72,7 +91,8 @@ public class NextPerceptReader {
             try {
 
                 switch (NextConstants.EPercepts.valueOf(percept.getName())) {
-                    // - SimulationStart Messages
+                    
+            // - SimulationStart Messages
                     case simStart:
                         simStatus.SetFlagSimulationIsStarted();
                         break;
@@ -98,7 +118,8 @@ public class NextPerceptReader {
                             agentStatus.SetRole(percept.getParameters().get(0).toProlog());
                         }
                         break;
-                    // - SimulationEnd Messages
+                        
+            // - SimulationEnd Messages
                     case simEnd:
                         simStatus.SetFlagSimulationIsFinished();
                         break;
@@ -113,7 +134,8 @@ public class NextPerceptReader {
                         // is called, when last Simulation is finished.
                         // no action in NextPerceptReader required. Should be handled in NextAgent
                         break;
-                    // - Request Action Messages
+                        
+            // - Request Action Messages
                     case requestAction:
                         // no action, should be handled in NextAgent
                         break;
@@ -139,7 +161,8 @@ public class NextPerceptReader {
                         // has to be adjusted to a List if used/needed
                         agentStatus.SetLastActionParams(percept.getParameters().get(0).toProlog());
                         break;
-                    // The "Score" percept is handled together with @SimEnd messages above
+                        
+            // The "Score" percept is handled together with @SimEnd messages above
                     case thing:
                         // Dividing in sublists obstacles, markers and things 
                         if (percept.getParameters().get(2).toProlog().equals("obstacle")) {
@@ -197,37 +220,47 @@ public class NextPerceptReader {
                     break;
                 }
             } catch (Exception e) {
-                agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
+                this.agent.say("Error in NextPerceptReader - evaluate \n" + e.toString());
             }
         }
 
         // handling of unusual percept entries
         if (!overhangNames.isEmpty()) {
-            agent.say("------------------------------------------------");
-            agent.say("WARNING! overhang \n" + overhangNames.toString() + "\n detected");
-            agent.say("------------------------------------------------");
+            this.agent.say("------------------------------------------------");
+            this.agent.say("WARNING! Unusual entry \n" + overhangNames.toString() + "\n detected");
+            this.agent.say("------------------------------------------------");
         }
 
         //Second Step of Processing of Sets
         convertGeneratedSets();
     }
 
+    /*
+     * ##################### endregion public methods
+     */
+
+    /*
+     * ########## region private methods
+     */
+
     private void clearSets() {
-        //clearing of the containers before processing of percepts
-        attached = new HashSet<>();
-        tasks = new HashSet<>();
-        norms = new HashSet<>();
-        roles = new HashSet<>();
-        things = new HashSet<>();
-        markers = new HashSet<>();
-        obstacles = new HashSet<>();
-        violations = new HashSet<>();
-        goalZones = new HashSet<>();
-        roleZones = new HashSet<>();
-        overhangNames = new HashSet<>();
-        hits = new HashSet<>();
-        surveyedAgents = new HashSet<>();
-        surveyedThings = new HashSet<>();
+        
+        //initialising and clearing of the containers before processing of percepts
+        
+        attached        = new HashSet<>();
+        tasks           = new HashSet<>();
+        norms           = new HashSet<>();
+        roles           = new HashSet<>();
+        things          = new HashSet<>();
+        markers         = new HashSet<>();
+        obstacles       = new HashSet<>();
+        violations      = new HashSet<>();
+        goalZones       = new HashSet<>();
+        roleZones       = new HashSet<>();
+        overhangNames   = new HashSet<>();
+        hits            = new HashSet<>();
+        surveyedAgents  = new HashSet<>();
+        surveyedThings  = new HashSet<>();
     }
 
     /**
@@ -236,7 +269,7 @@ public class NextPerceptReader {
     private void convertGeneratedSets() {
 
         //Process Things, Markers and Obstales and combine to fullLocalView
-        //retaining the flexibility to combine the thing elements 
+        //target: keep the flexibility to combine the thing elements later
         HashSet<NextMapTile> fullLocalView = new HashSet<>();
         HashSet<NextMapTile> processedObstacles;
         HashSet<NextMapTile> processedThings;
@@ -246,32 +279,35 @@ public class NextPerceptReader {
         processedMarkers = processThingsSet(markers);
         processedObstacles = processObstaclesSet();
         fullLocalView.addAll(processedThings);
-        //fullLocalView.addAll(processedMarkers); 
+        //fullLocalView.addAll(processedMarkers);           
         fullLocalView.addAll(processedObstacles);
+
         agentStatus.SetVision(processedThings);
         agentStatus.SetMarkers(processedMarkers);
         agentStatus.SetObstacles(processedObstacles);
         agentStatus.SetFullLocalView(fullLocalView);
-
+        
         //Process remaining Datasets
         simStatus.SetTasksList(processTasksSet());
         simStatus.SetNormsList(processNormsSet());
         simStatus.SetRolesList(processRolesSet());
         simStatus.SetViolations(processViolationsSet());
-
-        agentStatus.SetAttachedElementsNextMapTile(updateAttachedSetMapTile());
+        
         agentStatus.SetVisibleAttachedElements(processAttachedSet());
         agentStatus.SetGoalZones(processGoalZonesSet());
         agentStatus.SetRoleZones(processRoleZonesSet());
-
         agentStatus.SetHits(processHitsSet());
-
         agentStatus.SetSurveyedAgents(processSurveyedAgentSet());
         agentStatus.SetSurveyedThings(processSurveyedThingSet());
-
         agentStatus.SetDispenser(convertDispenserFromVision());
+        
     }
 
+    /**
+     * Select dispenser from vision
+     * 
+     * @return NextMapTile HashSet of type dispenser
+     */
     private HashSet<NextMapTile> convertDispenserFromVision() {
         HashSet<NextMapTile> collectionOfDispenser = new HashSet<>();
         for (NextMapTile mapTile : agentStatus.GetVisibleThings()) {
@@ -286,10 +322,16 @@ public class NextPerceptReader {
         return collectionOfDispenser;
     }
 
+    /**
+     * Convert the collected task data to NextTask elements
+     * 
+     * data example:
+     * task (name, deadline, reward, [req(x,y,type),...])
+     * 
+     * @return NextTask HashSet with available tasks
+     */
     private HashSet<NextTask> processTasksSet() {
-        // task(name, deadline, reward, [req(x,y,type),...])
         HashSet<NextTask> processedTasksSet = new HashSet<>();
-        // Converts Percept Data to Task Elements.
         for (List<Parameter> task : tasks) {
             try {
 
@@ -314,28 +356,30 @@ public class NextPerceptReader {
         }
         //*/
         return processedTasksSet;
-
     }
-
+    
+    /**
+     * Converts percept data to norm attributes and constructs norms.
+     * 
+     * Recieved data example:
+     * norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
+     * 
+     * id : Identifier - ID of the norm
+     * start : Numeral - first step the norm holds
+     * end : Numeral - last step the norm holds
+     * requirement:
+     *          type : the subject of the norm
+     *          name : the precise name the subject refers to, e.g., the role constructor
+     *          quantity : the maximum quantity that can be carried/adopted
+     *          details : possibly additional details
+     * fine : Numeral - the energy cost of violating the norm (per step)
+     *  
+     * @return NextNorm HashSet with available norms
+     */
     private HashSet<NextNorm> processNormsSet() {
-        /*  --- Recieved information
         
-        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
-
-        id : Identifier - ID of the norm
-        start : Numeral - first step the norm holds
-        end : Numeral - last step the norm holds
-            requirement:
-                type : the subject of the norm
-                name : the precise name the subject refers to, e.g., the role constructor
-                quantity : the maximum quantity that can be carried/adopted
-                details : possibly additional details
-        fine : Numeral - the energy cost of violating the norm (per step)
-        
-         */
-
         HashSet<NextNorm> processedNormsSet = new HashSet<>();
-        // Converts Percept Data to Norm Attributes and constructs Norms.
+        
         for (List<Parameter> norm : norms) {
             try {
 
@@ -368,6 +412,14 @@ public class NextPerceptReader {
         return processedNormsSet;
     }
 
+    /**
+     * Converts percept data to roles attributes and constructs roles.
+     * 
+     * Recieved data example:
+     * role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
+     * 
+     * @return NextRoles HashSet with available roles 
+     */
     private HashSet<NextRole> processRolesSet() {
         // role(name, vision, [action1, action2, ...], [speed1, speed2, ...], clearChance, clearMaxDistance)
 
@@ -407,10 +459,16 @@ public class NextPerceptReader {
 
     }
 
+    /**
+     * Converts percept data to attached points. All visible attached elements are processed.
+     * 
+     * Recieved data example:
+     * attached(x, y)
+     * 
+     * @return Vector2D HashSet with positions of visible attached elements
+     */
     private HashSet<Vector2D> processAttachedSet() {
-        // attached(x, y) - Percept Data Format
         HashSet<Vector2D> processedAttachedSet = new HashSet<>();
-        // Converts percept data to attached points. All visible attached elements are processed.
         for (List<Parameter> zone : attached) {
             try {
                 processedAttachedSet.add(new Vector2D(
@@ -429,29 +487,20 @@ public class NextPerceptReader {
         return processedAttachedSet;
     }
 
-    private HashSet<NextMapTile> updateAttachedSetMapTile() {
-        HashSet<NextMapTile> processedAttachedSet = new HashSet<>();
-        for (NextMapTile tile : processThingsSet(things)) {
-            if (tile.GetThingType().contains("block")
-                    && (tile.getPosition().equals(NextConstants.WestPoint)
-                    || tile.getPosition().equals(NextConstants.NorthPoint)
-                    || tile.getPosition().equals(NextConstants.EastPoint)
-                    || tile.getPosition().equals(NextConstants.SouthPoint))) {
-                for (Vector2D attachedSet : processAttachedSet()) {
-                    if (attachedSet.equals(tile.GetPosition())) {
-                        processedAttachedSet.add(tile);
-                    }
-                }
-            }
-        }
-        return processedAttachedSet;
-    }
+
+    /**
+     * Converts Percept Data to NextMapTile Elements
+     * 
+     * Recieved data example:
+     * thing(x, y, type, details) - Percept Data Format
+     *   
+     * @param things HashSet of Parameter Lists containing the recieved data
+     * @return NextMapTile HashSet with visible things
+     */
 
     private HashSet<NextMapTile> processThingsSet(HashSet<List<Parameter>> things) {
-        // thing(x, y, type, details) - Percept Data Format
         HashSet<NextMapTile> processedThingsSet = new HashSet<>();
-        // Converts Percept Data to NextMapTile Elements
-        for (List<Parameter> object : things) {
+               for (List<Parameter> object : things) {
             try {
                 switch (object.size()) {
                     case 3 -> {
@@ -486,11 +535,17 @@ public class NextPerceptReader {
         //*/
         return processedThingsSet;
     }
-
+    
+    /**
+     * Converts Percept Data of obstacles to NextMapTile Elements
+     * 
+     * Recieved data example:
+     * thing(x, y, type, details) - Percept Data Format
+     *   
+     * @return NextMapTile HashSet with visible obstacles
+     */
     private HashSet<NextMapTile> processObstaclesSet() {
-        // thing(x, y, type, details) - Percept Data Format
         HashSet<NextMapTile> processedObstacles = new HashSet<>();
-        // Converts Percept Data to goalZone MapTiles
         for (List<Parameter> object : obstacles) {
             try {
                 processedObstacles.add(new NextMapTile(
@@ -512,10 +567,18 @@ public class NextPerceptReader {
         return processedObstacles;
 
     }
+    
+    /**
+     * Converts Percept Data to Violation Elements
+     * no processing needed
+     * 
+     * Recieved data example:
+     * violation(id) - Percept Data Format
+     *   
+     * @return String HashSet with violation IDs
+     */
 
     private HashSet<String> processViolationsSet() {
-        // violation(id) - Percept Data Format
-        // Forwards Percept Data as a String
 
         /* Debug Helper - Place // before to activate 
         if (!violations.isEmpty()) {
@@ -526,10 +589,18 @@ public class NextPerceptReader {
 
     }
 
+    /**
+     * Converts percept data of goal zones to NextMapTile elements
+     * 
+     * Recieved data example:
+     * goalZone(x, y) - Percept Data Format
+     *   
+     * @return NextMapTile HashSet with visible goal zones
+     */
+    
     private HashSet<NextMapTile> processGoalZonesSet() {
-        // goalZone(x, y) - Percept Data Format
+        
         HashSet<NextMapTile> processedGoalZones = new HashSet<>();
-        // Converts Percept Data to goalZone MapTiles
         for (List<Parameter> zone : goalZones) {
             try {
                 processedGoalZones.add(new NextMapTile(
@@ -550,11 +621,17 @@ public class NextPerceptReader {
         //*/
         return processedGoalZones;
     }
-
+    
+    /**
+     * Converts percept data of role zones to NextMapTile elements
+     * 
+     * Recieved data example:
+     * roleZone(x, y) - Percept Data Format
+     *   
+     * @return NextMapTile HashSet with visible role zones
+     */
     private HashSet<NextMapTile> processRoleZonesSet() {
-        // roleZone(x, y) - Percept Data Format
         HashSet<NextMapTile> processedRoleZones = new HashSet<>();
-        // Converts Percept Data to roleZone MapTiles
         for (List<Parameter> zone : roleZones) {
             try {
                 processedRoleZones.add(new NextMapTile(
@@ -575,10 +652,16 @@ public class NextPerceptReader {
         return processedRoleZones;
     }
 
+    /**
+     * Converts percept data of hits to NextMapTile elements
+     * 
+     * Recieved data example:
+     * hit(x, y) - Percept Data Format
+     *   
+     * @return NextMapTile HashSet with source of damage
+     */
     private HashSet<NextMapTile> processHitsSet() {
-        // hit(x, y) - Percept Data Format
         HashSet<NextMapTile> processedHits = new HashSet<>();
-        // Converts Percept Data to goalZone MapTiles
         for (List<Parameter> hit : hits) {
             try {
                 processedHits.add(new NextMapTile(
@@ -600,16 +683,20 @@ public class NextPerceptReader {
         return processedHits;
     }
 
+     /**
+     * Converts percept data of surveyed agent
+     * 
+     * Recieved data example:
+     * surveyed("agent", name, role, energy)
+     *    name:     Identifier
+     *    role:     Identifier
+     *    energy:   Numeral
+     * 
+     * @return NextSurveyedAgent HashSet with information about the specific agent
+     */
     private HashSet<NextSurveyedAgent> processSurveyedAgentSet() {
-        /*  --- Recieved information        
-          surveyed("agent", name, role, energy)
-          name : Identifier
-          role : Identifier
-          energy : Numeral
-        */
-
+        
         HashSet<NextSurveyedAgent> processedSurveyedAgents = new HashSet<>();
-        // Converts Percept Data to Target Data
         for (List<Parameter> SurveyedAgent : surveyedAgents) {
             try {
                 processedSurveyedAgents.add(
@@ -631,11 +718,18 @@ public class NextPerceptReader {
 
     }
 
+    /**
+     * Converts percept data of surveyed thing
+     * 
+     * Recieved data example:
+     * surveyed("dispenser"/"goal"/"role", Distance)
+     * 
+     * @return NextSurveyedThing HashSet with distance th next object of type
+     */
+
     private HashSet<NextSurveyedThing> processSurveyedThingSet() {
 
-        // surveyed("dispenser"/"goal"/"role", Distance)
         HashSet<NextSurveyedThing> processedSurveyedThings = new HashSet<>();
-        // Converts Percept Data to Target Data
         for (List<Parameter> SurveyedAgent : surveyedThings) {
             try {
                 processedSurveyedThings.add(
@@ -656,6 +750,12 @@ public class NextPerceptReader {
         return processedSurveyedThings;
     }
 
+    /**
+     * Converts percept data to description of block orientation for a task
+     * 
+     * @param requirementsList HashSet of Parameter Lists with requirement description
+     * @return NextMapTile HashSet with block position for task submission
+     */
     private HashSet<NextMapTile> convertRequirements(HashSet<List<Parameter>> requirementsList) {
         HashSet<NextMapTile> processedRequirements = new HashSet<>();
         for (List<Parameter> element : requirementsList) {
@@ -671,21 +771,20 @@ public class NextPerceptReader {
         return processedRequirements;
     }
 
+    /**
+     * Converts percept data to description of norm specification
+     * 
+     * Recieved data example:
+     * requirement(
+     *          type : the subject of the norm
+     *          name : the precise name the subject refers to, e.g., the role constructor
+     *          quantity : the maximum quantity that can be carried/adopted
+     *          details : possibly additional details)
+     * 
+     * @param requirementsList HashSet of Parameter Lists with requirement description
+     * @return NextMapTile HashSet with block position for task submission
+     */
     private HashSet<NextNormRequirement> convertNormRequirements(HashSet<List<Parameter>> collectionOfRequirementElements) {
-        /*  --- Recieved information
-        norm(id, start, end, [requirement(type, name, quantity, details), ...], fine)
-
-        id : Identifier - ID of the norm
-        start : Numeral - first step the norm holds
-        end : Numeral - last step the norm holds
-            requirement:
-                type : the subject of the norm
-                name : the precise name the subject refers to, e.g., the role constructor
-                quantity : the maximum quantity that can be carried/adopted
-                details : possibly additional details
-        fine : Numeral - the energy cost of violating the norm (per step)
-
-         */
 
         HashSet<NextNormRequirement> processedNormRequirements = new HashSet<>();
         for (List<Parameter> element : collectionOfRequirementElements) {
@@ -700,4 +799,8 @@ public class NextPerceptReader {
 
         return processedNormRequirements;
     }
+    
+    /*
+     * ##################### endregion private methods
+     */
 }
